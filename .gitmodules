@@ -1,3 +1,6 @@
 [submodule "puppet/modules/openvpn"]
 	path = puppet/modules/openvpn
 	url = git://github.com/luxflux/puppet-openvpn.git
+[submodule "puppet/modules/concat"]
+	path = puppet/modules/concat
+	url = git://code.leap.se/puppet_concat
