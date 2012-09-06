@@ -1,8 +1,10 @@
 node 'default' {
   notify {'Please specify a host in site.pp!':}
 
+  $openvpn_server='cougar.leap.se'
+
   openvpn::server {
-    'cougar.leap.se':
+    "$openvpn_server":
         country      => 'TR',
         province     => 'Ankara',
         city         => 'Ankara',
@@ -14,67 +16,67 @@ node 'default' {
   
 
   openvpn::option {
-    "dev server1":
+    "dev $openvpn_server":
         key    => "dev",
         value  => "tun0",
-        server => "server1";
-    "script-security server1":
+        server => "$openvpn_server";
+    "script-security $openvpn_server":
         key    => "script-security",
         value  => "3",
-        server => "server1";
-    "daemon server1":
+        server => "$openvpn_server";
+    "daemon $openvpn_server":
         key    => "daemon",
-        server => "server1";
-    "keepalive server1":
+        server => "$openvpn_server";
+    "keepalive $openvpn_server":
         key    => "keepalive",
         value  => "10 60",
-        server => "server1";
-    "ping-timer-rem server1":
+        server => "$openvpn_server";
+    "ping-timer-rem $openvpn_server":
         key    => "ping-timer-rem",
-        server => "server1";
-    "persist-tun server1":
+        server => "$openvpn_server";
+    "persist-tun $openvpn_server":
         key    => "persist-tun",
-        server => "server1";
-    "persist-key server1":
+        server => "$openvpn_server";
+    "persist-key $openvpn_server":
         key    => "persist-key",
-        server => "server1";
-    "proto server1":
+        server => "$openvpn_server";
+    "proto $openvpn_server":
         key    => "proto",
         value  => "tcp-server",
-        server => "server1";
-    "cipher server1":
+        server => "$openvpn_server";
+    "cipher $openvpn_server":
         key    => "cipher",
         value  => "BF-CBC",
-        server => "server1";
-    "local server1":
+        server => "$openvpn_server";
+    "local $openvpn_server":
         key    => "local",
         value  => $ipaddress,
-        server => "server1";
-    "tls-server server1":
+        server => "$openvpn_server";
+    "tls-server $openvpn_server":
         key    => "tls-server",
-        server => "server1";
-    "server server1":
+        server => "$openvpn_server";
+    "server $openvpn_server":
         key    => "server",
         value  => "10.10.10.0 255.255.255.0",
-        server => "server1";
-    "lport server1":
+        server => "$openvpn_server";
+    "lport $openvpn_server":
         key    => "lport",
         value  => "1194",
-        server => "server1";
-    "management server1":
+        server => "$openvpn_server";
+    "management $openvpn_server":
         key    => "management",
-        value  => "/var/run/openvpn-server1.sock unix",
-        server => "server1";
-    "comp-lzo server1":
+        value  => "/var/run/openvpn-$openvpn_server.sock unix",
+        server => "$openvpn_server";
+    "comp-lzo $openvpn_server":
         key    => "comp-lzo",
-        server => "server1";
-    "topology server1":
+        server => "$openvpn_server";
+    "topology $openvpn_server":
         key    => "topology",
         value  => "subnet",
-        server => "server1";
-    "client-to-client server1":
+        server => "$openvpn_server";
+    "client-to-client $openvpn_server":
         key    => "client-to-client",
-        server => "server1";
+        server => "$openvpn_server";
   }
 
 }
