@@ -1,3 +1,3 @@
 #!/bin/sh
 
-puppet --modulepath=$PWD/modules $PWD/manifests/site.pp $@
+puppet apply --modulepath=$PWD/puppet/modules $PWD/puppet/manifests/site.pp $@
