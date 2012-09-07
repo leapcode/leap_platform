@@ -1,0 +1,16 @@
+---
+:backends:
+  - yaml
+  - puppet
+
+:logger: console
+
+:hierarchy:
+  - "%{location}"
+  - common
+
+:yaml:
+   :datadir: /etc/leap/hieradata
+
+:puppet:
+   :datasource: data
