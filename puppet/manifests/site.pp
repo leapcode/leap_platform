@@ -1,15 +1,15 @@
 node 'default' {
   notify {'Please specify a host in site.pp!':}
 
-  $openvpn_server='cougar.leap.se'
+  $openvpn_server=$::fqdn
 
   openvpn::server {
     "$openvpn_server":
-        country      => 'TR',
-        province     => 'Ankara',
-        city         => 'Ankara',
-        organization => 'leap.se',
-        email        => 'sysdev@leap.se';
+        country      => hiera("country"),
+        province     => hiera("province"),
+        city         => hiera("city"),
+        organization => hiera("organization"),
+        email        => hiera("email");
   }
 
 # configure server
