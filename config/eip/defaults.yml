@@ -1,0 +1,7 @@
+---
+
+# make shure 'false' is quoted  
+tor: 'false'
+openvpn_ports:  - 80
+                - 443
+                - 1194

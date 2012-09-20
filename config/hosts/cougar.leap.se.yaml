@@ -1,4 +1,4 @@
 ---
-openvpn_ports:  - 999
-                - 1000
-tor: true
+# varac's local machine
+services: - eip 
+          - couchdb 

@@ -2,4 +2,4 @@
 openvpn_ports:  - 80
                 - 443
                 - 1194
-tor: false
+tor: 'true' 
