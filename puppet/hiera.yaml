@@ -7,7 +7,7 @@
 
 :hierarchy:
   - hosts/%{fqdn}
-  - services/%{service}
+#  - services/%{service}     # that's not possible, as hiera needs _one_ target per hierarchy
   - defaults
 
 # relative from where puppet is run, so we need to run puppet 
