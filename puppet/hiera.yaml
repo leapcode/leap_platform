@@ -6,11 +6,14 @@
 :logger: console
 
 :hierarchy:
-  - "%{location}"
-  - common
+  - hosts/%{fqdn}
+  - services/%{service}
+  - defaults
 
+# relative from where puppet is run, so we need to run puppet 
+# from the root dir of the leap_platform repo
 :yaml:
-   :datadir: /etc/leap/hieradata
+   :datadir: config
 
 :puppet:
    :datasource: data
