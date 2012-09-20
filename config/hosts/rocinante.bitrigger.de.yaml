@@ -1,0 +1,5 @@
+---
+# varac's local machine
+openvpn_ports:  - 1
+                - 2
+tor: true
