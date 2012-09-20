@@ -11,6 +11,7 @@
   - ca/defaults
   - eip/%{fqdn}
   - eip/defaults
+# more services following
   - defaults
 
 # relative from where puppet is run, so we need to run puppet 
