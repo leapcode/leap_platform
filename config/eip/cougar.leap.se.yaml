@@ -1,9 +1,10 @@
 ---
-openvpn:
+openvpn_server_configs:
   port80_tcp:
     port: 80
-    protocol: tcp
+    proto: tcp-server
   port1194_udp:
     port: 1194
-    protocol: udp
+    proto: udp
+
 tor: 'false'
