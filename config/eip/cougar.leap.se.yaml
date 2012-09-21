@@ -1,5 +1,9 @@
 ---
-openvpn_ports:  - 80
-                - 443
-                - 1194
-tor: 'true' 
+openvpn:
+  port80_tcp:
+    port: 80
+    protocol: tcp
+  port1194_udp:
+    port: 1194
+    protocol: udp
+tor: 'false'

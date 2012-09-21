@@ -1,4 +1,3 @@
 ---
-# varac's local machine
 services: - eip 
           - couchdb 

@@ -1,7 +1,15 @@
 define print() {
-   notice("The value is: '${name}'")
+  notice("The value is: '${name}'")
 }
- 
+
+define create_openvpn_config($port, $protocol) {
+  $openvpn_configname=$name
+  notice("Creating OpenVPN $openvpn_configname:  
+    Port: $port, Protocol: $protocol")
+  # ...
+  #include site_openvpn
+
+}
 
 node 'default' {
   #$password=hiera('testpw')
@@ -11,12 +19,9 @@ node 'default' {
   notice("Services for $fqdn: $services")
 
   if 'eip' in $services {
-    $openvpn_ports=hiera_array('openvpn_ports')
+    $openvpn=hiera('openvpn')
     $tor=hiera('tor')
-    notice("Openvpn Config for $fqdn: openvpn_ports=$openvpn_ports, tor=$tor")
-    print{$openvpn_ports:}
-    #include site_openvpn
+    notice("Tor enabled: $tor")
+    create_resources('create_openvpn_config', $openvpn)
   }
-
-
 }
