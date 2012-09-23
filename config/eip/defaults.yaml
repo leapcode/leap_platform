@@ -1,4 +1,4 @@
 ---
 # make shure 'false' is quoted  
 tor: 'false'
-openvpn:
+openvpn_server_configs:
