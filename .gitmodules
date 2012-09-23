@@ -4,3 +4,6 @@
 [submodule "puppet/modules/concat"]
 	path = puppet/modules/concat
 	url = git://code.leap.se/puppet_concat
+[submodule "puppet/modules/sshd"]
+	path = puppet/modules/sshd
+	url = git://labs.riseup.net/shared-sshd
