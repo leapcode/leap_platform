@@ -7,3 +7,6 @@
 [submodule "puppet/modules/sshd"]
 	path = puppet/modules/sshd
 	url = git://labs.riseup.net/shared-sshd
+[submodule "puppet/modules/apt"]
+	path = puppet/modules/apt
+	url = git://code.leap.se/puppet_apt
