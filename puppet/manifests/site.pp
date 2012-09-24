@@ -3,8 +3,8 @@ node 'default' {
   # include some basic classes
   # $concat_basedir =  '/var/lib/puppet/modules/concat'  # do we need this ?
   include concat::setup
-  include apt,git,lsb
-
+  include apt, lsb, git
+  import "common"
 
   $services=hiera_array('services')
   notice("Services for $fqdn: $services")
