@@ -10,3 +10,9 @@
 [submodule "puppet/modules/apt"]
 	path = puppet/modules/apt
 	url = git://code.leap.se/puppet_apt
+[submodule "puppet/modules/lsb"]
+	path = puppet/modules/lsb
+	url = git://labs.riseup.net/shared-lsb
+[submodule "puppet/modules/ntp"]
+	path = puppet/modules/ntp
+	url = git://github.com/puppetlabs/puppetlabs-ntp.git
