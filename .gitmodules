@@ -19,3 +19,6 @@
 [submodule "puppet/modules/git"]
 	path = puppet/modules/git
 	url = git://code.leap.se/puppet_git
+[submodule "puppet/modules/common"]
+	path = puppet/modules/common
+	url = git://labs.riseup.net/shared-common
