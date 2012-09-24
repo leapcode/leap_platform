@@ -1,6 +1,10 @@
 node 'default' {
+
+  # include some basic classes
   # $concat_basedir =  '/var/lib/puppet/modules/concat'  # do we need this ?
   include concat::setup
+  include apt,git,lsb
+
 
   $services=hiera_array('services')
   notice("Services for $fqdn: $services")
@@ -21,6 +25,6 @@ node 'default' {
 
     $openvpn_configs=hiera('openvpn_server_configs')
     create_resources('site_openvpn::server_config', $openvpn_configs)
-
   }
+
 }
