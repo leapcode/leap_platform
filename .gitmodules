@@ -24,4 +24,4 @@
 	url = git://labs.riseup.net/shared-common
 [submodule "puppet/modules/couchdb"]
 	path = puppet/modules/couchdb
-	url = git://github.com/camptocamp/puppet-couchdb.git
+	url = git://code.leap.se/puppet_couchdb 
