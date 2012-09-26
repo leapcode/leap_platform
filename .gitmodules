@@ -1,0 +1,24 @@
+[submodule "puppet/modules/openvpn"]
+	path = puppet/modules/openvpn
+	url = git://github.com/luxflux/puppet-openvpn.git
+[submodule "puppet/modules/concat"]
+	path = puppet/modules/concat
+	url = git://code.leap.se/puppet_concat
+[submodule "puppet/modules/sshd"]
+	path = puppet/modules/sshd
+	url = git://labs.riseup.net/shared-sshd
+[submodule "puppet/modules/apt"]
+	path = puppet/modules/apt
+	url = git://code.leap.se/puppet_apt
+[submodule "puppet/modules/lsb"]
+	path = puppet/modules/lsb
+	url = git://labs.riseup.net/shared-lsb
+[submodule "puppet/modules/ntp"]
+	path = puppet/modules/ntp
+	url = git://github.com/puppetlabs/puppetlabs-ntp.git
+[submodule "puppet/modules/git"]
+	path = puppet/modules/git
+	url = git://code.leap.se/puppet_git
+[submodule "puppet/modules/common"]
+	path = puppet/modules/common
+	url = git://labs.riseup.net/shared-common

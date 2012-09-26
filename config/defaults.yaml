@@ -1,0 +1,7 @@
+---
+testpw: secret
+services: - none
+
+ssh_keys:
+  test_key:
+    key: ssh-rsa random_noiseAAdABIwAAAGEA3FSyQwBI6Z+nCSjUUk8EEAnnkhXlukKoppND/RRClWz2s5TCzIkd3Ou5+Cyz71X0XmazM3l5WgeErvtIwQMyT1KjNoMhoJMrJnWqQPOt5Q8zWd9qG7PBl9+eiH5qV7NZ
