@@ -1,6 +1,6 @@
 #!/bin/sh -x
 # 
-# missing: header, licence, usage
+# missing: header, license, usage
 
 PUPPET_ENV='--confdir=puppet'
 
