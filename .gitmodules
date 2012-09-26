@@ -22,3 +22,6 @@
 [submodule "puppet/modules/common"]
 	path = puppet/modules/common
 	url = git://labs.riseup.net/shared-common
+[submodule "puppet/modules/couchdb"]
+	path = puppet/modules/couchdb
+	url = git://code.leap.se/puppet_couchdb 

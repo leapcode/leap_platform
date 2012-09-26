@@ -27,4 +27,9 @@ node 'default' {
     create_resources('site_openvpn::server_config', $openvpn_configs)
   }
 
+  if 'couchdb' in $services { 
+    class { 'couchdb': 
+      #bind => '0.0.0.0' 
+    }
+  }
 }
