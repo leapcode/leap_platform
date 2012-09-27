@@ -7,4 +7,4 @@ openvpn_server_configs:
     port: 1194
     proto: udp
 
-#tor: 'false'
+tor: 'true'
