@@ -1,52 +1,52 @@
 define site_openvpn::server_config($port, $proto) {
   $openvpn_configname=$name
-  notice("Creating OpenVPN $openvpn_configname:  
+  notice("Creating OpenVPN $openvpn_configname:
     Port: $port, Protocol: $proto")
 
-  file {                                           
-     "/etc/openvpn/${name}":                      
-         ensure  => directory,                    
-         require => Package["openvpn"];           
-  }                                                
+  file {
+    "/etc/openvpn/${name}":
+      ensure  => directory,
+      require => Package['openvpn'];
+  }
 
-  concat {                                                                    
-    "/etc/openvpn/${openvpn_configname}.conf":                                            
-        owner   => root,                                                    
-        group   => root,                                                    
-        mode    => 644,                                                     
-        warn    => true,                                                    
-        require => File["/etc/openvpn"],                                    
-        notify  => Service["openvpn"];                                      
-  }      
+  concat {
+    "/etc/openvpn/$openvpn_configname.conf":
+        owner   => root,
+        group   => root,
+        mode    => 644,
+        warn    => true,
+        require => File['/etc/openvpn'],
+        notify  => Service['openvpn'];
+  }
 
 
 
   openvpn::option {
-    "ca ${openvpn_configname}":
-        key     => "ca",
-        value   => "/etc/openvpn/ca.crt",
-        #require => Exec["initca ${openvpn_configname}"],
-        server  => "${openvpn_configname}";
-    "cert ${openvpn_configname}":
-        key     => "cert",
-        value   => "/etc/openvpn/${openvpn_configname}/server.crt",
-        #require => Exec["generate server cert ${openvpn_configname}"],
-        server  => "${openvpn_configname}";
-    "key ${openvpn_configname}":
+    "ca $openvpn_configname":
+        key     => 'ca',
+        value   => '/etc/openvpn/ca.crt',
+        #require => Exec["initca $openvpn_configname"],
+        server  => $openvpn_configname;
+    "cert $openvpn_configname":
+        key     => 'cert',
+        value   => "/etc/openvpn/$openvpn_configname/server.crt",
+        #require => Exec["generate server cert $openvpn_configname"],
+        server  => $openvpn_configname;
+    "key $openvpn_configname":
         key     => "key",
-        value   => "/etc/openvpn/${openvpn_configname}/server.key",
-        #require => Exec["generate server cert ${openvpn_configname}"],
-        server  => "${openvpn_configname}";
-    "dh ${openvpn_configname}":
+        value   => "/etc/openvpn/$openvpn_configname/server.key",
+        #require => Exec["generate server cert $openvpn_configname"],
+        server  => "$openvpn_configname";
+    "dh $openvpn_configname":
         key     => "dh",
         value   => "/etc/openvpn/dh1024.pem",
-        #require => Exec["generate dh param ${openvpn_configname}"],
-        server  => "${openvpn_configname}";
+        #require => Exec["generate dh param $openvpn_configname"],
+        server  => "$openvpn_configname";
     "dev $openvpn_configname":
         key    => "dev",
         value  => "tun",
         server => "$openvpn_configname";
-    "mode ${openvpn_configname}":            
+    "mode $openvpn_configname":            
        key    => 'mode',      
        value  => 'server',    
        server => $openvpn_configname;       
