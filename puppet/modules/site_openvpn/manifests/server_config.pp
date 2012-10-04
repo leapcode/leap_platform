@@ -1,13 +1,8 @@
 define site_openvpn::server_config($port, $proto) {
-  $openvpn_configname=$name
+  $openvpn_configname = $name
+
   notice("Creating OpenVPN $openvpn_configname:
     Port: $port, Protocol: $proto")
-
-  file {
-    "/etc/openvpn/${name}":
-      ensure  => directory,
-      require => Package['openvpn'];
-  }
 
   concat {
     "/etc/openvpn/$openvpn_configname.conf":
@@ -19,28 +14,22 @@ define site_openvpn::server_config($port, $proto) {
         notify  => Service['openvpn'];
   }
 
-
-
   openvpn::option {
     "ca $openvpn_configname":
         key     => 'ca',
-        value   => '/etc/openvpn/ca.crt',
-        #require => Exec["initca $openvpn_configname"],
+        value   => '/etc/openvpn/keys/ca.crt',
         server  => $openvpn_configname;
     "cert $openvpn_configname":
         key     => 'cert',
-        value   => "/etc/openvpn/$openvpn_configname/server.crt",
-        #require => Exec["generate server cert $openvpn_configname"],
+        value   => "/etc/openvpn/keys/server.crt",
         server  => $openvpn_configname;
     "key $openvpn_configname":
         key     => "key",
-        value   => "/etc/openvpn/$openvpn_configname/server.key",
-        #require => Exec["generate server cert $openvpn_configname"],
+        value   => "/etc/openvpn/keys/server.key",
         server  => "$openvpn_configname";
     "dh $openvpn_configname":
         key     => "dh",
-        value   => "/etc/openvpn/dh1024.pem",
-        #require => Exec["generate dh param $openvpn_configname"],
+        value   => "/etc/openvpn/keys/dh1024.pem",
         server  => "$openvpn_configname";
     "dev $openvpn_configname":
         key    => "dev",
