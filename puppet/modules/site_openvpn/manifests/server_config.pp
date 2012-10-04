@@ -1,5 +1,7 @@
-define site_openvpn::server_config($port, $proto) {
+define site_openvpn::server_config ($port, $proto, $local, $server, $push ) {
+
   $openvpn_configname = $name
+
 
   #notice("Creating OpenVPN $openvpn_configname:
   #  Port: $port, Protocol: $proto")
@@ -45,7 +47,7 @@ define site_openvpn::server_config($port, $proto) {
         server => $openvpn_configname;
     "local $openvpn_configname":
         key    => 'local',
-        value  => $::ipaddress,
+        value  => $local,
         server => $openvpn_configname;
     "mute $openvpn_configname":
         key    => 'mute',
@@ -62,9 +64,13 @@ define site_openvpn::server_config($port, $proto) {
         key    => 'proto',
         value  => $proto,
         server => $openvpn_configname;
-    "push $openvpn_configname":
+    "push1 $openvpn_configname":
         key    => 'push',
-        value  => "\"redirect-gateway def1\"",
+        value  => $push,
+        server => $openvpn_configname;
+    "push2 $openvpn_configname":
+        key    => 'push',
+        value  => '"redirect-gateway def1"',
         server => $openvpn_configname;
     "script-security $openvpn_configname":
         key    => 'script-security',
@@ -72,7 +78,7 @@ define site_openvpn::server_config($port, $proto) {
         server => $openvpn_configname;
     "server $openvpn_configname":
         key    => 'server',
-        value  => "10.42.0.0 255.255.248.0",
+        value  => "$server",
         server => $openvpn_configname;
     "status $openvpn_configname":
         key    => 'status',
