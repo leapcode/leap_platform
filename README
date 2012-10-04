@@ -1,7 +1,0 @@
-...
-
-Installation
-------------
-
-- Edit /etc/leap/hieradata/common.yaml for your needs 
-- Run the deploy.sh script as root
