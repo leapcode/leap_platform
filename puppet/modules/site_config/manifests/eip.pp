@@ -1,8 +1,9 @@
 class site_config::eip {
   include site_openvpn
+  include site_openvpn::keys
 
-  $tor=hiera('tor')
-  notice("Tor enabled: $tor")
+  #$tor=hiera('tor')
+  #notice("Tor enabled: $tor")
 
   #$openvpn_configs=hiera('openvpn_server_configs')
   #create_resources('site_openvpn::server_config', $openvpn_configs)
