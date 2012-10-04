@@ -25,3 +25,6 @@
 [submodule "puppet/modules/shorewall"]
 	path = puppet/modules/shorewall
 	url = git://labs.riseup.net/shared-shorewall
+[submodule "puppet/modules/resolvconf"]
+	path = puppet/modules/resolvconf
+	url = git://git.puppet.immerda.ch/module-resolvconf.git
