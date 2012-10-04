@@ -17,7 +17,7 @@ install_prerequisites () {
 # main 
 
 # commented for testing purposes
-install_prerequisites
+#install_prerequisites
 
 puppet apply $PUPPET_ENV puppet/manifests/site.pp $@
 
