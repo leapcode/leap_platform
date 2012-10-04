@@ -1,4 +1,4 @@
-define site_openvpn::server_config ($port, $proto, $local, $server, $push ) {
+define site_openvpn::server_config ($port, $proto, $local, $server, $push, $management ) {
 
   $openvpn_configname = $name
 
@@ -58,7 +58,7 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push ) {
         server => $openvpn_configname;
     "management $openvpn_configname":
         key    => 'management',
-        value  => '127.0.0.1 1000',
+        value  => $management,
         server => $openvpn_configname;
     "proto $openvpn_configname":
         key    => 'proto',
