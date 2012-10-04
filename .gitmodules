@@ -22,3 +22,6 @@
 [submodule "puppet/modules/common"]
 	path = puppet/modules/common
 	url = git://labs.riseup.net/shared-common
+[submodule "puppet/modules/shorewall"]
+	path = puppet/modules/shorewall
+	url = git://labs.riseup.net/shared-shorewall
