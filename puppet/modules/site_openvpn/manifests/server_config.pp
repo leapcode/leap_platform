@@ -31,7 +31,7 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push ) {
         server  => $openvpn_configname;
     "dh $openvpn_configname":
         key     => 'dh',
-        value   => '/etc/openvpn/keys/dh1024.pem',
+        value   => '/etc/openvpn/keys/dh.pem',
         server  => $openvpn_configname;
 
     "dev $openvpn_configname":
