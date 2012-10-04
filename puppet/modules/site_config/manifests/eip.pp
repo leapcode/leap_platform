@@ -14,7 +14,7 @@ class site_config::eip {
     local       => $::ipaddress_eth0_1,
     server      => '10.1.0.0 255.255.248.0',
     push        => '"dhcp-option DNS 10.1.0.1"',
-    management  => 'management 127.0.0.1 1000'
+    management  => '127.0.0.1 1000'
   }
   site_openvpn::server_config { 'udp_config':
     port        => '1194',
@@ -22,6 +22,6 @@ class site_config::eip {
     local       => $::ipaddress_eth0_1,
     server      => '10.2.0.0 255.255.248.0',
     push        => '"dhcp-option DNS 10.2.0.1"',
-    management  => 'management 127.0.0.1 1001'
+    management  => '127.0.0.1 1001'
   }
 }
