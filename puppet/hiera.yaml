@@ -6,13 +6,15 @@
 :logger: console
 
 :hierarchy:
-  - hosts/%{fqdn}
-  - ca/%{fqdn}
-  - ca/defaults
-  - eip/%{fqdn}
-  - eip/defaults
+  - %{fqdn}
+#former hierarchy, not used anymore
+#  - hosts/%{fqdn}
+#  - ca/%{fqdn}
+#  - ca/defaults
+#  - eip/%{fqdn}
+#  - eip/defaults
 # more services following
-  - defaults
+#  - defaults
 
 # relative from where puppet is run, so we need to run puppet 
 # from the root dir of the leap_platform repo
