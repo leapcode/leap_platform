@@ -29,7 +29,7 @@ class site_shorewall::eip {
       sourcezone      => 'eip',
       destinationzone => 'all',
       policy          => 'ACCEPT',
-      order           => 200;
+      order           => 100;
     'all-to-all':
       sourcezone      => 'all',
       destinationzone => 'all',
