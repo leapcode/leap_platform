@@ -65,7 +65,7 @@ class site_shorewall::eip {
         destination => 'all',
         action      => 'DNS(ACCEPT)',
         order       => 200;
-      'fw2all-DNS':
+      'fw2all-git':
         source      => '$FW',
         destination => 'all',
         action      => 'Git(ACCEPT)',
