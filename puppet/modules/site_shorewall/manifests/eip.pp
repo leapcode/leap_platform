@@ -53,6 +53,8 @@ class site_shorewall::eip {
         destination => 'all',
         action      => 'OpenVPN(ACCEPT)',
         order       => 200;
+
+      # eip gw itself to outside
       'fw2all-http':
         source      => '$FW',
         destination => 'all',
@@ -63,6 +65,12 @@ class site_shorewall::eip {
         destination => 'all',
         action      => 'DNS(ACCEPT)',
         order       => 200;
+      'fw2all-DNS':
+        source      => '$FW',
+        destination => 'all',
+        action      => 'Git(ACCEPT)',
+        order       => 200;
+
       'eip2fw-https':
         source      => 'eip',
         destination => '$FW',
