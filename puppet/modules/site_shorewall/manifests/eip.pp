@@ -5,13 +5,16 @@ class site_shorewall::eip {
 
   include site_shorewall::defaults
 
+  shorewall::interface    {'eth0:1':
+    zone    => 'net',
+    options => 'tcpflags,blacklist,nosmurfs'; }
   shorewall::interface    {'tun0':
     zone    => 'eip',
-    rfc1918 => $shorewall_rfc1918_maineth,
+    rfc1918 => true,
     options => 'tcpflags,blacklist,nosmurfs'; }
   shorewall::interface    {'tun1':
     zone    => 'eip',
-    rfc1918 => $shorewall_rfc1918_maineth,
+    rfc1918 => true,
     options => 'tcpflags,blacklist,nosmurfs'; }
 
   shorewall::zone         {'eip':
