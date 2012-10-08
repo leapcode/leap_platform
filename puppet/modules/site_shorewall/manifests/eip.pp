@@ -44,5 +44,15 @@ class site_shorewall::eip {
         destination => 'all',
         action      => 'OpenVPN(ACCEPT)',
         order       => 200;
+      'fw2all-http':
+        source      => '$FW',
+        destination => 'all',
+        action      => 'HTTP(ACCEPT)',
+        order       => 200;
+     'fw2all-DNS':
+        source      => '$FW',
+        destination => 'all',
+        action      => 'DNS(ACCEPT)',
+        order       => 200;
   }
 }
