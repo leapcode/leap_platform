@@ -21,7 +21,8 @@ class site_shorewall::eip {
     interface => 'eth0'; }
 
   shorewall::masq {'eth0':
-    interface => 'eth0'; }
+    interface => 'eth0',
+    source    => ''; }
 
   shorewall::policy {
     'all-to-all':
