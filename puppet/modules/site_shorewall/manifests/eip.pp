@@ -9,8 +9,14 @@ class site_shorewall::eip {
     zone    => 'eip',
     rfc1918 => $shorewall_rfc1918_maineth,
     options => 'tcpflags,blacklist,nosmurfs'; }
+  shorewall::interface    {'tun1':
+    zone    => 'eip',
+    rfc1918 => $shorewall_rfc1918_maineth,
+    options => 'tcpflags,blacklist,nosmurfs'; }
+
   shorewall::zone         {'eip':
     type => 'ipv4'; }
+
   shorewall::routestopped {'eth0':
     interface => 'eth0'; }
 
