@@ -10,11 +10,9 @@ class site_shorewall::eip {
     options => 'tcpflags,blacklist,nosmurfs'; }
   shorewall::interface    {'tun0':
     zone    => 'eip',
-    rfc1918 => true,
     options => 'tcpflags,blacklist,nosmurfs'; }
   shorewall::interface    {'tun1':
     zone    => 'eip',
-    rfc1918 => true,
     options => 'tcpflags,blacklist,nosmurfs'; }
 
   shorewall::zone         {'eip':
