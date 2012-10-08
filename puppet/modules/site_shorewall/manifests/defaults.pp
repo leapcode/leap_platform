@@ -10,17 +10,8 @@ class site_shorewall::defaults {
 
   shorewall::rule_section { 'NEW': order => 10; }
 
-  case $shorewall_rfc1918_maineth {
-    '': {$shorewall_rfc1918_maineth = true }
-  }
-
-  case $shorewall_main_interface {
-    '': { $shorewall_main_interface = 'eth0' }
-  }
-
-  shorewall::interface {$shorewall_main_interface:
+  shorewall::interface {'eth0':
     zone      => 'net',
-    rfc1918   => $shorewall_rfc1918_maineth,
     options   => 'tcpflags,blacklist,nosmurfs';
   }
 }
