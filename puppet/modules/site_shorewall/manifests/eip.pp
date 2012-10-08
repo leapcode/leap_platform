@@ -25,6 +25,11 @@ class site_shorewall::eip {
     source    => ''; }
 
   shorewall::policy {
+    'eip-to-all':
+      sourcezone      => 'eip',
+      destinationzone => 'all',
+      policy          => 'ACCEPT',
+      order           => 200;
     'all-to-all':
       sourcezone      => 'all',
       destinationzone => 'all',
