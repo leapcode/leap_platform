@@ -20,6 +20,9 @@ class site_shorewall::eip {
   shorewall::routestopped {'eth0':
     interface => 'eth0'; }
 
+  shorewall::masq {'eth0':
+    interface => 'eth0'; }
+
   shorewall::policy {
     'all-to-all':
       sourcezone      => 'all',
@@ -49,10 +52,15 @@ class site_shorewall::eip {
         destination => 'all',
         action      => 'HTTP(ACCEPT)',
         order       => 200;
-     'fw2all-DNS':
+      'fw2all-DNS':
         source      => '$FW',
         destination => 'all',
         action      => 'DNS(ACCEPT)',
+        order       => 200;
+      'eip2fw-https':
+        source      => 'eip',
+        destination => '$FW',
+        action      => 'HTTPS(ACCEPT)',
         order       => 200;
   }
 }
