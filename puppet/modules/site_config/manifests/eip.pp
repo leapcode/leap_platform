@@ -24,4 +24,6 @@ class site_config::eip {
     push        => '"dhcp-option DNS 10.2.0.1"',
     management  => '127.0.0.1 1001'
   }
+
+  include site_shorewall::eip
 }
