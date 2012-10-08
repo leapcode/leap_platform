@@ -7,7 +7,9 @@ class site_shorewall::eip {
 
   # define macro
   file { "/etc/shorewall/macro.leap_eip":
-    content => 'PARAM   -       -       -     53,80,443,1194', }
+    content => 'PARAM   -       -       tcp     53,80,443,1194
+PARAM   -       -       udp     53,80,443,1194
+', }
 
   shorewall::interface    {'tun0':
     zone    => 'eip',
