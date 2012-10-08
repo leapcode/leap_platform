@@ -5,9 +5,6 @@ class site_shorewall::eip {
 
   include site_shorewall::defaults
 
-  shorewall::interface    {'eth0:1':
-    zone    => 'net',
-    options => 'tcpflags,blacklist,nosmurfs'; }
   shorewall::interface    {'tun0':
     zone    => 'eip',
     options => 'tcpflags,blacklist,nosmurfs'; }
