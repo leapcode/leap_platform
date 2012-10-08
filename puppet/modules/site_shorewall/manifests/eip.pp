@@ -5,6 +5,10 @@ class site_shorewall::eip {
 
   include site_shorewall::defaults
 
+  # define macro
+  file { "/etc/shorewall/macro.leap_eip":
+    content => 'PARAM   -       -       -     53,80,443,1194', }
+
   shorewall::interface    {'tun0':
     zone    => 'eip',
     options => 'tcpflags,blacklist,nosmurfs'; }
@@ -41,15 +45,16 @@ class site_shorewall::eip {
         destination => 'all',
         action      => 'Ping(ACCEPT)',
         order       => 200;
-      'all2all-ssh':
-        source      => 'all',
-        destination => 'all',
+
+      'net2fw-ssh':
+        source      => 'net',
+        destination => '$FW',
         action      => 'SSH(ACCEPT)',
         order       => 200;
-      'all2all-openvpn':
-        source      => 'all',
-        destination => 'all',
-        action      => 'OpenVPN(ACCEPT)',
+      'net2fw-openvpn':
+        source      => 'net',
+        destination => '$FW',
+        action      => 'leap_eip(ACCEPT)',
         order       => 200;
 
       # eip gw itself to outside
