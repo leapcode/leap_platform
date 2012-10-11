@@ -11,7 +11,7 @@ node 'default' {
   notice("Services for $fqdn: $services")
 
   # configure eip
-  if 'eip' in $services {
+  if 'openvpn' in $services {
     include site_config::eip
   }
 
