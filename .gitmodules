@@ -28,3 +28,6 @@
 [submodule "puppet/modules/resolvconf"]
 	path = puppet/modules/resolvconf
 	url = git://git.puppet.immerda.ch/module-resolvconf.git
+[submodule "puppet/modules/sysctl"]
+	path = puppet/modules/sysctl
+	url = git://github.com/luxflux/puppet-sysctl.git
