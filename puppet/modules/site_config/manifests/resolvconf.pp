@@ -8,9 +8,9 @@ class site_config::resolvconf {
 
   # 127.0.0.1: caching-only local bind
   # 87.118.100.175: http://server.privacyfoundation.de
-  class { 'resolvconf':
-    $domain = $domain_public,
-    $search = $domain_public,
-    $nameservers = [ '127.0.0.1', '87.118.100.175' ]
+  class { '::resolvconf':
+    domain      => $domain_public,
+    search      => $domain_public,
+    nameservers => [ '127.0.0.1', '87.118.100.175' ]
   }
 }
