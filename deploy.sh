@@ -24,7 +24,7 @@ install_prerequisites () {
   if [ ! $? -eq 0 ]
   then 
     apt-get update
-    apt-get install $PACKAGES 
+    apt-get install -y $PACKAGES 
   fi
 
   # lsb is needed for a first puppet run
