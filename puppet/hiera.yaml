@@ -7,6 +7,7 @@
 
 :hierarchy:
   - %{fqdn}
+  - defaults
 #former hierarchy, not used anymore
 #  - hosts/%{fqdn}
 #  - ca/%{fqdn}
