@@ -31,3 +31,6 @@
 [submodule "puppet/modules/sysctl"]
 	path = puppet/modules/sysctl
 	url = git://github.com/luxflux/puppet-sysctl.git
+[submodule "puppet/modules/couchdb"]
+	path = puppet/modules/couchdb
+	url = git://code.leap.se/puppet_couchdb 

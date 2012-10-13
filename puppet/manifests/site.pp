@@ -15,4 +15,9 @@ node 'default' {
     include site_config::eip
   }
 
+  if 'couchdb' in $services { 
+    class { 'couchdb': 
+      #bind => '0.0.0.0' 
+    }
+  }
 }
