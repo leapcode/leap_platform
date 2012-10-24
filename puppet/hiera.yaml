@@ -5,22 +5,11 @@
 
 :logger: console
 
-:hierarchy:
-  - %{fqdn}
-  - defaults
-#former hierarchy, not used anymore
-#  - hosts/%{fqdn}
-#  - ca/%{fqdn}
-#  - ca/defaults
-#  - eip/%{fqdn}
-#  - eip/defaults
-# more services following
-#  - defaults
-
-# relative from where puppet is run, so we need to run puppet 
-# from the root dir of the leap_platform repo
 :yaml:
-   :datadir: ../config
+   :datadir: /etc/leap 
 
+:hierarchy:
+  - hiera
+ 
 :puppet:
    :datasource: data
