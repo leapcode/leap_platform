@@ -5,6 +5,8 @@ class site_shorewall::eip {
 
   include site_shorewall::defaults
 
+  $interface = hiera('interface')
+
   # define macro
   file { "/etc/shorewall/macro.leap_eip":
     content => 'PARAM   -       -       tcp     53,80,443,1194
@@ -21,11 +23,11 @@ PARAM   -       -       udp     53,80,443,1194
   shorewall::zone         {'eip':
     type => 'ipv4'; }
 
-  shorewall::routestopped {'eth0':
-    interface => 'eth0'; }
+  shorewall::routestopped {'$interface':
+    interface => '$interface'; }
 
-  shorewall::masq {'eth0':
-    interface => 'eth0',
+  shorewall::masq {'$interface':
+    interface => '$interface',
     source    => ''; }
 
   shorewall::policy {
