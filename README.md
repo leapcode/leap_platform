@@ -31,8 +31,8 @@ Installation
 - Edit /etc/leap/hieradata/common.yaml for your needs
 - Run the deploy.sh script as root
 
-git clone ssh://gitolite@leap.se/leap_platform
-git clone ssh://gitolite@leap.se/leap_cli
+git clone git://code.leap.se/leap_platform
+git clone git://code.leap.se/leap_cli
 
     cd leap_cli
 
@@ -40,7 +40,7 @@ git clone ssh://gitolite@leap.se/leap_cli
 
     cd ..
 
-git clone ssh://gitolite@leap.se/leap_testprovider
+git clone git://code.leap.se/leap_testprovider
 ln -s /home/me/dev/leap_cli/bin ~/bin   # or whatever to have leap_cli/bin/leap in your path.
 cd leap_testprovider
 ln -s ../leap_platform .
