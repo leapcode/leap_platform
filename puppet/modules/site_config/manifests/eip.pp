@@ -5,13 +5,14 @@ class site_config::eip {
   #$tor=hiera('tor')
   #notice("Tor enabled: $tor")
 
-  #$openvpn_configs=hiera('openvpn_server_configs')
-  #create_resources('site_openvpn::server_config', $openvpn_configs)
- 
+  $openvpn_config     = hiera('openvpn')
+  $interface          = hiera('interface')
+  $gateway_address    = $openvpn_config['gateway_address']
+
   site_openvpn::server_config { 'tcp_config':
     port        => '1194',
     proto       => 'tcp',
-    local       => $::ipaddress_eth0_1,
+    local       => $gateway_address,
     server      => '10.1.0.0 255.255.248.0',
     push        => '"dhcp-option DNS 10.1.0.1"',
     management  => '127.0.0.1 1000'
@@ -19,7 +20,7 @@ class site_config::eip {
   site_openvpn::server_config { 'udp_config':
     port        => '1194',
     proto       => 'udp',
-    local       => $::ipaddress_eth0_1,
+    local       => $gateway_address,
     server      => '10.2.0.0 255.255.248.0',
     push        => '"dhcp-option DNS 10.2.0.1"',
     management  => '127.0.0.1 1001'
