@@ -18,8 +18,8 @@ class site_config::eip {
     options       => [ "address $ip_address",
       'netmask 255.255.255.0',
       "gateway $gateway_address",
-      "up   ip addr add $openvpn_gateway_address/24 dev eth0 label",
-      "down ip addr del $openvpn_gateway_address/24 dev eth0 label",
+      "up   ip addr add $openvpn_gateway_address/24 dev eth0",
+      "down ip addr del $openvpn_gateway_address/24 dev eth0",
       ],
     auto          => 1,
     allow_hotplug => 1 }
