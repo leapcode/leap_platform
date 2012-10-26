@@ -12,16 +12,16 @@ class site_config::eip {
   $openvpn_gateway_address  = $openvpn_config['gateway_address']
 
   include interfaces
-  interfaces::iface { $interface: 
-    family => 'inet',
-    method => 'static', 
-    options => [ "address $ip_address",
+  interfaces::iface { $interface:
+    family        => 'inet',
+    method        => 'static',
+    options       => [ "address $ip_address",
       'netmask 255.255.255.0',
-      "gateway $gateway",
+      "gateway $gateway_address",
       "up   ip addr add $openvpn_gateway_address/24 dev eth0 label",
       "down ip addr del $openvpn_gateway_address/24 dev eth0 label",
-      ], 
-    auto => 1, 
+      ],
+    auto          => 1,
     allow_hotplug => 1 }
 
 
