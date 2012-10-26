@@ -5,9 +5,25 @@ class site_config::eip {
   #$tor=hiera('tor')
   #notice("Tor enabled: $tor")
 
-  $openvpn_config     = hiera('openvpn')
-  $interface          = hiera('interface')
-  $gateway_address    = $openvpn_config['gateway_address']
+  $ip_address               = hiera('ip_address')
+  $interface                = hiera('interface')
+  $gateway_address          = hiera('gateway_address')
+  $openvpn_config           = hiera('openvpn')
+  $openvpn_gateway_address  = $openvpn_config['gateway_address']
+
+  include interfaces
+  interfaces::iface { $interface: 
+    family => 'inet',
+    method => 'static', 
+    options => [ "address $ip_address",
+      'netmask 255.255.255.0',
+      "gateway $gateway",
+      "up   ip addr add $openvpn_gateway_address/24 dev eth0 label",
+      "down ip addr del $openvpn_gateway_address/24 dev eth0 label",
+      ], 
+    auto => 1, 
+    allow_hotplug => 1 }
+
 
   site_openvpn::server_config { 'tcp_config':
     port        => '1194',
