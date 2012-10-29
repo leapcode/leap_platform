@@ -8,7 +8,7 @@ class site_shorewall::eip {
   $interface = hiera('interface')
 
   # define macro
-  file { "/etc/shorewall/macro.leap_eip":
+  file { '/etc/shorewall/macro.leap_eip':
     content => 'PARAM   -       -       tcp     53,80,443,1194
 PARAM   -       -       udp     53,80,443,1194
 ', }
