@@ -5,13 +5,15 @@ class site_shorewall::eip {
 
   include site_shorewall::defaults
 
-  $interface = hiera('interface')
+  $interface  = hiera('interface')
+  $ssh_config = hiera('ssh')
+  $ssh_port   = $ssh_config['port']  
 
   # define macro
   file { '/etc/shorewall/macro.leap_eip':
-    content => 'PARAM   -       -       tcp     53,80,443,1194
+    content => "PARAM   -       -       tcp     53,80,443,1194,$ssh_port
 PARAM   -       -       udp     53,80,443,1194
-', }
+", }
 
 
   # define interfaces
