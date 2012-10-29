@@ -43,7 +43,7 @@ class site_config::eip {
 
   file { '/usr/local/bin/leap_add_second_ip.sh':
     content => "#!/bin/sh
-ip addr show dev $interface | grep -q "$openvpn_gateway_address/24" || ip addr add "$openvpn_gateway_address/24" dev $interface",
+ip addr show dev $interface | grep -q ${openvpn_gateway_address}/24 || ip addr add ${openvpn_gateway_address}/24 dev $interface",
     mode    => '0755',
   }
 
