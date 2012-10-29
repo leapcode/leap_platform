@@ -92,10 +92,11 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push, $mana
         key    => 'topology',
         value  => 'subnet',
         server => $openvpn_configname;
-    "up $openvpn_configname":
-        key    => 'up',
-        value  => '/etc/openvpn/server-up.sh',
-        server => $openvpn_configname;
+    # no need for server-up.sh right now
+    #"up $openvpn_configname":
+    #    key    => 'up',
+    #    value  => '/etc/openvpn/server-up.sh',
+    #    server => $openvpn_configname;
     "verb $openvpn_configname":
         key    => 'verb',
         value  => '3',
