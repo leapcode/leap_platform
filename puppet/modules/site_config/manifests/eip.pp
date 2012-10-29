@@ -9,8 +9,10 @@ class site_config::eip {
   $openvpn_gateway_address    = $openvpn_config['gateway_address']
   $openvpn_tcp_network_prefix = '10.1.0'
   $openvpn_tcp_netmask        = '255.255.248.0'
+  $openvpn_tcp_cidr           = '21'
   $openvpn_udp_network_prefix = '10.2.0'
   $openvpn_udp_netmask        = '255.255.248.0'
+  $openvpn_udp_cidr           = '21'
 
   site_openvpn::server_config { 'tcp_config':
     port        => '1194',
