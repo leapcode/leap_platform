@@ -37,9 +37,9 @@ PARAM   -       -       udp     53,80,443,1194
     interface => $interface; }
 
 
-  shorewall::masq {"$interface":
+  shorewall::masq { $interface:
     interface => $interface,
-    source    => ''; }
+    source    => "$site_config::eip::openvpn_tcp_netmask.0/$site_config::eip::openvpn_tcp_cidr"; }
 
   shorewall::policy {
     'eip-to-all':
