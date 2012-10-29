@@ -13,9 +13,9 @@ class site_shorewall::eip {
 PARAM   -       -       udp     53,80,443,1194
 ', }
 
-  
+
   # define interfaces
-  shorewall::interface {"$interface":
+  shorewall::interface { $interface:
     zone      => 'net',
     options   => 'tcpflags,blacklist,nosmurfs';
   }
@@ -31,11 +31,12 @@ PARAM   -       -       udp     53,80,443,1194
   shorewall::zone         {'eip':
     type => 'ipv4'; }
 
-  shorewall::routestopped {'$interface':
-    interface => '$interface'; }
+  shorewall::routestopped { $interface:
+    interface => $interface; }
 
-  shorewall::masq {'$interface':
-    interface => '$interface',
+
+  shorewall::masq {"$interface":
+    interface => $interface,
     source    => ''; }
 
   shorewall::policy {
