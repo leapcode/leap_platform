@@ -37,11 +37,11 @@ PARAM   -       -       udp     53,80,443,1194
     interface => $interface; }
 
 
-  shorewall::masq { $interface:
+  shorewall::masq { "${interface}_tcp":
     interface => $interface,
     source    => "$site_config::eip::openvpn_tcp_network_prefix.0/$site_config::eip::openvpn_tcp_cidr"; }
 
-  shorewall::masq { $interface:
+  shorewall::masq { "${interface}_udp":
     interface => $interface,
     source    => "$site_config::eip::openvpn_udp_network_prefix.0/$site_config::eip::openvpn_udp_cidr"; }
 
