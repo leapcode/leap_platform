@@ -4,7 +4,7 @@ class site_config::eip {
 
   $ip_address               = hiera('ip_address')
   $interface                = hiera('interface')
-  $gateway_address          = hiera('gateway_address')
+  #$gateway_address          = hiera('gateway_address')
   $openvpn_config           = hiera('openvpn')
   $openvpn_gateway_address  = $openvpn_config['gateway_address']
 
