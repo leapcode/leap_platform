@@ -11,19 +11,18 @@ class site_config::eip {
   $openvpn_config           = hiera('openvpn')
   $openvpn_gateway_address  = $openvpn_config['gateway_address']
 
-  include interfaces
-  interfaces::iface { $interface:
-    family        => 'inet',
-    method        => 'static',
-    options       => [ "address $ip_address",
-      'netmask 255.255.255.0',
-      "gateway $gateway_address",
-      "up   ip addr add $openvpn_gateway_address/24 dev $interface",
-      "down ip addr del $openvpn_gateway_address/24 dev $interface",
-      ],
-    auto          => 1,
-    allow_hotplug => 1 }
-
+  #include interfaces
+  #interfaces::iface { $interface:
+  #  family        => 'inet',
+  #  method        => 'static',
+  #  options       => [ "address $ip_address",
+  #    'netmask 255.255.255.0',
+  #    "gateway $gateway_address",
+  #    "up   ip addr add $openvpn_gateway_address/24 dev $interface",
+  #    "down ip addr del $openvpn_gateway_address/24 dev $interface",
+  #    ],
+  #  auto          => 1,
+  #  allow_hotplug => 1 }
 
   #site_openvpn::server_config { 'tcp_config':
   #  port        => '1194',
@@ -43,8 +42,8 @@ class site_config::eip {
   #}
 
   file { '/usr/local/bin/leap_add_second_ip.sh':
-    content => '#!/bin/sh
-      ip addr show dev eth0 | grep -q "$openvpn_gateway_address/24" || ip addr add "$openvpn_gateway_address/24" dev eth0',
+    content => "#!/bin/sh
+ip addr show dev $interface | grep -q "$openvpn_gateway_address/24" || ip addr add "$openvpn_gateway_address/24" dev $interface",
     mode    => '0755',
   }
 
