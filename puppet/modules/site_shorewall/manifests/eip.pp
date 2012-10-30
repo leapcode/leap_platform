@@ -1,18 +1,24 @@
 class site_shorewall::eip {
 
   # be safe for development
-  #$shorewall_startup='0'
+  $shorewall_startup='0'
 
   include site_shorewall::defaults
 
-  $interface  = hiera('interface')
-  $ssh_config = hiera('ssh')
-  $ssh_port   = $ssh_config['port']  
+  $interface      = hiera('interface')
+  $ssh_config     = hiera('ssh')
+  $ssh_port       = $ssh_config['port']
+  $openvpn_config = hiera('openvpn')
+  $openvpn_ports  = $openvpn_config['ports']
+  $openvpn_gateway_address = $site_config::eip::openvpn_gateway_address
 
-  # define macro
+  notify {"openvpn:  $openvpn":}
+  notify {"openvpn_ports:  $openvpn_ports":}
+
+  # define macro, allowing incoming openvpn and ssh 
   file { '/etc/shorewall/macro.leap_eip':
-    content => "PARAM   -       -       tcp     53,80,443,1194,$ssh_port
-PARAM   -       -       udp     53,80,443,1194
+    content => "PARAM   -       -       tcp     1194,$ssh_port
+PARAM   -       -       udp     1194
 ", }
 
 
@@ -65,12 +71,7 @@ PARAM   -       -       udp     53,80,443,1194
         action      => 'Ping(ACCEPT)',
         order       => 200;
 
-      'net2fw-ssh':
-        source      => 'net',
-        destination => '$FW',
-        action      => 'SSH(ACCEPT)',
-        order       => 200;
-      'net2fw-openvpn':
+      'net2fw-openvpn_ssh':
         source      => 'net',
         destination => '$FW',
         action      => 'leap_eip(ACCEPT)',
@@ -93,10 +94,15 @@ PARAM   -       -       udp     53,80,443,1194
         action      => 'Git(ACCEPT)',
         order       => 200;
 
-      'eip2fw-https':
-        source      => 'eip',
-        destination => '$FW',
-        action      => 'HTTPS(ACCEPT)',
-        order       => 200;
+      #'eip2fw-https':
+      #  source      => 'eip',
+      #  destination => '$FW',
+      #  action      => 'HTTPS(ACCEPT)',
+      #  order       => 200;
   }
+
+  # create dnat rule for each port
+  #create_resources('site_shorewall::dnat_rule', $openvpn_ports)
+  site_shorewall::dnat_rule { $openvpn_ports: }
+
 }
