@@ -1,8 +1,9 @@
 class site_config::sshd {
-  # configure ssh and inculde ssh-keys
+  # configure sshd
   include sshd
-  $ssh_pubkeys=hiera_hash('ssh_pubkeys')
   include site_sshd
-  notice($ssh_pubkeys)
-  create_resources('site_sshd::ssh_key', $ssh_pubkeys)
+  # no need for configuring authorized_keys as leap_cli cares for that 
+  #$ssh_pubkeys=hiera_hash('ssh_pubkeys')
+  #notice($ssh_pubkeys)
+  #create_resources('site_sshd::ssh_key', $ssh_pubkeys)
 }
