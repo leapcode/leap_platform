@@ -10,8 +10,4 @@ class site_shorewall::defaults {
 
   shorewall::rule_section { 'NEW': order => 10; }
 
-  shorewall::interface {'eth0':
-    zone      => 'net',
-    options   => 'tcpflags,blacklist,nosmurfs';
-  }
 }

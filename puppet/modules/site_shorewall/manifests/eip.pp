@@ -1,15 +1,26 @@
 class site_shorewall::eip {
 
   # be safe for development
-  $shorewall_startup='0'
+  #$shorewall_startup='0'
 
   include site_shorewall::defaults
 
+  $interface  = hiera('interface')
+  $ssh_config = hiera('ssh')
+  $ssh_port   = $ssh_config['port']  
+
   # define macro
-  file { "/etc/shorewall/macro.leap_eip":
-    content => 'PARAM   -       -       tcp     53,80,443,1194
+  file { '/etc/shorewall/macro.leap_eip':
+    content => "PARAM   -       -       tcp     53,80,443,1194,$ssh_port
 PARAM   -       -       udp     53,80,443,1194
-', }
+", }
+
+
+  # define interfaces
+  shorewall::interface { $interface:
+    zone      => 'net',
+    options   => 'tcpflags,blacklist,nosmurfs';
+  }
 
   shorewall::interface    {'tun0':
     zone    => 'eip',
@@ -18,15 +29,21 @@ PARAM   -       -       udp     53,80,443,1194
     zone    => 'eip',
     options => 'tcpflags,blacklist,nosmurfs'; }
 
+
   shorewall::zone         {'eip':
     type => 'ipv4'; }
 
-  shorewall::routestopped {'eth0':
-    interface => 'eth0'; }
+  shorewall::routestopped { $interface:
+    interface => $interface; }
 
-  shorewall::masq {'eth0':
-    interface => 'eth0',
-    source    => ''; }
+
+  shorewall::masq { "${interface}_tcp":
+    interface => $interface,
+    source    => "$site_config::eip::openvpn_tcp_network_prefix.0/$site_config::eip::openvpn_tcp_cidr"; }
+
+  shorewall::masq { "${interface}_udp":
+    interface => $interface,
+    source    => "$site_config::eip::openvpn_udp_network_prefix.0/$site_config::eip::openvpn_udp_cidr"; }
 
   shorewall::policy {
     'eip-to-all':
