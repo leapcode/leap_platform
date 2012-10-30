@@ -1,7 +1,7 @@
 class site_shorewall::eip {
 
   # be safe for development
-  $shorewall_startup='0'
+  #$shorewall_startup='0'
 
   include site_shorewall::defaults
 
