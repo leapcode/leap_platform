@@ -2,10 +2,6 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push, $mana
 
   $openvpn_configname = $name
 
-
-  #notice("Creating OpenVPN $openvpn_configname:
-  #  Port: $port, Protocol: $proto")
-
   concat {
     "/etc/openvpn/$openvpn_configname.conf":
         owner   => root,
