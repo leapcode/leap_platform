@@ -1,7 +1,6 @@
 class site_config::eip {
-  include site_openvpn
-  include site_openvpn::keys
 
+  # parse hiera config
   $ip_address                 = hiera('ip_address')
   $interface                  = hiera('interface')
   #$gateway_address           = hiera('gateway_address')
@@ -14,6 +13,12 @@ class site_config::eip {
   $openvpn_udp_netmask        = '255.255.248.0'
   $openvpn_udp_cidr           = '21'
 
+  include site_openvpn
+  
+  # deploy ca + server keys
+  include site_openvpn::keys
+
+  # create 2 openvpn config files, one for tcp, one for udp
   site_openvpn::server_config { 'tcp_config':
     port        => '1194',
     proto       => 'tcp',
@@ -31,6 +36,7 @@ class site_config::eip {
     management  => '127.0.0.1 1001'
   }
 
+  # add second IP on given interface
   file { '/usr/local/bin/leap_add_second_ip.sh':
     content => "#!/bin/sh
 ip addr show dev $interface | grep -q ${openvpn_gateway_address}/24 || ip addr add ${openvpn_gateway_address}/24 dev $interface",
