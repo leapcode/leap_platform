@@ -6,5 +6,6 @@ class site_couchdb {
   include site_couchdb::package
   include site_couchdb::configure
 
+  include couchdb::ssl::deploy_certs
   include couchdb::deploy_config
 }
