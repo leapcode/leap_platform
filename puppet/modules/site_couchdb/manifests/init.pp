@@ -1,8 +1,8 @@
 class site_couchdb {
 
-  $couchdb_config = hiera('couchdb')
-  $key            = $couchdb_config['key']
-  $cert           = $couchdb_config['crt']
+  $x509 = hiera('x509')
+  $key  = $x509['key']
+  $cert = $x509['cert']
 
   # install couchdb package first, then configure it
   Class['site_couchdb::package'] -> Class['site_couchdb::configure']
