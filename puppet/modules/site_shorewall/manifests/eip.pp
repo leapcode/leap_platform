@@ -7,9 +7,9 @@ class site_shorewall::eip {
 
   $interface  = hiera('interface')
   $ssh_config = hiera('ssh')
-  $ssh_port   = $ssh_config['port']  
+  $ssh_port   = $ssh_config['port']
 
-  # define macro
+  # define macro for incoming services
   file { '/etc/shorewall/macro.leap_eip':
     content => "PARAM   -       -       tcp     53,80,443,1194,$ssh_port
 PARAM   -       -       udp     53,80,443,1194
@@ -51,6 +51,11 @@ PARAM   -       -       udp     53,80,443,1194
       destinationzone => 'all',
       policy          => 'ACCEPT',
       order           => 100;
+    'fw-to-all':
+      sourcezone      => '$FW',
+      destinationzone => 'all',
+      policy          => 'ACCEPT',
+      order           => 100;
     'all-to-all':
       sourcezone      => 'all',
       destinationzone => 'all',
@@ -59,12 +64,14 @@ PARAM   -       -       udp     53,80,443,1194
   }
 
   shorewall::rule {
+      # ping party
       'all2all-ping':
         source      => 'all',
         destination => 'all',
         action      => 'Ping(ACCEPT)',
         order       => 200;
 
+      # outside to server
       'net2fw-ssh':
         source      => 'net',
         destination => '$FW',
@@ -76,7 +83,7 @@ PARAM   -       -       udp     53,80,443,1194
         action      => 'leap_eip(ACCEPT)',
         order       => 200;
 
-      # eip gw itself to outside
+      # server to outside
       'fw2all-http':
         source      => '$FW',
         destination => 'all',
@@ -93,10 +100,11 @@ PARAM   -       -       udp     53,80,443,1194
         action      => 'Git(ACCEPT)',
         order       => 200;
 
-      'eip2fw-https':
-        source      => 'eip',
-        destination => '$FW',
-        action      => 'HTTPS(ACCEPT)',
-        order       => 200;
+      # Webfrontend is running on another server
+      #'eip2fw-https':
+      # source      => 'eip',
+      #  destination => '$FW',
+      #  action      => 'HTTPS(ACCEPT)',
+      #  order       => 200;
   }
 }
