@@ -11,12 +11,6 @@ class site_couchdb {
   include site_couchdb::configure
   include couchdb::deploy_config
 
-
-  #couchdb::ssl::deploy_cert { 'cert':
-  #  key  => $key,
-  #  cert => $cert,
-  #}
-
   include apache::ssl
   apache::module {
     'rewrite':      ensure => present;
@@ -32,4 +26,21 @@ class site_couchdb {
     owner   => 'root',
     group   => 'root',
   }
+
+  file { '/etc/couchdb/server_cert.pem':
+    mode    => '0644',
+    owner   => 'couchdb',
+    group   => 'couchdb',
+    content => $cert,
+    notify  => Service[apache],
+  }
+
+  file { '/etc/couchdb/server_key.pem':
+    mode    => '0600',
+    owner   => 'couchdb',
+    group   => 'couchdb',
+    content => $key,
+    notify  => Service[apache],
+  }
+
 }
