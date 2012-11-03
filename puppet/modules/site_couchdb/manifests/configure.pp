@@ -5,7 +5,7 @@ class site_couchdb::configure {
     require => Class['site_couchdb::package'],
   }
 
-  $adminpw = hiera('couchdb_adminpw')
+  $adminpw = $site_couchdb::adminpw 
   file { '/etc/couchdb/local.d/admin.ini':
     content => "[admins]
 admin = $adminpw
