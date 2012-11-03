@@ -9,11 +9,19 @@ class site_couchdb {
 
   include site_couchdb::package
   include site_couchdb::configure
-
-
-  couchdb::ssl::deploy_cert { 'cert':
-    key  => $key,
-    cert => $cert,
-  }
   include couchdb::deploy_config
+
+
+  #couchdb::ssl::deploy_cert { 'cert':
+  #  key  => $key,
+  #  cert => $cert,
+  #}
+  
+  include apache::ssl
+  apache::module { 
+    'rewrite': ensure => present;
+    'proxy':   ensure => present; 
+    'proxy_http':   ensure => present; 
+   }
+  apache::vhost::file { 'couchdb_proxy': }
 }
