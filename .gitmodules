@@ -37,3 +37,6 @@
 [submodule "puppet/modules/interfaces"]
 	path = puppet/modules/interfaces
 	url = git://github.com/x-way/puppet-interfaces.git
+[submodule "puppet/modules/apache"]
+	path = puppet/modules/apache
+	url = git://labs.riseup.net/shared-apache
