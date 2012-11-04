@@ -12,8 +12,16 @@ class site_couchdb {
   $couchdb_leap_ca_pw         = $couchdb_leap_ca_user['pw']
   $couchdb_host               = "admin:$adminpw@127.0.0.1:5984"
 
-  # install couchdb package first, then configure it
-  Class['site_couchdb::package'] -> Class['site_couchdb::configure']
+  Class['site_couchdb::package']
+    -> Package ['couchdb']
+    -> File['/etc/init.d/couchdb']
+    -> File['/etc/couchdb/local.ini']
+    -> File['/etc/couchdb/local.d/admin.ini']
+    -> Couchdb::Create_db[leap_web]
+    -> Couchdb::Create_db[leap_ca]
+    -> Couchdb::Add_user[leap_web]
+    -> Couchdb::Add_user[leap_ca]
+    -> Site_couchdb::Apache_ssl_proxy['apache_ssl_proxy']
 
   include site_couchdb::package
   include site_couchdb::configure
