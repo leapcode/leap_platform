@@ -75,9 +75,6 @@ PARAM   -       -       udp     1194
         action      => 'Ping(ACCEPT)',
         order       => 200;
 
-<<<<<<< HEAD
-      'net2fw-openvpn_ssh':
-=======
       # outside to server
       'net2fw-ssh':
         source      => 'net',
@@ -85,7 +82,6 @@ PARAM   -       -       udp     1194
         action      => 'SSH(ACCEPT)',
         order       => 200;
       'net2fw-openvpn':
->>>>>>> feature/couchdb
         source      => 'net',
         destination => '$FW',
         action      => 'leap_eip(ACCEPT)',
@@ -108,14 +104,9 @@ PARAM   -       -       udp     1194
         action      => 'Git(ACCEPT)',
         order       => 200;
 
-<<<<<<< HEAD
-      #'eip2fw-https':
-      #  source      => 'eip',
-=======
       # Webfrontend is running on another server
       #'eip2fw-https':
-      # source      => 'eip',
->>>>>>> feature/couchdb
+      #  source      => 'eip',
       #  destination => '$FW',
       #  action      => 'HTTPS(ACCEPT)',
       #  order       => 200;
