@@ -11,7 +11,6 @@ class site_shorewall::eip {
   $openvpn_config = hiera('openvpn')
   $openvpn_ports  = $openvpn_config['ports']
   $openvpn_gateway_address = $site_config::eip::openvpn_gateway_address
-  $interface  = hiera('interface')
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_eip':
