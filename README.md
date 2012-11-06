@@ -47,7 +47,7 @@ See also README.md for installation hints, but this should work in most cases:
   bundle
   rake build
   rake install
-  leap help
+  leap help - this should provide you with the help output of the leap command-line tool
 
 Install leap_platform
 ---------------------
@@ -62,8 +62,7 @@ Right now, use the develop branch
 
 Initialize Submodules
 
-  git submodule init
-  git submodule update
+  git submodule update --init
 
 Configuration
 =============
