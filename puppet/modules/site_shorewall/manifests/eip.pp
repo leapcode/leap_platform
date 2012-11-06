@@ -11,11 +11,9 @@ class site_shorewall::eip {
   $openvpn_config = hiera('openvpn')
   $openvpn_ports  = $openvpn_config['ports']
   $openvpn_gateway_address = $site_config::eip::openvpn_gateway_address
+  $interface  = hiera('interface')
 
-  notify {"openvpn:  $openvpn":}
-  notify {"openvpn_ports:  $openvpn_ports":}
-
-  # define macro, allowing incoming openvpn and ssh 
+  # define macro for incoming services
   file { '/etc/shorewall/macro.leap_eip':
     content => "PARAM   -       -       tcp     1194,$ssh_port
 PARAM   -       -       udp     1194
@@ -57,6 +55,11 @@ PARAM   -       -       udp     1194
       destinationzone => 'all',
       policy          => 'ACCEPT',
       order           => 100;
+    'fw-to-all':
+      sourcezone      => '$FW',
+      destinationzone => 'all',
+      policy          => 'ACCEPT',
+      order           => 100;
     'all-to-all':
       sourcezone      => 'all',
       destinationzone => 'all',
@@ -65,19 +68,30 @@ PARAM   -       -       udp     1194
   }
 
   shorewall::rule {
+      # ping party
       'all2all-ping':
         source      => 'all',
         destination => 'all',
         action      => 'Ping(ACCEPT)',
         order       => 200;
 
+<<<<<<< HEAD
       'net2fw-openvpn_ssh':
+=======
+      # outside to server
+      'net2fw-ssh':
+        source      => 'net',
+        destination => '$FW',
+        action      => 'SSH(ACCEPT)',
+        order       => 200;
+      'net2fw-openvpn':
+>>>>>>> feature/couchdb
         source      => 'net',
         destination => '$FW',
         action      => 'leap_eip(ACCEPT)',
         order       => 200;
 
-      # eip gw itself to outside
+      # server to outside
       'fw2all-http':
         source      => '$FW',
         destination => 'all',
@@ -94,8 +108,14 @@ PARAM   -       -       udp     1194
         action      => 'Git(ACCEPT)',
         order       => 200;
 
+<<<<<<< HEAD
       #'eip2fw-https':
       #  source      => 'eip',
+=======
+      # Webfrontend is running on another server
+      #'eip2fw-https':
+      # source      => 'eip',
+>>>>>>> feature/couchdb
       #  destination => '$FW',
       #  action      => 'HTTPS(ACCEPT)',
       #  order       => 200;

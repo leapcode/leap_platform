@@ -4,7 +4,7 @@ node 'default' {
   include concat::setup
 
   # include some basic classes
-  #include site_config
+  include site_config
 
   # parse services for host
   $services=hiera_array('services')
@@ -15,9 +15,7 @@ node 'default' {
     include site_config::eip
   }
 
-  if 'couchdb' in $services { 
-    class { 'couchdb': 
-      #bind => '0.0.0.0' 
-    }
+  if 'couchdb' in $services {
+    include site_couchdb
   }
 }
