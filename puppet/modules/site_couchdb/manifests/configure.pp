@@ -12,10 +12,9 @@ class site_couchdb::configure {
     group  => 'root',
   }
 
-  $adminpw = $site_couchdb::adminpw
   file { '/etc/couchdb/local.d/admin.ini':
     content => "[admins]
-admin = $adminpw
+admin = $site_couchdb::couchdb_admin_pw
 ",
     mode    => '0600',
     owner   => 'couchdb',
@@ -24,7 +23,7 @@ admin = $adminpw
   }
 
 
-  exec { '/etc/init.d/couchdb restart; sleep 3':
+  exec { '/etc/init.d/couchdb restart; sleep 6':
     path        => ['/bin', '/usr/bin',],
     subscribe   => File['/etc/couchdb/local.d/admin.ini',
       '/etc/couchdb/local.ini'],
