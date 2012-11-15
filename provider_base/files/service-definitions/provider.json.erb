@@ -1,0 +1,20 @@
+<%=
+  hsh = {}
+
+  # grab some fields from provider.json
+  hsh = global.provider.pick(
+    :languages, :description, :name,
+    :enrollment_policy, :default_language, :domain
+  )
+
+  # advertise services that are 'user services'
+  hsh['services'] = global.services[:service_type => :user_service].field(:name)
+
+  hsh['api_version'] = "1"
+  hsh['api_uri'] = "https://" + api_domain
+
+  hsh['ca_cert_uri'] = 'https://' + global.provider.domain + '/ca.crt'
+  hsh['ca_cert_fingerprint'] = ""
+
+  generate_json hsh
+%>

@@ -1,0 +1,22 @@
+{
+  "service_type": "internal_service",
+  "x509": {
+    "use": true
+  },
+  "couch": {
+    "users": {
+      "admin": {
+        "username": "admin",
+        "password": "= secret :couch_admin_password"
+      },
+      "webapp": {
+        "username": "webapp",
+        "password": "= secret :couch_webapp_password"
+      },
+      "ca_daemon": {
+        "username": "ca_daemon",
+        "password": "= secret :couch_ca_daemon_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "hosts": {
+    "public":  "= nodes['dns.public' => true].fields('domain.name', 'dns.aliases', 'ip_address')",
+    "private": "= nodes['dns.public' => false].fields('domain.name', 'dns.aliases', 'ip_address')"
+  },
+  "service_type": "public_service"
+}

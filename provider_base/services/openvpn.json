@@ -1,0 +1,14 @@
+{
+  "service_type": "user_service",
+  "x509": {
+    "use": true
+  },
+  "openvpn": {
+    "ports": ["80", "443", "53", "1194"],
+    "filter_dns": false,
+    "nat": true,
+    "ca_crt": "= file :ca_cert",
+    "ca_key": "= file :ca_key",
+    "dh": "= file :dh_params"
+  }
+}

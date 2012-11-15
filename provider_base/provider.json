@@ -1,0 +1,27 @@
+{
+  "domain": "REQUIRED",
+  "internal_domain": "= domain.sub(/\\..*$/,'.i')",
+  "name": {
+    "en": "REQUIRED"
+  },
+  "description": {
+    "en": "REQUIRED"
+  },
+  "languages": ["en"],
+  "default_language": "en",
+  "enrollment_policy": "open",
+  "ca": {
+    "name": "= global.provider.ca.organization + ' Root CA'",
+    "organization": "= global.provider.name[global.provider.default_language]",
+    "organizational_unit": "= 'https://' + global.common.domain.full_suffix",
+    "bit_size": 4096,
+    "life_span": "10y",
+    "server_certificates": {
+      "bit_size": 3248,
+      "life_span": "1y"
+    }
+  },
+  "vagrant":{
+    "network":"10.5.5.0/24"
+  }
+}

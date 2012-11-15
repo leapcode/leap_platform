@@ -1,0 +1,6 @@
+{
+  "service_type": "internal_service",
+  "x509": {
+    "use": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "webapp": {
+    "modules": ["user", "billing", "help"],
+    "couchdb_hosts": "= nodes[:services => :couchdb].field('domain.name')",
+    "couchdb_user": "= global.services[:couchdb].couch.users[:webapp]"
+  },
+  "definition_files": {
+    "provider": "= file('service-definitions/provider.json.erb')",
+    "eip_service": "file('service-definitions/eip-service.json.erb')"
+  },
+  "service_type": "public_service",
+  "api_domain": "= 'api.' + domain.full_suffix",
+  "dns": {
+    "aliases": "= [domain.full, api_domain]"
+  },
+  "x509": {
+    "use": true
+  }
+}
