@@ -79,10 +79,10 @@ Configure
 
 Edit following files: 
   
-  * common.yaml
-  * nodes/COUCHDB_SERVER.yaml
-  * nodes/WEBAPP_SERVER.yaml
-  * nodes/VPN_SERVER.yaml
+  * common.json
+  * nodes/<COUCHDB_SERVER>.json - change <COUCHDB_SERVER> to be the hostname of the server hosting couchdb
+  * nodes/<WEBAPP_SERVER>.json  - change <WEBAPP_SERVER> to be the hostname of the server hosting the webapp
+  * nodes/<VPN_SERVER>.json     - change <VPN_SERVER> to be the hostname of the server hosting the VPN server
  
   leap add-user --self
   leap compile
@@ -92,7 +92,7 @@ Initialize and deploy nodes
 
 For every server you configured do:
   
-  leap node-init SERVERNAME
+  leap init-node SERVERNAME
   leap -v 2 deploy SERVERNAME
 
 More Information
