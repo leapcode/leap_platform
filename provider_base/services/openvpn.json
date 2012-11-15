@@ -4,9 +4,12 @@
     "use": true
   },
   "openvpn": {
+    "location": "Location Unknown",
     "ports": ["80", "443", "53", "1194"],
+    "protocols": ["tcp", "udp"],
     "filter_dns": false,
-    "nat": true,
+    "adblock": false,
+    "user_ips": false,
     "ca_crt": "= file :ca_cert",
     "ca_key": "= file :ca_key",
     "dh": "= file :dh_params"

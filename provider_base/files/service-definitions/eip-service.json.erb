@@ -1,0 +1,33 @@
+<%=
+  def underscore(words)
+    words = words.to_s.dup
+    words.downcase!
+    words.gsub! /[^a-z]/, '_'
+    words
+  end
+
+  hsh = {}
+  hsh["serial"] = 1
+  hsh["version"] = 1
+  clusters = {}
+  gateways = []
+  global.services['openvpn'].node_list.each_node do |node|
+    next if node.vagrant?
+    gateway = {}
+    gateway["capabilities"] = node.openvpn.pick(
+      :ports, :protocols, :user_ips, :adblock, :filter_dns)
+    gateway["capabilities"]["transport"] = ["openvpn"]
+    gateway["ip_address"] = node.ip_address
+    gateway["host"] = node.domain.full
+    gateway["cluster"] = underscore(node.openvpn.location)
+    gateways << gateway
+    clusters[gateway["cluster"]] ||= {
+      "name" => gateway["cluster"],
+      "label" => {"en" => node.openvpn.location}
+    }
+  end
+  hsh["gateways"] = gateways
+  hsh["clusters"] = clusters.values
+
+  generate_json hsh
+%>
