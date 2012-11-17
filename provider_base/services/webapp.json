@@ -14,6 +14,8 @@
     "aliases": "= [domain.full, api_domain]"
   },
   "x509": {
-    "use": true
+    "use": true,
+    "commercial_cert": "= file [:commercial_cert, global.provider.domain]",
+    "commercial_key": "= file [:commercial_key, global.provider.domain]"
   }
 }
