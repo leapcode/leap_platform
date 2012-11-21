@@ -12,7 +12,7 @@ class site_openvpn::keys {
   }
 
   file { '/etc/openvpn/keys/dh.pem':
-    content => $openvpn_keys['dh_key'],
+    content => $openvpn_keys['dh'],
     mode    => '0644',
   }
 
