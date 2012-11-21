@@ -12,7 +12,7 @@ node 'default' {
 
   # configure eip
   if 'openvpn' in $services {
-    include site_config::eip
+    include site_openvpn
   }
 
   if 'couchdb' in $services {

@@ -10,7 +10,7 @@ class site_shorewall::eip {
   $ssh_port       = $ssh_config['port']
   $openvpn_config = hiera('openvpn')
   $openvpn_ports  = $openvpn_config['ports']
-  $openvpn_gateway_address = $site_config::eip::openvpn_gateway_address
+  $openvpn_gateway_address = $site_openvpn::openvpn_gateway_address
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_eip':
@@ -42,11 +42,11 @@ PARAM   -       -       udp     1194
 
   shorewall::masq { "${interface}_tcp":
     interface => $interface,
-    source    => "$site_config::eip::openvpn_tcp_network_prefix.0/$site_config::eip::openvpn_tcp_cidr"; }
+    source    => "$site_openvpn::openvpn_tcp_network_prefix.0/$site_openvpn::openvpn_tcp_cidr"; }
 
   shorewall::masq { "${interface}_udp":
     interface => $interface,
-    source    => "$site_config::eip::openvpn_udp_network_prefix.0/$site_config::eip::openvpn_udp_cidr"; }
+    source    => "$site_openvpn::openvpn_udp_network_prefix.0/$site_openvpn::openvpn_udp_cidr"; }
 
   shorewall::policy {
     'eip-to-all':
