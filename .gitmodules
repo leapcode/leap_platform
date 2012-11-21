@@ -35,3 +35,15 @@
 	path = puppet/modules/apache
 	url = git://code.leap.se/puppet_apache
 
+[submodule "puppet/modules/bundler"]
+	path = puppet/modules/bundler
+	url = git://code.leap.se/puppet_bundler
+[submodule "puppet/modules/vcsrepo"]
+	path = puppet/modules/vcsrepo
+	url = git://github.com/puppetlabs/puppetlabs-vcsrepo.git
+[submodule "puppet/modules/rubygems"]
+	path = puppet/modules/rubygems
+	url = git://code.leap.se/puppet_rubygems
+[submodule "puppet/modules/ruby"]
+	path = puppet/modules/ruby
+	url = git://code.leap.se/puppet_ruby
