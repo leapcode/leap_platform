@@ -16,6 +16,7 @@ class site_couchdb {
   $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
 
   Class['site_couchdb::package']
+    -> Exec['refresh_apt']
     -> Package ['couchdb']
     -> File['/etc/init.d/couchdb']
     -> File['/etc/couchdb/local.ini']
