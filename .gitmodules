@@ -34,7 +34,6 @@
 [submodule "puppet/modules/apache"]
 	path = puppet/modules/apache
 	url = git://code.leap.se/puppet_apache
-
 [submodule "puppet/modules/bundler"]
 	path = puppet/modules/bundler
 	url = git://code.leap.se/puppet_bundler
