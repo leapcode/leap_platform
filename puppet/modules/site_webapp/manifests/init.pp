@@ -41,7 +41,7 @@ class site_webapp {
 
   exec { 'bundler_update':
     cwd     => '/srv/leap-webapp',
-    command => '/bin/bash -c \"/usr/bin/bundle check || /usr/bin/bundle install\"',
+    command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install"',
     unless  => '/usr/bin/bundle check',
     require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ];
   }
