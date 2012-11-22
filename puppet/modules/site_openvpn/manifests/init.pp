@@ -11,6 +11,7 @@ class site_openvpn {
   $openvpn_udp_network_prefix = '10.2.0'
   $openvpn_udp_netmask        = '255.255.248.0'
   $openvpn_udp_cidr           = '21'
+  $x509_config                = hiera('x509')
 
   include site_openvpn
   
