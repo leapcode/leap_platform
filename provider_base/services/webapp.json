@@ -5,8 +5,8 @@
     "couchdb_user": "= global.services[:couchdb].couch.users[:webapp]"
   },
   "definition_files": {
-    "provider": "= file 'service-definitions/provider.json.erb'",
-    "eip_service": "= file 'service-definitions/eip-service.json.erb'"
+    "provider": "= file :provider_json_template",
+    "eip_service": "= file :eip_service_json_template"
   },
   "service_type": "public_service",
   "api_domain": "= 'api.' + domain.full_suffix",
