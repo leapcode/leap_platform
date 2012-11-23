@@ -1,0 +1,28 @@
+client
+dev tun
+remote-cert-tls server
+remote-random
+nobind
+script-security 2
+verb 3
+auth SHA1
+cipher AES-128-CBC
+tls-cipher DHE-RSA-AES128-SHA
+
+<% manager.services['openvpn'].node_list.each_node do |node| -%>
+<%   unless node.local -%>
+<%=   "remote #{node.openvpn.gateway_address} 1194 udp"%>
+<%   end -%>
+<% end -%>
+
+<ca>
+<%= read_file! :ca_cert -%>
+</ca>
+
+<cert>
+<%= read_file! :test_client_cert -%>
+</cert>
+
+<key>
+<%= read_file! :test_client_key -%>
+</key>
