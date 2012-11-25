@@ -1,6 +1,7 @@
 {
   "ip_address": "REQUIRED",
   "services": [],
+  "tags": [],
   "domain": {
      "full_suffix": "= global.provider.domain",
      "internal_suffix": "= global.provider.internal_domain",
@@ -21,6 +22,5 @@
     "cert": "= x509.use ? file(:node_x509_cert, :missing => 'x509 certificate for node $node. Run `leap update-cert`') : nil",
     "key": "= x509.use ? file(:node_x509_key, :missing => 'x509 key for node $node. Run `leap update-cert`') : nil",
     "ca_cert": "= try_file :ca_cert"
-  },
-  "local": "= self.vagrant?"
+  }
 }
