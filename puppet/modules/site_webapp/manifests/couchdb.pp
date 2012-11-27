@@ -1,6 +1,6 @@
 class site_webapp::couchdb {
 
-  $webapp           = hiera_array('webapp')
+  $webapp           = hiera('webapp')
   $couchdb_host     = $webapp['couchdb_hosts']
   $couchdb_user     = $webapp['couchdb_user']['username']
   $couchdb_password = $webapp['couchdb_user']['password']
