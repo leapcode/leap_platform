@@ -18,4 +18,8 @@ node 'default' {
   if 'couchdb' in $services {
     include site_couchdb
   }
+
+  if 'webapp' in $services {
+    include site_webapp
+  }
 }
