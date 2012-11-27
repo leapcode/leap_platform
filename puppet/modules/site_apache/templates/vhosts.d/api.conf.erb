@@ -20,6 +20,7 @@
   RequestHeader set X_FORWARDED_PROTO 'https'
 
   DocumentRoot /srv/leap_webapp/public
+  Alias /1 /srv/leap_webapp/public
 
   # Check for maintenance file and redirect all requests
   RewriteEngine On

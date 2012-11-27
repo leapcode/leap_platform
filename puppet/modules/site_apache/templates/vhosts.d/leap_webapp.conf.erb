@@ -22,9 +22,10 @@
   RequestHeader set X_FORWARDED_PROTO 'https'
 
   DocumentRoot /srv/leap_webapp/public
+  Alias /1 /srv/leap_webapp/public
 
-  # Check for maintenance file and redirect all requests
   RewriteEngine On
+  # Check for maintenance file and redirect all requests
   RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
   RewriteCond %{SCRIPT_FILENAME} !maintenance.html
   RewriteCond %{REQUEST_URI} !/images/maintenance.jpg

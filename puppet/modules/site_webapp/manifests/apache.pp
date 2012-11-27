@@ -13,6 +13,7 @@ class site_webapp::apache {
   include apache::ssl
 
   apache::module {
+    'alias':   ensure => present;
     'rewrite': ensure => present;
     'headers': ensure => present;
   }
