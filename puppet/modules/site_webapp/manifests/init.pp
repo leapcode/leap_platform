@@ -49,4 +49,15 @@ class site_webapp {
     unless  => '/usr/bin/bundle check',
     require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ];
   }
+
+  file {
+    '/srv/leap-webapp/public/provider.json':
+      content => $provider,
+      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+
+    '/srv/leap-webapp/public/ca.crt':
+      content => $cert_root,
+      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+  }
+
 }
