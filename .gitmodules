@@ -46,3 +46,9 @@
 [submodule "puppet/modules/ruby"]
 	path = puppet/modules/ruby
 	url = git://code.leap.se/puppet_ruby
+[submodule "puppet/modules/x509"]
+	path = puppet/modules/x509
+	url = git://code.leap.se/puppet_x509
+[submodule "puppet/modules/passenger"]
+	path = puppet/modules/passenger
+	url = git://code.leap.se/puppet_passenger
