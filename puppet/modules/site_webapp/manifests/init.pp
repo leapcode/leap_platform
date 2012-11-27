@@ -2,6 +2,7 @@ class site_webapp {
 
   $definition_files = hiera('definition_files')
   $provider         = $definition_files['provider']
+  $eap_service      = $definition_files['eap_service']
 
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
 
@@ -57,6 +58,14 @@ class site_webapp {
 
     '/srv/leap-webapp/public/ca.crt':
       content => $cert_root,
+      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+
+    '/srv/leap-webapp/public/config':
+      ensure => directory,
+      owner  => leap-webapp, group => leap-webapp, mode => '0755';
+
+    '/srv/leap-webapp/public/config/eip-service.json':
+      content => $eap_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
   }
 
