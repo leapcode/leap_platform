@@ -1,0 +1,39 @@
+<VirtualHost *:80>
+  ServerName <%= domain %>
+  ServerAlias www.<%= domain %>
+  RewriteEngine On
+  RewriteRule ^.*$ https://<%= domain -%>%{REQUEST_URI} [R=permanent,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName <%= domain %>
+  ServerAlias www.<%= domain %>
+
+  SSLEngine on
+  SSLProtocol -all +SSLv3 +TLSv1
+  SSLCipherSuite HIGH:MEDIUM:!aNULL:!SSLv2:!MD5:@STRENGTH
+  SSLHonorCipherOrder on
+
+  SSLCACertificatePath /etc/ssl/certs
+  SSLCertificateChainFile /etc/ssl/certs/leap_webapp.crt
+  SSLCertificateKeyFile /etc/x509/keys/leap_webapp.key
+  SSLCertificateFile /etc/x509/certs/leap_webapp.crt
+
+  RequestHeader set X_FORWARDED_PROTO 'https'
+
+  DocumentRoot /srv/leap_webapp/public
+
+  # Check for maintenance file and redirect all requests
+  RewriteEngine On
+  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteCond %{REQUEST_URI} !/images/maintenance.jpg
+  RewriteRule ^.*$ %{DOCUMENT_ROOT}/system/maintenance.html [L]
+
+  # http://www.modrails.com/documentation/Users%20guide%20Apache.html#_passengerallowencodedslashes_lt_on_off_gt
+  AllowEncodedSlashes on
+  PassengerAllowEncodedSlashes on
+  PassengerFriendlyErrorPages off
+  SetEnv TMPDIR /var/tmp
+</VirtualHost>
+
