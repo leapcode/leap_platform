@@ -1,12 +1,16 @@
 class site_webapp {
 
+  $definition_files = hiera('definition_files')
+  $provider         = $definition_files['provider']
+
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
 
   class { 'ruby': ruby_version => '1.9.3' }
 
-  include rubygems
-
   class { 'bundler::install': install_method => '' }
+
+  include rubygems
+  include site_webapp::apache
 
   group { 'leap-webapp':
     ensure    => present,
@@ -46,5 +50,3 @@ class site_webapp {
     require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ];
   }
 }
-
-
