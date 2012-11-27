@@ -12,6 +12,7 @@ class site_webapp {
 
   include rubygems
   include site_webapp::apache
+  include site_webapp::couchdb
 
   group { 'leap-webapp':
     ensure    => present,
