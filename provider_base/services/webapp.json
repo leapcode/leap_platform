@@ -15,7 +15,7 @@
   },
   "x509": {
     "use": true,
-    "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap init-ca`'",
+    "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
     "commercial_cert": "= file [:commercial_cert, global.provider.domain]",
     "commercial_key": "= file [:commercial_key, global.provider.domain]",
     "commercial_ca_cert": "= try_file :commercial_ca_cert"

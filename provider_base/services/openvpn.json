@@ -2,8 +2,8 @@
   "service_type": "user_service",
   "x509": {
     "use": true,
-    "ca_cert": "= file :ca_cert, :missing => 'Certificate Authority. Run `leap init-ca`'",
-    "dh": "= file :dh_params, :missing => 'Diffie-Hellman parameters. Run `leap init-dh`'"
+    "ca_cert": "= file :ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
+    "dh": "= file :dh_params, :missing => 'Diffie-Hellman parameters. Run `leap cert dh`'"
   },
   "openvpn": {
     "location": "Location Unknown",
