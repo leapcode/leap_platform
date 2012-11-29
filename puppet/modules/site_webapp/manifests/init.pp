@@ -8,7 +8,7 @@ class site_webapp {
 
   class { 'ruby': ruby_version => '1.9.3' }
 
-  class { 'bundler::install': install_method => '' }
+  class { 'bundler::install': install_method => 'package' }
 
   include rubygems
   include site_webapp::apache
