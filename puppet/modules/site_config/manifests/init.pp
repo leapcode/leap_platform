@@ -1,9 +1,12 @@
 class site_config {
-  # default class, use by all hosts
+  # default class, used by all hosts
 
-  include apt, lsb, git
+  include lsb, git
 
-  # configure ssh and inculde ssh-keys
+  # configure apt
+  include site_config::apt
+
+  # configure ssh and include ssh-keys
   include site_config::sshd
 
   # configure /etc/resolv.conf
