@@ -28,7 +28,7 @@ class site_webapp {
   }
 
   file { '/srv/leap-webapp':
-    ensure  => present,
+    ensure  => directory,
     owner   => 'leap-webapp',
     group   => 'leap-webapp',
     require => User['leap-webapp'];
