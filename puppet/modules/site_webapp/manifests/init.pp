@@ -58,8 +58,8 @@ class site_webapp {
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
     '/srv/leap-webapp/public/ca.crt':
-      content => $cert_root,
-      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+      ensure  => link,
+      target  => '/usr/local/share/ca-certificates/leap_api.crt';
 
     '/srv/leap-webapp/public/config':
       ensure => directory,
