@@ -24,7 +24,7 @@
 	url = git://labs.riseup.net/shared-common
 [submodule "puppet/modules/shorewall"]
 	path = puppet/modules/shorewall
-	url = git://labs.riseup.net/shared-shorewall
+	url = git://code.leap.se/puppet_shorewall
 [submodule "puppet/modules/resolvconf"]
 	path = puppet/modules/resolvconf
 	url = git://git.puppet.immerda.ch/module-resolvconf.git
@@ -52,3 +52,6 @@
 [submodule "puppet/modules/passenger"]
 	path = puppet/modules/passenger
 	url = git://code.leap.se/puppet_passenger
+[submodule "puppet/modules/augeas"]
+	path = puppet/modules/augeas
+	url = git://code.leap.se/puppet_augeas
