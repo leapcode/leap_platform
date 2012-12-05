@@ -1,9 +1,10 @@
 define site_couchdb::apache_ssl_proxy ($key, $cert) {
 
   $apache_no_default_site = true
-  include apache::ssl
+  include apache
   apache::module {
     'rewrite':      ensure => present;
+    'ssl':          ensure => present;
     'proxy':        ensure => present;
     'proxy_http':   ensure => present;
   }
