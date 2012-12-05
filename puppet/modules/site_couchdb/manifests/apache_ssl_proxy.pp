@@ -3,10 +3,10 @@ define site_couchdb::apache_ssl_proxy ($key, $cert) {
   $apache_no_default_site = true
   include apache
   apache::module {
-    'rewrite':      ensure => present;
-    'ssl':          ensure => present;
     'proxy':        ensure => present;
     'proxy_http':   ensure => present;
+    'rewrite':      ensure => present;
+    'ssl':          ensure => present;
   }
   apache::vhost::file { 'couchdb_proxy': }
   # prevent 0-default.conf and 0-default_ssl.conf from apache module
