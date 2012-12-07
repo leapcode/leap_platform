@@ -22,8 +22,8 @@ class site_couchdb {
     -> File['/etc/couchdb/local.ini']
     -> File['/etc/couchdb/local.d/admin.ini']
     -> File['/etc/couchdb/couchdb.netrc']
-    -> Couchdb::Create_db[leap_web]
-    -> Couchdb::Create_db[leap_ca]
+    -> Couchdb::Create_db['users']
+    -> Couchdb::Create_db['client_certificates']
     -> Couchdb::Add_user[$couchdb_webapp_user]
     -> Couchdb::Add_user[$couchdb_ca_daemon_user]
     -> Site_couchdb::Apache_ssl_proxy['apache_ssl_proxy']
@@ -52,11 +52,11 @@ class site_couchdb {
     pw    => $couchdb_ca_daemon_pw
   }
 
-  couchdb::create_db { 'leap_web':
+  couchdb::create_db { 'users':
     readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }"
   }
 
-  couchdb::create_db { 'leap_ca':
+  couchdb::create_db { 'client_certificates':
     readers => "{ \"names\": [], \"roles\": [\"certs\"] }"
   }
 }
