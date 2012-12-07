@@ -14,9 +14,10 @@
   },
   "ssh": {
     "authorized_keys": "= file :authorized_keys",
-    "known_hosts": "= file :known_hosts",
+    "known_hosts": "=> known_hosts_file",
     "port": 22
   },
+  "hosts": "=> hosts_file",
   "x509": {
     "use": false,
     "cert": "= x509.use ? file(:node_x509_cert, :missing => 'x509 certificate for node $node. Run `leap update-cert`') : nil",
