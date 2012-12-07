@@ -1,5 +1,7 @@
 class site_couchdb {
 
+  include couchdb
+
   $x509                   = hiera('x509')
   $key                    = $x509['key']
   $cert                   = $x509['cert']
@@ -15,9 +17,7 @@ class site_couchdb {
   $couchdb_ca_daemon_user = $couchdb_ca_daemon['username']
   $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
 
-  Class['site_couchdb::package']
-    -> Exec['refresh_apt']
-    -> Package ['couchdb']
+  Package ['couchdb']
     -> File['/etc/init.d/couchdb']
     -> File['/etc/couchdb/local.ini']
     -> File['/etc/couchdb/local.d/admin.ini']
@@ -28,8 +28,6 @@ class site_couchdb {
     -> Couchdb::Add_user[$couchdb_ca_daemon_user]
     -> Site_couchdb::Apache_ssl_proxy['apache_ssl_proxy']
 
-  # Setup couchdb
-  include site_couchdb::package
   include site_couchdb::configure
   include couchdb::deploy_config
 

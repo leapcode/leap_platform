@@ -1,9 +1,4 @@
 class site_couchdb::configure {
-  Class[site_couchdb::package] -> Class[couchdb]
-
-  class { 'couchdb':
-    require => Class['site_couchdb::package'], }
-
 
   file { '/etc/init.d/couchdb':
     source => 'puppet:///modules/site_couchdb/couchdb',
