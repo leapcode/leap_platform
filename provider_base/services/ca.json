@@ -1,5 +1,5 @@
 {
-  "ca": {
+  "ca_daemon": {
     "couchdb_hosts": "= nodes[:services => :couchdb][:local => local].field('domain.name')",
     "couchdb_user": "= global.services[:couchdb].couch.users[:ca_daemon]"
   },

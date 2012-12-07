@@ -24,6 +24,6 @@ node 'default' {
   }
 
   if 'ca' in $services {
-    include site_ca
+    include site_ca_daemon
   }
 }
