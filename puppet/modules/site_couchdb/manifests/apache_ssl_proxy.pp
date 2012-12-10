@@ -10,20 +10,16 @@ define site_couchdb::apache_ssl_proxy ($key, $cert) {
   }
   apache::vhost::file { 'couchdb_proxy': }
 
-  file { '/etc/couchdb/server_cert.pem':
-    mode    => '0644',
-    owner   => 'couchdb',
-    group   => 'couchdb',
-    content => $cert,
-    notify  => Service[apache],
+  x509::key {
+    'leap_couchdb':
+      content => $x509['key'],
+      notify  => Service[apache];
   }
 
-  file { '/etc/couchdb/server_key.pem':
-    mode    => '0600',
-    owner   => 'couchdb',
-    group   => 'couchdb',
-    content => $key,
-    notify  => Service[apache],
+  x509::cert {
+    'leap_couchdb':
+      content => $x509['cert'],
+      notify  => Service[apache];
   }
 
 }
