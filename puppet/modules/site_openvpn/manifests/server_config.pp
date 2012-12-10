@@ -69,15 +69,15 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push, $mana
   openvpn::option {
     "ca $openvpn_configname":
         key     => 'ca',
-        value   => '/etc/openvpn/keys/ca.crt',
+        value   => '/usr/local/share/ca-certificates/leap_openvpn.crt',
         server  => $openvpn_configname;
     "cert $openvpn_configname":
         key     => 'cert',
-        value   => '/etc/openvpn/keys/server.crt',
+        value   => '/etc/x509/certs/leap_openvpn.crt',
         server  => $openvpn_configname;
     "key $openvpn_configname":
         key     => 'key',
-        value   => '/etc/openvpn/keys/server.key',
+        value   => '/etc/x509/keys/leap_openvpn.key',
         server  => $openvpn_configname;
     "dh $openvpn_configname":
         key     => 'dh',

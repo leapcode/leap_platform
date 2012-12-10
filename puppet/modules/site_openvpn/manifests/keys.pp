@@ -1,8 +1,21 @@
 class site_openvpn::keys {
 
-  file { '/etc/openvpn/keys/ca.crt':
-    content => $site_openvpn::x509_config['ca_cert'],
-    mode    => '0644',
+  x509::key {
+    'leap_openvpn':
+      content => $site_openvpn::x509_config['key'],
+      notify  => Service[openvpn];
+  }
+
+  x509::cert {
+    'leap_openvpn':
+      content => $site_openvpn::x509_config['cert'],
+      notify  => Service[openvpn];
+  }
+
+  x509::ca {
+    'leap_openvpn':
+      content => $site_openvpn::x509_config['ca_cert'],
+      notify  => Service[openvpn];
   }
 
   file { '/etc/openvpn/keys/dh.pem':
@@ -10,13 +23,4 @@ class site_openvpn::keys {
     mode    => '0644',
   }
 
-  file { '/etc/openvpn/keys/server.key':
-    content => $site_openvpn::x509_config['key'],
-    mode    => '0600',
-  }
-
-  file { '/etc/openvpn/keys/server.crt':
-    content => $site_openvpn::x509_config['cert'],
-    mode    => '0644',
-  }
 }
