@@ -3,6 +3,7 @@ class site_ca_daemon {
   #$definition_files = hiera('definition_files')
   #$provider         = $definition_files['provider']
   #$eip_service      = $definition_files['eip_service']
+  $x509             = hiera('x509') 
 
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
 
@@ -26,6 +27,19 @@ class site_ca_daemon {
     home      => '/srv/leap_ca_daemon',
     require   => [ Group['leap_ca_daemon'] ];
   }
+
+
+  x509::key {                                                                   
+    'leap_ca_daemon':                                                           
+      content => $x509['cert'],                                               
+      #notify  => Service[apache];                                               
+  }                                                                             
+                                                                                
+  x509::cert {                                                                  
+    'leap_ca_daemon':                                                           
+      content => $x509['key'],                                              
+      #notify  => Service[apache];                                               
+  }    
 
   file { '/srv/leap_ca_daemon':
     ensure  => directory,
@@ -51,5 +65,7 @@ class site_ca_daemon {
     unless  => '/usr/bin/bundle check',
     require => [ Class['bundler::install'], Vcsrepo['/srv/leap_ca_daemon'] ];
   }
+
+
 
 }
