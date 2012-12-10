@@ -36,7 +36,7 @@ class site_ca_daemon {
 
   vcsrepo { '/srv/leap_ca_daemon':
     ensure   => present,
-    revision => 'origin/deploy',
+    revision => 'origin/master',
     provider => git,
     source   => 'git://code.leap.se/leap_ca',
     owner    => 'leap_ca_daemon',
