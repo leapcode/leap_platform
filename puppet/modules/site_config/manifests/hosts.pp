@@ -3,7 +3,7 @@ class site_config::hosts {
   $hosts = hiera('hosts','')
   $hostname = hiera('name')
 
-  exec { "/bin/hostname $hostname ": }
+  exec { "/bin/hostname $hostname": }
 
   file { "/etc/hostname":
     ensure => present,
