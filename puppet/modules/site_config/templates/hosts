@@ -1,7 +1,9 @@
 # This file is managed by puppet, any changes will be overwritten!
 
-127.0.0.1	localhost
-<%= scope.function_hiera('hosts') %>
+127.0.0.1    localhost
+<%- if hosts.to_s != '' then -%>
+<%= hosts %>
+<% end -%>
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     ip6-localhost ip6-loopback
