@@ -1,4 +1,4 @@
-class site_config::hosts {
+class site_config::hosts() {
 
   $hosts = hiera('hosts','')
   $hostname = hiera('name')

@@ -13,5 +13,11 @@ class site_config {
   include site_config::resolvconf
 
   # configure /etc/hosts
-  include site_config::hosts
+  stage { 'initial':
+    before => Stage['main'],
+  }
+
+  class { 'site_config::hosts':
+    stage => initial,
+  }
 }
