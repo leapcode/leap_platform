@@ -11,4 +11,7 @@ class site_config {
 
   # configure /etc/resolv.conf
   include site_config::resolvconf
+
+  # configure /etc/hosts
+  include site_config::hosts
 }
