@@ -1,4 +1,4 @@
-class site_config::apt {
+class site_apt {
 
   include ::apt
 

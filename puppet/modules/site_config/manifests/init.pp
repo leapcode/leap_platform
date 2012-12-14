@@ -4,7 +4,7 @@ class site_config {
   include lsb, git
 
   # configure apt
-  include site_config::apt
+  include site_apt
 
   # configure ssh and include ssh-keys
   include site_config::sshd
