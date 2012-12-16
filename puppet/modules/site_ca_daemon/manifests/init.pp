@@ -73,4 +73,8 @@ class site_ca_daemon {
     require => [ Class['bundler::install'], Vcsrepo['/srv/leap_ca_daemon'] ];
   }
 
+  file { '/usr/local/bin/leap_ca_daemon':
+    ensure => link,
+    target => '/srv/leap_ca_daemon/bin/leap_ca',
+  }
 }
