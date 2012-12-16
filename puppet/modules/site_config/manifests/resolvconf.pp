@@ -1,7 +1,28 @@
 class site_config::resolvconf {
+
+  # bind9
   package { 'bind9':
     ensure => installed,
   }
+
+  service { 'bind9':
+    ensure => running,
+    require => Package['bind9'],
+  }
+
+  file { '/etc/default/bind9':
+    source    => 'puppet:///modules/site_config/bind9',
+    require => Package['bind9'],
+    notify  => Service['bind9'], 
+  }
+
+  file { '/etc/bind/named.options':
+    source => 'puppet:///modules/site_config/named.options',
+    require => Package['bind9'],
+    notify  => Service['bind9'], 
+  }
+
+
 
   $domain_hash = hiera('domain')
   $domain_public = $domain_hash['public']
