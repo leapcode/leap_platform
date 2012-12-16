@@ -16,8 +16,8 @@ class site_config::resolvconf {
     notify  => Service['bind9'], 
   }
 
-  file { '/etc/bind/named.options':
-    source => 'puppet:///modules/site_config/named.options',
+  file { '/etc/bind/named.conf.options':
+    source => 'puppet:///modules/site_config/named.conf.options',
     require => Package['bind9'],
     notify  => Service['bind9'], 
   }
