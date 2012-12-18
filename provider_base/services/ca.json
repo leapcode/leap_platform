@@ -5,6 +5,7 @@
   },
   "service_type": "internal_service",
   "x509": {
-    "use": true
+    "use": true,
+    "ca_key": "= file(:ca_key, :missing => 'CA key. Run `leap cert ca` to create the Certificate Authority.')"
   }
 }

@@ -31,21 +31,33 @@ class site_ca_daemon {
 
   x509::key {
     'leap_ca_daemon':
-      content => $x509['key'],
-      #notify  => Service[apache];
+      content => $x509['ca_key'];
+      #notify  => Service['leap_ca_daemon']; <== no service yet for leap_ca_daemon
   }
 
   x509::cert {
     'leap_ca_daemon':
-      content => $x509['cert'],
-      #notify  => Service[apache];
+      content => $x509['ca_cert'];
+      #notify  => Service['leap_ca_daemon'];  <== no service yet for leap_ca_daemon
   }
 
-  x509::ca {
-    'leap_ca_daemon':
-      content => $x509['ca_cert'],
-      #notify  => Service[apache];
-  }
+  #
+  # Does CA need a server key/cert? I think not now.
+  #
+  # x509::key {
+  #   'server':
+  #     content => $x509['key'];
+  # }
+  #
+  # x509::cert {
+  #   'server':
+  #     content => $x509['cert'];
+  # }
+
+  # x509::ca {
+  #   'leap_ca_daemon':
+  #     content => $x509['ca_cert'];
+  # }
 
 
   file { '/srv/leap_ca_daemon':
