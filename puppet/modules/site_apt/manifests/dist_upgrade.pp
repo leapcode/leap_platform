@@ -6,5 +6,6 @@ class site_apt::dist_upgrade inherits apt::dist_upgrade {
   }
 
   # Ensure apt-get upgrade has been run before installing any packages
-  Exec["apt_dist-upgrade"] -> Package <| name != 'lsb-release' |> 
+  # Disables because apt-get update is moved to stage initial
+  # Exec["apt_dist-upgrade"] -> Package <| name != 'lsb-release' |> 
 }

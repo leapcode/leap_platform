@@ -6,6 +6,7 @@ class site_config {
   # configure apt
   include site_apt
 
+
   # configure ssh and include ssh-keys
   include site_config::sshd
 
@@ -18,6 +19,10 @@ class site_config {
   }
 
   class { 'site_config::hosts':
+    stage => initial,
+  }
+
+  class { 'site_apt::dist_upgrade':
     stage => initial,
   }
 }
