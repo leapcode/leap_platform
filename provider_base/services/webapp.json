@@ -9,9 +9,12 @@
     "eip_service": "= file :eip_service_json_template"
   },
   "service_type": "public_service",
-  "api_domain": "= 'api.' + domain.full_suffix",
+  "api": {
+    "domain": "= 'api.' + domain.full_suffix",
+    "port": "4430"
+  },
   "dns": {
-    "aliases": "= [domain.full, api_domain]"
+    "aliases": "= [domain.full, api.domain]"
   },
   "x509": {
     "use": true,

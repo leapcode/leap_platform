@@ -1,10 +1,12 @@
 <VirtualHost *:80>
   ServerName <%= api_domain %>
   RewriteEngine On
-  RewriteRule ^.*$ https://<%= api_domain -%>%{REQUEST_URI} [R=permanent,L]
+  RewriteRule ^.*$ https://<%= api_domain -%>:<%= api_port -%>%{REQUEST_URI} [R=permanent,L]
 </VirtualHost>
 
-<VirtualHost *:443>
+Listen 0.0.0.0:<%= api_port %>
+
+<VirtualHost *:<%= api_port -%>>
   ServerName <%= api_domain %>
 
   SSLEngine on
