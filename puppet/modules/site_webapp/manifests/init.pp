@@ -36,7 +36,7 @@ class site_webapp {
 
   vcsrepo { '/srv/leap-webapp':
     ensure   => present,
-    revision => 'origin/develop',
+    revision => 'origin/master',
     provider => git,
     source   => 'git://code.leap.se/leap_web',
     owner    => 'leap-webapp',
