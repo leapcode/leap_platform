@@ -2,7 +2,11 @@
   "webapp": {
     "modules": ["user", "billing", "help"],
     "couchdb_hosts": "= hostnames nodes[:services => :couchdb][:local => local]",
-    "couchdb_user": "= global.services[:couchdb].couch.users[:webapp]"
+    "couchdb_user": "= global.services[:couchdb].couch.users[:webapp]",
+    "favicon": "= file_path 'branding/favicon.ico'",
+    "tail_scss": "= file_path 'branding/tail.scss'",
+    "head_scss": "= file_path 'branding/head.scss'",
+    "img_dir": "= file_path 'branding/img'"
   },
   "definition_files": {
     "provider": "= file :provider_json_template",

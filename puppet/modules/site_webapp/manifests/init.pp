@@ -5,6 +5,7 @@ class site_webapp {
   $eip_service      = $definition_files['eip_service']
   $node_domain      = hiera('domain')
   $provider_domain  = $node_domain['full_suffix']
+  $webapp           = hiera('webapp')
 
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
 
@@ -70,6 +71,22 @@ class site_webapp {
     '/srv/leap-webapp/public/config/eip-service.json':
       content => $eip_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
+
+    '/srv/leap-webapp/public/favicon.ico':
+      ensure => 'link',
+      target => $webapp['favicon'];
+
+    '/srv/leap-webapp/app/assets/stylesheets/tail.scss':
+      ensure => 'link',
+      target => $webapp['tail_scss'];
+
+    '/srv/leap-webapp/app/assets/stylesheets/head.scss':
+      ensure => 'link',
+      target => $webapp['head_scss'];
+
+    '/srv/leap-webapp/public/img':
+       ensure => 'link',
+       target => $webapp['img_dir'];
   }
 
   file {
