@@ -55,3 +55,9 @@
 [submodule "puppet/modules/augeas"]
 	path = puppet/modules/augeas
 	url = git://code.leap.se/puppet_augeas
+[submodule "puppet/modules/stdlib"]
+	path = puppet/modules/stdlib
+	url = git://code.leap.se/puppet_stdlib
+[submodule "puppet/modules/unbound"]
+	path = puppet/modules/unbound
+	url = git://code.leap.se/puppet_unbound
