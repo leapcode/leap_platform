@@ -3,7 +3,7 @@ class site_unbound {
   class { 'unbound':
     root_hints => false,
     anchor     => false,
-    ssl        => false
+    ssl        => false,
     settings   => {
       server       => {
         verbosity      => '1',
@@ -16,5 +16,4 @@ class site_unbound {
       }
     }
   }
-
 }
