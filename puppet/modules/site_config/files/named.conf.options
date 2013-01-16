@@ -1,6 +1,0 @@
-options {
-        allow-query     { 127.0.0.1; };
-        allow-transfer  { none; };
-        listen-on        { 127.0.0.1; };
-};
-

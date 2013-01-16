@@ -13,6 +13,9 @@ class site_config {
   # configure /etc/resolv.conf
   include site_config::resolvconf
 
+  # configure caching, local resolver
+  include site_config::caching_resolver
+  
   # configure /etc/hosts
   stage { 'initial':
     before => Stage['main'],
