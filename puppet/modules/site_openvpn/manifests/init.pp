@@ -13,8 +13,6 @@ class site_openvpn {
   $openvpn_udp_cidr           = '21'
   $x509_config                = hiera('x509')
 
-  include site_unbound
-
   # deploy ca + server keys
   include site_openvpn::keys
 
@@ -54,6 +52,9 @@ ip addr show dev $interface | grep -q ${openvpn_gateway_address}/24 || ip addr a
     user    => 'root',
     special => 'reboot',
   }
+
+  # setup the resolver to listen on the vpn IP
+  include site_openvpn::resolver
 
   include site_shorewall::eip
 
