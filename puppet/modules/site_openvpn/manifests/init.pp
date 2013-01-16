@@ -13,8 +13,6 @@ class site_openvpn {
   $openvpn_udp_cidr           = '21'
   $x509_config                = hiera('x509')
 
-  include site_openvpn
-  
   # deploy ca + server keys
   include site_openvpn::keys
 
