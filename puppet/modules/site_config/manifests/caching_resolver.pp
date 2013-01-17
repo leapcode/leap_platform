@@ -1,8 +1,14 @@
 class site_config::caching_resolver {
 
-  # Setup a conf.d directory to place additional unbound configuration files
-  # there must be at least one file in the directory, or unbound will not
-  # start, so create an empty placeholder to ensure this
+  # Setup a conf.d directory to place additional unbound configuration files.
+  # There must be at least one file in the directory, or unbound will not start,
+  # so create an empty placeholder to ensure this.
+
+  # Note: the version of unbound we are working with does not accept a wildcard
+  # for an include directive, so we are not able to use this. When we can use
+  # the newer unbound, then we will add 'include: /etc/unbound.d/*' to the
+  # configuration file
+
   file {
     '/etc/unbound/conf.d':
       ensure => directory,
@@ -27,8 +33,7 @@ class site_config::caching_resolver {
         hide-identity  => 'yes',
         hide-version   => 'yes',
         harden-glue    => 'yes',
-        access-control => [ '127.0.0.0/8 allow', '::1 allow' ],
-        include        => '/etc/unbound/conf.d/*'
+        access-control => [ '127.0.0.0/8 allow', '::1 allow' ]
       }
     }
   }
