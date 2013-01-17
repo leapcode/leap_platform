@@ -14,7 +14,8 @@ class site_shorewall::defaults {
     changes => 'set /files/etc/shorewall/shorewall.conf/IP_FORWARDING Yes',
     lens    => 'Shellvars.lns',
     incl    => '/etc/shorewall/shorewall.conf',
-    notify  => Service[shorewall];
+    notify  => Service[shorewall],
+    require => Class[augeas];
   }
 
 }
