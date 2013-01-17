@@ -1,3 +1,6 @@
+# set a default exec path
+Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
+
 node 'default' {
   # prerequisites
   import 'common'
