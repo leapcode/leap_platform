@@ -87,6 +87,16 @@ class site_ca_daemon {
 
   file { '/usr/local/bin/leap_ca_daemon':
     ensure => link,
-    target => '/srv/leap_ca_daemon/bin/leap_ca',
+    target => '/srv/leap_ca_daemon/bin/leap_ca_daemon',
   }
+
+  file { '/etc/cron.hourly/leap_ca':
+    ensure  => present,
+    content => "#/bin/sh\n/srv/leap_ca_daemon/bin/leap_ca_daemon --run-once > /dev/null",
+    owner   => 'root',
+    group   => 0,
+    mode    => '0755',
+  }
+
+
 }
