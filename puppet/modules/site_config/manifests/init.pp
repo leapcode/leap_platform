@@ -1,4 +1,6 @@
 class site_config {
+  $domain_hash = hiera('domain')
+
   # default class, used by all hosts
 
   include lsb, git

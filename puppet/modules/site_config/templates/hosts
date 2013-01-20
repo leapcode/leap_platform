@@ -1,7 +1,7 @@
 # This file is managed by puppet, any changes will be overwritten!
 
 127.0.0.1    localhost
-127.0.1.1    <%= hostname %>.<%= domain %> <%= hostname %>
+127.0.1.1    <%= hostname %>.<%= @domain_public %> <%= hostname %>
 
 <%- if hosts.to_s != '' then -%>
 <%= hosts %>

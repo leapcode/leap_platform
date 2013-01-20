@@ -3,6 +3,8 @@ class site_config::hosts() {
   $hosts = hiera('hosts','')
   $hostname = hiera('name')
 
+  $domain_public = $domain_hash['full_suffix']
+
   file { "/etc/hostname":
     ensure => present,
     content => $hostname
