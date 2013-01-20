@@ -1,11 +1,11 @@
 class site_apt::dist_upgrade inherits apt::dist_upgrade {
 
-  # really upgrade on every puppetrun
+  if $::apt_running == 'true' { 
+    fail ('apt-get is running in background - Please wait until it finishes. Exiting.')
+  }
+  # ensue dist-upgrade on every puppetrun
   Exec['apt_dist-upgrade']{
     refreshonly => false,
   }
 
-  # Ensure apt-get upgrade has been run before installing any packages
-  # Disables because apt-get update is moved to stage initial
-  # Exec["apt_dist-upgrade"] -> Package <| name != 'lsb-release' |>
 }
