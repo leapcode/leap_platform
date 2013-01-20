@@ -1,19 +1,12 @@
 class site_config::resolvconf {
 
-  # bind9
+  # bind9 purging can be taken out after some time
   package { 'bind9':
     ensure => absent,
   }
-
-  service { 'bind9':
-    ensure => stopped,
-    require => Package['bind9'],
-  }
-
   file { '/etc/default/bind9':
     ensure    => absent;
   }
-
   file { '/etc/bind/named.conf.options':
     ensure => absent;
   }
