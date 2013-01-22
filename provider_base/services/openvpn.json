@@ -2,7 +2,7 @@
   "service_type": "user_service",
   "x509": {
     "use": true,
-    "ca_cert": "= file :ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
+    "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
     "dh": "= file :dh_params, :missing => 'Diffie-Hellman parameters. Run `leap cert dh`'"
   },
   "openvpn": {
