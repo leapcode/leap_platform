@@ -12,7 +12,8 @@ class site_config::caching_resolver {
   file {
     '/etc/unbound/conf.d':
       ensure => directory,
-      owner  => root, group => root, mode => '0755';
+      owner  => root, group => root, mode => '0755',
+      require => Package['unbound'];
 
     '/etc/unbound/conf.d/placeholder':
       ensure  => present,
