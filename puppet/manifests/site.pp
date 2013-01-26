@@ -29,4 +29,8 @@ node 'default' {
   if 'ca' in $services {
     include site_ca_daemon
   }
+
+  if 'monitoring' in $services {
+    include site_nagios::server
+  }
 }
