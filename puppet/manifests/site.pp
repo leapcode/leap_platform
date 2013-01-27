@@ -6,8 +6,13 @@ node 'default' {
   import 'common'
   include concat::setup
 
-  # include some basic classes
-  include site_config
+  $development = hiera('development')
+  if $development['site_config'] == true {
+    # include some basic classes
+    include site_config
+  } else {
+    notice ('NOT applying site_config') 
+  }
 
   # parse services for host
   $services=hiera_array('services')
@@ -30,7 +35,7 @@ node 'default' {
     include site_ca_daemon
   }
 
-  if 'monitoring' in $services {
+  if 'monitor' in $services {
     include site_nagios::server
   }
 }
