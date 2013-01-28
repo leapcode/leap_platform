@@ -43,11 +43,11 @@ PARAM   -       -       udp     1194
 
   shorewall::masq { "${interface}_tcp":
     interface => $interface,
-    source    => "$site_openvpn::openvpn_tcp_network_prefix.0/$site_openvpn::openvpn_tcp_cidr"; }
+    source    => "${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr}"; }
 
   shorewall::masq { "${interface}_udp":
     interface => $interface,
-    source    => "$site_openvpn::openvpn_udp_network_prefix.0/$site_openvpn::openvpn_udp_cidr"; }
+    source    => "${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr}"; }
 
   shorewall::policy {
     'eip-to-all':
