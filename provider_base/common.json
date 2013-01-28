@@ -24,5 +24,9 @@
     "key": "= x509.use ? file(:node_x509_key, :missing => 'x509 key for node $node. Run `leap cert update`') : nil",
     "ca_cert": "= try_file :ca_cert"
   },
-  "local": false
+  "local": false,
+  "service_type": "internal_service",
+  "development": {
+    "site_config": true 
+  }
 }

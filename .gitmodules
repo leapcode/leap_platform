@@ -61,3 +61,6 @@
 [submodule "puppet/modules/unbound"]
 	path = puppet/modules/unbound
 	url = git://code.leap.se/puppet_unbound
+[submodule "puppet/modules/nagios"]
+	path = puppet/modules/nagios
+	url = git://code.leap.se/puppet_nagios
