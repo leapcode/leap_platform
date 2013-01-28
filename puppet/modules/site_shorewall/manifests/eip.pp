@@ -5,7 +5,8 @@ class site_shorewall::eip {
 
   include site_shorewall::defaults
 
-  $interface      = hiera('interface')
+  $ip_address     = hiera('ip_address')
+  $interface      = getvar("$::{ip_address}_interface")
   $ssh_config     = hiera('ssh')
   $ssh_port       = $ssh_config['port']
   $openvpn_config = hiera('openvpn')
