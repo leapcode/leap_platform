@@ -1,22 +1,22 @@
-define site_nagios::add_service ($host, $ip, $service) {
-
-  notice ('$name $host $ip $service')
+define site_nagios::add_service ($hostname, $ip_address, $service) {
 
   case $service {
     'openvpn': {
-      $check_command       = 'check_openvpn!...'
+      $check_command       = 'check_openvpn'
       $service_description = 'Openvpn'
     }
     'webapp': {
-      $check_command       = 'check_http!...'
+      $check_command       = 'check_http'
       $service_description = 'Website'
     }
-    default:  { fail ('unknown service') }
+  default:  { notice ("No Nagios service check for service \"$service\"") }
   }
 
-  nagios_service { $name:
-    use                 => 'generic-service',
-    check_command       => $check_command,
-    service_description => $service_description,
-    host_name           => $host }
+  if ( $check_command != '' ) {
+    nagios_service { $name:
+      use                 => 'generic-service',
+      check_command       => $check_command,
+      service_description => $service_description,
+      host_name           => $hostname }
+  }
 }

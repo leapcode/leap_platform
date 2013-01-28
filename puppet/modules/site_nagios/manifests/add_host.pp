@@ -1,30 +1,29 @@
-define site_nagios::add_host ($ip, $services='' ) {
+define site_nagios::add_host {
+  $nagios_host     = $name
+  $nagios_hostname = $name['domain_full']
+  $nagios_ip       = $name['ip_address']
+  $nagios_services = $name['services']
 
-  $nagios_hostname = $name
-
-  #notice ("$nagios_hostname $ip $services")
-
+  # Add Nagios host
   nagios_host { $nagios_hostname:
-    address => $ip,
+    address => $nagios_ip,
     use     => 'generic-host',
   }
 
-  # turn serice array into hash
-  # https://github.com/ashak/puppet-resource-looping
+  # Add Nagios service
+
+  # First, we need to turn the serice array into hash, using a "hash template"
+  # see https://github.com/ashak/puppet-resource-looping
   $nagios_service_hashpart = {
-    'host' => $nagios_hostname,
-    'ip'   => $ip,
+    'hostname'   => $nagios_hostname,
+    'ip_address' => $nagios_ip,
   }
   $dynamic_parameters = {
     'service' => '%s'
   }
-
-  #$nagios_services = ['one', 'two']
   $nagios_servicename = "${nagios_hostname}_%s"
 
-  $nagios_service_hash = create_resources_hash_from($nagios_servicename, $services, $nagios_service_hashpart, $dynamic_parameters)
-  #notice ($created_resource_hash)
-
+  $nagios_service_hash = create_resources_hash_from($nagios_servicename, $nagios_services, $nagios_service_hashpart, $dynamic_parameters)
 
   create_resources ( site_nagios::add_service, $nagios_service_hash )
 }

@@ -13,6 +13,5 @@ class site_nagios::server {
     #before             => Class ['nagios::defaults']
   }
 
-  create_resources ( site_nagios::add_host, $hosts)
-
+  site_nagios::add_host {$hosts:}
 }
