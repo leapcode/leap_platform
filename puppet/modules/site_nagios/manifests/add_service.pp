@@ -6,7 +6,7 @@ define site_nagios::add_service ($hostname, $ip_address, $service) {
     #  $service_description = 'Openvpn'
     #}
     'webapp': {
-      $check_command       = 'check_http'
+      $check_command       = 'check_https'
       $service_description = 'Website'
     }
   default:  { notice ("No Nagios service check for service \"$service\"") }
