@@ -1,10 +1,10 @@
 define site_nagios::add_service ($hostname, $ip_address, $service) {
 
   case $service {
-    'openvpn': {
-      $check_command       = "check_openvpn_server_ip_port!$ip_address!1194"
-      $service_description = 'Openvpn'
-    }
+    #'openvpn': {
+    #  $check_command       = "check_openvpn_server_ip_port!$ip_address!1194"
+    #  $service_description = 'Openvpn'
+    #}
     'webapp': {
       $check_command       = 'check_http'
       $service_description = 'Website'
