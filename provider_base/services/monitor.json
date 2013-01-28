@@ -1,0 +1,6 @@
+{
+  "nagios": {
+    "nagiosadmin_pw": "= secret :nagios_admin_password",
+    "hosts": "= nodes['production' => true].fields('domain.full', 'ip_address', 'services')"
+  }
+}
