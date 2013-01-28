@@ -13,5 +13,13 @@ class site_nagios::server {
     #before             => Class ['nagios::defaults']
   }
 
+  # deploy serverside plugins
+  file { '/usr/lib/nagios/plugins/check_openvpn_server.pl':
+    source => 'puppet:///modules/nagios/plugins/check_openvpn_server.pl',
+    mode   => '0755',
+    owner  => 'nagios',
+    group  => 'nagios',
+  }
+
   site_nagios::add_host {$hosts:}
 }
