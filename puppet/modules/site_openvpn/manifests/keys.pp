@@ -13,6 +13,12 @@ class site_openvpn::keys {
   }
 
   x509::ca {
+    'leap_client_ca':
+      content => $site_openvpn::x509_config['client_ca_cert'],
+      notify  => Service[openvpn];
+  }
+
+  x509::ca {
     'leap_openvpn':
       content => $site_openvpn::x509_config['ca_cert'],
       notify  => Service[openvpn];
