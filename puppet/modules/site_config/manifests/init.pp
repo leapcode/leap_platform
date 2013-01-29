@@ -17,12 +17,8 @@ class site_config {
 
   # configure caching, local resolver
   include site_config::caching_resolver
-  
-  # configure /etc/hosts
-  stage { 'initial':
-    before => Stage['main'],
-  }
 
+  # configure /etc/hosts
   class { 'site_config::hosts':
     stage => initial,
   }

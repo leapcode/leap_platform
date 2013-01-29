@@ -1,6 +1,10 @@
 # set a default exec path
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
+stage { 'initial':
+  before => Stage['main'],
+}
+
 node 'default' {
   # prerequisites
   import 'common'
@@ -11,7 +15,7 @@ node 'default' {
     # include some basic classes
     include site_config
   } else {
-    notice ('NOT applying site_config') 
+    notice ('NOT applying site_config')
   }
 
   # parse services for host
