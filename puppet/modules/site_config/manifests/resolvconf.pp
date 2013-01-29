@@ -11,7 +11,7 @@ class site_config::resolvconf {
     ensure => absent;
   }
 
-  $domain_public = $domain_hash['full_suffix']
+  $domain_public = $site_config::domain_hash['full_suffix']
 
   # 127.0.0.1:      caching-only local bind
   # 87.118.100.175: http://server.privacyfoundation.de
