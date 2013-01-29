@@ -8,7 +8,7 @@ class site_shorewall::eip {
   $ip_address     = hiera('ip_address')
   # a special case for vagrant interfaces
   $interface      = $::virtual ? {
-    virtualbox => ['eth0', 'eth1'],
+    virtualbox => [ 'eth0', 'eth1' ],
     default    => getvar("${ip_address}_interface")
   }
   $ssh_config     = hiera('ssh')
@@ -30,28 +30,42 @@ PARAM   -       -       udp     1194
     options   => 'tcpflags,blacklist,nosmurfs';
   }
 
-  shorewall::interface    {'tun0':
-    zone    => 'eip',
-    options => 'tcpflags,blacklist,nosmurfs'; }
-  shorewall::interface    {'tun1':
-    zone    => 'eip',
-    options => 'tcpflags,blacklist,nosmurfs'; }
+  shorewall::interface {
+    'tun0':
+      zone    => 'eip',
+      options => 'tcpflags,blacklist,nosmurfs';
+    'tun1':
+      zone    => 'eip',
+      options => 'tcpflags,blacklist,nosmurfs'
+  }
 
 
   shorewall::zone         {'eip':
     type => 'ipv4'; }
 
-  shorewall::routestopped { $interface:
-    interface => $interface; }
+  shorewall::routestopped { $interface: }
 
+  case $::virtual {
+    'virtualbox': {
+      shorewall::masq {
+        'eth0_tcp':
+          interface => 'eth0',
+          source    => "${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr}";
+        'eth0_udp':
+          interface => 'eth0',
+          source    => "${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr}"; }
+    }
+    default: {
+      shorewall::masq {
+        "${interface}_tcp":
+          interface => $interface,
+          source    => "${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr}";
 
-  shorewall::masq { "${interface}_tcp":
-    interface => $interface,
-    source    => "${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr}"; }
-
-  shorewall::masq { "${interface}_udp":
-    interface => $interface,
-    source    => "${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr}"; }
+        "${interface}_udp":
+          interface => $interface,
+          source    => "${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr}"; }
+    }
+  }
 
   shorewall::policy {
     'eip-to-all':
