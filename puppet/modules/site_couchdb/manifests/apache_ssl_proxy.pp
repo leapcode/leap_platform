@@ -12,13 +12,13 @@ define site_couchdb::apache_ssl_proxy ($key, $cert) {
 
   x509::key {
     'leap_couchdb':
-      content => $x509['key'],
+      content => $key,
       notify  => Service[apache];
   }
 
   x509::cert {
     'leap_couchdb':
-      content => $x509['cert'],
+      content => $cert,
       notify  => Service[apache];
   }
 
