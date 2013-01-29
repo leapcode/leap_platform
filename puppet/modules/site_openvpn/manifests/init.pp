@@ -21,14 +21,14 @@ class site_openvpn {
     port        => '1194',
     proto       => 'tcp',
     local       => $openvpn_gateway_address,
-    server      => "${openvpn_tcp_network_prefix.0} ${openvpn_tcp_netmask}",
+    server      => "${openvpn_tcp_network_prefix}.0 ${openvpn_tcp_netmask}",
     push        => "\"dhcp-option DNS ${openvpn_tcp_network_prefix}.1\"",
     management  => '127.0.0.1 1000'
   }
   site_openvpn::server_config { 'udp_config':
     port        => '1194',
     proto       => 'udp',
-    server      => "${openvpn_udp_network_prefix.0} ${openvpn_udp_netmask}",
+    server      => "${openvpn_udp_network_prefix}.0 ${openvpn_udp_netmask}",
     push        => "\"dhcp-option DNS ${openvpn_udp_network_prefix}.1\"",
     local       => $openvpn_gateway_address,
     management  => '127.0.0.1 1001'
