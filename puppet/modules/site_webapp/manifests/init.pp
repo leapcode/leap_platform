@@ -84,10 +84,14 @@ class site_webapp {
     '/srv/leap-webapp/app/assets/stylesheets/head.scss':
       ensure => 'link',
       target => $webapp['head_scss'];
+  }
 
-    '/srv/leap-webapp/public/img':
-       ensure => 'link',
-       target => $webapp['img_dir'];
+  if $webapp['img_dir'] != undef {
+    file {
+      '/srv/leap-webapp/public/img':
+        ensure => 'link',
+        target => $webapp['img_dir'];
+    }
   }
 
   file {
