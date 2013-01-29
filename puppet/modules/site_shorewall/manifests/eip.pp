@@ -9,7 +9,7 @@ class site_shorewall::eip {
   # a special case for vagrant interfaces
   $interface      = $::virtual ? {
     virtualbox => [ 'eth0', 'eth1' ],
-    default    => getvar("${ip_address}_interface")
+    default    => getvar("interface_${ip_address}")
   }
   $ssh_config     = hiera('ssh')
   $ssh_port       = $ssh_config['port']

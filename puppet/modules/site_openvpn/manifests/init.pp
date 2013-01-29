@@ -1,7 +1,7 @@
 class site_openvpn {
   # parse hiera config
   $ip_address                 = hiera('ip_address')
-  $interface                  = getvar("${ip_address}_interface")
+  $interface                  = getvar("interface_${ip_address}")
   #$gateway_address           = hiera('gateway_address')
   $openvpn_config             = hiera('openvpn')
   $openvpn_gateway_address    = $openvpn_config['gateway_address']
