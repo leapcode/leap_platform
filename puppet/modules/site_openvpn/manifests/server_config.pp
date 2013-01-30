@@ -143,7 +143,7 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push, $mana
         server => $openvpn_configname;
     "server $openvpn_configname":
         key    => 'server',
-        value  => "$server",
+        value  => $server,
         server => $openvpn_configname;
     "status $openvpn_configname":
         key    => 'status',
