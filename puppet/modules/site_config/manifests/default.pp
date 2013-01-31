@@ -25,4 +25,7 @@ class site_config::default {
     stage => initial,
   }
 
+  package { [ 'etckeeper' ]:
+    ensure => installed,
+  }
 }
