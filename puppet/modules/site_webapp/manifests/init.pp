@@ -1,5 +1,5 @@
 class site_webapp {
-  tag 'service'
+  tag 'leap_service'
   $definition_files = hiera('definition_files')
   $provider         = $definition_files['provider']
   $eip_service      = $definition_files['eip_service']

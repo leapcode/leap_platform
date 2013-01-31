@@ -1,5 +1,5 @@
 class site_config::default {
-  tag 'base'
+  tag 'leap_base'
 
   $domain_hash = hiera('domain')
 

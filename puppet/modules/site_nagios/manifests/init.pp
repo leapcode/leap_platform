@@ -1,4 +1,4 @@
 class site_nagios  {
-  tag 'service'
+  tag 'leap_service'
   include site_nagios::server
 }

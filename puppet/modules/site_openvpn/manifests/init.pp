@@ -1,5 +1,5 @@
 class site_openvpn {
-  tag 'service'
+  tag 'leap_service'
   # parse hiera config
   $ip_address                 = hiera('ip_address')
   $interface                  = getvar("interface_${ip_address}")
