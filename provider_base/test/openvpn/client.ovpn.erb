@@ -9,10 +9,8 @@ auth SHA1
 cipher AES-128-CBC
 tls-cipher DHE-RSA-AES128-SHA
 
-<% manager.services['openvpn'].node_list.each_node do |node| -%>
-<%   unless node.local -%>
-<%=   "remote #{node.openvpn.gateway_address} 1194 udp"%>
-<%   end -%>
+<% vpn_nodes.each_node do |node| -%>
+<%=  "remote #{node.openvpn.gateway_address} 1194 udp"%>
 <% end -%>
 
 <ca>
