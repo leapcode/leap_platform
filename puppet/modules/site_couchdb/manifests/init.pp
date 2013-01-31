@@ -1,5 +1,5 @@
 class site_couchdb {
-
+  tag 'service'
   include couchdb
 
   $x509                   = hiera('x509')

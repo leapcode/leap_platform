@@ -1,4 +1,6 @@
-class site_config {
+class site_config::default {
+  tag 'base'
+
   $domain_hash = hiera('domain')
 
   # default class, used by all hosts
@@ -23,7 +25,4 @@ class site_config {
     stage => initial,
   }
 
-  class { 'site_apt::dist_upgrade':
-    stage => initial,
-  }
 }
