@@ -33,5 +33,5 @@ if 'ca' in $services {
 }
 
 if 'monitor' in $services {
-  include site_nagios::server
+  include site_nagios
 }
