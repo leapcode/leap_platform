@@ -5,41 +5,33 @@ stage { 'initial':
   before => Stage['main'],
 }
 
-node 'default' {
-  # prerequisites
-  import 'common'
-  include concat::setup
+# prerequisites
+import 'common'
+include concat::setup
+include site_config::default
+include site_config::slow
 
-  $development = hiera('development')
-  if $development['site_config'] == true {
-    # include some basic classes
-    include site_config
-  } else {
-    notice ('NOT applying site_config')
-  }
+# parse services for host
+$services=hiera_array('services')
+notice("Services for ${fqdn}: ${services}")
 
-  # parse services for host
-  $services=hiera_array('services')
-  notice("Services for $fqdn: $services")
+# configure eip
+if 'openvpn' in $services {
+  include site_openvpn
+}
 
-  # configure eip
-  if 'openvpn' in $services {
-    include site_openvpn
-  }
+if 'couchdb' in $services {
+  include site_couchdb
+}
 
-  if 'couchdb' in $services {
-    include site_couchdb
-  }
+if 'webapp' in $services {
+  include site_webapp
+}
 
-  if 'webapp' in $services {
-    include site_webapp
-  }
+if 'ca' in $services {
+  include site_ca_daemon
+}
 
-  if 'ca' in $services {
-    include site_ca_daemon
-  }
-
-  if 'monitor' in $services {
-    include site_nagios::server
-  }
+if 'monitor' in $services {
+  include site_nagios::server
 }

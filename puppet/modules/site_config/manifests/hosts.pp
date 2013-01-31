@@ -3,7 +3,7 @@ class site_config::hosts() {
   $hosts = hiera('hosts','')
   $hostname = hiera('name')
 
-  $domain_public = $site_config::domain_hash['full_suffix']
+  $domain_public = $site_config::default::domain_hash['full_suffix']
 
   file { "/etc/hostname":
     ensure => present,
