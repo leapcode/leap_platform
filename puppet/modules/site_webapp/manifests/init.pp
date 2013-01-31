@@ -27,6 +27,7 @@ class site_webapp {
     ensure    => present,
     allowdupe => false,
     gid       => 'leap-webapp',
+    groups    => 'ssl-cert',
     home      => '/srv/leap-webapp',
     require   => [ Group['leap-webapp'] ];
   }

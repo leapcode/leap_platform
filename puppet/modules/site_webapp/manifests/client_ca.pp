@@ -13,6 +13,7 @@ class site_webapp::client_ca {
   x509::key {
     'leap_client_ca':
       source => $x509['client_ca_key'],
+      group  => 'leap-webapp',
       notify  => Service[apache];
   }
 
