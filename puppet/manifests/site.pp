@@ -5,9 +5,7 @@ stage { 'initial':
   before => Stage['main'],
 }
 
-# prerequisites
 import 'common'
-include concat::setup
 include site_config::default
 include site_config::slow
 

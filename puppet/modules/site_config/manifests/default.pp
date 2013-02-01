@@ -3,6 +3,8 @@ class site_config::default {
 
   $domain_hash = hiera('domain')
 
+  include concat::setup
+
   # default class, used by all hosts
 
   include lsb, git
