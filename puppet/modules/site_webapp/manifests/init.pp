@@ -54,6 +54,7 @@ class site_webapp {
     cwd     => '/srv/leap-webapp',
     command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install"',
     unless  => '/usr/bin/bundle check',
+    timeout => 600,
     require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ];
   }
 
