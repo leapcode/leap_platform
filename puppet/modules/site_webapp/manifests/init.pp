@@ -55,7 +55,15 @@ class site_webapp {
     command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install"',
     unless  => '/usr/bin/bundle check',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ];
+    require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ],
+    notify  => Service['apache'];
+  }
+
+  exec { 'compile_assets':
+    cwd     => '/srv/leap-webapp',
+    command => '/bin/bash -c "/usr/bin/bundle exec rake assets:precompile"',
+    require => Exec['bundler_update'],
+    notify  => Service['apache'];
   }
 
   file {
