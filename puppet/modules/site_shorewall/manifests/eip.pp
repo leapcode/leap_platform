@@ -58,11 +58,6 @@ PARAM   -       -       udp     1194
       destinationzone => 'all',
       policy          => 'ACCEPT',
       order           => 100;
-    'fw-to-all':
-      sourcezone      => '$FW',
-      destinationzone => 'all',
-      policy          => 'ACCEPT',
-      order           => 100;
   }
 
   shorewall::rule {
