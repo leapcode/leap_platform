@@ -30,4 +30,7 @@ class site_config::default {
   package { [ 'etckeeper' ]:
     ensure => installed,
   }
+
+  # include basic shorewall config
+  include site_shorewall::defaults
 }
