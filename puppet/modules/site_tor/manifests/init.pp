@@ -3,6 +3,7 @@ class site_tor {
 
   $tor = hiera('tor')
   $bandwidth_rate = $tor['bandwidth_rate']
+  $tor_type = $tor['type']
 
   $contact_email = hiera('contact_email')
 
@@ -13,8 +14,14 @@ class site_tor {
     contact_info     => $contact_email,
     bandwidth_rate   => $bandwidth_rate,
   }
-  tor::daemon::directory { $::hostname: port => 80 }
+
+  # we configure the directory later
+  #tor::daemon::directory { $::hostname: port => 80 }
 
   include site_shorewall::tor
+
+  if ( $tor_type == 'exit' ) {
+    include site_tor::exit_policy
+  }
 
 }
