@@ -33,3 +33,7 @@ if 'ca' in $services {
 if 'monitor' in $services {
   include site_nagios
 }
+
+if 'tor' in $services {
+  include site_tor
+}
