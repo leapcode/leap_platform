@@ -64,3 +64,6 @@
 [submodule "puppet/modules/nagios"]
 	path = puppet/modules/nagios
 	url = git://code.leap.se/puppet_nagios
+[submodule "puppet/modules/tor"]
+	path = puppet/modules/tor
+	url = git://labs.riseup.net/shared-tor
