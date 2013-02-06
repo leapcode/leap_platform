@@ -2,14 +2,9 @@ define site_nagios::add_service (
   $hostname, $ip_address, $openvpn_gw = '', $service) {
 
   case $service {
-    # don't deploy until we fix 1546
-    'openvpn': {
-      $check_command       = "check_openvpn_server_ip_port!$openvpn_gw!1194"
-      $service_description = 'Openvpn'
-    }
     'webapp': {
-      $check_command       = 'check_https'
-      $service_description = 'Website'
+      $check_command       = 'check_https_cert'
+      $service_description = 'Website Certificate'
     }
     default:  {
       #notice ("No Nagios service check for service \"$service\"")
