@@ -112,4 +112,6 @@ class site_webapp {
       mode    => '0600';
   }
 
+  include site_shorewall::webapp
+
 }
