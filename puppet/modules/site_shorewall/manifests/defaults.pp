@@ -29,6 +29,11 @@ class site_shorewall::defaults {
   shorewall::routestopped { $interface: }
 
   shorewall::policy {
+    'fw-to-all':
+      sourcezone      => 'fw',
+      destinationzone => 'all',
+      policy          => 'ACCEPT',
+      order           => 100;
     'all-to-all':
       sourcezone      => 'all',
       destinationzone => 'all',
@@ -42,23 +47,6 @@ class site_shorewall::defaults {
         source      => 'all',
         destination => 'all',
         action      => 'Ping(ACCEPT)',
-        order       => 200;
-
-      # server to outside
-      'fw2all-http':
-        source      => '$FW',
-        destination => 'all',
-        action      => 'HTTP(ACCEPT)',
-        order       => 200;
-      'fw2all-DNS':
-        source      => '$FW',
-        destination => 'all',
-        action      => 'DNS(ACCEPT)',
-        order       => 200;
-      'fw2all-git':
-        source      => '$FW',
-        destination => 'all',
-        action      => 'Git(ACCEPT)',
         order       => 200;
   }
 
