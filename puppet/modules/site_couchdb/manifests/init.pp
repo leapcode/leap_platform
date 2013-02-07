@@ -59,4 +59,6 @@ class site_couchdb {
   couchdb::create_db { 'client_certificates':
     readers => "{ \"names\": [], \"roles\": [\"certs\"] }"
   }
+
+  include site_shorewall::couchdb
 }
