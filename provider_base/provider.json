@@ -1,11 +1,14 @@
 {
   "domain": "REQUIRED",
-  "internal_domain": "= domain.sub(/\\..*$/,'.i')",
+  "domain_internal": "= domain.sub(/\\..*$/,'.i')",
   "name": {
     "en": "REQUIRED"
   },
   "description": {
     "en": "REQUIRED"
+  },
+  "contacts": {
+    "default": "REQUIRED"
   },
   "languages": ["en"],
   "default_language": "en",
