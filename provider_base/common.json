@@ -25,8 +25,9 @@
     "ca_cert": "= try_file :ca_cert"
   },
   "local": false,
+  "production": false,
   "service_type": "internal_service",
   "development": {
-    "site_config": true 
+    "site_config": true
   }
 }
