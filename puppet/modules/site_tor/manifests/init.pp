@@ -5,8 +5,8 @@ class site_tor {
   $bandwidth_rate = $tor['bandwidth_rate']
   $tor_type       = $tor['type']
   $nickname       = $tor['nickname']
+  $contact_email  = $tor['contacts']
 
-  $contact_email  = hiera('contact_email')
   $address        = hiera('ip_address')
 
   class { 'tor::daemon': }
