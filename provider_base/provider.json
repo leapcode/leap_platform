@@ -26,8 +26,5 @@
       "life_span": "1y"
     }
   },
-  "vagrant":{
-    "network":"10.5.5.0/24"
-  },
   "hiera_sync_destination": "/etc/leap"
 }
