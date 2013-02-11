@@ -82,7 +82,9 @@ class site_webapp {
     '/srv/leap-webapp/public/config/eip-service.json':
       content => $eip_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
+  }
 
+  try::file {
     '/srv/leap-webapp/public/favicon.ico':
       ensure => 'link',
       target => $webapp['favicon'];
@@ -94,14 +96,10 @@ class site_webapp {
     '/srv/leap-webapp/app/assets/stylesheets/head.scss':
       ensure => 'link',
       target => $webapp['head_scss'];
-  }
 
-  if $webapp['img_dir'] != undef {
-    file {
-      '/srv/leap-webapp/public/img':
-        ensure => 'link',
-        target => $webapp['img_dir'];
-    }
+    '/srv/leap-webapp/public/img':
+      ensure => 'link',
+      target => $webapp['img_dir'];
   }
 
   file {
