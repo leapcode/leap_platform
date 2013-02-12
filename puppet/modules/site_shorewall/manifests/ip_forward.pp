@@ -5,6 +5,6 @@ class site_shorewall::ip_forward {
     lens    => 'Shellvars.lns',
     incl    => '/etc/shorewall/shorewall.conf',
     notify  => Service[shorewall],
-    require => Class[augeas];
+    require => [ Class[augeas], Package[shorewall] ];
   }
 }

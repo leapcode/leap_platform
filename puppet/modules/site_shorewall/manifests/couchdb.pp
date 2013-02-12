@@ -7,7 +7,8 @@ class site_shorewall::couchdb {
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_couchdb':
     content => "PARAM   -       -       tcp    $couchdb_port",
-    notify  => Service['shorewall']
+    notify  => Service['shorewall'],
+    require => Package['shorewall']
   }
 
 

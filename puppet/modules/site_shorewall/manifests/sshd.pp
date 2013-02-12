@@ -8,7 +8,8 @@ class site_shorewall::sshd {
   # define macro for incoming sshd
   file { '/etc/shorewall/macro.leap_sshd':
     content => "PARAM   -       -       tcp    $ssh_port",
-    notify  => Service['shorewall']
+    notify  => Service['shorewall'],
+    require => Package['shorewall']
   }
 
 
