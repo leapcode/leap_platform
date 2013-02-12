@@ -2,7 +2,9 @@
   "webapp": {
     "modules": ["user", "billing", "help"],
     "couchdb_hosts": "= hostnames nodes[:services => :couchdb][:local => local]",
-    "couchdb_user": "= global.services[:couchdb].couch.users[:webapp]",
+    # NOTE: this is bad, but pending a fix to https://leap.se/code/issues/1163
+    # before we can use user "webapp"
+    "couchdb_user": "= global.services[:couchdb].couch.users[:admin]",
     "favicon": "= file_path 'branding/favicon.ico'",
     "tail_scss": "= file_path 'branding/tail.scss'",
     "head_scss": "= file_path 'branding/head.scss'",
