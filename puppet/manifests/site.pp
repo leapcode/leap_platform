@@ -1,9 +1,7 @@
 # set a default exec path
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
-stage { 'initial':
-  before => Stage['main'],
-}
+include stdlib
 
 import 'common'
 include site_config::default

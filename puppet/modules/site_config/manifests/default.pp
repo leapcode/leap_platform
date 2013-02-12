@@ -24,7 +24,7 @@ class site_config::default {
 
   # configure /etc/hosts
   class { 'site_config::hosts':
-    stage => initial,
+    stage => setup,
   }
 
   package { [ 'etckeeper' ]:
