@@ -18,11 +18,7 @@ class site_shorewall::tor {
         destination => '$FW',
         action      => 'leap_tor(ACCEPT)',
         order       => 200;
-      'net2fw-http':
-        source      => 'net',
-        destination => '$FW',
-        action      => 'HTTP(ACCEPT)',
-        order       => 200;
   }
 
+  include site_shorewall::service::http
 }
