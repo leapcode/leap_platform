@@ -1,6 +1,10 @@
 # set a default exec path
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
+# make sure apt is updated before any packages are installed
+include apt::update
+Package { require => Exec['apt_updated'] }
+
 include stdlib
 
 import 'common'
