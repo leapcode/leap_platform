@@ -4,7 +4,7 @@ class site_apt::dist_upgrade {
     fail ('apt-get is running in background - Please wait until it finishes. Exiting.')
   } else {
     exec{'initial_apt_update':
-      command     => '/usr/bin/apt-get update && /usr/bin/apt-get  autoclean',
+      command     => '/usr/bin/apt-get update',
       refreshonly => false,
     }
     exec{'initial_apt_dist_upgrade':
