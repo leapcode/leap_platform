@@ -1,0 +1,6 @@
+{
+  "nagios": {
+    "nagiosadmin_pw": "= secret :nagios_admin_password",
+    "hosts": "= nodes_like_me.fields('domain.internal', 'ip_address', 'services', 'openvpn.gateway_address')"
+  }
+}

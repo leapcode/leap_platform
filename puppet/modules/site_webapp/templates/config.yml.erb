@@ -1,0 +1,5 @@
+production:
+  admins: [admin]
+  domain: <%= @provider_domain %>
+  client_ca_key: <%= scope.lookupvar('site_webapp::client_ca::key_path') %>
+  client_ca_cert: <%= scope.lookupvar('site_webapp::client_ca::cert_path') %>

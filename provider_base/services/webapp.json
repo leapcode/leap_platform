@@ -1,0 +1,34 @@
+{
+  "webapp": {
+    "modules": ["user", "billing", "help"],
+    "couchdb_hosts": "= hostnames nodes[:services => :couchdb][:local => local]",
+    # NOTE: this is bad, but pending a fix to https://leap.se/code/issues/1163
+    # before we can use user "webapp"
+    "couchdb_user": "= global.services[:couchdb].couch.users[:admin]",
+    "favicon": "= file_path 'branding/favicon.ico'",
+    "tail_scss": "= file_path 'branding/tail.scss'",
+    "head_scss": "= file_path 'branding/head.scss'",
+    "img_dir": "= file_path 'branding/img'"
+  },
+  "definition_files": {
+    "provider": "= file :provider_json_template",
+    "eip_service": "= file :eip_service_json_template"
+  },
+  "service_type": "public_service",
+  "api": {
+    "domain": "= 'api.' + domain.full_suffix",
+    "port": "4430"
+  },
+  "dns": {
+    "aliases": "= [domain.full, api.domain]"
+  },
+  "x509": {
+    "use": true,
+    "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
+    "client_ca_cert": "= file_path :client_ca_cert",
+    "client_ca_key": "= file_path :client_ca_key",
+    "commercial_cert": "= file [:commercial_cert, global.provider.domain]",
+    "commercial_key": "= file [:commercial_key, global.provider.domain]",
+    "commercial_ca_cert": "= try_file :commercial_ca_cert"
+  }
+}

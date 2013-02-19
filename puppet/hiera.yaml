@@ -1,0 +1,15 @@
+---
+:backends:
+  - yaml
+  - puppet
+
+:logger: console
+
+:yaml:
+   :datadir: /etc/leap 
+
+:hierarchy:
+  - hiera
+ 
+:puppet:
+   :datasource: data

@@ -1,0 +1,3 @@
+# basic
+deb http://ftp.debian.org/debian/ <%= lsbdistcodename %> main contrib non-free
+

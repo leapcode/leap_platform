@@ -1,0 +1,9 @@
+This directory holds the base provider files that actual providers inherit from.
+
+For example:
+
+  the file........ myproject/provider/common.json
+  inherits from... myproject/leap_platform/provider_base/common.json
+
+
+  

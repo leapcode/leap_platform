@@ -1,0 +1,6 @@
+{
+  "tor": {
+    "bandwidth_rate": 6550,
+    "contacts": "= global.provider.contacts['tor'] || global.provider.contacts.default"
+  }
+}
