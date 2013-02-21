@@ -57,7 +57,7 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push, $mana
   $openvpn_configname = $name
 
   concat {
-    "/etc/openvpn/$openvpn_configname.conf":
+    "/etc/openvpn/${openvpn_configname}.conf":
         owner   => root,
         group   => root,
         mode    => 644,
