@@ -23,13 +23,17 @@ class site_openvpn::resolver {
   file {
     '/etc/unbound/conf.d/vpn_udp_resolver':
       content => "interface: ${site_openvpn::openvpn_udp_network_prefix}.1\naccess-control: ${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr} allow\n",
-      owner   => root, group => root, mode => '0644',
+      owner   => root,
+      group   => root,
+      mode    => '0644',
       require => Service['openvpn'],
       notify  => Service['unbound'];
 
     '/etc/unbound/conf.d/vpn_tcp_resolver':
       content => "interface: ${site_openvpn::openvpn_tcp_network_prefix}.1\naccess-control: ${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr} allow\n",
-      owner   => root, group => root, mode => '0644',
+      owner   => root,
+      group   => root,
+      mode    => '0644',
       require => Service['openvpn'],
       notify  => Service['unbound'];
   }
