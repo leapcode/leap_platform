@@ -38,7 +38,7 @@ class site_openvpn {
   # add second IP on given interface
   file { '/usr/local/bin/leap_add_second_ip.sh':
     content => "#!/bin/sh
-ip addr show dev $interface | grep -q ${openvpn_gateway_address}/24 || ip addr add ${openvpn_gateway_address}/24 dev $interface
+ip addr show dev ${interface} | grep -q ${openvpn_gateway_address}/24 || ip addr add ${openvpn_gateway_address}/24 dev ${interface}
 /bin/echo 1 > /proc/sys/net/ipv4/ip_forward
 ",
     mode    => '0755',
@@ -49,7 +49,7 @@ ip addr show dev $interface | grep -q ${openvpn_gateway_address}/24 || ip addr a
   }
 
   cron { 'leap_add_second_ip.sh':
-    command => "/usr/local/bin/leap_add_second_ip.sh",
+    command => '/usr/local/bin/leap_add_second_ip.sh',
     user    => 'root',
     special => 'reboot',
   }
