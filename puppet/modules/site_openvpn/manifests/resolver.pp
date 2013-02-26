@@ -8,16 +8,18 @@ class site_openvpn::resolver {
 
   line {
     'add_tcp_resolver':
-      ensure => present,
-      file   => '/etc/unbound/unbound.conf',
-      line   => 'server: include: /etc/unbound/conf.d/vpn_tcp_resolver',
-      notify => Service['unbound'];
+      ensure  => present,
+      file    => '/etc/unbound/unbound.conf',
+      line    => 'server: include: /etc/unbound/conf.d/vpn_tcp_resolver',
+      notify  => Service['unbound'],
+      require => Package['unbound'];
 
     'add_udp_resolver':
-      ensure => present,
-      file   => '/etc/unbound/unbound.conf',
-      line   => 'server: include: /etc/unbound/conf.d/vpn_udp_resolver',
-      notify => Service['unbound'];
+      ensure  => present,
+      file    => '/etc/unbound/unbound.conf',
+      line    => 'server: include: /etc/unbound/conf.d/vpn_udp_resolver',
+      notify  => Service['unbound'],
+      require => Package['unbound']
   }
 
   file {
