@@ -12,7 +12,8 @@ class site_shorewall::eip {
     content => "PARAM   -       -       tcp     1194
 PARAM   -       -       udp     1194
 ",
-    notify  => Service['shorewall']
+    notify  => Service['shorewall'],
+    require => Package['shorewall']
   }
 
 
