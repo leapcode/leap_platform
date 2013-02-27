@@ -22,9 +22,8 @@ For a minimal test or develop install we recommend a fairly recent computer x86_
 You could use Vagrant or KVM to simulate a live deployment.
 
 For a live deployment of the platform the amount of required (virtual) servers depends on your needs and which services you want to deploy. 
-In it's initial release you can deploy Tor, OpenVPN, CouchDB and a webapp to administer your users (billing, help tickets,...).
+In it's initial release you can deploy Tor, OpenVPN, CouchDB and a webapp to administer your users (billing, help tickets,…).
 While you can deploy all services on one server, we stronly recommend to use seperate servers for better security.
-
 
 Usage
 =====
@@ -60,7 +59,7 @@ Read LICENSE
 Known bugs
 ----------
 
-* currently none known, there will probably be some around !
+* currently none known, there will probably be some around!
 
 Troubleshooting
 ---------------
