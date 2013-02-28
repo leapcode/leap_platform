@@ -1,0 +1,11 @@
+#!/bin/sh
+
+ip addr show dev <%= @interface %> | grep -q <%= @openvpn_gateway_address %>/24 ||
+  ip addr add <%= @openvpn_gateway_address %>/24 dev <%= @interface %>
+
+<% if @openvpn_allow_free %>
+ip addr show dev <%= @interface %> | grep -q <%= @openvpn_free_gateway_address %>/24 ||
+  ip addr add <%= @openvpn_free_gateway_address %>/24 dev <%= @interface %>
+<% end %>
+
+/bin/echo 1 > /proc/sys/net/ipv4/ip_forward

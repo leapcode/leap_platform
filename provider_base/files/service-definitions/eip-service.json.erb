@@ -6,21 +6,34 @@
     words
   end
 
+  def gateway_definition(node)
+    gateway = {}
+    gateway["capabilities"] = node.openvpn.pick(:ports, :protocols, :user_ips, :adblock, :filter_dns)
+    gateway["capabilities"]["transport"] = ["openvpn"]
+    gateway["host"] = node.domain.full
+    gateway["cluster"] = underscore(node.openvpn.location)
+    gateway
+  end
+
   hsh = {}
   hsh["serial"] = 1
   hsh["version"] = 1
   clusters = {}
   gateways = []
-  global.services['openvpn'].node_list.each_node do |node|
-    next if node.vagrant?
-    gateway = {}
-    gateway["capabilities"] = node.openvpn.pick(
-      :ports, :protocols, :user_ips, :adblock, :filter_dns)
-    gateway["capabilities"]["transport"] = ["openvpn"]
-    gateway["ip_address"] = node.openvpn.gateway_address
-    gateway["host"] = node.domain.full
-    gateway["cluster"] = underscore(node.openvpn.location)
-    gateways << gateway
+  nodes_like_me[:services => 'openvpn'].each_node do |node|
+    if node.openvpn.gateway_address
+      gateway = gateway_definition(node)
+      gateway["ip_address"] = node.openvpn.gateway_address
+      gateway["capabilities"]["free"] = false
+      gateways << gateway
+    end
+    if node.openvpn.free_gateway_address && node.openvpn.free_gateway_address != "REQUIRED"
+      gateway = gateway_definition(node)
+      gateway["ip_address"] = node.openvpn.free_gateway_address
+      gateway["capabilities"]["free"] = true
+      gateway["capabilities"]["rate_limit"] = node.openvpn.free_rate_limit
+      gateways << gateway
+    end
     clusters[gateway["cluster"]] ||= {
       "name" => gateway["cluster"],
       "label" => {"en" => node.openvpn.location}

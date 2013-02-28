@@ -7,10 +7,15 @@
   },
   "openvpn": {
     "location": "Location Unknown",
+    "gateway_address": "REQUIRED",
+    "free_gateway_address": "= openvpn.allow_free ? 'REQUIRED' : nil",
     "ports": ["80", "443", "53", "1194"],
     "protocols": ["tcp", "udp"],
     "filter_dns": false,
     "adblock": false,
-    "user_ips": false
+    "user_ips": false,
+    "allow_free": "= global.provider.service_allow_free",
+    "free_prefix": "= global.provider.ca.client_certificates.free_prefix",
+    "free_rate_limit": "= openvpn.allow_free ? global.provider.service_levels.detect{|level| level['name'] == 'free'}['bandwidth'] : nil"
   }
 }

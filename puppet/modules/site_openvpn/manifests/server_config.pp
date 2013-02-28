@@ -52,7 +52,9 @@
 #   note: the default is BF-CBC (blowfish)
 #
 
-define site_openvpn::server_config ($port, $proto, $local, $server, $push, $management ) {
+define site_openvpn::server_config(
+  $port, $proto, $local, $server, $push,
+  $management, $tls_remote = undef, $shaper = undef) {
 
   $openvpn_configname = $name
 
@@ -64,6 +66,20 @@ define site_openvpn::server_config ($port, $proto, $local, $server, $push, $mana
         warn    => true,
         require => File['/etc/openvpn'],
         notify  => Service['openvpn'];
+  }
+
+  # special options for the "free" gateway daemons
+  if $shaper != undef {
+    openvpn::option {
+      "shaper $openvpn_configname":
+         key     => 'shaper',
+         value   => $shaper,
+         server  => $openvpn_configname;
+      "tls-remote $openvpn_configname":
+         key     => 'tls-remote',
+         value   => $tls_remote,
+         server  => $openvpn_configname;
+    }
   }
 
   openvpn::option {

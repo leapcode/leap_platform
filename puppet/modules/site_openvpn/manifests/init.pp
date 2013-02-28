@@ -1,9 +1,9 @@
 class site_openvpn {
   tag 'leap_service'
+
   # parse hiera config
   $ip_address                 = hiera('ip_address')
   $interface                  = getvar("interface_${ip_address}")
-  #$gateway_address           = hiera('gateway_address')
   $openvpn_config             = hiera('openvpn')
   $openvpn_gateway_address    = $openvpn_config['gateway_address']
   $openvpn_tcp_network_prefix = '10.1.0'
@@ -12,6 +12,10 @@ class site_openvpn {
   $openvpn_udp_network_prefix = '10.2.0'
   $openvpn_udp_netmask        = '255.255.248.0'
   $openvpn_udp_cidr           = '21'
+  $openvpn_allow_free         = $openvpn_config['allow_free']
+  $openvpn_free_gateway_address = $openvpn_config['free_gateway_address']
+  $openvpn_free_rate_limit    = $openvpn_config['free_rate_limit']
+  $openvpn_free_prefix        = $openvpn_config['free_prefix']
   $x509_config                = hiera('x509')
 
   # deploy ca + server keys
@@ -26,22 +30,47 @@ class site_openvpn {
     push        => "\"dhcp-option DNS ${openvpn_tcp_network_prefix}.1\"",
     management  => '127.0.0.1 1000'
   }
+
   site_openvpn::server_config { 'udp_config':
     port        => '1194',
     proto       => 'udp',
+    local       => $openvpn_gateway_address,
     server      => "${openvpn_udp_network_prefix}.0 ${openvpn_udp_netmask}",
     push        => "\"dhcp-option DNS ${openvpn_udp_network_prefix}.1\"",
-    local       => $openvpn_gateway_address,
     management  => '127.0.0.1 1001'
   }
 
+  if $openvpn_allow_free {
+    site_openvpn::server_config { 'free_tcp_config':
+      port        => '1194',
+      proto       => 'tcp',
+      local       => $openvpn_free_gateway_address,
+      tls_remote  => "\"${openvpn_free_prefix}\"",
+      shaper      => $openvpn_free_rate_limit,
+      server      => "${openvpn_tcp_network_prefix}.0 ${openvpn_tcp_netmask}",
+      push        => "\"dhcp-option DNS ${openvpn_tcp_network_prefix}.1\"",
+      management  => '127.0.0.1 1002'
+    }
+    site_openvpn::server_config { 'free_udp_config':
+      port        => '1194',
+      proto       => 'udp',
+      local       => $openvpn_free_gateway_address,
+      tls_remote  => "\"${openvpn_free_prefix}\"",
+      shaper      => $openvpn_free_rate_limit,
+      server      => "${openvpn_udp_network_prefix}.0 ${openvpn_udp_netmask}",
+      push        => "\"dhcp-option DNS ${openvpn_udp_network_prefix}.1\"",
+      management  => '127.0.0.1 1003'
+    }
+  } else {
+    tidy { "/etc/openvpn/free_tcp_config.conf": }
+    tidy { "/etc/openvpn/free_udp_config.conf": }
+  }
+
   # add second IP on given interface
-  file { '/usr/local/bin/leap_add_second_ip.sh':
-    content => "#!/bin/sh
-ip addr show dev ${interface} | grep -q ${openvpn_gateway_address}/24 || ip addr add ${openvpn_gateway_address}/24 dev ${interface}
-/bin/echo 1 > /proc/sys/net/ipv4/ip_forward
-",
-    mode    => '0755',
+  file {
+    '/usr/local/bin/leap_add_second_ip.sh':
+      content => template('site_openvpn/leap_add_second_ip.sh.erb'),
+      mode    => '0755';
   }
 
   exec { '/usr/local/bin/leap_add_second_ip.sh':

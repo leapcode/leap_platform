@@ -13,6 +13,12 @@
   "languages": ["en"],
   "default_language": "en",
   "enrollment_policy": "open",
+  "service_levels": [
+    {"name": "free", "bandwidth":102400, "storage":50},
+    {"name": "basic", "bandwidth":null, "storage":1000},
+    {"name": "premium", "bandwidth":null, "storage":10000}
+  ],
+  "service_allow_free": false,
   "ca": {
     "name": "= global.provider.ca.organization + ' Root CA'",
     "organization": "= global.provider.name[global.provider.default_language]",
@@ -24,6 +30,12 @@
       "bit_size": 3248,
       "digest": "SHA256",
       "life_span": "1y"
+    },
+    "client_certificates": {
+      "bit_size": 2024,
+      "digest": "SHA256",
+      "life_span": "2m",
+      "free_prefix": "FREE"
     }
   },
   "hiera_sync_destination": "/etc/leap"
