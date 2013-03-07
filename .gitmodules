@@ -73,3 +73,6 @@
 [submodule "puppet/modules/haproxy"]
 	path = puppet/modules/haproxy
 	url = git://code.leap.se/puppet_haproxy
+[submodule "puppet/modules/postfix"]
+	path = puppet/modules/postfix
+	url = git://labs.riseup.net/shared-postfix
