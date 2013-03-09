@@ -4,6 +4,7 @@
     "use": true
   },
   "couch": {
+    "port": 5984,
     "users": {
       "admin": {
         "username": "admin",
