@@ -1,11 +1,5 @@
 class site_couchdb::configure {
 
-  file { '/etc/init.d/couchdb':
-    source => 'puppet:///modules/site_couchdb/couchdb',
-    mode   => '0755',
-    owner  => 'root',
-    group  => 'root',
-  }
 
   file { '/etc/couchdb/local.d/admin.ini':
     content => "[admins]
