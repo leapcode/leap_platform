@@ -21,7 +21,7 @@ if 'openvpn' in $services {
 }
 
 if 'couchdb' in $services {
-  include site_couchdb
+  include site_couchdb::bigcouch
 }
 
 if 'webapp' in $services {
