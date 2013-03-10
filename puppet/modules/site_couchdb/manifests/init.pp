@@ -15,10 +15,13 @@ class site_couchdb ( $bigcouch = false ) {
   $couchdb_ca_daemon      = $couchdb_users['ca_daemon']
   $couchdb_ca_daemon_user = $couchdb_ca_daemon['username']
   $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
+  $bigcouch_config        = $couchdb_config['bigcouch']
+  $bigcouch_cookie        = $bigcouch_config['cookie']
 
   class {'couchdb':
-    bigcouch => $bigcouch,
-    admin_pw => $couchdb_admin_pw
+    bigcouch        => $bigcouch,
+    admin_pw        => $couchdb_admin_pw,
+    bigcouch_cookie => $bigcouch_cookie
   }
 
   Service ['couchdb']
