@@ -6,6 +6,7 @@ class site_apt::dist_upgrade {
     exec{'initial_apt_update':
       command     => '/usr/bin/apt-get update',
       refreshonly => false,
+      timeout     => 360,
     }
     exec{'initial_apt_dist_upgrade':
       command     => "/usr/bin/apt-get -q -y -o 'DPkg::Options::=--force-confold'  dist-upgrade",
