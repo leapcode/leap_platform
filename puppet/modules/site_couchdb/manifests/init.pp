@@ -1,6 +1,5 @@
-class site_couchdb {
+class site_couchdb ( $bigcouch = false ) {
   tag 'leap_service'
-  include couchdb
 
   $x509                   = hiera('x509')
   $key                    = $x509['key']
@@ -17,19 +16,17 @@ class site_couchdb {
   $couchdb_ca_daemon_user = $couchdb_ca_daemon['username']
   $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
 
-  Package ['couchdb']
-    -> File['/etc/init.d/couchdb']
-    -> File['/etc/couchdb/local.ini']
-    -> File['/etc/couchdb/local.d/admin.ini']
-    -> File['/etc/couchdb/couchdb.netrc']
+  class {'couchdb':
+    bigcouch => $bigcouch,
+    admin_pw => $couchdb_admin_pw
+  }
+
+  Service ['couchdb']
     -> Couchdb::Create_db['users']
     -> Couchdb::Create_db['client_certificates']
     -> Couchdb::Add_user[$couchdb_webapp_user]
     -> Couchdb::Add_user[$couchdb_ca_daemon_user]
     -> Site_couchdb::Apache_ssl_proxy['apache_ssl_proxy']
-
-  include site_couchdb::configure
-  include couchdb::deploy_config
 
   site_couchdb::apache_ssl_proxy { 'apache_ssl_proxy':
     key   => $key,
