@@ -4,6 +4,9 @@
     "use": true
   },
   "couch": {
+    "bigcouch": {
+      "cookie": "= secret :bigcouch_cookie"
+    },
     "users": {
       "admin": {
         "username": "admin",
