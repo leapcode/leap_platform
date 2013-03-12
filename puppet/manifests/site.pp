@@ -1,6 +1,8 @@
 # set a default exec path
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
+$custom_key_dir = 'puppet:///modules/site_apt/keys'
+
 # make sure apt is updated before any packages are installed
 include apt::update
 Package { require => Exec['apt_updated'] }

@@ -2,6 +2,9 @@ class site_apt {
 
   include ::apt
 
+  # enable http://deb.leap.se debian package repository
+  include site_apt::leap_repo
+
   apt::apt_conf { '90disable-pdiffs':
     content => 'Acquire::PDiffs "false";';
   }
