@@ -5,6 +5,9 @@
   },
   "couch": {
     "port": 5984,
+    "bigcouch": {
+      "cookie": "= secret :bigcouch_cookie"
+    },
     "users": {
       "admin": {
         "username": "admin",
