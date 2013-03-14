@@ -3,6 +3,10 @@ Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
 $custom_key_dir = 'puppet:///modules/site_apt/keys'
 
+# parse services for host
+$services=hiera_array('services')
+notice("Services for ${fqdn}: ${services}")
+
 # make sure apt is updated before any packages are installed
 include apt::update
 Package { require => Exec['apt_updated'] }
@@ -13,9 +17,6 @@ import 'common'
 include site_config::default
 include site_config::slow
 
-# parse services for host
-$services=hiera_array('services')
-notice("Services for ${fqdn}: ${services}")
 
 # configure eip
 if 'openvpn' in $services {
