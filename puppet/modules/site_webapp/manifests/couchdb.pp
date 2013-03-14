@@ -1,5 +1,9 @@
 class site_webapp::couchdb {
 
+  $x509             = hiera('x509')
+  $key              = $x509['key']
+  $cert             = $x509['cert']
+  $ca               = $x509['ca_cert']
   $webapp           = hiera('webapp')
   $couchdb_host     = $webapp['couchdb_hosts']
   $couchdb_user     = $webapp['couchdb_user']['username']
@@ -13,4 +17,9 @@ class site_webapp::couchdb {
       mode    => '0600';
   }
 
+  class { 'site_webapp::couchdb_stunnel':
+    key  => $key,
+    cert => $cert,
+    ca   => $ca
+  }
 }
