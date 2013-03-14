@@ -30,12 +30,9 @@ class site_couchdb ( $bigcouch = false ) {
     -> Couchdb::Create_db['client_certificates']
     -> Couchdb::Add_user[$couchdb_webapp_user]
     -> Couchdb::Add_user[$couchdb_ca_daemon_user]
-    -> Site_couchdb::Apache_ssl_proxy['apache_ssl_proxy']
 
-  site_couchdb::apache_ssl_proxy { 'apache_ssl_proxy':
-    key   => $key,
-    cert  => $cert
-  }
+  # this is here to disable and remove the proxy
+  include site_couchdb::apache_ssl_proxy
 
   couchdb::query::setup { 'localhost':
     user  => $couchdb_admin_user,
