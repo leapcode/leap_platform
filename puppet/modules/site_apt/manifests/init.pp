@@ -2,8 +2,9 @@ class site_apt  {
 
   # on couchdb we need to include squeeze in apt preferences,
   # so the cloudant package can pull some packages from squeeze
+  # template() must be unquoted !
   if 'couchdb' in $::services {
-    $custom_preferences = 'site_apt/preferences.include_squeeze'
+    $custom_preferences = template("site_apt/preferences.include_squeeze")
   } else {
     $custom_preferences = ''
   }
