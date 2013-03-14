@@ -23,6 +23,7 @@ class site_couchdb ( $bigcouch = false ) {
     admin_pw        => $couchdb_admin_pw,
     bigcouch_cookie => $bigcouch_cookie
   }
+  include couchdb::bigcouch::package::cloudant
 
   Service ['couchdb']
     -> Couchdb::Create_db['users']
