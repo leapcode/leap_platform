@@ -1,6 +1,13 @@
-class site_apt {
+class site_apt  {
 
-  include ::apt
+  # on couchdb we need to include squeeze in apt preferences,
+  # so the cloudant package can pull some packages from squeeze
+  if 'couchdb' in $::services {
+    $custom_preferences = 'site_apt/preferences.include_squeeze'
+  } else {
+    $custom_preferences = ''
+  }
+  class {'apt': custom_preferences => $custom_preferences }
 
   # enable http://deb.leap.se debian package repository
   include site_apt::leap_repo
