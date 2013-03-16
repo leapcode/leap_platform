@@ -67,3 +67,6 @@
 [submodule "puppet/modules/tor"]
 	path = puppet/modules/tor
 	url = git://labs.riseup.net/shared-tor
+[submodule "puppet/modules/stunnel"]
+	path = puppet/modules/stunnel
+	url = git://labs.riseup.net/shared-stunnel
