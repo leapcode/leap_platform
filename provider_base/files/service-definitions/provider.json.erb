@@ -13,7 +13,7 @@
   hsh['api_version'] = "1"
   hsh['api_uri'] = "https://" + api.domain + ':' + api.port
 
-  hsh['ca_cert_uri'] = 'https://' + global.provider.domain + '/ca.crt'
+  hsh['ca_cert_uri'] = 'https://' + domain.full_suffix + '/ca.crt'
   hsh['ca_cert_fingerprint'] = fingerprint(:ca_cert)
 
   generate_json hsh
