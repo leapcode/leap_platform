@@ -6,41 +6,39 @@
     words
   end
 
-  def gateway_definition(node)
+  def add_gateway(node, locations, options={})
+    return nil if options[:ip] == 'REQUIRED'
     gateway = {}
     gateway["capabilities"] = node.openvpn.pick(:ports, :protocols, :user_ips, :adblock, :filter_dns)
     gateway["capabilities"]["transport"] = ["openvpn"]
     gateway["host"] = node.domain.full
-    gateway["cluster"] = underscore(node.openvpn.location)
+    gateway["ip_address"] = options[:ip]
+    gateway["capabilities"]["limited"] = options[:limited]
+    if node.location
+      location_name = underscore(node.location.name)
+      gateway["location"] = location_name
+      locations[location_name] ||= node.location
+    end
     gateway
   end
 
   hsh = {}
   hsh["serial"] = 1
   hsh["version"] = 1
-  clusters = {}
+  locations = {}
   gateways = []
   nodes_like_me[:services => 'openvpn'].each_node do |node|
-    if node.openvpn.gateway_address
-      gateway = gateway_definition(node)
-      gateway["ip_address"] = node.openvpn.gateway_address
-      gateway["capabilities"]["free"] = false
-      gateways << gateway
+    if node.openvpn.allow_limited && node.openvpn.allow_unlimited
+      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+      gateways << add_gateway(node, locations, :ip => node.openvpn.second_gateway_address, :limited => true)
+    elsif node.openvpn.allow_unlimited
+      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+    elsif node.openvpn.allow_limited
+      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => true)
     end
-    if node.openvpn.free_gateway_address && node.openvpn.free_gateway_address != "REQUIRED"
-      gateway = gateway_definition(node)
-      gateway["ip_address"] = node.openvpn.free_gateway_address
-      gateway["capabilities"]["free"] = true
-      gateway["capabilities"]["rate_limit"] = node.openvpn.free_rate_limit
-      gateways << gateway
-    end
-    clusters[gateway["cluster"]] ||= {
-      "name" => gateway["cluster"],
-      "label" => {"en" => node.openvpn.location}
-    }
   end
-  hsh["gateways"] = gateways
-  hsh["clusters"] = clusters.values
+  hsh["gateways"] = gateways.compact
+  hsh["locations"] = locations
   hsh["openvpn_configuration"] = {
     "tls-cipher" => "DHE-RSA-AES128-SHA",
     "auth" => "SHA1",

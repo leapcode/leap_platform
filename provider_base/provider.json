@@ -13,21 +13,31 @@
   "languages": ["en"],
   "default_language": "en",
   "enrollment_policy": "open",
-  "service_levels": [
-    {"name": "free", "bandwidth":102400, "storage":50},
-    {"name": "basic", "bandwidth":null, "storage":1000},
-    {"name": "premium", "bandwidth":null, "storage":10000}
-  ],
-  "service_allow_free": false,
+  "service": {
+    "levels": [
+      // bandwidth limit is in Bytes, storage limit is in MB.
+      {"id": 1, "name": "free", "bandwidth":"limited", "storage":50},
+      {"id": 2, "name": "basic", "storage":1000, "rate": ["US$10", "€10"]},
+      {"id": 3, "name": "pro", "storage":10000, "rate": ["US$20", "€20"]}
+    ],
+    "default_service_level": 1,
+    "bandwidth_limit": 102400,
+    "allow_free": "= global.provider.service.levels.select {|l| l['rate'].nil?}.any?",
+    "allow_paid": "= global.provider.service.levels.select {|l| !l['rate'].nil?}.any?",
+    "allow_anonymous": "= global.provider.service.levels.select {|l| l['name'] == 'anonymous'}.any?",
+    "allow_registration": "= global.provider.service.levels.select {|l| l['name'] != 'anonymous'}.any?",
+    "allow_limited_bandwidth": "= global.provider.service.levels.select {|l| l['bandwidth'] == 'limited'}.any?",
+    "allow_unlimited_bandwidth": "= global.provider.service.levels.select {|l| l['bandwidth'].nil?}.any?"
+  },
   "ca": {
     "name": "= global.provider.ca.organization + ' Root CA'",
     "organization": "= global.provider.name[global.provider.default_language]",
-    "organizational_unit": "= 'https://' + global.common.domain.full_suffix",
+    "organizational_unit": "= 'https://' + global.provider.domain",
     "bit_size": 4096,
     "digest": "SHA256",
     "life_span": "10y",
     "server_certificates": {
-      "bit_size": 3248,
+      "bit_size": 2024,
       "digest": "SHA256",
       "life_span": "1y"
     },
@@ -35,7 +45,8 @@
       "bit_size": 2024,
       "digest": "SHA256",
       "life_span": "2m",
-      "free_prefix": "FREE"
+      "limited_prefix": "LIMITED",
+      "unlimited_prefix": "UNLIMITED"
     }
   },
   "hiera_sync_destination": "/etc/leap"

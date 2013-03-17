@@ -5,17 +5,19 @@
     "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
     "dh": "= file :dh_params, :missing => 'Diffie-Hellman parameters. Run `leap cert dh`'"
   },
+  "location": null,
   "openvpn": {
-    "location": "Location Unknown",
     "gateway_address": "REQUIRED",
-    "free_gateway_address": "= openvpn.allow_free ? 'REQUIRED' : nil",
+    "second_gateway_address": "= openvpn.allow_limited && openvpn.allow_unlimited ? 'REQUIRED' : nil",
     "ports": ["80", "443", "53", "1194"],
     "protocols": ["tcp", "udp"],
     "filter_dns": false,
     "adblock": false,
     "user_ips": false,
-    "allow_free": "= global.provider.service_allow_free",
-    "free_prefix": "= global.provider.ca.client_certificates.free_prefix",
-    "free_rate_limit": "= openvpn.allow_free ? global.provider.service_levels.detect{|level| level['name'] == 'free'}['bandwidth'] : nil"
+    "allow_limited": "= global.provider.service.allow_limited_bandwidth",
+    "allow_unlimited": "= global.provider.service.allow_unlimited_bandwidth",
+    "limited_prefix": "= global.provider.ca.client_certificates.limited_prefix",
+    "unlimited_prefix": "= global.provider.ca.client_certificates.unlimited_prefix",
+    "rate_limit": "= openvpn.allow_limited ? global.provider.service.bandwidth_limit : nil"
   }
 }

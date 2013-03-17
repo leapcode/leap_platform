@@ -6,8 +6,11 @@ production:
   client_ca_cert: <%= scope.lookupvar('site_webapp::client_ca::cert_path') %>
 
 cert_options:
-  client_cert_lifespan: <%= cert_options['life_span'].to_i     %>
-  client_cert_bit_size: <%= cert_options['bit_size'].to_i      %>
-  client_cert_hash: <%=     cert_options['digest']             %>
-  free_certs_enabled: <%=   @webapp['allow_free'].inspect      %>
-  free_cert_prefix: "<%=    cert_options['free_prefix']        %>"
+  client_cert_lifespan: <%= cert_options['life_span'].to_i %>
+  client_cert_bit_size: <%= cert_options['bit_size'].to_i %>
+  client_cert_hash: <%= cert_options['digest'] %>
+  allow_limited_certs: <%= @webapp['allow_limited_certs'].inspect %>
+  allow_unlimited_certs: <%= @webapp['allow_unlimited_certs'].inspect %>
+  allow_anonymous_certs: <%= @webapp['allow_anonymous_certs'].inspect %>
+  limited_cert_prefix: "<%= cert_options['limited_prefix'] %>"
+  unlimited_cert_prefix: "<%= cert_options['unlimited_prefix'] %>"

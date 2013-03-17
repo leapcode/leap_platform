@@ -18,9 +18,11 @@ tls-cipher DHE-RSA-AES128-SHA
 </ca>
 
 <cert>
-<%= read_file! :test_client_cert -%>
+<%# read_file! :test_client_cert -%>
+<%= cert -%>
 </cert>
 
 <key>
-<%= read_file! :test_client_key -%>
+<%# read_file! :test_client_key -%>
+<%= key -%>
 </key>

@@ -1,84 +1,128 @@
+#
+# An openvpn gateway can support three modes:
+#
+#   (1) limited and unlimited
+#   (2) unlimited only
+#   (3) limited only
+#
+# The difference is that 'unlimited' gateways only allow client certs that match the 'unlimited_prefix',
+# and 'limited' gateways only allow certs that match the 'limited_prefix'.
+#
+# We potentially create four openvpn config files (thus four daemons):
+#
+#   (1) unlimited + tcp => tcp_config.conf
+#   (2) unlimited + udp => udp_config.conf
+#   (3) limited + tcp => limited_tcp_config.conf
+#   (4) limited + udp => limited_udp_config.conf
+#
+
 class site_openvpn {
   tag 'leap_service'
 
-  # parse hiera config
-  $ip_address                 = hiera('ip_address')
-  $interface                  = getvar("interface_${ip_address}")
-  $openvpn_config             = hiera('openvpn')
-  $openvpn_gateway_address    = $openvpn_config['gateway_address']
-  $openvpn_tcp_network_prefix = '10.1.0'
-  $openvpn_tcp_netmask        = '255.255.248.0'
-  $openvpn_tcp_cidr           = '21'
-  $openvpn_udp_network_prefix = '10.2.0'
-  $openvpn_udp_netmask        = '255.255.248.0'
-  $openvpn_udp_cidr           = '21'
-  $openvpn_allow_free         = $openvpn_config['allow_free']
-  $openvpn_free_gateway_address = $openvpn_config['free_gateway_address']
-  $openvpn_free_rate_limit    = $openvpn_config['free_rate_limit']
-  $openvpn_free_prefix        = $openvpn_config['free_prefix']
-  $x509_config                = hiera('x509')
+  $openvpn_config   = hiera('openvpn')
+  $x509_config      = hiera('x509')
+  $ip_address       = hiera('ip_address')
+  $interface        = getvar("interface_${ip_address}")
+  $openvpn_ports    = $openvpn_config['ports']
+  $openvpn_gateway_address         = $openvpn_config['gateway_address']
+  $openvpn_second_gateway_address  = undef
+  if $openvpn_config['second_gateway_address'] {
+    $openvpn_second_gateway_address = $openvpn_config['second_gateway_address']
+  }
+
+  $openvpn_allow_unlimited              = $openvpn_config['allow_unlimited']
+  $openvpn_unlimited_prefix             = $openvpn_config['unlimited_prefix']
+  $openvpn_unlimited_tcp_network_prefix = '10.41.0'
+  $openvpn_unlimited_tcp_netmask        = '255.255.248.0'
+  $openvpn_unlimited_tcp_cidr           = '21'
+  $openvpn_unlimited_udp_network_prefix = '10.42.0'
+  $openvpn_unlimited_udp_netmask        = '255.255.248.0'
+  $openvpn_unlimited_udp_cidr           = '21'
+
+  $openvpn_allow_limited                = $openvpn_config['allow_limited']
+  $openvpn_limited_prefix               = $openvpn_config['limited_prefix']
+  $openvpn_rate_limit                   = $openvpn_config['rate_limit']
+  $openvpn_limited_tcp_network_prefix   = '10.43.0'
+  $openvpn_limited_tcp_netmask          = '255.255.248.0'
+  $openvpn_limited_tcp_cidr             = '21'
+  $openvpn_limited_udp_network_prefix   = '10.44.0'
+  $openvpn_limited_udp_netmask          = '255.255.248.0'
+  $openvpn_limited_udp_cidr             = '21'
 
   # deploy ca + server keys
   include site_openvpn::keys
 
-  # create 2 openvpn config files, one for tcp, one for udp
-  site_openvpn::server_config { 'tcp_config':
-    port        => '1194',
-    proto       => 'tcp',
-    local       => $openvpn_gateway_address,
-    server      => "${openvpn_tcp_network_prefix}.0 ${openvpn_tcp_netmask}",
-    push        => "\"dhcp-option DNS ${openvpn_tcp_network_prefix}.1\"",
-    management  => '127.0.0.1 1000'
+  if $openvpn_allow_unlimited and $openvpn_allow_limited {
+    $unlimited_gateway_address = $openvpn_gateway_address
+    $limited_gateway_address = $openvpn_second_gateway_address
+  } elsif $openvpn_allow_unlimited {
+    $unlimited_gateway_address = $openvpn_gateway_address
+    $limited_gateway_address = undef
+  } elsif $openvpn_allow_limited {
+    $unlimited_gateway_address = undef
+    $limited_gateway_address = $openvpn_gateway_address
   }
 
-  site_openvpn::server_config { 'udp_config':
-    port        => '1194',
-    proto       => 'udp',
-    local       => $openvpn_gateway_address,
-    server      => "${openvpn_udp_network_prefix}.0 ${openvpn_udp_netmask}",
-    push        => "\"dhcp-option DNS ${openvpn_udp_network_prefix}.1\"",
-    management  => '127.0.0.1 1001'
-  }
-
-  if $openvpn_allow_free {
-    site_openvpn::server_config { 'free_tcp_config':
+  if $openvpn_allow_unlimited {
+    site_openvpn::server_config { 'tcp_config':
       port        => '1194',
       proto       => 'tcp',
-      local       => $openvpn_free_gateway_address,
-      tls_remote  => "\"${openvpn_free_prefix}\"",
-      shaper      => $openvpn_free_rate_limit,
-      server      => "${openvpn_tcp_network_prefix}.0 ${openvpn_tcp_netmask}",
-      push        => "\"dhcp-option DNS ${openvpn_tcp_network_prefix}.1\"",
-      management  => '127.0.0.1 1002'
+      local       => $unlimited_gateway_address,
+      tls_remote  => "\"${openvpn_unlimited_prefix}\"",
+      server      => "${openvpn_unlimited_tcp_network_prefix}.0 ${openvpn_unlimited_tcp_netmask}",
+      push        => "\"dhcp-option DNS ${openvpn_unlimited_tcp_network_prefix}.1\"",
+      management  => '127.0.0.1 1000'
     }
-    site_openvpn::server_config { 'free_udp_config':
+    site_openvpn::server_config { 'udp_config':
       port        => '1194',
       proto       => 'udp',
-      local       => $openvpn_free_gateway_address,
-      tls_remote  => "\"${openvpn_free_prefix}\"",
-      shaper      => $openvpn_free_rate_limit,
-      server      => "${openvpn_udp_network_prefix}.0 ${openvpn_udp_netmask}",
-      push        => "\"dhcp-option DNS ${openvpn_udp_network_prefix}.1\"",
+      local       => $unlimited_gateway_address,
+      tls_remote  => "\"${openvpn_unlimited_prefix}\"",
+      server      => "${openvpn_unlimited_udp_network_prefix}.0 ${openvpn_unlimited_udp_netmask}",
+      push        => "\"dhcp-option DNS ${openvpn_unlimited_udp_network_prefix}.1\"",
+      management  => '127.0.0.1 1001'
+    }
+  } else {
+    tidy { "/etc/openvpn/tcp_config.conf": }
+    tidy { "/etc/openvpn/udp_config.conf": }
+  }
+
+  if $openvpn_allow_limited {
+    site_openvpn::server_config { 'limited_tcp_config':
+      port        => '1194',
+      proto       => 'tcp',
+      local       => $limited_gateway_address,
+      tls_remote  => "\"${openvpn_limited_prefix}\"",
+      server      => "${openvpn_limited_tcp_network_prefix}.0 ${openvpn_limited_tcp_netmask}",
+      push        => "\"dhcp-option DNS ${openvpn_limited_tcp_network_prefix}.1\"",
+      management  => '127.0.0.1 1002'
+    }
+    site_openvpn::server_config { 'limited_udp_config':
+      port        => '1194',
+      proto       => 'udp',
+      local       => $limited_gateway_address,
+      tls_remote  => "\"${openvpn_limited_prefix}\"",
+      server      => "${openvpn_limited_udp_network_prefix}.0 ${openvpn_limited_udp_netmask}",
+      push        => "\"dhcp-option DNS ${openvpn_limited_udp_network_prefix}.1\"",
       management  => '127.0.0.1 1003'
     }
   } else {
-    tidy { "/etc/openvpn/free_tcp_config.conf": }
-    tidy { "/etc/openvpn/free_udp_config.conf": }
+    tidy { "/etc/openvpn/limited_tcp_config.conf": }
+    tidy { "/etc/openvpn/limited_udp_config.conf": }
   }
 
-  # add second IP on given interface
   file {
-    '/usr/local/bin/leap_add_second_ip.sh':
-      content => template('site_openvpn/leap_add_second_ip.sh.erb'),
+    '/usr/local/bin/add_gateway_ips.sh':
+      content => template('site_openvpn/add_gateway_ips.sh.erb'),
       mode    => '0755';
   }
 
-  exec { '/usr/local/bin/leap_add_second_ip.sh':
-    subscribe   => File['/usr/local/bin/leap_add_second_ip.sh'],
+  exec { '/usr/local/bin/add_gateway_ips.sh':
+    subscribe   => File['/usr/local/bin/add_gateway_ips.sh'],
   }
 
-  cron { 'leap_add_second_ip.sh':
-    command => '/usr/local/bin/leap_add_second_ip.sh',
+  cron { 'add_gateway_ips.sh':
+    command => '/usr/local/bin/add_gateway_ips.sh',
     user    => 'root',
     special => 'reboot',
   }
