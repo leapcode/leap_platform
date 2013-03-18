@@ -4,9 +4,10 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   include site_stunnel
 
   $cert_name = 'leap_couchdb'
-  $ca_path = "${x509::variables::certs}/leap_client_ca.crt"
+  $ca_name   = 'leap_ca'
+  $ca_path   = "${x509::variables::local_CAs}/${ca_name}.crt"
   $cert_path = "${x509::variables::certs}/${cert_name}.crt"
-  $key_path = "${x509::variables::keys}/${cert_name}.key"
+  $key_path  = "${x509::variables::keys}/${cert_name}.key"
 
   x509::key {
     $cert_name:
@@ -21,7 +22,7 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   }
 
   x509::ca {
-    $cert_name:
+    $ca_name:
       content => $ca,
       notify  => Service['stunnel'];
   }
