@@ -4,11 +4,13 @@
     "use": true
   },
   "stunnel": {
-    "couch_server": "= stunnel_server(couch.port)"
+    "couch_server": "= stunnel_server(couch.port)",
+    "bigcouch_replication_server": "= stunnel_server(couch.bigcouch.port)"
   },
   "couch": {
     "port": 5984,
     "bigcouch": {
+      "port": 4369,
       "cookie": "= secret :bigcouch_cookie"
     },
     "users": {
