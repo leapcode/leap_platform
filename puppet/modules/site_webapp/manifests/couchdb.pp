@@ -38,3 +38,4 @@ class site_webapp::couchdb {
     require  => Exec['bundler_update'],
     notify   => Service['apache'];
   }
+}
