@@ -6,11 +6,9 @@ class site_webapp::couchdb {
   $ca               = $x509['ca_cert']
   $webapp           = hiera('webapp')
   $couchdb_hosts    = $webapp['couchdb_hosts']
-  # for now, pick the first couchdb host before we have a working
-  # load balancing setup (see https://leap.se/code/issues/1994)
-  # which is configured through a stunnel connection, reachable
-  # through localhost:5000
+  # haproxy listener on port localhost:4096, see site_webapp::haproxy
   $couchdb_host     = 'localhost'
+  $couchdb_port     = '4096'
   $couchdb_user     = $webapp['couchdb_user']['username']
   $couchdb_password = $webapp['couchdb_user']['password']
 

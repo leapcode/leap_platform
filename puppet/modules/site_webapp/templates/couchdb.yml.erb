@@ -2,7 +2,7 @@ production:
   prefix: ""
   protocol: 'http'
   host: <%= @couchdb_host %>
-  port: 5000 
+  port: <%= @couchdb_port %>
   auto_update_design_doc: false
   username: <%= @couchdb_user %>
   password: <%= @couchdb_password %>
