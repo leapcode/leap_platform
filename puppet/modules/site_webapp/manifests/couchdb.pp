@@ -33,10 +33,11 @@ class site_webapp::couchdb {
       mode   => '0744';
   }
 
-  class { 'site_webapp::couchdb_stunnel':
-    key  => $key,
-    cert => $cert,
-    ca   => $ca
+  class { 'site_stunnel::setup':
+    cert_name => 'leap_couchdb',
+    key       => $key,
+    cert      => $cert,
+    ca        => $ca
   }
 
   exec { 'migrate_design_documents':
@@ -45,4 +46,16 @@ class site_webapp::couchdb {
     require  => Exec['bundler_update'],
     notify   => Service['apache'];
   }
+
+  $couchdb_stunnel_client_defaults = {
+    'client'     => true,
+    'cafile'     => $ca_path,
+    'key'        => $key_path,
+    'cert'       => $cert_path,
+    'verify'     => '2',
+    'rndfile'    => '/var/lib/stunnel4/.rnd',
+    'debuglevel' => '4'
+  }
+
+  create_resources(site_stunnel::clients, hiera('stunnel'), $couchdb_stunnel_client_defaults)
 }

@@ -1,9 +1,8 @@
-class site_webapp::couchdb_stunnel ($key, $cert, $ca) {
+class site_stunnel::setup ($cert_name, $key, $cert, $ca) {
 
   include x509::variables
   include site_stunnel
 
-  $cert_name = 'leap_couchdb'
   $ca_name   = 'leap_ca'
   $ca_path   = "${x509::variables::local_CAs}/${ca_name}.crt"
   $cert_path = "${x509::variables::certs}/${cert_name}.crt"
@@ -24,20 +23,8 @@ class site_webapp::couchdb_stunnel ($key, $cert, $ca) {
   x509::ca {
     $ca_name:
       content => $ca,
-      notify => Service['stunnel'];
+      notify  => Service['stunnel'];
   }
-
-  $couchdb_stunnel_client_defaults = {
-    'client'     => true,
-    'cafile'     => $ca_path,
-    'key'        => $key_path,
-    'cert'       => $cert_path,
-    'verify'     => '2',
-    'rndfile'    => '/var/lib/stunnel4/.rnd',
-    'debuglevel' => '4'
-  }
-
-  create_resources(site_webapp::couchdb_stunnel::clients, hiera('stunnel'), $couchdb_stunnel_client_defaults)
 
 }
 
