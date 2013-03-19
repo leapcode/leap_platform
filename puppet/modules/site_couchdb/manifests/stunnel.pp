@@ -39,5 +39,17 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4'
   }
+  stunnel::service { 'bigcouch':
+    accept     => '6984',
+    connect    => '127.0.0.1:5984',
+    client     => false,
+    cafile     => $ca_path,
+    key        => $key_path,
+    cert       => $cert_path,
+    verify     => '2',
+    pid        => '/var/run/stunnel4/couchdb.pid',
+    rndfile    => '/var/lib/stunnel4/.rnd',
+    debuglevel => '4'
+  }
 }
 
