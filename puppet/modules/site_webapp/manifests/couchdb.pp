@@ -34,7 +34,7 @@ class site_webapp::couchdb {
   }
 
   class { 'site_stunnel::setup':
-    cert_name => 'leap_couchdb',
+    cert_name => $cert_name,
     key       => $key,
     cert      => $cert,
     ca        => $ca
@@ -49,9 +49,9 @@ class site_webapp::couchdb {
 
   $couchdb_stunnel_client_defaults = {
     'client'     => true,
-    'cafile'     => $ca_path,
-    'key'        => $key_path,
-    'cert'       => $cert_path,
+    'cafile'     => "${x509::variables::local_CAs}/${ca_name}.crt",
+    'key'        => "${x509::variables::keys}/${cert_name}.key",
+    'cert'       => "${x509::variables::certs}/${cert_name}.crt",
     'verify'     => '2',
     'rndfile'    => '/var/lib/stunnel4/.rnd',
     'debuglevel' => '4'
