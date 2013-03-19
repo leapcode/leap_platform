@@ -3,11 +3,11 @@
 cd /srv/leap-webapp
 
 # use admin credentials
-mv config/couchdb.yml.admin config/couchdb.yml
+cp config/couchdb.yml.admin config/couchdb.yml
 
 # needs to be run twice 
 /usr/bin/bundle exec rake couchrest:migrate
 /usr/bin/bundle exec rake couchrest:migrate
 
 # use user credentials and remove admin credentials
-mv config/couchdb.yml.webapp config/couchdb.yml
+cp config/couchdb.yml.webapp config/couchdb.yml
