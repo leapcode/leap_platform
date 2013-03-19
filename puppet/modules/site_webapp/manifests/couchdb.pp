@@ -20,6 +20,12 @@ class site_webapp::couchdb {
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0600';
+
+    '/usr/local/sbin/migrate_design_documents':
+      source => 'puppet:///modules/site_webapp/migrate_design_documents',
+      owner  => root,
+      group  => root,
+      mode   => '0744';
   }
 
   class { 'site_webapp::couchdb_stunnel':
@@ -27,4 +33,10 @@ class site_webapp::couchdb {
     cert => $cert,
     ca   => $ca
   }
-}
+
+  exec { 'migrate_design_documents':
+    cwd      => '/srv/leap-webapp',
+    commmand => '/usr/local/sbin/migrate_design_documents',
+    require  => Exec['bundler_update'],
+    notify   => Service['apache'];
+  }
