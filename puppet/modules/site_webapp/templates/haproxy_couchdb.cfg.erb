@@ -1,0 +1,16 @@
+
+listen bigcouch-in
+  mode http
+  balance  roundrobin
+
+  option httplog
+  option dontlognull
+  option tcplog
+
+  bind localhost:4096
+<% for port in @local_ports -%>
+  server couchdb_<%=port%> localhost:<%=port%>
+<% end -%>
+
+
+

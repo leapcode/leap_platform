@@ -17,6 +17,7 @@ class site_webapp {
   include site_webapp::apache
   include site_webapp::couchdb
   include site_webapp::client_ca
+  include site_webapp::haproxy
 
   group { 'leap-webapp':
     ensure    => present,
