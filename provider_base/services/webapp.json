@@ -11,7 +11,8 @@
     "client_certificates": "= global.provider.ca.client_certificates",
     "allow_limited_certs": "= global.provider.service.allow_limited_bandwidth",
     "allow_unlimited_certs": "= global.provider.service.allow_unlimited_bandwidth",
-    "allow_anonymous_certs": "= global.provider.service.allow_anonymous"
+    "allow_anonymous_certs": "= global.provider.service.allow_anonymous",
+    "secret_token": "= secret :webapp_secret_token"
   },
   "definition_files": {
     "provider": "= file :provider_json_template",

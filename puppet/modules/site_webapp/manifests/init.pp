@@ -6,6 +6,7 @@ class site_webapp {
   $node_domain      = hiera('domain')
   $provider_domain  = $node_domain['full_suffix']
   $webapp           = hiera('webapp')
+  $secret_token     = $webapp['secret_token']
 
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
 
@@ -111,6 +112,11 @@ class site_webapp {
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0600';
+
+    '/srv/leap-webapp/config/initializers/secret_token.rb':
+      content => "LeapWeb::Application.config.secret_token = '${secret_token}'\n",
+      owner   => leap-webapp, group => leap-webapp, mode => '0644',
+      notify => Service['apache'];
   }
 
   include site_shorewall::webapp
