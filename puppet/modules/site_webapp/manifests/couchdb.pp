@@ -34,7 +34,7 @@ class site_webapp::couchdb {
 
   exec { 'migrate_design_documents':
     cwd      => '/srv/leap-webapp',
-    commmand => '/usr/local/sbin/migrate_design_documents',
+    command  => '/usr/local/sbin/migrate_design_documents',
     require  => Exec['bundler_update'],
     notify   => Service['apache'];
   }
