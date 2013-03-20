@@ -43,7 +43,7 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     verify     => '2',
     pid        => '/var/run/stunnel4/couchdb.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '7'
   }
 
   # clients
