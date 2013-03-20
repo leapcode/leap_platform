@@ -1,5 +1,6 @@
 define site_stunnel::clients (
   $accept_port,
+  $connect_port,
   $connect,
   $client = true,
   $cafile,
@@ -12,7 +13,7 @@ define site_stunnel::clients (
 
   stunnel::service { $name:
     accept     => "127.0.0.1:${accept_port}",
-    connect    => "${connect}:6984",
+    connect    => "${connect}:${connect_port}",
     client     => $client,
     cafile     => $cafile,
     key        => $key,
