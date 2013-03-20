@@ -25,7 +25,7 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     key        => $key_path,
     cert       => $cert_path,
     verify     => '2',
-    pid        => '/var/run/stunnel4/couchdb.pid',
+    pid        => '/var/run/stunnel4/bigcouch.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4'
   }
