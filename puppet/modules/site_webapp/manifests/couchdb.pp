@@ -48,6 +48,7 @@ class site_webapp::couchdb {
   }
 
   $couchdb_stunnel_client_defaults = {
+    'connect_port' => '6984',
     'client'     => true,
     'cafile'     => "${x509::variables::local_CAs}/${ca_name}.crt",
     'key'        => "${x509::variables::keys}/${cert_name}.key",
