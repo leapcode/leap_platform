@@ -31,6 +31,8 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   }
 
   # clustering between bigcouch nodes
+
+  # server
   stunnel::service { 'bigcouch':
     accept     => '5369',
     connect    => '127.0.0.1:4369',
@@ -43,5 +45,19 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4'
   }
+
+  # clients
+  $couchdb_stunnel_client_defaults = {
+    'connect_port' => '5369',
+    'client'       => true,
+    'cafile'       => "${x509::variables::local_CAs}/${ca_name}.crt",
+    'key'          => "${x509::variables::keys}/${cert_name}.key",
+    'cert'         => "${x509::variables::certs}/${cert_name}.crt",
+    'verify'       => '2',
+    'rndfile'      => '/var/lib/stunnel4/.rnd',
+    'debuglevel'   => '4'
+  }
+  create_resources(site_stunnel::clients, hiera('stunnel'), $couchdb_stunnel_client_defaults)
+
 }
 
