@@ -23,15 +23,4 @@ class site_shorewall::couchdb {
         order       => 200;
   }
 
-  #shorewall::rule {
-  #  'dnat-bigcouch-clustering-to-stunnel':
-  #    destination     => "net:${::ipaddress}:8080",
-  #    destinationport => $portmapper_port,
-  #    source          => '$FW',
-  #    proto           => 'tcp',
-  #    order           => 200,
-  #    action          => 'DNAT';
-  #}
-
-
 }
