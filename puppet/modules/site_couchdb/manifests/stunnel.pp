@@ -1,7 +1,6 @@
 class site_couchdb::stunnel ($key, $cert, $ca) {
 
   include x509::variables
-  include site_stunnel
 
   $cert_name = 'leap_couchdb'
   $ca_name   = 'leap_ca'
