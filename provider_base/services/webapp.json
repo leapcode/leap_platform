@@ -1,7 +1,6 @@
 {
   "webapp": {
     "modules": ["user", "billing", "help"],
-    "couchdb_hosts": "= hostnames nodes[:services => :couchdb][:local => local]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "favicon": "= file_path 'branding/favicon.ico'",
@@ -13,6 +12,12 @@
     "allow_unlimited_certs": "= global.provider.service.allow_unlimited_bandwidth",
     "allow_anonymous_certs": "= global.provider.service.allow_anonymous",
     "secret_token": "= secret :webapp_secret_token"
+  },
+  "stunnel": {
+    "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
+  },
+  "haproxy": {
+    "local_ports": "= stunnel.couch_client.field(:accept_port)"
   },
   "definition_files": {
     "provider": "= file :provider_json_template",

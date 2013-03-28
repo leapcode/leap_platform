@@ -5,7 +5,6 @@ class site_webapp::couchdb {
   $cert                    = $x509['cert']
   $ca                      = $x509['ca_cert']
   $webapp                  = hiera('webapp')
-  $couchdb_hosts           = $webapp['couchdb_hosts']
   # haproxy listener on port localhost:4096, see site_webapp::haproxy
   $couchdb_host            = 'localhost'
   $couchdb_port            = '4096'

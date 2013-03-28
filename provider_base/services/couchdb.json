@@ -3,6 +3,9 @@
   "x509": {
     "use": true
   },
+  "stunnel": {
+    "couch_server": "= stunnel_server(couch.port)"
+  },
   "couch": {
     "port": 5984,
     "bigcouch": {
