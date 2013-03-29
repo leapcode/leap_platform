@@ -25,9 +25,10 @@ class site_openvpn {
   $interface        = getvar("interface_${ip_address}")
   $openvpn_ports    = $openvpn_config['ports']
   $openvpn_gateway_address         = $openvpn_config['gateway_address']
-  $openvpn_second_gateway_address  = undef
   if $openvpn_config['second_gateway_address'] {
     $openvpn_second_gateway_address = $openvpn_config['second_gateway_address']
+  } else {
+    $openvpn_second_gateway_address = undef
   }
 
   $openvpn_allow_unlimited              = $openvpn_config['allow_unlimited']
