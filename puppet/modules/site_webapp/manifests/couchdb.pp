@@ -1,9 +1,5 @@
 class site_webapp::couchdb {
 
-  $x509                    = hiera('x509')
-  $key                     = $x509['key']
-  $cert                    = $x509['cert']
-  $ca                      = $x509['ca_cert']
   $webapp                  = hiera('webapp')
   # haproxy listener on port localhost:4096, see site_webapp::haproxy
   $couchdb_host            = 'localhost'
@@ -12,6 +8,21 @@ class site_webapp::couchdb {
   $couchdb_admin_password  = $webapp['couchdb_admin_user']['password']
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
+
+  $stunnel                 = hiera('stunnel')
+  $couch_client            = $stunnel['couch_client']
+  $couch_client_connect    = $couch_client['connect']
+
+  include x509::variable
+  $x509                    = hiera('x509')
+  $key                     = $x509['key']
+  $cert                    = $x509['cert']
+  $ca                      = $x509['ca_cert']
+  $cert_name               = 'leap_couchdb'
+  $ca_name                 = 'leap_ca'
+  $ca_path                 = "${x509::variables::local_CAs}/${ca_name}.crt"
+  $cert_path               = "${x509::variables::certs}/${cert_name}.crt"
+  $key_path                = "${x509::variables::keys}/${cert_name}.key"
 
   file {
     '/srv/leap-webapp/config/couchdb.yml.admin':
@@ -48,15 +59,12 @@ class site_webapp::couchdb {
   }
 
   $couchdb_stunnel_client_defaults = {
-    'connect_port' => '6984',
+    'connect_port' => $couch_client_connect,
     'client'     => true,
-    'cafile'     => "${x509::variables::local_CAs}/${ca_name}.crt",
-    'key'        => "${x509::variables::keys}/${cert_name}.key",
-    'cert'       => "${x509::variables::certs}/${cert_name}.crt",
-    'verify'     => '2',
-    'rndfile'    => '/var/lib/stunnel4/.rnd',
-    'debuglevel' => '4'
+    'cafile'     => $ca_path,
+    'key'        => $key_path,
+    'cert'       => $cert_path,
   }
 
-  create_resources(site_stunnel::clients, hiera('stunnel'), $couchdb_stunnel_client_defaults)
+  create_resources(site_stunnel::clients, $couch_client, $couchdb_stunnel_client_defaults)
 }
