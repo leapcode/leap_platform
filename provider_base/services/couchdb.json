@@ -5,7 +5,8 @@
   },
   "stunnel": {
     "couch_server": "= stunnel_server(couch.port)",
-    "bigcouch_replication_server": "= stunnel_server(couch.bigcouch.port)"
+    "bigcouch_replication_server": "= stunnel_server(couch.bigcouch.port)",
+    "bigcouch_replication_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.port)"
   },
   "couch": {
     "port": 5984,
