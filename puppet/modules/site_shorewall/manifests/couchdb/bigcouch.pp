@@ -1,4 +1,4 @@
-class site_shorewall::couchdb::bigcouch inherits site_shorewall::couchdb {
+class site_shorewall::couchdb::bigcouch {
 
   include site_shorewall::defaults
 
