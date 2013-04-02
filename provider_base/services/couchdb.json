@@ -14,15 +14,18 @@
     "users": {
       "admin": {
         "username": "admin",
-        "password": "= secret :couch_admin_password"
+        "password": "= secret :couch_admin_password",
+        "salt": "= hex_secret :couch_admin_password_salt, 128"
       },
       "webapp": {
         "username": "webapp",
-        "password": "= secret :couch_webapp_password"
+        "password": "= secret :couch_webapp_password",
+        "salt": "= hex_secret :couch_webapp_password_salt, 128"
       },
       "ca_daemon": {
         "username": "ca_daemon",
-        "password": "= secret :couch_ca_daemon_password"
+        "password": "= secret :couch_ca_daemon_password",
+        "salt": "= hex_secret :couch_ca_daemon_password_salt, 128"
       }
     }
   }
