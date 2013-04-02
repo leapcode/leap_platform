@@ -10,12 +10,12 @@ define site_shorewall::couchdb::dnat (
 
   shorewall::rule {
     "dnat_${name}_${destinationport}":
+      action          => 'DNAT',
       source          => $source,
       destination     => "\$FW:127.0.0.1:${accept_port}",
+      proto           => $proto,
       destinationport => $destinationport,
       originaldest    => $connect,
-      proto           => $proto,
-      order           => 200,
-      action          => 'DNAT';
+      order           => 200
   }
 }

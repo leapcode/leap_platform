@@ -8,12 +8,12 @@ define site_shorewall::dnat (
 
   shorewall::rule {
     "dnat_${name}_${destinationport}":
+      action          => 'DNAT',
       source          => $source,
       destination     => $destination,
+      proto           => $proto,
       destinationport => $destinationport,
       originaldest    => $originaldest,
-      proto           => $proto,
-      order           => 200,
-      action          => 'DNAT';
+      order           => 200
   }
 }
