@@ -67,4 +67,5 @@ class site_couchdb ( $bigcouch = false ) {
   }
 
   include site_shorewall::couchdb
+  include site_shorewall::couchdb::bigcouch
 }

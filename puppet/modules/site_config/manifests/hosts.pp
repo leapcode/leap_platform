@@ -9,7 +9,7 @@ class site_config::hosts() {
     content => $hostname
   }
 
-  exec { "/bin/hostname $hostname":
+  exec { "/bin/hostname ${hostname}":
     subscribe   => [ File['/etc/hostname'], File['/etc/hosts'] ],
     refreshonly => true;
   }
