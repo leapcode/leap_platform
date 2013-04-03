@@ -7,26 +7,15 @@
 # (exit codes, lockfile, multiple manifests, etc)
 #
 
-$puppet_bin = '/usr/bin/puppet'
-$puppet_directory = '/srv/leap'
-$puppet_parameters = '--color=false --detailed-exitcodes --libdir=puppet/lib --confdir=puppet'
-$site_manifest = 'puppet/manifests/site.pp'
-$setup_manifest = 'puppet/manifests/setup.pp'
+PUPPET_BIN        = '/usr/bin/puppet'
+PUPPET_DIRECTORY  = '/srv/leap'
+PUPPET_PARAMETERS = '--color=false --detailed-exitcodes --libdir=puppet/lib --confdir=puppet'
+SITE_MANIFEST     = 'puppet/manifests/site.pp'
+SETUP_MANIFEST    = 'puppet/manifests/setup.pp'
+DEFAULT_TAGS      = 'leap_base,leap_service'
 
 def main
-  @commands = []
-  loop do
-    case ARGV[0]
-      when 'apply'        then ARGV.shift; @commands << 'apply'
-      when 'set_hostname' then ARGV.shift; @commands << 'set_hostname'
-      when '--verbosity'  then ARGV.shift; @verbosity = ARGV.shift.to_i
-      when '--force'      then ARGV.shift; remove_lockfile
-      when '--tags'       then ARGV.shift; @tags      = ARGV.shift
-      when /^-/           then usage("Unknown option: #{ARGV[0].inspect}")
-      else break
-    end
-  end
-  usage("No command given") unless @commands.any?
+  process_command_line_arguments
   with_lockfile do
     @commands.each do |command|
       self.send(command)
@@ -39,6 +28,24 @@ def puts(str)
   $stdout.flush
 end
 
+def process_command_line_arguments
+  @commands = []
+  @verbosity = 1
+  @tags = DEFAULT_TAGS
+  loop do
+    case ARGV[0]
+      when 'apply'        then ARGV.shift; @commands << 'apply'
+      when 'set_hostname' then ARGV.shift; @commands << 'set_hostname'
+      when '--verbosity'  then ARGV.shift; @verbosity = ARGV.shift.to_i
+      when '--force'      then ARGV.shift; remove_lockfile
+      when '--tags'       then ARGV.shift; @tags      = ARGV.shift
+      when /^-/           then usage("Unknown option: #{ARGV[0].inspect}")
+      else break
+    end
+  end
+  usage("No command given") unless @commands.any?
+end
+
 def apply
   exit_code = puppet_apply do |line|
     puts line
@@ -47,11 +54,12 @@ def apply
 end
 
 def set_hostname
-  exit_code = puppet_apply(:manifest => $setup_manifest, :tags => '') do |line|
-    # todo: how to suppress this?
-    # dnsdomainname: Name or service not known
-    # warning: Could not retrieve fact fqdn
-    if line !~ /Finished catalog run/ || @verbosity > 2
+  exit_code = puppet_apply(:manifest => SETUP_MANIFEST, :tags => '') do |line|
+    # todo: replace setup.pp with https://github.com/lutter/ruby-augeas
+    # or try this: http://www.puppetcookbook.com/posts/override-a-facter-fact.html
+    if (line !~ /Finished catalog run/ || @verbosity > 2) &&
+       (line !~ /dnsdomainname: Name or service not known/) &&
+       (line !~ /warning: Could not retrieve fact fqdn/)
       puts line
     end
   end
@@ -69,9 +77,9 @@ end
 #
 def puppet_apply(options={}, &block)
   options = {:verbosity => @verbosity, :tags => @tags}.merge(options)
-  manifest = options[:manifest] || $site_manifest
-  Dir.chdir($puppet_directory) do
-    return run("#{$puppet_bin} apply #{custom_parameters(options)} #{$puppet_parameters} #{manifest}", &block)
+  manifest = options[:manifest] || SITE_MANIFEST
+  Dir.chdir(PUPPET_DIRECTORY) do
+    return run("#{PUPPET_BIN} apply #{custom_parameters(options)} #{PUPPET_PARAMETERS} #{manifest}", &block)
   end
 end
 
