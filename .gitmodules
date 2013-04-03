@@ -69,7 +69,7 @@
 	url = git://labs.riseup.net/shared-tor
 [submodule "puppet/modules/stunnel"]
 	path = puppet/modules/stunnel
-	url = git://labs.riseup.net/shared-stunnel
+	url = git://code.leap.se/puppet_stunnel
 [submodule "puppet/modules/haproxy"]
 	path = puppet/modules/haproxy
 	url = git://code.leap.se/puppet_haproxy
