@@ -8,7 +8,8 @@
     "en": "REQUIRED"
   },
   "contacts": {
-    "default": "REQUIRED"
+    "default": "REQUIRED",
+    "english": "= contacts.default.split('@').join(' at the domain ')"
   },
   "languages": ["en"],
   "default_language": "en",
