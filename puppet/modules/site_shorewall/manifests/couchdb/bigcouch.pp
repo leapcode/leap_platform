@@ -3,15 +3,15 @@ class site_shorewall::couchdb::bigcouch {
   include site_shorewall::defaults
 
   $stunnel = hiera('stunnel')
-  $bigcouch_replication_clients         = $stunnel['bigcouch_replication_clients']
+  $epmd_clients         = $stunnel['epmd_clients']
 
-  $bigcouch_replication_server          = $stunnel['bigcouch_replication_server']
-  $bigcouch_replication_server_port     = $bigcouch_replication_server['accept']
-  $bigcouch_replication_connect         = $bigcouch_replication_server['connect']
+  $epmd_server          = $stunnel['epmd_server']
+  $epmd_server_port     = $epmd_server['accept']
+  $epmd_server_connect  = $epmd_server['connect']
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_bigcouch':
-    content => "PARAM   -       -       tcp    ${bigcouch_replication_server_port}",
+    content => "PARAM   -       -       tcp    ${epmd_server_port}",
     notify  => Service['shorewall'],
     require => Package['shorewall']
   }
@@ -24,13 +24,13 @@ class site_shorewall::couchdb::bigcouch {
         order       => 300;
   }
 
-  $bigcouch_shorewall_dnat_defaults = {
+  $epmd_shorewall_dnat_defaults = {
     'source'          => '$FW',
     'proto'           => 'tcp',
-    'destinationport' => regsubst($bigcouch_replication_connect, '^([0-9.]+:)([0-9]+)$', '\2')
+    'destinationport' => regsubst($epmd_server_connect, '^([0-9.]+:)([0-9]+)$', '\2')
   }
 
-  create_resources(site_shorewall::couchdb::dnat, $bigcouch_replication_clients, $bigcouch_shorewall_dnat_defaults)
+  create_resources(site_shorewall::couchdb::dnat, $epmd_clients, $epmd_shorewall_dnat_defaults)
 
 }
 

@@ -5,13 +5,13 @@
   },
   "stunnel": {
     "couch_server": "= stunnel_server(couch.port)",
-    "epmd_server": "= stunnel_server(couch.bigcouch.port)",
-    "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.port)"
+    "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
+    "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.epmd_port)",
   },
   "couch": {
     "port": 5984,
     "bigcouch": {
-      "port": 4369,
+      "epmd_port": 4369,
       "cookie": "= secret :bigcouch_cookie"
     },
     "users": {
