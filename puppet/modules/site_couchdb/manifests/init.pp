@@ -5,6 +5,7 @@ class site_couchdb ( $bigcouch = false ) {
   $key                    = $x509['key']
   $cert                   = $x509['cert']
   $ca                     = $x509['ca_cert']
+
   $couchdb_config         = hiera('couch')
   $couchdb_users          = $couchdb_config['users']
   $couchdb_admin          = $couchdb_users['admin']
@@ -16,6 +17,7 @@ class site_couchdb ( $bigcouch = false ) {
   $couchdb_ca_daemon      = $couchdb_users['ca_daemon']
   $couchdb_ca_daemon_user = $couchdb_ca_daemon['username']
   $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
+
   $bigcouch_config        = $couchdb_config['bigcouch']
   $bigcouch_cookie        = $bigcouch_config['cookie']
 
@@ -32,10 +34,6 @@ class site_couchdb ( $bigcouch = false ) {
     -> Couchdb::Add_user[$couchdb_webapp_user]
     -> Couchdb::Add_user[$couchdb_ca_daemon_user]
 
-  # this is here to disable and remove the proxy
-  include site_couchdb::apache_ssl_proxy
-
-  # the above apache_ssl_proxy is replaced by the following stunnel
   class { 'site_couchdb::stunnel':
     key  => $key,
     cert => $cert,
