@@ -21,10 +21,13 @@ class site_couchdb ( $bigcouch = false ) {
   $bigcouch_config        = $couchdb_config['bigcouch']
   $bigcouch_cookie        = $bigcouch_config['cookie']
 
-  class {'couchdb':
+  $ednp_port              = $bigcouch_config['ednp_port']
+
+  class { 'couchdb':
     bigcouch        => $bigcouch,
     admin_pw        => $couchdb_admin_pw,
-    bigcouch_cookie => $bigcouch_cookie
+    bigcouch_cookie => $bigcouch_cookie,
+    ednp_port       => $ednp_port
   }
   include couchdb::bigcouch::package::cloudant
 

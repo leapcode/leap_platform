@@ -6,12 +6,9 @@ class site_shorewall::couchdb {
   $couch_server = $stunnel['couch_server']
   $couch_stunnel_port = $couch_server['accept']
 
-  # see http://stackoverflow.com/questions/8459949/bigcouch-cluster-connection-issue#comment10467603_8463814
-  $erlang_vm_port = '9001'
-
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_couchdb':
-    content => "PARAM   -       -       tcp    ${couch_stunnel_port},${erlang_vm_port}",
+    content => "PARAM   -       -       tcp    ${couch_stunnel_port}",
     notify  => Service['shorewall'],
     require => Package['shorewall']
   }
