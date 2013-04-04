@@ -6,11 +6,11 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   $couch_server_accept  = $couch_server['accept']
   $couch_server_connect = $couch_server['connect']
 
-  $bigcouch_replication_server         = $stunnel['bigcouch_replication_server']
-  $bigcouch_replication_server_accept  = $bigcouch_replication_server['accept']
-  $bigcouch_replication_server_connect = $bigcouch_replication_server['connect']
+  $epmd_server          = $stunnel['epmd_server']
+  $epmd_server_accept   = $epmd_server['accept']
+  $epmd_server_connect  = $epmd_server['connect']
 
-  $bigcouch_replication_clients         = $stunnel['bigcouch_replication_clients']
+  $epmd_clients         = $stunnel['epmd_clients']
 
   include x509::variables
   $cert_name = 'leap_couchdb'
@@ -45,26 +45,26 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
 
   # setup stunnels for bigcouch clustering between each bigcouchdb node
   # server
-  stunnel::service { 'bigcouch_replication_server':
-    accept     => $bigcouch_replication_server_accept,
-    connect    => $bigcouch_replication_server_connect,
+  stunnel::service { 'epmd_server':
+    accept     => $epmd_server_accept,
+    connect    => $epmd_server_connect,
     client     => false,
     cafile     => $ca_path,
     key        => $key_path,
     cert       => $cert_path,
     verify     => '2',
-    pid        => '/var/run/stunnel4/bigcouchreplication_server.pid',
+    pid        => '/var/run/stunnel4/epmd_server.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4'
   }
 
   # clients
-  $bigcouch_replication_client_defaults = {
+  $epmd_client_defaults = {
     'client'       => true,
     'cafile'       => $ca_path,
     'key'          => $key_path,
     'cert'         => $cert_path,
   }
 
-  create_resources(site_stunnel::clients, $bigcouch_replication_clients, $bigcouch_replication_client_defaults)
+  create_resources(site_stunnel::clients, $epmd_clients, $epmd_client_defaults)
 }
