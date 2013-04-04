@@ -48,6 +48,7 @@ class site_webapp::couchdb {
     cert_name => $cert_name,
     key       => $key,
     cert      => $cert,
+    ca_name   => $ca_name
     ca        => $ca
   }
 

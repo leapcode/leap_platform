@@ -31,6 +31,7 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     cert_name => $cert_name,
     key       => $key,
     cert      => $cert,
+    ca_name   => $ca_name,
     ca        => $ca
   }
 

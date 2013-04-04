@@ -1,4 +1,4 @@
-class site_stunnel::setup ($cert_name, $key, $cert, $ca) {
+class site_stunnel::setup ($cert_name, $key, $cert, $ca_name, $ca) {
 
   include site_stunnel
 
