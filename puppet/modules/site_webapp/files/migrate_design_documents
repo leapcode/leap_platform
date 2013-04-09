@@ -7,8 +7,8 @@ cp config/couchdb.yml.admin config/couchdb.yml
 chown leap-webapp:leap-webapp config/couchdb.yml
 
 # needs to be run twice 
-/usr/bin/bundle exec rake couchrest:migrate
-/usr/bin/bundle exec rake couchrest:migrate
+RAILS_ENV=production /usr/bin/bundle exec rake couchrest:migrate
+RAILS_ENV=production /usr/bin/bundle exec rake couchrest:migrate
 
 # use user credentials and remove admin credentials
 cp config/couchdb.yml.webapp config/couchdb.yml
