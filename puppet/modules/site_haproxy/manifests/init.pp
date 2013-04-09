@@ -13,12 +13,12 @@ class site_haproxy {
       'daemon'  => ''
     },
     defaults_options => {
-      'log'        => 'global',
-      'retries'    => '3',
-      'option'     => 'redispatch',
-      'contimeout' => '5000',
-      'clitimeout' => '50000',
-      'srvtimeout' => '50000'
+      'log'             => 'global',
+      'retries'         => '3',
+      'option'          => 'redispatch',
+      'timeout connect' => '4000',
+      'timeout client'  => '20000',
+      'timeout server'  => '20000'
     }
   }
 
