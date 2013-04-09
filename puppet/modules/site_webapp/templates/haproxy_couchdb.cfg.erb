@@ -2,14 +2,14 @@
 listen bigcouch-in
   mode http
   balance  roundrobin
-
   option httplog
   option dontlognull
-  option tcplog
-
+  option httpchk GET /
+  option http-server-close
+  
   bind localhost:4096
 <% for port in @local_ports -%>
-  server couchdb_<%=port%> localhost:<%=port%>
+  server couchdb_<%=port%> localhost:<%=port%> check inter 3000 fastinter 1000 downinter 1000 rise 2 fall 1
 <% end -%>
 
 
