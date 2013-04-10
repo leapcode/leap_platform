@@ -33,10 +33,6 @@ if 'webapp' in $services {
   include site_webapp
 }
 
-if 'ca' in $services {
-  include site_ca_daemon
-}
-
 if 'monitor' in $services {
   include site_nagios
 }
