@@ -111,12 +111,8 @@ class site_webapp {
       content => template('site_webapp/config.yml.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
-      mode    => '0600';
-
-    '/srv/leap-webapp/config/initializers/secret_token.rb':
-      content => "LeapWeb::Application.config.secret_token = '${secret_token}'\n",
-      owner   => leap-webapp, group => leap-webapp, mode => '0644',
-      notify => Service['apache'];
+      mode    => '0600',
+      notify  => Service['apache'];
   }
 
   include site_shorewall::webapp
