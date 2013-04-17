@@ -18,3 +18,14 @@
     "commercial_ca_cert": "= try_file :commercial_ca_cert"
   }
 }
+  },
+  "x509": {
+    "use": true,
+    "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
+    "client_ca_cert": "= file_path :client_ca_cert",
+    "client_ca_key": "= file_path :client_ca_key",
+    "commercial_cert": "= file [:commercial_cert, domain.full_suffix]",
+    "commercial_key": "= file [:commercial_key, domain.full_suffix]",
+    "commercial_ca_cert": "= try_file :commercial_ca_cert"
+  }
+}
