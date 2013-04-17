@@ -19,8 +19,8 @@ class site_apt  {
 
   include ::apt::unattended_upgrades
 
-  apt::sources_list { 'fallback.list.disabled':
-    content => template('site_apt/fallback.list');
+  apt::sources_list { 'secondary.list.disabled':
+    content => template('site_apt/secondary.list');
   }
 
 }
