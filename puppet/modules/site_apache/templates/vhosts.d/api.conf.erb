@@ -22,7 +22,6 @@ Listen 0.0.0.0:<%= api_port %>
   RequestHeader set X_FORWARDED_PROTO 'https'
 
   DocumentRoot /srv/leap-webapp/public
-  Alias /1 /srv/leap-webapp/public
 
   # Check for maintenance file and redirect all requests
   RewriteEngine On
