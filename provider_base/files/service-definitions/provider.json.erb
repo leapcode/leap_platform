@@ -4,8 +4,10 @@
   # grab some fields from provider.json
   hsh = global.provider.pick(
     :languages, :description, :name,
-    :enrollment_policy, :default_language, :domain, :service
+    :enrollment_policy, :default_language, :service
   )
+
+  hsh['domain'] = domain.full_suffix
 
   # advertise services that are 'user services'
   hsh['services'] = global.services[:service_type => :user_service].field(:name)
