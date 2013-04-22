@@ -18,9 +18,28 @@ class site_postfix::mx {
     'luser_relay':          value => 'vmail';
     'local_recipient_maps': value => '';
     #'debug_peer_list':      value => '127.0.0.1';
+      value => 'check_recipient_access hash:/etc/postfix/recipient,reject_unauth_destination';
+    'mailbox_size_limit':
+      value => '0';
+    'home_mailbox':
+      value => 'Maildir/';
+    'virtual_alias_maps':
+      value => 'hash:/etc/postfix/virtual';
   }
 
-  include site_postfix::mx::smtpd_checks
+  postfix::hash { '/etc/postfix/virtual': }
+  postfix::hash { '/etc/postfix/recipient': }
+
+  # for now, accept all mail
+  line {'deliver to vmail':
+    file    => '/etc/postfix/recipient',
+    line    => "@${domain} vmail",
+    notify  => Exec['generate /etc/postfix/recipient.db'],
+    require => Package['postfix'],
+  }
+
+  postfix::virtual { "@${domain}": destination => 'vmail'; }
+  #postfix::mailalias { 'vmail': recipient => 'vmail' }
 
   user { 'vmail':
     ensure     => present,
@@ -29,6 +48,16 @@ class site_postfix::mx {
     shell      => '/bin/false',
     managehome => true,
   }
+
+  user { 'vmail':
+    ensure     => present,
+    comment    => 'Leap Mailspool',
+    home       => '/var/mail/vmail',
+    shell      => '/bin/false',
+    managehome => true,
+  }
+
+  include site_postfix::mx::smtpd_checks
 
   class { 'postfix':
     root_mail_recipient => $root_mail_recipient,
