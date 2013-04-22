@@ -1,10 +1,10 @@
 class site_postfix::mx {
 
-  $domain_hash = hiera ('domain')
-  $domain = $domain_hash['full_suffix']
+  $domain_hash         = hiera ('domain')
+  $domain              = $domain_hash['full_suffix']
+  $mx_hash             = hiera('mx')
 
-  # see https://leap.se/code/issues/1936 for contact email addr
-  #$root_mail_recipient = ''
+  $root_mail_recipient = $mx_hash['contact']
   $postfix_smtp_listen = 'all'
 
   postfix::config {

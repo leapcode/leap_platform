@@ -1,4 +1,7 @@
 {
+  "mx": {
+    "contact": "= global.provider.contacts.default"
+  },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
   },
