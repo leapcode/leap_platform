@@ -11,7 +11,6 @@ Package { require => Exec['apt_updated'] }
 
 include stdlib
 
-import 'common'
 include site_config::default
 include site_config::slow
 
