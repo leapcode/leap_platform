@@ -49,14 +49,6 @@ class site_postfix::mx {
     managehome => true,
   }
 
-  user { 'vmail':
-    ensure     => present,
-    comment    => 'Leap Mailspool',
-    home       => '/var/mail/vmail',
-    shell      => '/bin/false',
-    managehome => true,
-  }
-
   include site_postfix::mx::smtpd_checks
 
   class { 'postfix':
