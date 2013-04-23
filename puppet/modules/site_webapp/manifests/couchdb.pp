@@ -40,7 +40,7 @@ class site_webapp::couchdb {
     '/srv/leap-webapp/logs/production.log':
       owner   => leap-webapp,
       group   => leap-webapp,
-      mode    => '0660';
+      mode    => '0666';
 
     '/usr/local/sbin/migrate_design_documents':
       source => 'puppet:///modules/site_webapp/migrate_design_documents',
