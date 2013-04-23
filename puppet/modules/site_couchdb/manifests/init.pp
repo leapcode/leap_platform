@@ -11,12 +11,15 @@ class site_couchdb ( $bigcouch = false ) {
   $couchdb_admin          = $couchdb_users['admin']
   $couchdb_admin_user     = $couchdb_admin['username']
   $couchdb_admin_pw       = $couchdb_admin['password']
+  $couchdb_admin_salt     = $couchdb_admin['salt']
   $couchdb_webapp         = $couchdb_users['webapp']
   $couchdb_webapp_user    = $couchdb_webapp['username']
   $couchdb_webapp_pw      = $couchdb_webapp['password']
+  $couchdb_webapp_salt    = $couchdb_webapp['salt']
   $couchdb_ca_daemon      = $couchdb_users['ca_daemon']
   $couchdb_ca_daemon_user = $couchdb_ca_daemon['username']
   $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
+  $couchdb_ca_daemon_salt = $couchdb_ca_daemon['salt']
 
   $bigcouch_config        = $couchdb_config['bigcouch']
   $bigcouch_cookie        = $bigcouch_config['cookie']
@@ -45,18 +48,20 @@ class site_couchdb ( $bigcouch = false ) {
 
   couchdb::query::setup { 'localhost':
     user  => $couchdb_admin_user,
-    pw    => $couchdb_admin_pw
+    pw    => $couchdb_admin_pw,
   }
 
   # Populate couchdb
   couchdb::add_user { $couchdb_webapp_user:
     roles => '["certs"]',
-    pw    => $couchdb_webapp_pw
+    pw    => $couchdb_webapp_pw,
+    salt  => $couchdb_webapp_salt
   }
 
   couchdb::add_user { $couchdb_ca_daemon_user:
     roles => '["certs"]',
-    pw    => $couchdb_ca_daemon_pw
+    pw    => $couchdb_ca_daemon_pw,
+    salt  => $couchdb_ca_daemon_salt
   }
 
   couchdb::create_db { 'users':
