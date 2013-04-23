@@ -1,7 +1,6 @@
 {
   "webapp": {
     "modules": ["user", "billing", "help"],
-    "couchdb_hosts": "= hostnames nodes_like_me[:services => :couchdb]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "favicon": "= file_path 'branding/favicon.ico'",
