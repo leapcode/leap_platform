@@ -1,4 +1,4 @@
-class site_couchdb ( $bigcouch = false ) {
+class site_couchdb {
   tag 'leap_service'
 
   $x509                   = hiera('x509')
@@ -27,7 +27,7 @@ class site_couchdb ( $bigcouch = false ) {
   $ednp_port              = $bigcouch_config['ednp_port']
 
   class { 'couchdb':
-    bigcouch        => $bigcouch,
+    bigcouch        => true,
     admin_pw        => $couchdb_admin_pw,
     admin_salt      => $couchdb_admin_salt,
     bigcouch_cookie => $bigcouch_cookie,
