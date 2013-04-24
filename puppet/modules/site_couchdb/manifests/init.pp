@@ -29,6 +29,7 @@ class site_couchdb ( $bigcouch = false ) {
   class { 'couchdb':
     bigcouch        => $bigcouch,
     admin_pw        => $couchdb_admin_pw,
+    admin_salt      => $couchdb_admin_salt,
     bigcouch_cookie => $bigcouch_cookie,
     ednp_port       => $ednp_port
   }
