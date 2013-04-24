@@ -16,10 +16,10 @@ class site_couchdb ( $bigcouch = false ) {
   $couchdb_webapp_user    = $couchdb_webapp['username']
   $couchdb_webapp_pw      = $couchdb_webapp['password']
   $couchdb_webapp_salt    = $couchdb_webapp['salt']
-  $couchdb_ca_daemon      = $couchdb_users['ca_daemon']
-  $couchdb_ca_daemon_user = $couchdb_ca_daemon['username']
-  $couchdb_ca_daemon_pw   = $couchdb_ca_daemon['password']
-  $couchdb_ca_daemon_salt = $couchdb_ca_daemon['salt']
+  $couchdb_soledad        = $couchdb_users['soledad']
+  $couchdb_soledad_user   = $couchdb_soledad['username']
+  $couchdb_soledad_pw     = $couchdb_soledad['password']
+  $couchdb_soledad_salt   = $couchdb_soledad['salt']
 
   $bigcouch_config        = $couchdb_config['bigcouch']
   $bigcouch_cookie        = $bigcouch_config['cookie']
@@ -36,9 +36,9 @@ class site_couchdb ( $bigcouch = false ) {
 
   Service ['couchdb']
     -> Couchdb::Create_db['users']
-    -> Couchdb::Create_db['client_certificates']
+    -> Couchdb::Create_db['tokens']
     -> Couchdb::Add_user[$couchdb_webapp_user]
-    -> Couchdb::Add_user[$couchdb_ca_daemon_user]
+    -> Couchdb::Add_user[$couchdb_soledad_user]
 
   class { 'site_couchdb::stunnel':
     key  => $key,
@@ -53,23 +53,23 @@ class site_couchdb ( $bigcouch = false ) {
 
   # Populate couchdb
   couchdb::add_user { $couchdb_webapp_user:
-    roles => '["certs"]',
+    roles => '["auth"]',
     pw    => $couchdb_webapp_pw,
     salt  => $couchdb_webapp_salt
   }
 
-  couchdb::add_user { $couchdb_ca_daemon_user:
-    roles => '["certs"]',
-    pw    => $couchdb_ca_daemon_pw,
-    salt  => $couchdb_ca_daemon_salt
+  couchdb::add_user { $couchdb_soledad_user:
+    roles => '["auth"]',
+    pw    => $couchdb_soledad_pw,
+    salt  => $couchdb_soledad_salt
   }
 
   couchdb::create_db { 'users':
     readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }"
   }
 
-  couchdb::create_db { 'client_certificates':
-    readers => "{ \"names\": [], \"roles\": [\"certs\"] }"
+  couchdb::create_db { 'tokens':
+    readers => "{ \"names\": [], \"roles\": [\"auth\"] }"
   }
 
   include site_shorewall::couchdb

@@ -28,10 +28,10 @@
         "password": "= secret :couch_webapp_password",
         "salt": "= hex_secret :couch_webapp_password_salt, 128"
       },
-      "ca_daemon": {
-        "username": "ca_daemon",
-        "password": "= secret :couch_ca_daemon_password",
-        "salt": "= hex_secret :couch_ca_daemon_password_salt, 128"
+      "soledad": {
+        "username": "soledad",
+        "password": "= secret :couch_soledad_password",
+        "salt": "= hex_secret :couch_soledad_password_salt, 128"
       }
     }
   }
