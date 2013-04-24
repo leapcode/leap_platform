@@ -27,8 +27,8 @@ class site_webapp::couchdb {
   file {
     '/srv/leap-webapp/config/couchdb.yml.admin':
       content => template('site_webapp/couchdb.yml.admin.erb'),
-      owner   => leap_webapp,
-      group   => leap_webapp,
+      owner   => leap-webapp,
+      group   => leap-webapp,
       mode    => '0600';
 
     '/srv/leap-webapp/config/couchdb.yml.webapp':
