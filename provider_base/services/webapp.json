@@ -11,7 +11,8 @@
     "allow_limited_certs": "= global.provider.service.allow_limited_bandwidth",
     "allow_unlimited_certs": "= global.provider.service.allow_unlimited_bandwidth",
     "allow_anonymous_certs": "= global.provider.service.allow_anonymous",
-    "secret_token": "= secret :webapp_secret_token"
+    "secret_token": "= secret :webapp_secret_token",
+    "api_version": 1
   },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
@@ -21,7 +22,7 @@
   },
   "definition_files": {
     "provider": "= file :provider_json_template",
-    "eip_service": "= file :eip_service_json_template"
+    "eip_service": "= file [:eip_service_json_template, 'v'+webapp.api_version.to_s]"
   },
   "service_type": "public_service",
   "api": {

@@ -6,6 +6,7 @@ class site_webapp {
   $node_domain      = hiera('domain')
   $provider_domain  = $node_domain['full_suffix']
   $webapp           = hiera('webapp')
+  $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
 
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
@@ -83,7 +84,11 @@ class site_webapp {
       ensure => directory,
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
-    '/srv/leap-webapp/public/config/eip-service.json':
+    "/srv/leap-webapp/public/config/${api_version}":
+      ensure => directory,
+      owner  => leap-webapp, group => leap-webapp, mode => '0755';
+
+    "/srv/leap-webapp/public/config/${api_version}/eip-service.json":
       content => $eip_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
   }
