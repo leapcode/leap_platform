@@ -17,9 +17,10 @@ class site_postfix::mx {
     'virtual_alias_maps':   value => 'tcp:localhost:4242';
     'luser_relay':          value => 'vmail';
     'local_recipient_maps': value => '';
+    #'debug_peer_list':      value => '127.0.0.1';
   }
 
-  #include site_postfix::mx::smtp_checks
+  include site_postfix::mx::smtpd_checks
 
   user { 'vmail':
     ensure     => present,
