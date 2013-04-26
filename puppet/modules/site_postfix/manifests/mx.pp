@@ -27,7 +27,7 @@ class site_postfix::mx {
       value => 'hash:/etc/postfix/virtual';
   }
 
-  #include site_postfix::mx::smtp_checks
+  include site_postfix::mx::smtpd_checks
 
   user { 'vmail':
     ensure     => present,
