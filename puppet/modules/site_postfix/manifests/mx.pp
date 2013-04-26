@@ -27,19 +27,7 @@ class site_postfix::mx {
       value => 'hash:/etc/postfix/virtual';
   }
 
-  postfix::hash { '/etc/postfix/virtual': }
-  postfix::hash { '/etc/postfix/recipient': }
-
-  # for now, accept all mail
-  line {'deliver to vmail':
-    file    => '/etc/postfix/recipient',
-    line    => "@${domain} vmail",
-    notify  => Exec['generate /etc/postfix/recipient.db'],
-    require => Package['postfix'],
-  }
-
-  postfix::virtual { "@${domain}": destination => 'vmail'; }
-  #postfix::mailalias { 'vmail': recipient => 'vmail' }
+  #include site_postfix::mx::smtp_checks
 
   user { 'vmail':
     ensure     => present,
