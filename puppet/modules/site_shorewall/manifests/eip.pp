@@ -1,6 +1,7 @@
 class site_shorewall::eip {
 
   include site_shorewall::defaults
+  include site_config::params
   include site_shorewall::ip_forward
 
   # define macro for incoming services
@@ -32,11 +33,7 @@ PARAM   -       -       udp     1194
       type => 'ipv4';
   }
 
-  if $::virtual == 'virtualbox' {
-    $interface = 'eth0'
-  } else {
-    $interface = $site_shorewall::defaults::interface
-  }
+  $interface = $site_config::params::interface
 
   shorewall::masq {
     "${interface}_unlimited_tcp":

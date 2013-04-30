@@ -1,16 +1,9 @@
 class site_shorewall::defaults {
   include shorewall
+  include site_config::params
 
   # be safe for development
   #if ( $::virtual == 'virtualbox') { $shorewall_startup='0' }
-
-  $ip_address     = hiera('ip_address')
-  # a special case for vagrant interfaces
-  $interface      = $::virtual ? {
-    virtualbox => [ 'eth0', 'eth1' ],
-    default    => getvar("interface_${ip_address}")
-  }
-
 
   # If you want logging:
   shorewall::params {
@@ -19,14 +12,13 @@ class site_shorewall::defaults {
 
   shorewall::zone {'net': type => 'ipv4'; }
 
-
   # define interfaces
-  shorewall::interface { $interface:
+  shorewall::interface { $site_config::params::interface:
     zone      => 'net',
     options   => 'tcpflags,blacklist,nosmurfs';
   }
 
-  shorewall::routestopped { $interface: }
+  shorewall::routestopped { $site_config::params::interface: }
 
   shorewall::policy {
     'fw-to-all':

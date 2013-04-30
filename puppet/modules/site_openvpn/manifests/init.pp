@@ -21,8 +21,6 @@ class site_openvpn {
 
   $openvpn_config   = hiera('openvpn')
   $x509_config      = hiera('x509')
-  $ip_address       = hiera('ip_address')
-  $interface        = getvar("interface_${ip_address}")
   $openvpn_ports    = $openvpn_config['ports']
   $openvpn_gateway_address         = $openvpn_config['gateway_address']
   if $openvpn_config['second_gateway_address'] {
