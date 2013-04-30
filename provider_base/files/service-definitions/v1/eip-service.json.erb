@@ -14,7 +14,7 @@
     gateway["host"] = node.domain.full
     gateway["ip_address"] = options[:ip]
     gateway["capabilities"]["limited"] = options[:limited]
-    if node.location
+    if node['location']
       location_name = underscore(node.location.name)
       gateway["location"] = location_name
       locations[location_name] ||= node.location

@@ -3,6 +3,7 @@ class site_webapp {
   $definition_files = hiera('definition_files')
   $provider         = $definition_files['provider']
   $eip_service      = $definition_files['eip_service']
+  $soledad_service  = $definition_files['soledad_service']
   $node_domain      = hiera('domain')
   $provider_domain  = $node_domain['full_suffix']
   $webapp           = hiera('webapp')
@@ -80,16 +81,20 @@ class site_webapp {
       ensure  => link,
       target  => '/usr/local/share/ca-certificates/leap_api.crt';
 
-    '/srv/leap-webapp/public/config':
+    "/srv/leap-webapp/public/${api_version}":
       ensure => directory,
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
-    "/srv/leap-webapp/public/config/${api_version}":
+    "/srv/leap-webapp/public/${api_version}/config/":
       ensure => directory,
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
-    "/srv/leap-webapp/public/config/${api_version}/eip-service.json":
+    "/srv/leap-webapp/public/${api_version}/config/eip-service.json":
       content => $eip_service,
+      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+
+    "/srv/leap-webapp/public/${api_version}/config/soledad-service.json":
+      content => $soledad_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
   }
 

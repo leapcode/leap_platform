@@ -1,0 +1,6 @@
+{
+  "service_type": "public_service",
+  "soledad": {
+    "port": 1111
+  }
+}

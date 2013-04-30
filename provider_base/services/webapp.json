@@ -22,7 +22,8 @@
   },
   "definition_files": {
     "provider": "= file :provider_json_template",
-    "eip_service": "= file [:eip_service_json_template, 'v'+webapp.api_version.to_s]"
+    "eip_service": "= file [:eip_service_json_template, 'v'+webapp.api_version.to_s]",
+    "soledad_service": "= file [:soledad_service_json_template, 'v'+webapp.api_version.to_s]"
   },
   "service_type": "public_service",
   "api": {
