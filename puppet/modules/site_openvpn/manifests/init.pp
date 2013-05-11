@@ -22,11 +22,16 @@ class site_openvpn {
   $openvpn_config   = hiera('openvpn')
   $x509_config      = hiera('x509')
   $openvpn_ports    = $openvpn_config['ports']
-  $openvpn_gateway_address         = $openvpn_config['gateway_address']
-  if $openvpn_config['second_gateway_address'] {
-    $openvpn_second_gateway_address = $openvpn_config['second_gateway_address']
+
+  if $::ec2_instance_id {
+    $openvpn_gateway_address = $::ipaddress
   } else {
-    $openvpn_second_gateway_address = undef
+    $openvpn_gateway_address         = $openvpn_config['gateway_address']
+    if $openvpn_config['second_gateway_address'] {
+      $openvpn_second_gateway_address = $openvpn_config['second_gateway_address']
+    } else {
+      $openvpn_second_gateway_address = undef
+    }
   }
 
   $openvpn_allow_unlimited              = $openvpn_config['allow_unlimited']
@@ -38,15 +43,17 @@ class site_openvpn {
   $openvpn_unlimited_udp_netmask        = '255.255.248.0'
   $openvpn_unlimited_udp_cidr           = '21'
 
-  $openvpn_allow_limited                = $openvpn_config['allow_limited']
-  $openvpn_limited_prefix               = $openvpn_config['limited_prefix']
-  $openvpn_rate_limit                   = $openvpn_config['rate_limit']
-  $openvpn_limited_tcp_network_prefix   = '10.43.0'
-  $openvpn_limited_tcp_netmask          = '255.255.248.0'
-  $openvpn_limited_tcp_cidr             = '21'
-  $openvpn_limited_udp_network_prefix   = '10.44.0'
-  $openvpn_limited_udp_netmask          = '255.255.248.0'
-  $openvpn_limited_udp_cidr             = '21'
+  if !$::ec2_instance_id {
+    $openvpn_allow_limited                = $openvpn_config['allow_limited']
+    $openvpn_limited_prefix               = $openvpn_config['limited_prefix']
+    $openvpn_rate_limit                   = $openvpn_config['rate_limit']
+    $openvpn_limited_tcp_network_prefix   = '10.43.0'
+    $openvpn_limited_tcp_netmask          = '255.255.248.0'
+    $openvpn_limited_tcp_cidr             = '21'
+    $openvpn_limited_udp_network_prefix   = '10.44.0'
+    $openvpn_limited_udp_netmask          = '255.255.248.0'
+    $openvpn_limited_udp_cidr             = '21'
+  }
 
   # deploy ca + server keys
   include site_openvpn::keys

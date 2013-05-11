@@ -42,12 +42,16 @@ class site_shorewall::eip {
     "${interface}_unlimited_udp":
       interface => $interface,
       source    => "${site_openvpn::openvpn_unlimited_udp_network_prefix}.0/${site_openvpn::openvpn_unlimited_udp_cidr}";
-    "${interface}_limited_tcp":
-      interface => $interface,
-      source    => "${site_openvpn::openvpn_limited_tcp_network_prefix}.0/${site_openvpn::openvpn_limited_tcp_cidr}";
-    "${interface}_limited_udp":
-      interface => $interface,
-      source    => "${site_openvpn::openvpn_limited_udp_network_prefix}.0/${site_openvpn::openvpn_limited_udp_cidr}";
+  }
+  if ! $::ec2_instance_id {
+    shorewall::masq {
+      "${interface}_limited_tcp":
+        interface => $interface,
+        source    => "${site_openvpn::openvpn_limited_tcp_network_prefix}.0/${site_openvpn::openvpn_limited_tcp_cidr}";
+      "${interface}_limited_udp":
+        interface => $interface,
+        source    => "${site_openvpn::openvpn_limited_udp_network_prefix}.0/${site_openvpn::openvpn_limited_udp_cidr}";
+    }
   }
 
   shorewall::policy {
