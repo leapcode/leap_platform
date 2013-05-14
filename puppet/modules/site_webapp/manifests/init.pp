@@ -4,6 +4,7 @@ class site_webapp {
   $provider         = $definition_files['provider']
   $eip_service      = $definition_files['eip_service']
   $soledad_service  = $definition_files['soledad_service']
+  $smtp_service     = $definition_files['smtp_service']
   $node_domain      = hiera('domain')
   $provider_domain  = $node_domain['full_suffix']
   $webapp           = hiera('webapp')
@@ -95,6 +96,10 @@ class site_webapp {
 
     "/srv/leap-webapp/public/${api_version}/config/soledad-service.json":
       content => $soledad_service,
+      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+
+    "/srv/leap-webapp/public/${api_version}/config/smtp-service.json":
+      content => $smtp_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
   }
 
