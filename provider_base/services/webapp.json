@@ -29,7 +29,7 @@
   "service_type": "public_service",
   "api": {
     "domain": "= 'api.' + domain.full_suffix",
-    "port": "4430"
+    "port": 4430
   },
   "dns": {
     "aliases": "= [domain.full, api.domain]"
