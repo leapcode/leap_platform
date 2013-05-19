@@ -11,13 +11,7 @@ class site_webapp {
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
 
-  Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
-
-  class { 'ruby': ruby_version => '1.9.3' }
-
-  class { 'bundler::install': install_method => 'package' }
-
-  include rubygems
+  include site_config::ruby
   include site_webapp::apache
   include site_webapp::couchdb
   include site_webapp::client_ca

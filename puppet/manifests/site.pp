@@ -29,6 +29,7 @@ if 'couchdb' in $services {
 
 if 'webapp' in $services {
   include site_webapp
+  include site_nickserver
 }
 
 if 'monitor' in $services {
