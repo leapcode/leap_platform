@@ -39,12 +39,10 @@ class site_nickserver {
   # NICKSERVER CODE
   #
 
-  #file { '/srv/leap/nickserver':
-  #  ensure  => directory,
-  #  owner   => 'nickserver',
-  #  group   => 'nickserver',
-  #  require => User['nickserver'];
-  #}
+  # libssl-dev must be installed before eventmachine gem in order to support TLS
+  package {
+    'libssl-dev': ensure => installed;
+  }
   vcsrepo { '/srv/leap/nickserver':
     ensure   => present,
     revision => 'origin/master',
@@ -61,7 +59,7 @@ class site_nickserver {
     unless  => '/usr/bin/bundle check',
     user    => 'nickserver',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/nickserver'] ],
+    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/nickserver'], Package['libssl-dev'] ],
     notify  => Service['nickserver'];
   }
 
