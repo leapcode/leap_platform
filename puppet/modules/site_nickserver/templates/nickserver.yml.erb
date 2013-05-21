@@ -1,10 +1,19 @@
-couch_host: <%= @couchdb_host %>
+#
+# configuration for nickserver.
+#
+
+domain: "<%= @address_domain %>"
+
+couch_host: "<%= @couchdb_host %>"
 couch_port: <%= @couchdb_port %>
-couch_database: 'users'
-couch_user: <%= @couchdb_user %>
-couch_password: <%= @couchdb_password %>
-hkp_url: 'https://hkps.pool.sks-keyservers.net:/pks/lookup'
-port: <%= @nickserver_port %>
-pid_file: '/var/run/nickserver'
-user: 'nickserver'
-log_file: '/var/log/nickserver.log'
+couch_database: "users"
+couch_user: "<%= @couchdb_user %>"
+couch_password: "<%= @couchdb_password %>"
+
+hkp_url: "https://hkps.pool.sks-keyservers.net:/pks/lookup"
+
+user: "nickserver"
+port: <%= @nickserver_local_port %>
+pid_file: "/var/run/nickserver"
+log_file: "/var/log/nickserver.log"
+
