@@ -16,5 +16,6 @@
     "commercial_cert": "= file [:commercial_cert, domain.full_suffix]",
     "commercial_key": "= file [:commercial_key, domain.full_suffix]",
     "commercial_ca_cert": "= try_file :commercial_ca_cert"
-  }
+  },
+  "service_type": "user_service"
 }
