@@ -33,18 +33,18 @@ class site_webapp {
     allowdupe => false,
     gid       => 'leap-webapp',
     groups    => 'ssl-cert',
-    home      => '/srv/leap-webapp',
+    home      => '/srv/leap/webapp',
     require   => [ Group['leap-webapp'] ];
   }
 
-  file { '/srv/leap-webapp':
+  file { '/srv/leap/webapp':
     ensure  => directory,
     owner   => 'leap-webapp',
     group   => 'leap-webapp',
     require => User['leap-webapp'];
   }
 
-  vcsrepo { '/srv/leap-webapp':
+  vcsrepo { '/srv/leap/webapp':
     ensure   => present,
     revision => 'origin/master',
     provider => git,
@@ -56,17 +56,17 @@ class site_webapp {
   }
 
   exec { 'bundler_update':
-    cwd     => '/srv/leap-webapp',
+    cwd     => '/srv/leap/webapp',
     command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install --path vendor/bundle"',
     unless  => '/usr/bin/bundle check',
     user    => 'leap-webapp',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap-webapp'] ],
+    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/webapp'] ],
     notify  => Service['apache'];
   }
 
   exec { 'compile_assets':
-    cwd     => '/srv/leap-webapp',
+    cwd     => '/srv/leap/webapp',
     command => '/bin/bash -c "/usr/bin/bundle exec rake assets:precompile"',
     user    => 'leap-webapp',
     require => Exec['bundler_update'],
@@ -74,55 +74,55 @@ class site_webapp {
   }
 
   file {
-    '/srv/leap-webapp/public/provider.json':
+    '/srv/leap/webapp/public/provider.json':
       content => $provider,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
-    '/srv/leap-webapp/public/ca.crt':
+    '/srv/leap/webapp/public/ca.crt':
       ensure  => link,
       target  => '/usr/local/share/ca-certificates/leap_api.crt';
 
-    "/srv/leap-webapp/public/${api_version}":
+    "/srv/leap/webapp/public/${api_version}":
       ensure => directory,
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
-    "/srv/leap-webapp/public/${api_version}/config/":
+    "/srv/leap/webapp/public/${api_version}/config/":
       ensure => directory,
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
-    "/srv/leap-webapp/public/${api_version}/config/eip-service.json":
+    "/srv/leap/webapp/public/${api_version}/config/eip-service.json":
       content => $eip_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
-    "/srv/leap-webapp/public/${api_version}/config/soledad-service.json":
+    "/srv/leap/webapp/public/${api_version}/config/soledad-service.json":
       content => $soledad_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
-    "/srv/leap-webapp/public/${api_version}/config/smtp-service.json":
+    "/srv/leap/webapp/public/${api_version}/config/smtp-service.json":
       content => $smtp_service,
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
   }
 
   try::file {
-    '/srv/leap-webapp/public/favicon.ico':
+    '/srv/leap/webapp/public/favicon.ico':
       ensure => 'link',
       target => $webapp['favicon'];
 
-    '/srv/leap-webapp/app/assets/stylesheets/tail.scss':
+    '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
       ensure => 'link',
       target => $webapp['tail_scss'];
 
-    '/srv/leap-webapp/app/assets/stylesheets/head.scss':
+    '/srv/leap/webapp/app/assets/stylesheets/head.scss':
       ensure => 'link',
       target => $webapp['head_scss'];
 
-    '/srv/leap-webapp/public/img':
+    '/srv/leap/webapp/public/img':
       ensure => 'link',
       target => $webapp['img_dir'];
   }
 
   file {
-    '/srv/leap-webapp/config/config.yml':
+    '/srv/leap/webapp/config/config.yml':
       content => template('site_webapp/config.yml.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,

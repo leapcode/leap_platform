@@ -25,19 +25,19 @@ class site_webapp::couchdb {
   $key_path                = "${x509::variables::keys}/${cert_name}.key"
 
   file {
-    '/srv/leap-webapp/config/couchdb.yml.admin':
+    '/srv/leap/webapp/config/couchdb.yml.admin':
       content => template('site_webapp/couchdb.yml.admin.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0600';
 
-    '/srv/leap-webapp/config/couchdb.yml.webapp':
+    '/srv/leap/webapp/config/couchdb.yml.webapp':
       content => template('site_webapp/couchdb.yml.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0600';
 
-    '/srv/leap-webapp/logs/production.log':
+    '/srv/leap/webapp/logs/production.log':
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0666';
@@ -58,7 +58,7 @@ class site_webapp::couchdb {
   }
 
   exec { 'migrate_design_documents':
-    cwd      => '/srv/leap-webapp',
+    cwd      => '/srv/leap/webapp',
     command  => '/usr/local/sbin/migrate_design_documents',
     require  => Exec['bundler_update'],
     notify   => Service['apache'];
