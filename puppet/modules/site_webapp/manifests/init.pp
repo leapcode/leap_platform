@@ -70,30 +70,37 @@ class site_webapp {
   file {
     '/srv/leap-webapp/public/provider.json':
       content => $provider,
+      require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
     '/srv/leap-webapp/public/ca.crt':
       ensure  => link,
+      require => Vcsrepo['/srv/leap/webapp'],
       target  => '/usr/local/share/ca-certificates/leap_api.crt';
 
     "/srv/leap-webapp/public/${api_version}":
       ensure => directory,
+      require => Vcsrepo['/srv/leap/webapp'],
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
     "/srv/leap-webapp/public/${api_version}/config/":
       ensure => directory,
+      require => Vcsrepo['/srv/leap/webapp'],
       owner  => leap-webapp, group => leap-webapp, mode => '0755';
 
     "/srv/leap-webapp/public/${api_version}/config/eip-service.json":
       content => $eip_service,
+      require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
     "/srv/leap-webapp/public/${api_version}/config/soledad-service.json":
       content => $soledad_service,
+      require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
     "/srv/leap-webapp/public/${api_version}/config/smtp-service.json":
       content => $smtp_service,
+      require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
   }
 
@@ -102,17 +109,20 @@ class site_webapp {
       ensure => 'link',
       target => $webapp['favicon'];
 
-    '/srv/leap-webapp/app/assets/stylesheets/tail.scss':
-      ensure => 'link',
-      target => $webapp['tail_scss'];
+    '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
+      ensure  => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
+      target  => $webapp['tail_scss'];
 
-    '/srv/leap-webapp/app/assets/stylesheets/head.scss':
-      ensure => 'link',
-      target => $webapp['head_scss'];
+    '/srv/leap/webapp/app/assets/stylesheets/head.scss':
+      ensure  => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
+      target  => $webapp['head_scss'];
 
-    '/srv/leap-webapp/public/img':
-      ensure => 'link',
-      target => $webapp['img_dir'];
+    '/srv/leap/webapp/public/img':
+      ensure  => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
+      target  => $webapp['img_dir'];
   }
 
   file {
@@ -121,6 +131,7 @@ class site_webapp {
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0600',
+      require => Vcsrepo['/srv/leap/webapp'],
       notify  => Service['apache'];
   }
 
