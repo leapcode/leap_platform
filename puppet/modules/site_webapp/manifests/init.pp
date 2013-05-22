@@ -106,19 +106,23 @@ class site_webapp {
 
   try::file {
     '/srv/leap/webapp/public/favicon.ico':
-      ensure => 'link',
-      target => $webapp['favicon'];
+      ensure  => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
+      target  => $webapp['favicon'];
 
     '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
       ensure => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
       target => $webapp['tail_scss'];
 
     '/srv/leap/webapp/app/assets/stylesheets/head.scss':
       ensure => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
       target => $webapp['head_scss'];
 
     '/srv/leap/webapp/public/img':
       ensure => 'link',
+      require => Vcsrepo['/srv/leap/webapp'],
       target => $webapp['img_dir'];
   }
 
