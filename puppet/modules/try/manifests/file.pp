@@ -18,7 +18,10 @@ define try::file (
     file { "$name":
       ensure => $ensure,
       target => $target,
-      require => Exec["check_${name}"],
+      require => $require ? {
+        undef   => Exec["check_${name}"],
+        default => [ $require, Exec["check_${name}"] ]
+      },
       loglevel => info;
     }
   }
@@ -37,6 +40,10 @@ define try::file (
       exec { "restore_${name}":
         command => $command,
         cwd => $file_dirname,
+        require => $require ? {
+          undef   => undef,
+          default => [ $require ]
+        },
         loglevel => info;
       }
     } else {
@@ -44,6 +51,10 @@ define try::file (
         unless => "/usr/bin/test -e '${target}'",
         command => $command,
         cwd => $file_dirname,
+        require => $require ? {
+          undef   => undef,
+          default => [ $require ]
+        },
         loglevel => info;
       }
     }
