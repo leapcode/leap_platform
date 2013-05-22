@@ -29,18 +29,21 @@ class site_webapp::couchdb {
       content => template('site_webapp/couchdb.yml.admin.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
-      mode    => '0600';
+      mode    => '0600',
+      require => Vcsrepo['/srv/leap/webapp'];
 
     '/srv/leap-webapp/config/couchdb.yml.webapp':
       content => template('site_webapp/couchdb.yml.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
-      mode    => '0600';
+      mode    => '0600',
+      require => Vcsrepo['/srv/leap/webapp'];
 
     '/srv/leap-webapp/logs/production.log':
       owner   => leap-webapp,
       group   => leap-webapp,
-      mode    => '0666';
+      mode    => '0666',
+      require => Vcsrepo['/srv/leap/webapp'];
 
     '/usr/local/sbin/migrate_design_documents':
       source => 'puppet:///modules/site_webapp/migrate_design_documents',
