@@ -11,7 +11,7 @@ class site_postfix::mx {
     'mydestination':
       value => "\$myorigin, localhost, localhost.\$mydomain, ${domain}";
     'smtpd_recipient_restrictions':
-      value => 'check_recipient_access tcp:localhost:2244,reject_unauth_destination';
+      value => 'check_recipient_access tcp:localhost:2244,reject_unauth_destination,permit_tls_all_clientcerts';
     'mailbox_size_limit':   value => '0';
     'home_mailbox':         value => 'Maildir/';
     'virtual_alias_maps':   value => 'tcp:localhost:4242';
