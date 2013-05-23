@@ -33,9 +33,12 @@ class site_couchdb {
     bigcouch_cookie => $bigcouch_cookie,
     ednp_port       => $ednp_port
   }
-  include couchdb::bigcouch::package::cloudant
 
-  Service ['couchdb']
+  class { 'couchdb::bigcouch::package::cloudant': }
+
+  Class ['couchdb::bigcouch::package::cloudant']
+    -> Service ['couchdb']
+    -> Class ['site_couchdb::bigcouch::add_nodes']
     -> Couchdb::Create_db['users']
     -> Couchdb::Create_db['tokens']
     -> Couchdb::Add_user[$couchdb_webapp_user]
@@ -46,6 +49,8 @@ class site_couchdb {
     cert => $cert,
     ca   => $ca
   }
+
+  class { 'site_couchdb::bigcouch::add_nodes': }
 
   couchdb::query::setup { 'localhost':
     user  => $couchdb_admin_user,
