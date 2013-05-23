@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /srv/leap-webapp
+cd /srv/leap/webapp
 
 # use admin credentials
 cp config/couchdb.yml.admin config/couchdb.yml
