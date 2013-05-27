@@ -30,5 +30,6 @@
     "site_config": true
   },
   "name": "common",
-  "location": null
+  "location": null,
+  "enabled": true
 }
