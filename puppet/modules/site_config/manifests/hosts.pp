@@ -1,11 +1,11 @@
 class site_config::hosts() {
-  $hosts = hiera('hosts','')
-  $hostname = hiera('name')
-  $domain_hash = hiera('domain')
+  $hosts         = hiera('hosts','')
+  $hostname      = hiera('name')
+  $domain_hash   = hiera('domain')
   $domain_public = $domain_hash['full_suffix']
 
-  file { "/etc/hostname":
-    ensure => present,
+  file { '/etc/hostname':
+    ensure  => present,
     content => $hostname
   }
 
@@ -16,6 +16,8 @@ class site_config::hosts() {
 
   file { '/etc/hosts':
     content => template('site_config/hosts'),
-    mode    => '0644', owner => root, group => root;
+    mode    => '0644',
+    owner   => root,
+    group   => root;
   }
 }
