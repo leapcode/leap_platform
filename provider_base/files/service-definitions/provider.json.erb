@@ -20,5 +20,5 @@
   hsh['ca_cert_uri'] = 'https://' + domain.full_suffix + '/ca.crt'
   hsh['ca_cert_fingerprint'] = fingerprint(:ca_cert)
 
-  generate_json hsh
+  JSON.sorted_generate hsh
 %>

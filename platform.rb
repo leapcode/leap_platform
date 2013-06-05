@@ -3,8 +3,8 @@
 #
 
 Leap::Platform.define do
-  self.version = "1.0.0"
-  self.compatible_cli = "1.0".."1.99"
+  self.version = "1.1.0"
+  self.compatible_cli = "1.1".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -38,6 +38,7 @@ Leap::Platform.define do
     :smtp_service_json_template    => 'files/service-definitions/#{arg}/smtp-service.json.erb',
 
     # output files
+    :facts            => 'facts.json',
     :user_ssh         => 'users/#{arg}/#{arg}_ssh.pub',
     :user_pgp         => 'users/#{arg}/#{arg}_pgp.pub',
     :known_hosts      => 'files/ssh/known_hosts',
