@@ -5,7 +5,7 @@
 
 <%- if @hosts then -%>
 <%   @hosts.each do |name, props| -%>
-<%=     props["ip_address"] %> <%= props["domain_full"] %>, <%= props["domain_internal"] %>, <%= name %>
+<%=     props["ip_address"] %> <%= props["domain_full"] %> <%= props["domain_internal"] %> <%= name %>
 <%   end -%>
 <% end -%>
 
