@@ -36,4 +36,6 @@ class site_config::default {
 
   Class['git'] -> Vcsrepo<||>
 
+  # include basic shell config
+  include site_config::shell
 }
