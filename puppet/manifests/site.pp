@@ -19,23 +19,23 @@ include site_config::slow
 
 
 # configure eip
-if 'openvpn' in $services {
+if $services =~ /\bopenvpn\b/ {
   include site_openvpn
 }
 
-if 'couchdb' in $services {
+if $services =~ /\bcouchdb\b/ {
   include site_couchdb
 }
 
-if 'webapp' in $services {
+if $services =~ /\bwebapp\b/ {
   include site_webapp
   include site_nickserver
 }
 
-if 'monitor' in $services {
+if $services =~ /\bmonitor\b/ {
   include site_nagios
 }
 
-if 'tor' in $services {
+if $services =~ /\btor\b/ {
   include site_tor
 }
