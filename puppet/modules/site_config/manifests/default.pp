@@ -12,9 +12,13 @@ class site_config::default {
   # configure apt
   include site_apt
 
-
   # configure ssh and include ssh-keys
   include site_config::sshd
+
+  # fix dhclient from changing resolver information
+  if $::ec2_instance_id {
+    include site_config::dhclient
+  }
 
   # configure /etc/resolv.conf
   include site_config::resolvconf
