@@ -28,4 +28,12 @@ class site_apt  {
     priority => 999
   }
 
+  # All packages should be installed _after_ refresh_apt is called,
+  # which does an apt-get update.
+  # There is one exception:
+  # The creation of sources.list depends on the lsb package
+
+  File['/etc/apt/preferences'] ->
+    Exec['refresh_apt']
+    Package <| ( title != 'lsb' ) |>
 }
