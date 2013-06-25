@@ -23,4 +23,17 @@ class site_apt  {
     content => template('site_apt/secondary.list');
   }
 
+  apt::preferences_snippet { 'facter':
+    release  => "${::lsbdistcodename}-backports",
+    priority => 999
+  }
+
+  # All packages should be installed _after_ refresh_apt is called,
+  # which does an apt-get update.
+  # There is one exception:
+  # The creation of sources.list depends on the lsb package
+
+  File['/etc/apt/preferences'] ->
+    Exec['refresh_apt']
+    Package <| ( title != 'lsb' ) |>
 }
