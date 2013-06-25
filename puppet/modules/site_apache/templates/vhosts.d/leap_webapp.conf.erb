@@ -36,7 +36,7 @@
   PassengerFriendlyErrorPages off
   SetEnv TMPDIR /var/tmp
 
- <% if (defined? @services) and (services.is_a? Array) and (@services.include? 'monitor') -%>
+ <% if (defined? @services) and (@services.include? 'monitor') -%>
  <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets)>
     PassengerEnabled off
     AllowOverride all
