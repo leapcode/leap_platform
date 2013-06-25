@@ -13,7 +13,7 @@ Package: *
 Pin: release o=Debian,n=sid
 Pin-Priority: 1
 
-Explanation: De
+Explanation: Debian squeeze
 Package: *
 Pin: release o=Debian,n=squeeze
 Pin-Priority: 980
