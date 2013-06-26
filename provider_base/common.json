@@ -14,7 +14,7 @@
     "public": "= service_type != 'internal_service'"
   },
   "ssh": {
-    "authorized_keys": "= file :authorized_keys",
+    "authorized_keys": "= authorized_keys",
     "known_hosts": "=> known_hosts_file",
     "port": 22,
     "mosh": {

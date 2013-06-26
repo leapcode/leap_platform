@@ -3,8 +3,8 @@
 #
 
 Leap::Platform.define do
-  self.version = "1.1.0"
-  self.compatible_cli = "1.1".."1.99"
+  self.version = "1.1.2"
+  self.compatible_cli = "1.1.2".."1.99"
 
   #
   # the facter facts that should be gathered
