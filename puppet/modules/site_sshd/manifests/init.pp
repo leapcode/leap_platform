@@ -1,5 +1,8 @@
 class site_sshd {
   $ssh = hiera_hash('ssh')
+  $ssh_authorized_keys = $ssh['authorized_keys']
+
+  include site_sshd::authorized_keys
 
   ##
   ## XTERM TITLE
