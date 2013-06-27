@@ -8,7 +8,10 @@ class site_apt  {
   } else {
     $custom_preferences = ''
   }
-  class {'apt': custom_preferences => $custom_preferences }
+  class { 'apt':
+    custom_preferences => $custom_preferences,
+    custom_key_dir     => 'puppet:///modules/site_apt/keys'
+  }
 
   # enable http://deb.leap.se debian package repository
   include site_apt::leap_repo
