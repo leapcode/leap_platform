@@ -4,7 +4,6 @@
 $services = ''
 
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
-$custom_key_dir = 'puppet:///modules/site_apt/keys'
 
 include site_config::hosts
 
