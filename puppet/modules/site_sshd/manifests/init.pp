@@ -7,7 +7,7 @@ class site_sshd {
 
   $authorized_keys = $ssh['authorized_keys']
 
-  class { 'site_sshd::authorized_keys':
+  class { 'site_sshd::deploy_authorized_keys':
     keys => $authorized_keys
   }
 
