@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Get the PID
-PIDFILE='/var/run/dhclient.<%= scope.lookupvar('site_config::params::interface') %>.pid
+PIDFILE='/var/run/dhclient.<%= scope.lookupvar('site_config::params::interface') %>.pid'
 
 # Capture how dhclient is currently running so we can relaunch it
 dhclient=`/bin/ps --no-headers --pid $(cat $PIDFILE) -f | /usr/bin/awk '{for(i=8;i<=NF;++i) printf("%s ",  $i) }'`
