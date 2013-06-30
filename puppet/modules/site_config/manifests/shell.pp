@@ -7,4 +7,16 @@ class site_config::shell {
       owner   => root,
       group   => root;
   }
+
+  ##
+  ## XTERM TITLE
+  ##
+
+  file { '/etc/profile.d/xterm-title.sh':
+    source => 'puppet:///modules/site_config/xterm-title.sh',
+    owner  => root,
+    group  => 0,
+    mode   => '0644';
+  }
+
 }
