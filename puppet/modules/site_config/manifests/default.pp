@@ -31,9 +31,8 @@ class site_config::default {
     stage => setup,
   }
 
-  package { [ 'etckeeper' ]:
-    ensure => installed,
-  }
+  # install/remove base packages
+  include site_config::base_packages
 
   # include basic shorewall config
   include site_shorewall::defaults
