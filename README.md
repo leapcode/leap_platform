@@ -30,14 +30,18 @@ While you can deploy all services on one server, we stronly recommend to use sep
 Troubleshooting
 ===============
 
-If you have a problem, we are interested in fixing it! The best way for us to solve your problem is if you provide to us the complete log of what you did, and the output that was produced. Please don't cut out what appears to be useless information and only include the error that you received, instead copy and paste the complete log so that we can better determine the overall situation.
+If you have a problem, we are interested in fixing it! 
 
-Visit https://leap.se/en/development for contact possibilities.
+If you have a problem, be sure to have a look at the Known Issues section of the documentation to see if your issue is detailed there.
 
-Known bugs
-----------
+If not, the best way for us to solve your problem is if you provide to us the complete log of what you did, and the output that was produced. Please don't cut out what appears to be useless information and only include the error that you received, instead copy and paste the complete log so that we can better determine the overall situation. If you can run the same command that produced the error with a raised verbosity level (such as -v2), that provides us with more useful debugging information.
 
-* Please read the section in the documentation about Known Issues (https://leap.se/docs/known-issues)
+Visit https://leap.se/development for contact possibilities.
+
+Known Issues
+------------
+
+* Please read the section in the documentation about Known Issues (https://leap.se/docs/platform/known-issues)
 
 
 More Information
