@@ -127,6 +127,13 @@ class site_openvpn {
     subscribe   => File['/usr/local/bin/add_gateway_ips.sh'],
   }
 
+  exec { 'restart_openvpn':
+    command     => '/etc/init.d/openvpn restart',
+    refreshonly => true,
+    subscribe   => File['/etc/openvpn'],
+    require     => [ Package['openvpn'], File['/etc/openvpn'] ];
+  }
+
   cron { 'add_gateway_ips.sh':
     command => '/usr/local/bin/add_gateway_ips.sh',
     user    => 'root',
@@ -142,6 +149,7 @@ class site_openvpn {
     'openvpn':
       ensure => installed;
   }
+
   service {
     'openvpn':
       ensure     => running,
@@ -153,6 +161,7 @@ class site_openvpn {
   file {
     '/etc/openvpn':
       ensure  => directory,
+      notify  => Exec['restart_openvpn'],
       require => Package['openvpn'];
   }
 
