@@ -1,16 +1,5 @@
 class site_config::resolvconf {
 
-  # bind9 purging can be taken out after some time
-  package { 'bind9':
-    ensure => absent,
-  }
-  file { '/etc/default/bind9':
-    ensure    => absent;
-  }
-  file { '/etc/bind/named.conf.options':
-    ensure => absent;
-  }
-
   $domain_public = $site_config::default::domain_hash['full_suffix']
 
   # 127.0.0.1:      caching-only local bind
