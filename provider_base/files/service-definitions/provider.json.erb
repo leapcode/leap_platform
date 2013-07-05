@@ -1,12 +1,9 @@
 <%=
-  hsh = {}
-
   # grab some fields from provider.json
   hsh = global.provider.pick(
     :languages, :description, :name,
     :enrollment_policy, :default_language, :service
   )
-
   hsh['domain'] = domain.full_suffix
 
   # advertise services that are 'user services' and for which there are actually nodes
@@ -20,5 +17,5 @@
   hsh['ca_cert_uri'] = 'https://' + domain.full_suffix + '/ca.crt'
   hsh['ca_cert_fingerprint'] = fingerprint(:ca_cert)
 
-  JSON.sorted_generate hsh
+  hsh.dump_json
 %>
