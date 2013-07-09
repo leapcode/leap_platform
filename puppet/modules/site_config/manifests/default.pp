@@ -12,9 +12,13 @@ class site_config::default {
   # configure apt
   include site_apt
 
-
   # configure ssh and include ssh-keys
   include site_config::sshd
+
+  # fix dhclient from changing resolver information
+  if $::ec2_instance_id {
+    include site_config::dhclient
+  }
 
   # configure /etc/resolv.conf
   include site_config::resolvconf
@@ -24,13 +28,17 @@ class site_config::default {
 
   # configure /etc/hosts
   class { 'site_config::hosts':
-    stage => initial,
+    stage => setup,
   }
 
-  package { [ 'etckeeper' ]:
-    ensure => installed,
-  }
+  # install/remove base packages
+  include site_config::base_packages
 
   # include basic shorewall config
   include site_shorewall::defaults
+
+  Class['git'] -> Vcsrepo<||>
+
+  # include basic shell config
+  include site_config::shell
 }

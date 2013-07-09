@@ -15,6 +15,7 @@ class site_tor {
     address          => $address,
     contact_info     => $contact_email,
     bandwidth_rate   => $bandwidth_rate,
+    my_family        => '$2A431444756B0E7228A7918C85A8DACFF7E3B050',
   }
 
   tor::daemon::directory { $::hostname: port => 80 }

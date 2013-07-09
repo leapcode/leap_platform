@@ -1,8 +1,9 @@
 production:
   prefix: ""
-  protocol: 'https'
+  protocol: 'http'
   host: <%= @couchdb_host %>
-  port: 6984
-  username: <%= @couchdb_user %>
-  password: <%= @couchdb_password %>
+  port: <%= @couchdb_port %>
+  auto_update_design_doc: false
+  username: <%= @couchdb_webapp_user %>
+  password: <%= @couchdb_webapp_password %>
 

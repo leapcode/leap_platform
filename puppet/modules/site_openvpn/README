@@ -1,0 +1,20 @@
+Place to look when debugging problems
+========================================
+
+Log files:
+
+    openvpn: /var/log/syslog
+    shorewall: /var/log/syslog
+    shorewall startup: /var/log/shorewall-init.log
+
+Check NAT masq:
+
+    iptables -t nat --list-rules
+
+Check interfaces:
+
+   ip addr ls
+
+Scripts:
+
+   /usr/local/bin/add_gateway_ips.sh

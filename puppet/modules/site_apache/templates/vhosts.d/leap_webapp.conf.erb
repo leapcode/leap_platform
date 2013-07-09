@@ -21,8 +21,7 @@
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 
-  DocumentRoot /srv/leap-webapp/public
-  Alias /1 /srv/leap-webapp/public
+  DocumentRoot /srv/leap/webapp/public
 
   RewriteEngine On
   # Check for maintenance file and redirect all requests
@@ -37,10 +36,10 @@
   PassengerFriendlyErrorPages off
   SetEnv TMPDIR /var/tmp
 
- <% if (defined? @services) and (services.is_a? Array) and (@services.include? 'monitor') -%>
+ <% if (defined? @services) and (@services.include? 'monitor') -%>
  <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets)>
     PassengerEnabled off
-    AllowOverride all 
+    AllowOverride all
   </DirectoryMatch>
  <% end -%>
 </VirtualHost>

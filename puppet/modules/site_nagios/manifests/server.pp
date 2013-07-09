@@ -2,7 +2,7 @@ class site_nagios::server inherits nagios::base {
 
   # First, purge old nagios config (see #1467)
   class { 'site_nagios::server::purge':
-    stage => initial
+    stage => setup
   }
 
   $nagios_hiera=hiera('nagios')

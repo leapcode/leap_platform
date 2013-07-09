@@ -1,0 +1,25 @@
+Explanation: Debian wheezy
+Package: *
+Pin: release o=Debian,n=wheezy
+Pin-Priority: 990
+
+Explanation: Debian wheezy-updates
+Package: *
+Pin: release o=Debian,n=wheezy-updates
+Pin-Priority: 990
+
+Explanation: Debian sid
+Package: *
+Pin: release o=Debian,n=sid
+Pin-Priority: 1
+
+Explanation: Debian squeeze
+Package: *
+Pin: release o=Debian,n=squeeze
+Pin-Priority: 980
+
+Explanation: Debian fallback
+Package: *
+Pin: release o=Debian
+Pin-Priority: -10
+

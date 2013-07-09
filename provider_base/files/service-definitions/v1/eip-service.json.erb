@@ -1,0 +1,48 @@
+<%=
+  def underscore(words)
+    words = words.to_s.dup
+    words.downcase!
+    words.gsub! /[^a-z]/, '_'
+    words
+  end
+
+  def add_gateway(node, locations, options={})
+    return nil if options[:ip] == 'REQUIRED'
+    gateway = {}
+    gateway["capabilities"] = node.openvpn.pick(:ports, :protocols, :user_ips, :adblock, :filter_dns)
+    gateway["capabilities"]["transport"] = ["openvpn"]
+    gateway["host"] = node.domain.full
+    gateway["ip_address"] = options[:ip]
+    gateway["capabilities"]["limited"] = options[:limited]
+    if node['location']
+      location_name = underscore(node.location.name)
+      gateway["location"] = location_name
+      locations[location_name] ||= node.location
+    end
+    gateway
+  end
+
+  hsh = {}
+  hsh["serial"] = 1
+  hsh["version"] = 1
+  locations = {}
+  gateways = []
+  nodes_like_me[:services => 'openvpn'].each_node do |node|
+    if node.openvpn.allow_limited && node.openvpn.allow_unlimited
+      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+      gateways << add_gateway(node, locations, :ip => node.openvpn.second_gateway_address, :limited => true)
+    elsif node.openvpn.allow_unlimited
+      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+    elsif node.openvpn.allow_limited
+      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => true)
+    end
+  end
+  hsh["gateways"] = gateways.compact
+  hsh["locations"] = locations
+  hsh["openvpn_configuration"] = {
+    "tls-cipher" => "DHE-RSA-AES128-SHA",
+    "auth" => "SHA1",
+    "cipher" => "AES-128-CBC"
+  }
+  JSON.sorted_generate hsh
+%>

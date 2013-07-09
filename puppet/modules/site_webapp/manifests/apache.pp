@@ -12,8 +12,7 @@ class site_webapp::apache {
   $api_cert         = $x509['cert']
   $api_root         = $x509['ca_cert']
 
-  $apache_no_default_site = true
-  include apache::ssl
+  class { '::apache': no_default_site => true, ssl => true }
 
   apache::module {
     'alias':   ensure => present;

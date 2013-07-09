@@ -1,0 +1,23 @@
+#
+# Apache reverse proxy configuration for the Nickserver
+#
+
+Listen 0.0.0.0:<%= @nickserver_port -%>
+
+<VirtualHost *:<%= @nickserver_port -%>>
+  ServerName <%= @nickserver_domain %>
+  ServerAlias <%= @address_domain %>
+
+  SSLEngine on
+  SSLProtocol -all +SSLv3 +TLSv1
+  SSLCipherSuite HIGH:MEDIUM:!aNULL:!SSLv2:!MD5:@STRENGTH
+  SSLHonorCipherOrder on
+
+  SSLCACertificatePath /etc/ssl/certs
+  SSLCertificateChainFile /etc/ssl/certs/nickserver.pem
+  SSLCertificateKeyFile /etc/x509/keys/nickserver.key
+  SSLCertificateFile /etc/x509/certs/nickserver.crt
+
+  ProxyPass / http://localhost:<%= @nickserver_local_port %>/
+  ProxyPreserveHost On  # preserve Host header in HTTP request
+</VirtualHost>

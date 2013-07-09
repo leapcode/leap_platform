@@ -1,0 +1,29 @@
+<%=
+  def underscore(words)
+    words = words.to_s.dup
+    words.downcase!
+    words.gsub! /[^a-z]/, '_'
+    words
+  end
+
+  hsh = {}
+  hsh["serial"] = 1
+  hsh["version"] = 1
+  locations = {}
+  hosts = {}
+  nodes_like_me[:services => 'soledad'].each_node do |node|
+    host = {}
+    host["hostname"] = node.domain.full
+    host["ip_address"] = node.ip_address
+    host["port"] = node.soledad.port
+    if node['location']
+      location_name = underscore(node.location.name)
+      host["location"] = location_name
+      locations[location_name] ||= node.location
+    end
+    hosts[node.name] = host
+  end
+  hsh["hosts"] = hosts
+  hsh["locations"] = locations
+  JSON.sorted_generate hsh
+%>

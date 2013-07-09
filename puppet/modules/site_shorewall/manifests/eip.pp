@@ -1,20 +1,17 @@
 class site_shorewall::eip {
 
   include site_shorewall::defaults
+  include site_config::params
   include site_shorewall::ip_forward
-
-  $openvpn_config = hiera('openvpn')
-  $openvpn_ports  = $openvpn_config['ports']
-  $openvpn_gateway_address = $site_openvpn::openvpn_gateway_address
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_eip':
     content => "PARAM   -       -       tcp     1194
-PARAM   -       -       udp     1194
-",
-    notify  => Service['shorewall']
+    PARAM   -       -       udp     1194
+    ",
+    notify  => Service['shorewall'],
+    require => Package['shorewall']
   }
-
 
   shorewall::interface {
     'tun0':
@@ -22,33 +19,38 @@ PARAM   -       -       udp     1194
       options => 'tcpflags,blacklist,nosmurfs';
     'tun1':
       zone    => 'eip',
-      options => 'tcpflags,blacklist,nosmurfs'
+      options => 'tcpflags,blacklist,nosmurfs';
+    'tun2':
+      zone    => 'eip',
+      options => 'tcpflags,blacklist,nosmurfs';
+    'tun3':
+      zone    => 'eip',
+      options => 'tcpflags,blacklist,nosmurfs';
   }
 
+  shorewall::zone {
+    'eip':
+      type => 'ipv4';
+  }
 
-  shorewall::zone {'eip':
-    type => 'ipv4'; }
+  $interface = $site_config::params::interface
 
-  case $::virtual {
-    'virtualbox': {
-      shorewall::masq {
-        'eth0_tcp':
-          interface => 'eth0',
-          source    => "${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr}";
-        'eth0_udp':
-          interface => 'eth0',
-          source    => "${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr}"; }
-    }
-    default: {
-      $interface = $site_shorewall::defaults::interface
-      shorewall::masq {
-        "${interface}_tcp":
-          interface => $interface,
-          source    => "${site_openvpn::openvpn_tcp_network_prefix}.0/${site_openvpn::openvpn_tcp_cidr}";
-
-        "${interface}_udp":
-          interface => $interface,
-          source    => "${site_openvpn::openvpn_udp_network_prefix}.0/${site_openvpn::openvpn_udp_cidr}"; }
+  shorewall::masq {
+    "${interface}_unlimited_tcp":
+      interface => $interface,
+      source    => "${site_openvpn::openvpn_unlimited_tcp_network_prefix}.0/${site_openvpn::openvpn_unlimited_tcp_cidr}";
+    "${interface}_unlimited_udp":
+      interface => $interface,
+      source    => "${site_openvpn::openvpn_unlimited_udp_network_prefix}.0/${site_openvpn::openvpn_unlimited_udp_cidr}";
+  }
+  if ! $::ec2_instance_id {
+    shorewall::masq {
+      "${interface}_limited_tcp":
+        interface => $interface,
+        source    => "${site_openvpn::openvpn_limited_tcp_network_prefix}.0/${site_openvpn::openvpn_limited_tcp_cidr}";
+      "${interface}_limited_udp":
+        interface => $interface,
+        source    => "${site_openvpn::openvpn_limited_udp_network_prefix}.0/${site_openvpn::openvpn_limited_udp_cidr}";
     }
   }
 
@@ -61,15 +63,14 @@ PARAM   -       -       udp     1194
   }
 
   shorewall::rule {
-      'net2fw-openvpn':
-        source      => 'net',
-        destination => '$FW',
-        action      => 'leap_eip(ACCEPT)',
-        order       => 200;
+    'net2fw-openvpn':
+      source      => 'net',
+      destination => '$FW',
+      action      => 'leap_eip(ACCEPT)',
+      order       => 200;
   }
 
   # create dnat rule for each port
-  #create_resources('site_shorewall::dnat_rule', $openvpn_ports)
-  site_shorewall::dnat_rule { $openvpn_ports: }
+  site_shorewall::dnat_rule { $site_openvpn::openvpn_ports: }
 
 }

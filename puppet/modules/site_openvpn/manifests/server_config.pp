@@ -52,18 +52,29 @@
 #   note: the default is BF-CBC (blowfish)
 #
 
-define site_openvpn::server_config ($port, $proto, $local, $server, $push, $management ) {
+define site_openvpn::server_config(
+  $port, $proto, $local, $server, $push,
+  $management, $tls_remote = undef) {
 
   $openvpn_configname = $name
 
   concat {
-    "/etc/openvpn/$openvpn_configname.conf":
+    "/etc/openvpn/${openvpn_configname}.conf":
         owner   => root,
         group   => root,
         mode    => 644,
         warn    => true,
         require => File['/etc/openvpn'],
-        notify  => Service['openvpn'];
+        notify  => Exec['restart_openvpn'];
+  }
+
+  if $tls_remote != undef {
+    openvpn::option {
+      "tls-remote $openvpn_configname":
+         key     => 'tls-remote',
+         value   => $tls_remote,
+         server  => $openvpn_configname;
+    }
   }
 
   openvpn::option {
