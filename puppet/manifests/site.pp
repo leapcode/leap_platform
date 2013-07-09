@@ -36,3 +36,7 @@ if $services =~ /\bmonitor\b/ {
 if $services =~ /\btor\b/ {
   include site_tor
 }
+
+if $services =~ /\bmx\b/ {
+  include site_mx
+}
