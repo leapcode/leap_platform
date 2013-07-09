@@ -54,28 +54,28 @@ class site_openvpn::resolver {
   # go away and instead the caching_resolver should be configured to
   # include: /etc/unbound/conf.d/*
 
-  line {
+  file_line {
     'add_unlimited_tcp_resolver':
       ensure  => $ensure_unlimited,
-      file    => '/etc/unbound/unbound.conf',
+      path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_unlimited_tcp_resolver',
       notify  => Service['unbound'],
       require => Package['unbound'];
     'add_unlimited_udp_resolver':
       ensure  => $ensure_unlimited,
-      file    => '/etc/unbound/unbound.conf',
+      path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_unlimited_udp_resolver',
       notify  => Service['unbound'],
       require => Package['unbound'];
     'add_limited_tcp_resolver':
       ensure  => $ensure_limited,
-      file    => '/etc/unbound/unbound.conf',
+      path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_limited_tcp_resolver',
       notify  => Service['unbound'],
       require => Package['unbound'];
     'add_limited_udp_resolver':
       ensure  => $ensure_limited,
-      file    => '/etc/unbound/unbound.conf',
+      path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_limited_udp_resolver',
       notify  => Service['unbound'],
       require => Package['unbound']
