@@ -4,7 +4,8 @@
 127.0.1.1    <%= @hostname %>.<%= @domain_public %> <%= @hostname %>
 
 <%- if @hosts then -%>
-<%   @hosts.each do |name, props| -%>
+<%   @hosts.keys.sort.each do |name| -%>
+<%-     props = @hosts[name] -%>
 <%=     props["ip_address"] %> <%= props["domain_full"] %> <%= props["domain_internal"] %> <%= name %>
 <%   end -%>
 <% end -%>
