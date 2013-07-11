@@ -41,4 +41,7 @@ class site_config::default {
 
   # include basic shell config
   include site_config::shell
+
+  # set up core leap files and directories
+  include site_config::files
 }

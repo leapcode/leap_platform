@@ -107,24 +107,35 @@ class site_webapp {
 
   try::file {
     '/srv/leap/webapp/public/favicon.ico':
-      ensure  => 'link',
+      ensure  => present,
+      owner   => leap-webapp,
+      group   => leap-webapp,
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['favicon'];
+      source  => $webapp['favicon'];
 
     '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
-      ensure  => 'link',
+      ensure  => present,
+      owner   => leap-webapp,
+      group   => leap-webapp,
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['tail_scss'];
+      source  => $webapp['tail_scss'];
 
     '/srv/leap/webapp/app/assets/stylesheets/head.scss':
-      ensure  => 'link',
+      ensure  => present,
+      owner   => leap-webapp,
+      group   => leap-webapp,
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['head_scss'];
+      source  => $webapp['head_scss'];
 
     '/srv/leap/webapp/public/img':
-      ensure  => 'link',
-      require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['img_dir'];
+      ensure => directory,
+      recurse => true,
+      purge => true,
+      force => true,
+      owner => leap-webapp,
+      group => leap-webapp,
+      mode => '0644',
+      source => $webapp['img_dir'];
   }
 
   file {
