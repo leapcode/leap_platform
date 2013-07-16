@@ -6,7 +6,10 @@
 # /bin/true and /usr/bin/test are hardcoded to their paths in debian.
 #
 # known limitations:
-# * restore does not work for directories
+# * this is far too noisy
+# * $restore does not work for directories
+# * only file:// $source is supported
+# * $content is not supported, only $target or $source.
 #
 define try::file (
   $ensure = undef,
@@ -20,33 +23,55 @@ define try::file (
   $mode = undef,
   $restore = true) {
 
-  if $target {
-    $target_or_source = $target
-  } else {
-    $target_or_source = $source
+  # dummy exec to propagate requires:
+  # metaparameter 'require' will get triggered by this dummy exec
+  # so then we just need to depend on this to capture all requires.
+  # exec { $name: command => "/bin/true" }
+
+  exec {
+    "chmod_${name}":
+      command => "chmod -R ${mode} '${name}'",
+      onlyif => "/usr/bin/test $mode",
+      loglevel => debug;
+    "chown_${name}":
+      command => "chown -R ${owner} '${name}'",
+      onlyif => "/usr/bin/test $owner",
+      loglevel => debug;
+    "chgrp_${name}":
+      command => "chgrp -R ${group} '${name}'",
+      onlyif => "/usr/bin/test $group",
+      loglevel => debug;
   }
 
-  if $target_or_source != undef {
-    exec { "check_${name}":
-      command => "/bin/true",
-      onlyif => "/usr/bin/test -e '${target_or_source}'",
-      loglevel => info;
+  if $target {
+    exec { "symlink_${name}":
+      command => "ln -s ${target} ${name}",
+      onlyif => "/usr/bin/test -d '${target}'",
     }
-    file { "$name":
-      ensure => $ensure,
-      target => $target,
-      source => $source,
-      owner => $owner,
-      group => $group,
-      recurse => $recurse,
-      purge => $purge,
-      force => $force,
-      mode => $mode,
-      require => $require ? {
-        undef   => Exec["check_${name}"],
-        default => [ $require, Exec["check_${name}"] ]
-      },
-      loglevel => info;
+  } elsif $source {
+    if $ensure == "directory" {
+      if $purge {
+        exec { "rsync_${name}":
+          command => "rsync -r --delete '${source}/' '${name}'",
+          onlyif => "/usr/bin/test -d '${source}'",
+          unless => "/usr/bin/diff -q '${source}' '${name}'",
+          notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
+        }
+      } else {
+        exec { "cp_r_${name}":
+          command => "cp -r '${source}' '${name}'",
+          onlyif => "/usr/bin/test -d '${source}'",
+          unless => "/usr/bin/diff -q '${source}' '${name}'",
+          notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
+        }
+      }
+    } else {
+      exec { "cp_${name}":
+        command => "cp '${source}' '${name}'",
+        onlyif => "/usr/bin/test -e '${source}'",
+        unless => "/usr/bin/diff -q '${source}' '${name}'",
+        notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
+      }
     }
   }
 
@@ -54,20 +79,23 @@ define try::file (
   # if the target/source does not exist (or is undef), and the file happens to be in a git repo,
   # then restore the file to its original state.
   #
+
+  if $target {
+    $target_or_source = $target
+  } else {
+    $target_or_source = $source
+  }
+
   if ($target_or_source == undef) or $restore {
     $file_basename = basename($name)
     $file_dirname  = dirname($name)
     $command = "git rev-parse && unlink '${name}'; git checkout -- '${file_basename}' && chown --reference='${file_dirname}' '${name}'; true"
     debug($command)
 
-    if $target == undef {
+    if $target_or_source == undef {
       exec { "restore_${name}":
         command => $command,
         cwd => $file_dirname,
-        require => $require ? {
-          undef   => undef,
-          default => [ $require ]
-        },
         loglevel => info;
       }
     } else {
@@ -75,10 +103,6 @@ define try::file (
         unless => "/usr/bin/test -e '${target_or_source}'",
         command => $command,
         cwd => $file_dirname,
-        require => $require ? {
-          undef   => undef,
-          default => [ $require ]
-        },
         loglevel => info;
       }
     }
