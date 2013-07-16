@@ -5,8 +5,9 @@
 #   (2) unlimited only
 #   (3) limited only
 #
-# The difference is that 'unlimited' gateways only allow client certs that match the 'unlimited_prefix',
-# and 'limited' gateways only allow certs that match the 'limited_prefix'.
+# The difference is that 'unlimited' gateways only allow client certs that match
+# the 'unlimited_prefix', and 'limited' gateways only allow certs that match the
+# 'limited_prefix'.
 #
 # We potentially create four openvpn config files (thus four daemons):
 #
@@ -89,8 +90,8 @@ class site_openvpn {
       management  => '127.0.0.1 1001'
     }
   } else {
-    tidy { "/etc/openvpn/tcp_config.conf": }
-    tidy { "/etc/openvpn/udp_config.conf": }
+    tidy { '/etc/openvpn/tcp_config.conf': }
+    tidy { '/etc/openvpn/udp_config.conf': }
   }
 
   if $openvpn_allow_limited {
@@ -113,8 +114,8 @@ class site_openvpn {
       management  => '127.0.0.1 1003'
     }
   } else {
-    tidy { "/etc/openvpn/limited_tcp_config.conf": }
-    tidy { "/etc/openvpn/limited_udp_config.conf": }
+    tidy { '/etc/openvpn/limited_tcp_config.conf': }
+    tidy { '/etc/openvpn/limited_udp_config.conf': }
   }
 
   file {
