@@ -3,7 +3,7 @@
 #
 # Also, if the source or target doesn't exist, and the destination is a git repo, then the file is restored from git.
 #
-# /bin/true and /usr/bin/test are hardcoded to their paths in debian.
+# All executable paths are hardcoded to their paths in debian.
 #
 # known limitations:
 # * this is far too noisy
@@ -30,36 +30,36 @@ define try::file (
 
   exec {
     "chmod_${name}":
-      command => "chmod -R ${mode} '${name}'",
+      command => "/bin/chmod -R ${mode} '${name}'",
       onlyif => "/usr/bin/test $mode",
       loglevel => debug;
     "chown_${name}":
-      command => "chown -R ${owner} '${name}'",
+      command => "/bin/chown -R ${owner} '${name}'",
       onlyif => "/usr/bin/test $owner",
       loglevel => debug;
     "chgrp_${name}":
-      command => "chgrp -R ${group} '${name}'",
+      command => "/bin/chgrp -R ${group} '${name}'",
       onlyif => "/usr/bin/test $group",
       loglevel => debug;
   }
 
   if $target {
     exec { "symlink_${name}":
-      command => "ln -s ${target} ${name}",
+      command => "/bin/ln -s ${target} ${name}",
       onlyif => "/usr/bin/test -d '${target}'",
     }
   } elsif $source {
-    if $ensure == "directory" {
+    if $ensure == 'directory' {
       if $purge {
         exec { "rsync_${name}":
-          command => "rsync -r --delete '${source}/' '${name}'",
+          command => "/usr/bin/rsync -r --delete '${source}/' '${name}'",
           onlyif => "/usr/bin/test -d '${source}'",
           unless => "/usr/bin/diff -q '${source}' '${name}'",
           notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
         }
       } else {
         exec { "cp_r_${name}":
-          command => "cp -r '${source}' '${name}'",
+          command => "/bin/cp -r '${source}' '${name}'",
           onlyif => "/usr/bin/test -d '${source}'",
           unless => "/usr/bin/diff -q '${source}' '${name}'",
           notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
@@ -67,7 +67,7 @@ define try::file (
       }
     } else {
       exec { "cp_${name}":
-        command => "cp '${source}' '${name}'",
+        command => "/bin/cp '${source}' '${name}'",
         onlyif => "/usr/bin/test -e '${source}'",
         unless => "/usr/bin/diff -q '${source}' '${name}'",
         notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
