@@ -128,14 +128,15 @@ class site_webapp {
       source  => $webapp['head_scss'];
 
     '/srv/leap/webapp/public/img':
-      ensure => directory,
+      ensure  => directory,
       recurse => true,
-      purge => true,
-      force => true,
-      owner => leap-webapp,
-      group => leap-webapp,
-      mode => '0644',
-      source => $webapp['img_dir'];
+      purge   => true,
+      force   => true,
+      owner   => leap-webapp,
+      group   => leap-webapp,
+      mode    => '0644',
+      require => Vcsrepo['/srv/leap/webapp'],
+      source  => $webapp['img_dir'];
   }
 
   file {
