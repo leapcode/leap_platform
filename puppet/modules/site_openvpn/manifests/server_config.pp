@@ -70,10 +70,10 @@ define site_openvpn::server_config(
 
   if $tls_remote != undef {
     openvpn::option {
-      'tls-remote $openvpn_configname':
-         key     => 'tls-remote',
-         value   => $tls_remote,
-         server  => $openvpn_configname;
+      "tls-remote ${openvpn_configname}":
+        key     => 'tls-remote',
+        value   => $tls_remote,
+        server  => $openvpn_configname;
     }
   }
 
