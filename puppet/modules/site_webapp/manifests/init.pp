@@ -31,13 +31,6 @@ class site_webapp {
     require   => [ Group['leap-webapp'] ];
   }
 
-  file { '/srv/leap/webapp':
-    ensure  => directory,
-    owner   => 'leap-webapp',
-    group   => 'leap-webapp',
-    require => User['leap-webapp'];
-  }
-
   vcsrepo { '/srv/leap/webapp':
     ensure   => present,
     force    => true,
