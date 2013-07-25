@@ -37,7 +37,7 @@ if $services =~ /\btor\b/ {
   include site_tor
 }
 
-if 'webapp' in $services {
-  include site_webapp
+if $services =~ /\bmx\b/ {
+  include site_mx
 }
 
