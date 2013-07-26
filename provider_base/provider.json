@@ -38,12 +38,12 @@
     "digest": "SHA256",
     "life_span": "10y",
     "server_certificates": {
-      "bit_size": 2024,
+      "bit_size": 2048,
       "digest": "SHA256",
       "life_span": "1y"
     },
     "client_certificates": {
-      "bit_size": 2024,
+      "bit_size": 2048,
       "digest": "SHA256",
       "life_span": "2m",
       "limited_prefix": "LIMITED",
