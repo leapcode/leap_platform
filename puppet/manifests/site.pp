@@ -29,6 +29,10 @@ if $services =~ /\bwebapp\b/ {
   include site_nickserver
 }
 
+if $services =~ /\bsoledad\b/ {
+  include soledad::server
+}
+
 if $services =~ /\bmonitor\b/ {
   include site_nagios
 }
