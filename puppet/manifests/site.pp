@@ -11,7 +11,6 @@ Package { require => Exec['apt_updated'] }
 
 include stdlib
 
-import 'common'
 include site_config::default
 include site_config::slow
 
@@ -30,6 +29,10 @@ if $services =~ /\bwebapp\b/ {
   include site_nickserver
 }
 
+if $services =~ /\bsoledad\b/ {
+  include soledad::server
+}
+
 if $services =~ /\bmonitor\b/ {
   include site_nagios
 }
@@ -37,3 +40,8 @@ if $services =~ /\bmonitor\b/ {
 if $services =~ /\btor\b/ {
   include site_tor
 }
+
+if $services =~ /\bmx\b/ {
+  include site_mx
+}
+
