@@ -4,7 +4,7 @@ class soledad::server {
 
   $couchdb          = hiera('soledad')
   $couchdb_host     = 'localhost'
-  $couchdb_port     = '4096'
+  $couchdb_port     = '5984'
   $couchdb_user     = $couchdb['couchdb_admin_user']['username']
   $couchdb_password = $couchdb['couchdb_admin_user']['password']
 
