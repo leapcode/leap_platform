@@ -2,11 +2,11 @@ class soledad::server {
   tag 'leap_service'
   include soledad
 
-  $couchdb          = hiera('couch')
+  $couchdb          = hiera('soledad')
   $couchdb_host     = 'localhost'
   $couchdb_port     = '4096'
-  $couchdb_user     = $couchdb['users']['soledad']['username']
-  $couchdb_password = $couchdb['users']['soledad']['password']
+  $couchdb_user     = $couchdb['couchdb_admin_user']['username']
+  $couchdb_password = $couchdb['couchdb_admin_user']['password']
 
   $x509      = hiera('x509')
   $x509_key  = $x509['key']

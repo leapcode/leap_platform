@@ -1,6 +1,7 @@
 {
-  "service_type": "public_service",
   "soledad": {
-    "port": 1111
-  }
+    "port": 2424,
+    "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]"
+  },
+  "service_type": "public_service"
 }
