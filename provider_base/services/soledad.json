@@ -1,7 +1,8 @@
 {
   "soledad": {
     "port": 2424,
-    "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]"
+    "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
+    "require_couchdb": "=> assert %(services.include? 'couchdb')"
   },
   "service_type": "public_service"
 }
