@@ -1,6 +1,6 @@
 <%- cert_options = @webapp['client_certificates'] -%>
 production:
-  admins: [admin]
+  admins: <%= @webapp['admins'].inspect %>
   domain: <%= @provider_domain %>
   force_ssl: <%= @webapp['secure'] %>
   client_ca_key: <%= scope.lookupvar('site_webapp::client_ca::key_path') %>

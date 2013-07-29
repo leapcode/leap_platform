@@ -1,5 +1,6 @@
 {
   "webapp": {
+    "admins": [],
     "modules": ["user", "billing", "help"],
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
 //    "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
