@@ -13,7 +13,8 @@
     "allow_unlimited_certs": "= global.provider.service.allow_unlimited_bandwidth",
     "allow_anonymous_certs": "= global.provider.service.allow_anonymous",
     "secret_token": "= secret :webapp_secret_token",
-    "api_version": 1
+    "api_version": 1,
+    "secure": false
   },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
