@@ -10,6 +10,7 @@
 # * $restore does not work for directories
 # * only file:// $source is supported
 # * $content is not supported, only $target or $source.
+# * does not auto-require all the parent directories like 'file' does
 #
 define try::file (
   $ensure = undef,
@@ -32,14 +33,17 @@ define try::file (
     "chmod_${name}":
       command => "/bin/chmod -R ${mode} '${name}'",
       onlyif => "/usr/bin/test $mode",
+      refreshonly => true,
       loglevel => debug;
     "chown_${name}":
       command => "/bin/chown -R ${owner} '${name}'",
       onlyif => "/usr/bin/test $owner",
+      refreshonly => true,
       loglevel => debug;
     "chgrp_${name}":
       command => "/bin/chgrp -R ${group} '${name}'",
       onlyif => "/usr/bin/test $group",
+      refreshonly => true,
       loglevel => debug;
   }
 
@@ -67,9 +71,9 @@ define try::file (
       }
     } else {
       exec { "cp_${name}":
-        command => "/bin/cp '${source}' '${name}'",
+        command => "/bin/cp --remove-destination '${source}' '${name}'",
         onlyif => "/usr/bin/test -e '${source}'",
-        unless => "/usr/bin/diff -q '${source}' '${name}'",
+        unless => "/usr/bin/test ! -h '${name}' && /usr/bin/diff -q '${source}' '${name}'",
         notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
       }
     }
