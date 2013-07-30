@@ -1,16 +1,23 @@
 
 listen bigcouch-in
-  mode http
+  mode     http
   balance  roundrobin
-  option httplog
-  option dontlognull
-  option httpchk GET /
-  option http-server-close
-  
+  option   httplog
+  option   dontlognull
+  option   httpchk GET /        # health check using simple get to root
+  option   http-server-close    # use client keep-alive, but close server connection.
+  option   allbackups           # balance among all backups, not just one.
+
   bind localhost:4096
-<% for port in @local_ports -%>
-  server couchdb_<%=port%> localhost:<%=port%> check inter 3000 fastinter 1000 downinter 1000 rise 2 fall 1
-<% end -%>
 
+  default-server inter 3000 fastinter 1000 downinter 1000 rise 2 fall 1
 
+<%- if @haproxy['servers'] -%>
+<%-   @haproxy['servers'].each do |name,server| -%>
+<%-     backup = server['backup'] ? 'backup' : '' -%>
+  # <%=name%>
+  server couchdb_<%=server['port']%> <%=server['host']%>:<%=server['port']%> <%=backup%> weight <%=server['weight']%> check
+
+<%-   end -%>
+<%- end -%>
 
