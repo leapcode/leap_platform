@@ -55,8 +55,9 @@ class site_webapp {
 
   exec { 'compile_assets':
     cwd     => '/srv/leap/webapp',
-    command => '/bin/bash -c "/usr/bin/bundle exec rake assets:precompile"',
+    command => '/usr/bin/bundle exec rake assets:precompile',
     user    => 'leap-webapp',
+    logoutput => on_failure,
     require => Exec['bundler_update'],
     notify  => Service['apache'];
   }
@@ -103,6 +104,7 @@ class site_webapp {
       ensure  => present,
       owner   => leap-webapp,
       group   => leap-webapp,
+      mode    => '0644',
       require => Vcsrepo['/srv/leap/webapp'],
       source  => $webapp['favicon'];
 
@@ -110,15 +112,19 @@ class site_webapp {
       ensure  => present,
       owner   => leap-webapp,
       group   => leap-webapp,
+      mode    => '0644',
       require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['tail_scss'];
+      source  => $webapp['tail_scss'],
+      before  => Exec['bundler_update'];
 
     '/srv/leap/webapp/app/assets/stylesheets/head.scss':
       ensure  => present,
       owner   => leap-webapp,
       group   => leap-webapp,
+      mode    => '0644',
       require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['head_scss'];
+      source  => $webapp['head_scss'],
+      before  => Exec['bundler_update'];
 
     '/srv/leap/webapp/public/img':
       ensure  => directory,
