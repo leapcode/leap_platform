@@ -76,3 +76,6 @@
 [submodule "puppet/modules/postfix"]
 	path = puppet/modules/postfix
 	url = git://labs.riseup.net/shared-postfix
+[submodule "puppet/modules/squid_deb_proxy"]
+	path = puppet/modules/squid_deb_proxy
+	url = git://code.leap.se/puppet_squid_deb_proxy

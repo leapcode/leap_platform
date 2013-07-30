@@ -44,4 +44,15 @@ class site_config::default {
 
   # set up core leap files and directories
   include site_config::files
+
+  # redundant declarations, remove if
+  # "Move setup.pp to a subclass (site_config::setup) (Feature #2993)"
+  # is solved.
+
+  # if squid_deb_proxy_client is set to true, install and configure
+  # squid_deb_proxy_client for apt caching
+  if hiera('squid_deb_proxy_client', false) {
+    include site_squid_deb_proxy::client
+  }
+
 }
