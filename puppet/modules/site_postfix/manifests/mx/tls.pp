@@ -25,7 +25,7 @@ class site_postfix::mx::tls {
     'smtpd_tls_key_file':   value  => $key_path;
     'smtpd_tls_req_ccert':  value  => 'yes';
     'smtpd_tls_security_level':
-      value  => 'encrypt';
+      value  => 'may';
   }
 
 }
