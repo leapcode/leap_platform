@@ -46,7 +46,7 @@ class leap_mx {
   # LEAP-MX DAEMON
   #
 
-  service { 'leap_mx':
+  service { 'leap-mx':
     ensure     => running,
     enable     => true,
     hasstatus  => true,
