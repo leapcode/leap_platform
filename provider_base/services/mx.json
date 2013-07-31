@@ -6,7 +6,7 @@
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
   },
   "haproxy": {
-    "local_ports": "= stunnel.couch_client.field(:accept_port)"
+    "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.couch_client)"
   },
   "x509": {
     "use": true,
