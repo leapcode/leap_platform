@@ -1,6 +1,6 @@
 {
   "soledad": {
-    "port": 2424,
+    "port": 2323,
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "require_couchdb": "=> assert %(services.include? 'couchdb')"
   },
