@@ -8,6 +8,7 @@
   "haproxy": {
     "local_ports": "= stunnel.couch_client.field(:accept_port)"
   },
+  "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
   "x509": {
     "use": true,
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",

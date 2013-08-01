@@ -1,9 +1,10 @@
 class leap_mx {
 
+  $couchdb_admin_user = hiera('couchdb_admin_user')
   $couchdb_host     = 'localhost'
   $couchdb_port     = '4096'
-  $couchdb_user     = $soledad::couchdb::user
-  $couchdb_password = $soledad::couchdb::password
+  $couchdb_user     = $couchdb_admin_user['username']
+  $couchdb_password = $couchdb_admin_user['password']
 
   #
   # USER AND GROUP
