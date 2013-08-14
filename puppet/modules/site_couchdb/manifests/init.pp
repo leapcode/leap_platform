@@ -59,23 +59,27 @@ class site_couchdb {
 
   # Populate couchdb
   couchdb::add_user { $couchdb_webapp_user:
-    roles => '["auth"]',
-    pw    => $couchdb_webapp_pw,
-    salt  => $couchdb_webapp_salt
+    roles   => '["auth"]',
+    pw      => $couchdb_webapp_pw,
+    salt    => $couchdb_webapp_salt,
+    require => Couchdb::Query::Setup['localhost']
   }
 
   couchdb::add_user { $couchdb_soledad_user:
     roles => '["auth"]',
     pw    => $couchdb_soledad_pw,
-    salt  => $couchdb_soledad_salt
+    salt  => $couchdb_soledad_salt,
+    require => Couchdb::Query::Setup['localhost']
   }
 
   couchdb::create_db { 'users':
-    readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }"
+    readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
+    require => Couchdb::Query::Setup['localhost']
   }
 
   couchdb::create_db { 'tokens':
-    readers => "{ \"names\": [], \"roles\": [\"auth\"] }"
+    readers => "{ \"names\": [], \"roles\": [\"auth\"] }",
+    require => Couchdb::Query::Setup['localhost']
   }
 
   include site_shorewall::couchdb
