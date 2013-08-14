@@ -39,7 +39,15 @@ class site_webapp::couchdb {
       mode    => '0600',
       require => Vcsrepo['/srv/leap/webapp'];
 
-    '/srv/leap/webapp/logs/production.log':
+    '/srv/leap/webapp/log':
+      ensure  => directory,
+      owner   => leap-webapp,
+      group   => leap-webapp,
+      mode    => '0755',
+      require => Vcsrepo['/srv/leap/webapp'];
+
+    '/srv/leap/webapp/log/production.log':
+      ensure  => present,
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0666',
