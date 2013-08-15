@@ -1,6 +1,7 @@
 class soledad::server {
   tag 'leap_service'
   include soledad
+  include site_apt::preferences::twisted
 
   $couchdb          = hiera('soledad')
   $couchdb_host     = 'localhost'

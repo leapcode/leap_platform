@@ -6,6 +6,8 @@ class leap_mx {
   $couchdb_user     = $couchdb_admin_user['username']
   $couchdb_password = $couchdb_admin_user['password']
 
+  include site_apt::preferences::twisted
+  
   #
   # USER AND GROUP
   #
