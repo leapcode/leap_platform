@@ -9,6 +9,8 @@ include concat::setup
 
 include site_config::hosts
 
+include site_config::initial_firewall
+
 include site_apt
 
 package { 'facter':

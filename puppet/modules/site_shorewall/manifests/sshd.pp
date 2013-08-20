@@ -21,4 +21,10 @@ class site_shorewall::sshd {
         action      => 'leap_sshd(ACCEPT)',
         order       => 200;
   }
+
+  # setup a routestopped rule to allow ssh when shorewall is stopped
+  shorewall::routestopped { $site_config::params::interface:
+    options => "-   tcp   ${ssh_port}"
+  }
+
 }
