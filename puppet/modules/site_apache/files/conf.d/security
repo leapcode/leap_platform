@@ -48,3 +48,8 @@ ServerSignature Off
 #TraceEnable Off
 TraceEnable On
 
+# Setting this header will prevent other sites from embedding pages from this
+# site as frames. This defends against clickjacking attacks.
+# Requires mod_headers to be enabled.
+#
+Header set X-Frame-Options: "DENY"
