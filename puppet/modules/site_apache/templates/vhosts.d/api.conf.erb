@@ -21,6 +21,11 @@ Listen 0.0.0.0:<%= api_port %>
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 
+  <IfModule mod_headers.c>
+    Header always unset X-Powered-By
+    Header always unset X-Runtime
+  </IfModule>
+
   DocumentRoot /srv/leap/webapp/public
 
   # Check for maintenance file and redirect all requests
