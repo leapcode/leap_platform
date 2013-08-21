@@ -22,6 +22,9 @@
   RequestHeader set X_FORWARDED_PROTO 'https'
 
   <IfModule mod_headers.c>
+<% if @webapp['secure'] -%>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+<% end -%>
     Header always unset X-Powered-By
     Header always unset X-Runtime
   </IfModule>
