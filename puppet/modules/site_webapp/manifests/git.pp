@@ -1,11 +1,12 @@
 # Usage
 # git::changes { name:
+#   cwd    =>  "/path/to/git/"
 #   user   =>  "me",
 #   ensure =>  {*assume-unchanged*, tracked}
 # }
 #
 
-define git::changes ( $user, $ensure='assume-unchanged' ) {
+define git::changes ( $cwd, $user, $ensure='assume-unchanged' ) {
 
   case $ensure {
     default: { err ( "unknown ensure value '${ensure}'" ) }
@@ -13,6 +14,7 @@ define git::changes ( $user, $ensure='assume-unchanged' ) {
     assume-unchanged: {
       exec { "assume-unchanged ${name}":
         command => "/usr/bin/git update-index --assume-unchanged ${name}",
+        cwd     => $cwd,
         user    => $user,
         unless  => "/usr/bin/git ls-files -v | grep '^[ch] ${name}'",
       }
@@ -21,6 +23,7 @@ define git::changes ( $user, $ensure='assume-unchanged' ) {
     tracked: {
       exec { "assume-unchanged ${name}":
         command => "/usr/bin/git update-index --no-assume-unchanged ${name}",
+        cwd     => $cwd,
         user    => $user,
         onlyif  => "/usr/bin/git ls-files -v | grep '^[ch] ${name}'",
       }
