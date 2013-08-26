@@ -138,10 +138,15 @@ class site_webapp {
       source  => $webapp['img_dir'];
   }
 
-  exec { 'git-assume-unchanged':
-    cwd     => '/srv/leap/webapp',
-    command => '/bin/bash -c "/usr/bin/git update-index --assume-unchanged app/assets/stylesheets/head.scss app/assets/stylesheets/tail.scss public/favicon.ico"',
-    user    => 'leap-webapp'
+  git:changes { 
+    '/srv/leap/webapp/app/assets/stylesheets/head.scss':
+      user    => 'leap-webapp';
+
+    '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
+      user    => 'leap-webapp';
+
+    '/srv/leap/webapp/public/favicon.ico':
+      user    => 'leap-webapp';
   }
 
   file {
