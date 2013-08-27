@@ -13,7 +13,7 @@ class site_tor {
   tor::daemon::relay { $nickname:
     port             => 9001,
     address          => $address,
-    contact_info     => $contact_email,
+    contact_info     => obfuscate_email($contact_email),
     bandwidth_rate   => $bandwidth_rate,
     my_family        => '$2A431444756B0E7228A7918C85A8DACFF7E3B050',
   }
