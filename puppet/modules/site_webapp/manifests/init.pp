@@ -138,6 +138,20 @@ class site_webapp {
       source  => $webapp['img_dir'];
   }
 
+  git::changes {
+    'app/assets/stylesheets/head.scss':
+      cwd     => '/srv/leap/webapp',
+      user    => 'leap-webapp';
+
+    'app/assets/stylesheets/tail.scss':
+      cwd     => '/srv/leap/webapp',
+      user    => 'leap-webapp';
+
+    'public/favicon.ico':
+      cwd     => '/srv/leap/webapp',
+      user    => 'leap-webapp';
+  }
+
   file {
     '/srv/leap/webapp/config/config.yml':
       content => template('site_webapp/config.yml.erb'),
