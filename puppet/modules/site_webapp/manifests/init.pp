@@ -138,7 +138,7 @@ class site_webapp {
       source  => $webapp['img_dir'];
   }
 
-  git::changes { 
+  git::changes {
     'app/assets/stylesheets/head.scss':
       cwd     => '/srv/leap/webapp',
       user    => 'leap-webapp';
