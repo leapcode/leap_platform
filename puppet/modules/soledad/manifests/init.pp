@@ -27,8 +27,4 @@ class soledad {
       require => User['soledad'];
   }
 
-  package { 'soledad-common':
-    ensure  => installed,
-    require => User['soledad'];
-  }
 }
