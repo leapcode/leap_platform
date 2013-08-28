@@ -6,8 +6,9 @@ class leap_mx {
   $couchdb_user     = $couchdb_admin_user['username']
   $couchdb_password = $couchdb_admin_user['password']
 
+  include soledad::common
   include site_apt::preferences::twisted
-  
+
   #
   # USER AND GROUP
   #
@@ -42,7 +43,8 @@ class leap_mx {
   #
 
   package { 'leap-mx':
-    ensure => installed;
+    ensure  => installed,
+    require => Class['site_apt::preferences::twisted']
   }
 
   #
