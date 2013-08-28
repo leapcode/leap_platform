@@ -18,6 +18,10 @@ class site_nagios::server inherits nagios::base {
     #before             => Class ['nagios::defaults']
   }
 
+  apache::module {
+    'headers': ensure => present;
+  }
+
   File ['nagios_htpasswd'] {
     source  => undef,
     content => "nagiosadmin:$nagiosadmin_pw",
