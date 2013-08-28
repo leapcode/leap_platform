@@ -82,6 +82,8 @@ class site_couchdb {
     require => Couchdb::Query::Setup['localhost']
   }
 
+  include site_couchdb::logrotate
+
   include site_shorewall::couchdb
   include site_shorewall::couchdb::bigcouch
 }
