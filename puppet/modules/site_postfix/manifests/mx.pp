@@ -17,7 +17,6 @@ class site_postfix::mx {
     'home_mailbox':         value => 'Maildir/';
     'virtual_alias_maps':   value => 'tcp:localhost:4242';
     'luser_relay':          value => 'vmail';
-    'local_recipient_maps': value => '';
   }
 
   include site_postfix::mx::smtpd_checks

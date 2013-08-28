@@ -23,7 +23,7 @@ class site_postfix::mx::tls {
     'smtpd_tls_CAfile':     value  => $client_ca;
     'smtpd_tls_cert_file':  value  => $cert_path;
     'smtpd_tls_key_file':   value  => $key_path;
-    'smtpd_tls_req_ccert':  value  => 'yes';
+    'smtpd_tls_ask_ccert':  value  => 'yes';
     'smtpd_tls_security_level':
       value  => 'may';
   }
