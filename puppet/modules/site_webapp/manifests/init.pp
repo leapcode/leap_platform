@@ -54,12 +54,12 @@ class site_webapp {
   }
 
   exec { 'compile_assets':
-    cwd     => '/srv/leap/webapp',
-    command => '/usr/bin/bundle exec rake assets:precompile',
-    user    => 'leap-webapp',
+    cwd       => '/srv/leap/webapp',
+    command   => '/usr/bin/bundle exec rake assets:precompile',
+    user      => 'leap-webapp',
     logoutput => on_failure,
-    require => Exec['bundler_update'],
-    notify  => Service['apache'];
+    require   => Exec['bundler_update'],
+    notify    => Service['apache'];
   }
 
   file {
@@ -74,14 +74,14 @@ class site_webapp {
       target  => '/usr/local/share/ca-certificates/leap_api.crt';
 
     "/srv/leap/webapp/public/${api_version}":
-      ensure => directory,
+      ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner  => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => leap-webapp, group => leap-webapp, mode => '0755';
 
     "/srv/leap/webapp/public/${api_version}/config/":
-      ensure => directory,
+      ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner  => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => leap-webapp, group => leap-webapp, mode => '0755';
 
     "/srv/leap/webapp/public/${api_version}/config/eip-service.json":
       content => $eip_service,
@@ -141,14 +141,17 @@ class site_webapp {
   git::changes {
     'app/assets/stylesheets/head.scss':
       cwd     => '/srv/leap/webapp',
+      require => Vcsrepo['/srv/leap/webapp'],
       user    => 'leap-webapp';
 
     'app/assets/stylesheets/tail.scss':
       cwd     => '/srv/leap/webapp',
+      require => Vcsrepo['/srv/leap/webapp'],
       user    => 'leap-webapp';
 
     'public/favicon.ico':
       cwd     => '/srv/leap/webapp',
+      require => Vcsrepo['/srv/leap/webapp'],
       user    => 'leap-webapp';
   }
 
