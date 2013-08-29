@@ -18,9 +18,7 @@ class site_nagios::server inherits nagios::base {
     #before             => Class ['nagios::defaults']
   }
 
-  apache::module {
-    'headers': ensure => present;
-  }
+  include site_apache::module::headers
 
   File ['nagios_htpasswd'] {
     source  => undef,
