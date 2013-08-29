@@ -32,6 +32,7 @@ class site_postfix::mx {
   }
 
   class { 'postfix':
+    preseed             => true,
     root_mail_recipient => $root_mail_recipient,
     smtp_listen         => 'all',
     require             => [ X509::Key[$cert_name], X509::Cert[$cert_name],
