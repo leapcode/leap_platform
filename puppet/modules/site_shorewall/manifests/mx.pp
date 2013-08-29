@@ -2,7 +2,7 @@ class site_shorewall::mx {
 
   include site_shorewall::defaults
 
-  $smtpd_ports = '25'
+  $smtpd_ports = '25,465'
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_mx':
