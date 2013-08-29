@@ -14,11 +14,9 @@ class site_webapp::apache {
 
   class { '::apache': no_default_site => true, ssl => true }
 
-  apache::module {
-    'alias':   ensure => present;
-    'rewrite': ensure => present;
-    'headers': ensure => present;
-  }
+  include site_apache::module::headers
+  include site_apache::module::rewrite
+  include site_apache::module::alias
 
   class { 'passenger': use_munin => false }
 
