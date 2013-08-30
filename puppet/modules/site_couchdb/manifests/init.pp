@@ -66,9 +66,9 @@ class site_couchdb {
   }
 
   couchdb::add_user { $couchdb_soledad_user:
-    roles => '["auth"]',
-    pw    => $couchdb_soledad_pw,
-    salt  => $couchdb_soledad_salt,
+    roles   => '["auth"]',
+    pw      => $couchdb_soledad_pw,
+    salt    => $couchdb_soledad_salt,
     require => Couchdb::Query::Setup['localhost']
   }
 
@@ -79,6 +79,11 @@ class site_couchdb {
 
   couchdb::create_db { 'tokens':
     readers => "{ \"names\": [], \"roles\": [\"auth\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
+  couchdb::create_db { 'sessions':
+    readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
