@@ -3,79 +3,79 @@
 	url = git://github.com/luxflux/puppet-openvpn.git
 [submodule "puppet/modules/concat"]
 	path = puppet/modules/concat
-	url = git://code.leap.se/puppet_concat
+	url = https://leap.se/git/puppet_concat
 [submodule "puppet/modules/sshd"]
 	path = puppet/modules/sshd
-	url = git://labs.riseup.net/shared-sshd
+	url = https://leap.se/git/puppet_sshd
 [submodule "puppet/modules/apt"]
 	path = puppet/modules/apt
-	url = git://code.leap.se/puppet_apt
+	url = https://leap.se/git/puppet_apt
 [submodule "puppet/modules/lsb"]
 	path = puppet/modules/lsb
-	url = git://labs.riseup.net/shared-lsb
+	url = https://leap.se/git/puppet_lsb
 [submodule "puppet/modules/ntp"]
 	path = puppet/modules/ntp
-	url = git://github.com/puppetlabs/puppetlabs-ntp.git
+	url = https://leap.se/git/puppet_ntp.git
 [submodule "puppet/modules/git"]
 	path = puppet/modules/git
-	url = git://code.leap.se/puppet_git
+	url = https://leap.se/git/puppet_git
 [submodule "puppet/modules/common"]
 	path = puppet/modules/common
-	url = git://labs.riseup.net/shared-common
+	url = https://leap.se/git/puppet_common
 [submodule "puppet/modules/shorewall"]
 	path = puppet/modules/shorewall
-	url = git://code.leap.se/puppet_shorewall
+	url = https://leap.se/git/puppet_shorewall
 [submodule "puppet/modules/resolvconf"]
 	path = puppet/modules/resolvconf
-	url = git://git.puppet.immerda.ch/module-resolvconf.git
+	url = https://leap.se/git/puppet_resolvconf.git
 [submodule "puppet/modules/couchdb"]
 	path = puppet/modules/couchdb
-	url = git://code.leap.se/puppet_couchdb 
+	url = https://leap.se/git/puppet_couchdb 
 [submodule "puppet/modules/apache"]
 	path = puppet/modules/apache
-	url = git://code.leap.se/puppet_apache
+	url = https://leap.se/git/puppet_apache
 [submodule "puppet/modules/bundler"]
 	path = puppet/modules/bundler
-	url = git://code.leap.se/puppet_bundler
+	url = https://leap.se/git/puppet_bundler
 [submodule "puppet/modules/vcsrepo"]
 	path = puppet/modules/vcsrepo
 	url = git://labs.riseup.net/module_vcs
 [submodule "puppet/modules/rubygems"]
 	path = puppet/modules/rubygems
-	url = git://code.leap.se/puppet_rubygems
+	url = https://leap.se/git/puppet_rubygems
 [submodule "puppet/modules/ruby"]
 	path = puppet/modules/ruby
-	url = git://code.leap.se/puppet_ruby
+	url = https://leap.se/git/puppet_ruby
 [submodule "puppet/modules/x509"]
 	path = puppet/modules/x509
-	url = git://code.leap.se/puppet_x509
+	url = https://leap.se/git/puppet_x509
 [submodule "puppet/modules/passenger"]
 	path = puppet/modules/passenger
-	url = git://code.leap.se/puppet_passenger
+	url = https://leap.se/git/puppet_passenger
 [submodule "puppet/modules/augeas"]
 	path = puppet/modules/augeas
-	url = git://code.leap.se/puppet_augeas
+	url = https://leap.se/git/puppet_augeas
 [submodule "puppet/modules/stdlib"]
 	path = puppet/modules/stdlib
-	url = git://code.leap.se/puppet_stdlib
+	url = https://leap.se/git/puppet_stdlib
 [submodule "puppet/modules/unbound"]
 	path = puppet/modules/unbound
-	url = git://code.leap.se/puppet_unbound
+	url = https://leap.se/git/puppet_unbound
 [submodule "puppet/modules/nagios"]
 	path = puppet/modules/nagios
-	url = git://code.leap.se/puppet_nagios
+	url = https://leap.se/git/puppet_nagios
 [submodule "puppet/modules/tor"]
 	path = puppet/modules/tor
 	url = git://labs.riseup.net/shared-tor
 [submodule "puppet/modules/stunnel"]
 	path = puppet/modules/stunnel
-	url = git://code.leap.se/puppet_stunnel
+	url = https://leap.se/git/puppet_stunnel
 [submodule "puppet/modules/haproxy"]
 	path = puppet/modules/haproxy
-	url = git://code.leap.se/puppet_haproxy
+	url = https://leap.se/git/puppet_haproxy
 [submodule "puppet/modules/squid_deb_proxy"]
 	path = puppet/modules/squid_deb_proxy
-	url = git://code.leap.se/puppet_squid_deb_proxy
+	url = https://leap.se/git/puppet_squid_deb_proxy
 [submodule "puppet/modules/postfix"]
 	path = puppet/modules/postfix
-	url = git://code.leap.se/puppet_postfix
+	url = https://leap.se/git/puppet_postfix
