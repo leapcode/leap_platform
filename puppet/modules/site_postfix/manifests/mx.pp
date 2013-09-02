@@ -21,7 +21,7 @@ class site_postfix::mx {
   include site_postfix::mx::tls
 
   # greater verbosity for debugging, take out for production
-  include site_postfix::debug
+  #include site_postfix::debug
 
   user { 'vmail':
     ensure     => present,
