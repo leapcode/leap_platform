@@ -55,7 +55,7 @@ class site_webapp {
 
   exec { 'compile_assets':
     cwd       => '/srv/leap/webapp',
-    command   => '/usr/bin/bundle exec rake assets:precompile',
+    command   => '/bin/bash -c "RAILS_ENV=production /usr/bin/bundle exec rake assets:precompile"',
     user      => 'leap-webapp',
     logoutput => on_failure,
     require   => Exec['bundler_update'],
