@@ -42,8 +42,9 @@ class site_postfix::mx {
     -o smtpd_tls_security_level=encrypt\n
     submission inet n        -       n       -       -       smtpd\n
     -o smtpd_tls_security_level=encrypt\n
-    -o smtpd_recipient_restrictions=\$submission_recipient_restrictions",
-    require             => [ X509::Key[$cert_name], X509::Cert[$cert_name],
-                             User['vmail'] ]
+    -o smtpd_recipient_restrictions=\$submission_recipient_restrictions\n
+    -o smtpd_helo_restrictions=\$submission_helo_restrictions",
+    require             =>
+      [ X509::Key[$cert_name], X509::Cert[$cert_name], User['vmail'] ]
   }
 }

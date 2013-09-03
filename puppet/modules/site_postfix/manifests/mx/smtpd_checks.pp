@@ -24,6 +24,8 @@ class site_postfix::mx::smtpd_checks {
       value => 'permit_tls_all_clientcerts, check_recipient_access tcp:localhost:2244, reject_unauth_destination, permit';
     'submission_recipient_restrictions':
       value => 'permit_tls_all_clientcerts, check_recipient_access tcp:localhost:2244, reject_unauth_destination, permit';
+    'submission_helo_restrictions':
+      value => 'permit_mynetworks, permit';
     'smtpd_sender_restrictions':
       value => 'permit_mynetworks, reject_non_fqdn_sender, reject_unknown_sender_domain, permit';
     }
