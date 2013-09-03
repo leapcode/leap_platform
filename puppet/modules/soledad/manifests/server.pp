@@ -47,7 +47,8 @@ class soledad::server {
 
   package { 'soledad-server':
     ensure  => latest,
-    require => Class['site_apt::preferences::twisted']
+    require => [ Class['site_apt::preferences::twisted'],
+                 Class['site_apt::leap_repo'] ];
   }
 
   file { '/etc/default/soledad':
