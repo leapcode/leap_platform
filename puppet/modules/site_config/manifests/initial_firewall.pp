@@ -59,6 +59,6 @@ class site_config::initial_firewall {
       logoutput => true,
       unless    => '/sbin/shorewall status',
       require   => [ Package['shorewall'],
-                     File['/etc/network/ipv6firewall_up.rules'];
+                     File['/etc/network/ipv6firewall_up.rules'] ];
   }
 }
