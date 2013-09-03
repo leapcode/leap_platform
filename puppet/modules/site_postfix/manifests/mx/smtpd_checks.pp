@@ -3,6 +3,8 @@ class site_postfix::mx::smtpd_checks {
   postfix::config {
     'smtpd_helo_required':
       value => 'yes';
+    'checks_dir':
+      value => '$config_directory/checks';
     'smtpd_client_restrictions':
       value => 'permit_mynetworks,permit';
     'smtpd_data_restrictions':
@@ -10,7 +12,7 @@ class site_postfix::mx::smtpd_checks {
     'smtpd_delay_reject':
       value => 'yes';
     'smtpd_helo_restrictions':
-      value => 'permit_mynetworks, reject_invalid_helo_hostname, reject_non_fqdn_helo_hostname, permit';
+      value => 'permit_mynetworks, reject_invalid_helo_hostname, reject_non_fqdn_helo_hostname, check_helo_access hash:$checks_dir/helo_checks, permit';
     'smtpd_recipient_restrictions':
       value => 'reject_unknown_recipient_domain, permit_mynetworks, check_recipient_access tcp:localhost:2244, reject_unauth_destination, permit';
     # We should change from permit_tls_all_clientcerts to permit_tls_clientcerts

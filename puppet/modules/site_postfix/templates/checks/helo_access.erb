@@ -1,0 +1,21 @@
+# THIS FILE IS MANAGED BY PUPPET
+# To make changes to this file, please edit your platform directory under
+# puppet/modules/site_postfix/templates/checks/helo_access.erb and then deploy
+
+# The format of this file is the HELO/EHLO domain followed by an action.
+# The action could be OK to allow it, REJECT to reject it, or a custom
+# status code and message. Any lines that are prefixed by an octothorpe (#)
+# will be considered comments.
+
+# Some examples:
+#
+# Reject anyone that HELO's with foobar:
+# foobar REJECT
+#
+# Allow the switches to skip this check:
+# switch1 OK
+# switch2 OK
+
+# Reject anybody that HELO's as being in our own domain(s)
+# anyone who identifies themselves as us is a virus/spammer
+<%= domain %> 554 You are not in domain <%= domain %>
