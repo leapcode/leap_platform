@@ -37,13 +37,14 @@ class site_postfix::mx {
     root_mail_recipient => $root_mail_recipient,
     smtp_listen         => 'all',
     mastercf_tail       =>
-    "smtps     inet  n       -       -       -       -       smtpd\n
-    -o smtpd_tls_wrappermode=yes\n
-    -o smtpd_tls_security_level=encrypt\n
-    submission inet n        -       n       -       -       smtpd\n
-    -o smtpd_tls_security_level=encrypt\n
-    -o smtpd_recipient_restrictions=\$submission_recipient_restrictions",
-    require             => [ X509::Key[$cert_name], X509::Cert[$cert_name],
-                             User['vmail'] ]
+    "smtps     inet  n       -       -       -       -       smtpd
+  -o smtpd_tls_wrappermode=yes
+  -o smtpd_tls_security_level=encrypt
+submission inet n        -       n       -       -       smtpd
+  -o smtpd_tls_security_level=encrypt
+  -o smtpd_recipient_restrictions=\$submission_recipient_restrictions
+  -o smtpd_helo_restrictions=\$submission_helo_restrictions",
+    require             => [
+      X509::Key[$cert_name], X509::Cert[$cert_name], User['vmail'] ]
   }
 }
