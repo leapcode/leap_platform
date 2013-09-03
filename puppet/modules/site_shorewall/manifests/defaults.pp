@@ -51,12 +51,14 @@ class site_shorewall::defaults {
       changes => 'set /files/etc/shorewall/shorewall.conf/SAFESTOP Yes',
       lens    => 'Shellvars.lns',
       incl    => '/etc/shorewall/shorewall.conf',
+      require => Package['shorewall'],
       notify  => Service[shorewall];
     # require that the interface exist
     'shorewall_REQUIRE_INTERFACE':
       changes => 'set /files/etc/shorewall/shorewall.conf/REQUIRE_INTERFACE Yes',
       lens    => 'Shellvars.lns',
       incl    => '/etc/shorewall/shorewall.conf',
+      require => Package['shorewall'],
       notify  => Service[shorewall];
     # configure shorewall-init
     'shorewall-init':
