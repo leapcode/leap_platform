@@ -1,6 +1,8 @@
 class site_postfix::mx::smtpd_checks {
 
   postfix::config {
+    'smtpd_helo_required':
+      value => 'yes';
     'smtpd_client_restrictions':
       value => 'permit_mynetworks,permit';
     'smtpd_data_restrictions':
