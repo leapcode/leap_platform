@@ -50,13 +50,13 @@ class site_config::initial_firewall {
     'default_ipv4_firewall':
       command   => '/sbin/iptables-restore < /etc/network/ipv4firewall_up.rules',
       logoutput => true,
-      unless    => '/etc/init.d/shorewall status',
+      unless    => 'test -x /etc/init.d/shorewall && /etc/init.d/shorewall status',
       require   => File['/etc/network/ipv4firewall_up.rules'];
 
     'default_ipv6_firewall':
       command   => '/sbin/ip6tables-restore < /etc/network/ipv6firewall_up.rules',
       logoutput => true,
-      unless    => '/etc/init.d/shorewall status',
+      unless    => 'test -x /etc/init.d/shorewall && /etc/init.d/shorewall status',
       require   => File['/etc/network/ipv6firewall_up.rules'];
   }
 }
