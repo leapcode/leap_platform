@@ -49,7 +49,7 @@ class site_webapp {
     unless  => '/usr/bin/bundle check',
     user    => 'leap-webapp',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/webapp'] ],
+    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/webapp'], Service['shorewall'] ],
     notify  => Service['apache'];
   }
 
