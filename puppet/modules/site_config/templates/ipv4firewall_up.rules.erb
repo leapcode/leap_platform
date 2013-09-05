@@ -10,10 +10,12 @@
 -A INPUT -p icmp -m icmp --icmp-type 8 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -p icmp -m icmp --icmp-type 0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -m limit --limit 5/min -j LOG --log-prefix "iptables denied: " --log-level 7
+-A OUTPUT -o lo -j ACCEPT
 -A OUTPUT -p icmp -m icmp --icmp-type 0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A OUTPUT -p icmp -m icmp --icmp-type 8 -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
 -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED --sport <%= @ssh_port %> -j ACCEPT
 -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED --dport 80 -j ACCEPT
+-A OUTPUT -p tcp -m state --state NEW,ESTABLISHED --dport 443 -j ACCEPT
 -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
 -A OUTPUT -p udp -m udp --dport 123 -j ACCEPT
 -A OUTPUT -m limit --limit 5/min -j LOG --log-prefix "iptables denied: " --log-level 7
