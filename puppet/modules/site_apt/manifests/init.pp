@@ -37,6 +37,6 @@ class site_apt  {
   # The creation of sources.list depends on the lsb package
 
   File['/etc/apt/preferences'] ->
-    Exec['refresh_apt']
-    Package <| ( title != 'lsb' ) |>
+    Exec['refresh_apt'] ->
+      Package <| ( title != 'lsb' ) |>
 }
