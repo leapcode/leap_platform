@@ -69,7 +69,7 @@ class site_nickserver {
     ensure   => present,
     revision => 'origin/master',
     provider => git,
-    source   => 'git://code.leap.se/nickserver',
+    source   => 'https://leap.se/git/nickserver',
     owner    => 'nickserver',
     group    => 'nickserver',
     require  => [ User['nickserver'], Group['nickserver'] ],

@@ -36,7 +36,7 @@ class site_webapp {
     force    => true,
     revision => 'origin/master',
     provider => git,
-    source   => 'git://code.leap.se/leap_web',
+    source   => 'https://leap.se/git/leap_web',
     owner    => 'leap-webapp',
     group    => 'leap-webapp',
     require  => [ User['leap-webapp'], Group['leap-webapp'] ],
