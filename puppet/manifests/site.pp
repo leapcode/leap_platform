@@ -2,7 +2,7 @@
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
 # parse services for host
-$services=join(hiera_array('services'), ' ')
+$services=join(hiera_array('services', ['']), ' ')
 notice("Services for ${fqdn}: ${services}")
 
 # make sure apt is updated before any packages are installed
