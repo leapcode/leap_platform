@@ -60,7 +60,7 @@ class site_webapp::couchdb {
       mode   => '0744';
   }
 
-  class { 'site_stunnel::setup':
+  site_stunnel::setup { 'webapp_couchdb':
     cert_name => $cert_name,
     key       => $key,
     cert      => $cert,

@@ -27,7 +27,7 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
 
   # basic setup: ensure cert, key, ca files are in place, and some generic
   # stunnel things are done
-  class { 'site_stunnel::setup':
+  site_stunnel::setup { 'couchdb_couchdb':
     cert_name => $cert_name,
     key       => $key,
     cert      => $cert,

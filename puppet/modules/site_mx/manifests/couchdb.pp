@@ -15,7 +15,7 @@ class site_mx::couchdb {
   $cert_path               = "${x509::variables::certs}/${cert_name}.crt"
   $key_path                = "${x509::variables::keys}/${cert_name}.key"
 
-  class { 'site_stunnel::setup':
+  site_stunnel::setup {'mx_couchdb':
     cert_name => $cert_name,
     key       => $key,
     cert      => $cert,
