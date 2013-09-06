@@ -3,13 +3,13 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.2.3"
-  self.compatible_cli = "1.2.1".."1.99"
+  self.version = "0.2.4"
+  self.compatible_cli = "1.2.2".."1.99"
 
   #
   # the facter facts that should be gathered
   #
-  self.facts = ["ec2_local_ipv4"]
+  self.facts = ["ec2_local_ipv4", "ec2_public_ipv4"]
 
   #
   # the named paths for this platform
