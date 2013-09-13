@@ -1,6 +1,6 @@
 [submodule "puppet/modules/openvpn"]
 	path = puppet/modules/openvpn
-	url = git://github.com/luxflux/puppet-openvpn.git
+	url = https://leap.se/git/puppet_openvpn
 [submodule "puppet/modules/concat"]
 	path = puppet/modules/concat
 	url = https://leap.se/git/puppet_concat
@@ -66,7 +66,7 @@
 	url = https://leap.se/git/puppet_nagios
 [submodule "puppet/modules/tor"]
 	path = puppet/modules/tor
-	url = git://labs.riseup.net/shared-tor
+	url = https://leap.se/git/puppet_tor
 [submodule "puppet/modules/stunnel"]
 	path = puppet/modules/stunnel
 	url = https://leap.se/git/puppet_stunnel
