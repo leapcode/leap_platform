@@ -5,23 +5,11 @@ class site_mx::couchdb {
   $couch_client_connect    = $couch_client['connect']
 
   include x509::variables
-  $x509                    = hiera('x509')
-  $key                     = $x509['key']
-  $cert                    = $x509['cert']
-  $ca                      = $x509['ca_cert']
-  $cert_name               = 'leap_couchdb'
-  $ca_name                 = 'leap_ca'
-  $ca_path                 = "${x509::variables::local_CAs}/${ca_name}.crt"
-  $cert_path               = "${x509::variables::certs}/${cert_name}.crt"
-  $key_path                = "${x509::variables::keys}/${cert_name}.key"
+  $ca_path                 = "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt"
+  $cert_path               = "${x509::variables::certs}/${site_config::params::cert_name}.crt"
+  $key_path                = "${x509::variables::keys}/${site_config::params::cert_name}.key"
 
-  site_stunnel::setup {'mx_couchdb':
-    cert_name => $cert_name,
-    key       => $key,
-    cert      => $cert,
-    ca_name   => $ca_name,
-    ca        => $ca
-  }
+  include site_stunnel
 
   $couchdb_stunnel_client_defaults = {
     'connect_port' => $couch_client_connect,

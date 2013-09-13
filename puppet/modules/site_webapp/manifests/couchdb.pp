@@ -60,13 +60,7 @@ class site_webapp::couchdb {
       mode   => '0744';
   }
 
-  site_stunnel::setup { 'webapp_couchdb':
-    cert_name => $cert_name,
-    key       => $key,
-    cert      => $cert,
-    ca_name   => $ca_name,
-    ca        => $ca
-  }
+  include site_stunnel
 
   exec { 'migrate_design_documents':
     cwd      => '/srv/leap/webapp',
