@@ -14,11 +14,5 @@ define site_stunnel::setup ($cert_name, $key, $cert, $ca_name, $ca) {
       notify  => Service['stunnel'];
   }
 
-  x509::ca {
-    $ca_name:
-      content => $ca,
-      notify  => Service['stunnel'];
-  }
-
 }
 

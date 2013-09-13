@@ -12,12 +12,6 @@ class site_openvpn::keys {
       notify  => Service[openvpn];
   }
 
-  x509::ca {
-    'leap_ca':
-      content => $site_openvpn::x509_config['ca_cert'],
-      notify  => Service[openvpn];
-  }
-
   file { '/etc/openvpn/keys/dh.pem':
     content => $site_openvpn::x509_config['dh'],
     mode    => '0644',
