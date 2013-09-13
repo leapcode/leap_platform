@@ -55,4 +55,15 @@ class site_config::default {
     include site_squid_deb_proxy::client
   }
 
+  # Set up leap ca
+  $x509    = hiera('x509')
+  $ca      = $x509['ca_cert']
+  $ca_name = 'leap_ca'
+
+  x509::ca { $ca_name:
+    content => $ca,
+    before  => [
+      Class['Site_openvpn::Keys'],
+      Class['Site_stunnel'] ]
+  }
 }
