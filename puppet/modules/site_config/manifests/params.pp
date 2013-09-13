@@ -22,4 +22,7 @@ class site_config::params {
   else {
     fail("unable to determine a valid interface, please set a valid interface for this node in nodes/${::hostname}.json")
   }
+
+  $ca_name   = 'leap_ca'
+  $cert_name = 'leap'
 }
