@@ -37,9 +37,6 @@
 [submodule "puppet/modules/bundler"]
 	path = puppet/modules/bundler
 	url = https://leap.se/git/puppet_bundler
-[submodule "puppet/modules/vcsrepo"]
-	path = puppet/modules/vcsrepo
-	url = git://labs.riseup.net/module_vcs
 [submodule "puppet/modules/rubygems"]
 	path = puppet/modules/rubygems
 	url = https://leap.se/git/puppet_rubygems
@@ -79,3 +76,6 @@
 [submodule "puppet/modules/postfix"]
 	path = puppet/modules/postfix
 	url = https://leap.se/git/puppet_postfix
+[submodule "puppet/modules/vcsrepo"]
+	path = puppet/modules/vcsrepo
+	url = https://leap.se/git/puppet_vcsrepo
