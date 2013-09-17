@@ -5,7 +5,7 @@ class site_config::params {
   $ec2_local_ipv4_interface = getvar("interface_${::ec2_local_ipv4}")
 
   if $::virtual == 'virtualbox' {
-    $interface = [ 'eth0', 'eth1' ]
+    $interface = 'eth1'
   }
   elsif hiera('interface','') != '' {
     $interface = hiera('interface')
@@ -17,7 +17,7 @@ class site_config::params {
     $interface = $ec2_local_ipv4_interface
   }
   elsif $::interfaces =~ /eth0/ {
-    $interface = eth0
+    $interface = 'eth0'
   }
   else {
     fail("unable to determine a valid interface, please set a valid interface for this node in nodes/${::hostname}.json")
