@@ -80,15 +80,15 @@ define site_openvpn::server_config(
   openvpn::option {
     "ca ${openvpn_configname}":
         key     => 'ca',
-        value   => '/etc/openvpn/ca_bundle.pem',
+        value   => "${x509::variables::local_CAs}/${site_config::params::ca_bundle_name}.crt",
         server  => $openvpn_configname;
     "cert ${openvpn_configname}":
         key     => 'cert',
-        value   => '/etc/x509/certs/leap_openvpn.crt',
+        value   => "${x509::variables::certs}/${site_config::params::cert_name}.crt",
         server  => $openvpn_configname;
     "key ${openvpn_configname}":
         key     => 'key',
-        value   => '/etc/x509/keys/leap_openvpn.key',
+        value   => "${x509::variables::keys}/${site_config::params::cert_name}.key",
         server  => $openvpn_configname;
     "dh ${openvpn_configname}":
         key     => 'dh',
