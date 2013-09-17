@@ -55,4 +55,6 @@ class site_config::default {
     include site_squid_deb_proxy::client
   }
 
+  include site_config::x509
+
 }

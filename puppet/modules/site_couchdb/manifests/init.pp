@@ -1,11 +1,6 @@
 class site_couchdb {
   tag 'leap_service'
 
-  $x509                   = hiera('x509')
-  $key                    = $x509['key']
-  $cert                   = $x509['cert']
-  $ca                     = $x509['ca_cert']
-
   $couchdb_config         = hiera('couch')
   $couchdb_users          = $couchdb_config['users']
   $couchdb_admin          = $couchdb_users['admin']
@@ -44,11 +39,7 @@ class site_couchdb {
     -> Couchdb::Add_user[$couchdb_webapp_user]
     -> Couchdb::Add_user[$couchdb_soledad_user]
 
-  class { 'site_couchdb::stunnel':
-    key  => $key,
-    cert => $cert,
-    ca   => $ca
-  }
+  class { 'site_couchdb::stunnel': }
 
   class { 'site_couchdb::bigcouch::add_nodes': }
 

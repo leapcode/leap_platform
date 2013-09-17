@@ -1,4 +1,4 @@
-class site_couchdb::stunnel ($key, $cert, $ca) {
+class site_couchdb::stunnel {
 
   $stunnel              = hiera('stunnel')
 
@@ -19,21 +19,9 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   $ednp_clients         = $stunnel['ednp_clients']
 
   include x509::variables
-  $cert_name = 'leap_couchdb'
-  $ca_name   = 'leap_ca'
-  $ca_path   = "${x509::variables::local_CAs}/${ca_name}.crt"
-  $cert_path = "${x509::variables::certs}/${cert_name}.crt"
-  $key_path  = "${x509::variables::keys}/${cert_name}.key"
-
-  # basic setup: ensure cert, key, ca files are in place, and some generic
-  # stunnel things are done
-  class { 'site_stunnel::setup':
-    cert_name => $cert_name,
-    key       => $key,
-    cert      => $cert,
-    ca_name   => $ca_name,
-    ca        => $ca
-  }
+  $ca_path   = "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt"
+  $cert_path = "${x509::variables::certs}/${site_config::params::cert_name}.crt"
+  $key_path  = "${x509::variables::keys}/${site_config::params::cert_name}.key"
 
   # setup a stunnel server for the webapp to connect to couchdb
   stunnel::service { 'couch_server':
