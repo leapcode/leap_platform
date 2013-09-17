@@ -15,9 +15,16 @@ class site_config::default {
   # configure ssh and include ssh-keys
   include site_config::sshd
 
+  # include classes for special environments
+  # i.e. openstack/aws nodes, vagrant nodes
+
   # fix dhclient from changing resolver information
   if $::ec2_instance_id {
     include site_config::dhclient
+  }
+
+  if ( $::virtual == 'virtualbox' ) {
+    include site_config::vagrant
   }
 
   # configure /etc/resolv.conf
