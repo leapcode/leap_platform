@@ -44,7 +44,6 @@ submission inet n        -       n       -       -       smtpd
   -o smtpd_tls_security_level=encrypt
   -o smtpd_recipient_restrictions=\$submission_recipient_restrictions
   -o smtpd_helo_restrictions=\$submission_helo_restrictions",
-    require             => [
-      X509::Key[$cert_name], X509::Cert[$cert_name], User['vmail'] ]
+    require             => Class['Site_config::X509']
   }
 }
