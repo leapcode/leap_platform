@@ -1,6 +1,7 @@
 class site_tor {
   tag 'leap_service'
-
+  Class['site_config::default'] -> Class['site_tor']
+  
   $tor            = hiera('tor')
   $bandwidth_rate = $tor['bandwidth_rate']
   $tor_type       = $tor['type']

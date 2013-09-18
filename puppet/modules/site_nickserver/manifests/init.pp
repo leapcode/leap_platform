@@ -11,6 +11,8 @@
 
 class site_nickserver {
   tag 'leap_service'
+  Class['site_config::default'] -> Class['site_nickserver']
+
   include site_config::ruby
 
   #

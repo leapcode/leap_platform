@@ -31,7 +31,8 @@ class site_couchdb {
 
   class { 'couchdb::bigcouch::package::cloudant': }
 
-  Class ['couchdb::bigcouch::package::cloudant']
+  Class['site_config::default']
+    -> Class ['couchdb::bigcouch::package::cloudant']
     -> Service ['couchdb']
     -> Class ['site_couchdb::bigcouch::add_nodes']
     -> Couchdb::Create_db['users']
