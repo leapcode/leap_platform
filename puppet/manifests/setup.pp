@@ -22,3 +22,11 @@ if hiera('squid_deb_proxy_client', false) {
   include site_squid_deb_proxy::client
 }
 
+# shorewall is installed/half-configured during setup.pp (Bug #3871)
+# we need to include shorewall::interface{eth0} in setup.pp so
+# packages can be installed during main puppetrun, even before shorewall
+# is configured completly
+if ( $::virtual == 'virtualbox' ) {
+  include site_config::vagrant
+}
+
