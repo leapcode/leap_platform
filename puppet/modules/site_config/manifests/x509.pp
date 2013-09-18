@@ -18,6 +18,10 @@ class site_config::x509 {
     content => $ca
   }
 
+  x509::ca { $site_config::params::client_ca_name:
+    content => $client_ca
+  }
+
   x509::ca { $site_config::params::ca_bundle_name:
     content => "${ca}${client_ca}"
   }

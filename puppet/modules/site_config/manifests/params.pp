@@ -24,6 +24,7 @@ class site_config::params {
   }
 
   $ca_name          = 'leap_ca'
+  $client_ca_name   = 'leap_client_ca'
   $ca_bundle_name   = 'leap_ca_bundle'
   $cert_name        = 'leap'
 }
