@@ -16,8 +16,9 @@ class site_webapp {
   include site_config::ruby
   include site_webapp::apache
   include site_webapp::couchdb
-  include site_webapp::client_ca
   include site_webapp::haproxy
+  include site_config::x509::cert_key
+  include site_config::x509::ca
 
   group { 'leap-webapp':
     ensure    => present,

@@ -1,5 +1,10 @@
 class site_config::x509::client_ca {
 
+  ##
+  ## This is for the special CA that is used exclusively for generating
+  ## client certificates by the webapp.
+  ##
+
   $x509      = hiera('x509')
   $client_ca = $x509['client_ca_cert']
 
