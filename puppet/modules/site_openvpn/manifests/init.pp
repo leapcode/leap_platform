@@ -20,6 +20,8 @@
 class site_openvpn {
   tag 'leap_service'
 
+  Class['site_config::default'] -> Class['site_openvpn']
+  
   $openvpn_config   = hiera('openvpn')
   $x509_config      = hiera('x509')
   $openvpn_ports    = $openvpn_config['ports']

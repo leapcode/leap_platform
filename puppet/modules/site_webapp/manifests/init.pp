@@ -11,6 +11,8 @@ class site_webapp {
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
 
+  Class['site_config::default'] -> Class['site_webapp']
+
   include site_config::ruby
   include site_webapp::apache
   include site_webapp::couchdb
