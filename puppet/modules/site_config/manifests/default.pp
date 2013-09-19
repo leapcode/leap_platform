@@ -3,6 +3,15 @@ class site_config::default {
 
   $domain_hash = hiera('domain')
 
+  # make sure apt is updated before any packages are installed
+  include apt::update
+  Package { require => Exec['apt_updated'] }
+
+  include stdlib
+
+  include site_config::slow
+
+
   include concat::setup
 
   # default class, used by all hosts

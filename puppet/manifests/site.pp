@@ -5,15 +5,7 @@ Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 $services=join(hiera_array('services', ['']), ' ')
 notice("Services for ${fqdn}: ${services}")
 
-# make sure apt is updated before any packages are installed
-include apt::update
-Package { require => Exec['apt_updated'] }
-
-include stdlib
-
 include site_config::default
-include site_config::slow
-
 
 # configure eip
 if $services =~ /\bopenvpn\b/ {
