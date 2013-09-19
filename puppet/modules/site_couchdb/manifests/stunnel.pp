@@ -18,6 +18,11 @@ class site_couchdb::stunnel {
   $ednp_server_connect  = $ednp_server['connect']
   $ednp_clients         = $stunnel['ednp_clients']
 
+
+
+  include site_config::x509::cert_key
+  include site_config::x509::ca
+
   include x509::variables
   $ca_path   = "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt"
   $cert_path = "${x509::variables::certs}/${site_config::params::cert_name}.crt"

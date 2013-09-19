@@ -36,6 +36,11 @@ class site_nickserver {
   # temporarily for now:
   $domain          = hiera('domain')
   $address_domain  = $domain['full_suffix']
+
+
+  include site_config::x509::cert_key
+  include site_config::x509::ca
+
   $x509            = hiera('x509')
   $x509_key        = $x509['key']
   $x509_cert       = $x509['cert']

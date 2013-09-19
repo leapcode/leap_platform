@@ -13,6 +13,8 @@ class site_webapp::couchdb {
   $couch_client            = $stunnel['couch_client']
   $couch_client_connect    = $couch_client['connect']
 
+  include site_config::x509::cert_key
+  include site_config::x509::ca
   include x509::variables
   $x509                    = hiera('x509')
   $key                     = $x509['key']
