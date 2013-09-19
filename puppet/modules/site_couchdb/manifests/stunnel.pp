@@ -39,7 +39,10 @@ class site_couchdb::stunnel {
     verify     => '2',
     pid        => '/var/run/stunnel4/couchserver.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '4',
+    require    => [
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca'] ];
   }
 
 
@@ -55,7 +58,10 @@ class site_couchdb::stunnel {
     verify     => '2',
     pid        => '/var/run/stunnel4/epmd_server.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '4',
+    require    => [
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   # setup stunnel clients for Erlang Port Mapper Daemon (epmd) to connect
@@ -81,7 +87,10 @@ class site_couchdb::stunnel {
     verify     => '2',
     pid        => '/var/run/stunnel4/ednp_server.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '4',
+    require    => [
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   # setup stunnel clients for Erlang Distributed Node Protocol (ednp) to connect

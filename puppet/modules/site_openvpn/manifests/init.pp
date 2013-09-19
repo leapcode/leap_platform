@@ -137,7 +137,11 @@ class site_openvpn {
     command     => '/etc/init.d/openvpn restart',
     refreshonly => true,
     subscribe   => File['/etc/openvpn'],
-    require     => [ Package['openvpn'], File['/etc/openvpn'] ];
+    require     => [
+      Package['openvpn'],
+      File['/etc/openvpn'],
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca_bundle'] ];
   }
 
   cron { 'add_gateway_ips.sh':
