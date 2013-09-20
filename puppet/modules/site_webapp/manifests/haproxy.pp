@@ -3,7 +3,6 @@ class site_webapp::haproxy {
   include site_haproxy
 
   $haproxy     = hiera('haproxy')
-  $local_ports = $haproxy['local_ports']
 
   # Template uses $global_options, $defaults_options
   concat::fragment { 'leap_haproxy_webapp_couchdb':
