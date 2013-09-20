@@ -15,9 +15,9 @@ Listen 0.0.0.0:<%= api_port %>
   SSLHonorCipherOrder on
 
   SSLCACertificatePath /etc/ssl/certs
-  SSLCertificateChainFile /etc/ssl/certs/leap_api.pem
-  SSLCertificateKeyFile /etc/x509/keys/leap_api.key
-  SSLCertificateFile /etc/x509/certs/leap_api.crt
+  SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::ca_name') %>.crt
+  SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key
+  SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 

@@ -8,9 +8,15 @@ class site_webapp::apache {
   $commercial_key   = $x509['commercial_key']
   $commercial_cert  = $x509['commercial_cert']
   $commercial_root  = $x509['commercial_ca_cert']
-  $api_key          = $x509['key']
-  $api_cert         = $x509['cert']
-  $api_root         = $x509['ca_cert']
+
+  include site_config::x509::cert_key
+  include site_config::x509::ca
+
+  include x509::variables
+
+  X509::Cert[$site_config::params::cert_name] ~> Service[apache]
+  X509::Key[$site_config::params::cert_name]  ~> Service[apache]
+  X509::Ca[$site_config::params::ca_name]  ~> Service[apache]
 
   class { '::apache': no_default_site => true, ssl => true }
 
@@ -34,29 +40,17 @@ class site_webapp::apache {
     'leap_webapp':
       content => $commercial_key,
       notify  => Service[apache];
-
-    'leap_api':
-      content => $api_key,
-      notify  => Service[apache];
   }
 
   x509::cert {
     'leap_webapp':
       content => $commercial_cert,
       notify  => Service[apache];
-
-    'leap_api':
-      content => $api_cert,
-      notify  => Service[apache];
   }
 
   x509::ca {
     'leap_webapp':
       content => $commercial_root,
-      notify  => Service[apache];
-
-    'leap_api':
-      content => $api_root,
       notify  => Service[apache];
   }
 }

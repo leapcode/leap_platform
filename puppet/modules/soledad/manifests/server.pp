@@ -9,28 +9,11 @@ class soledad::server {
   $couchdb_user     = $couchdb['couchdb_admin_user']['username']
   $couchdb_password = $couchdb['couchdb_admin_user']['password']
 
-  $x509      = hiera('x509')
-  $x509_key  = $x509['key']
-  $x509_cert = $x509['cert']
-  $x509_ca   = $x509['ca_cert']
+  include site_config::x509::cert_key
+  include site_config::x509::ca
 
   $soledad      = hiera('soledad')
   $soledad_port = $soledad['port']
-
-  x509::key { 'soledad':
-    content => $x509_key,
-    notify  => Service['soledad-server'];
-  }
-
-  x509::cert { 'soledad':
-    content => $x509_cert,
-    notify  => Service['soledad-server'];
-  }
-
-  x509::ca { 'soledad':
-    content => $x509_ca,
-    notify  => Service['soledad-server'];
-  }
 
   #
   # SOLEDAD CONFIG
@@ -47,8 +30,9 @@ class soledad::server {
 
   package { 'soledad-server':
     ensure  => latest,
-    require => [ Class['site_apt::preferences::twisted'],
-                 Class['site_apt::leap_repo'] ];
+    require => [
+      Class['site_apt::preferences::twisted'],
+      Class['site_apt::leap_repo'] ];
   }
 
   file { '/etc/default/soledad':
@@ -65,7 +49,11 @@ class soledad::server {
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => [ Class['soledad'], Package['soledad-server'] ];
+    require    => [
+      Class['soledad'],
+      Package['soledad-server'],
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   include site_shorewall::soledad

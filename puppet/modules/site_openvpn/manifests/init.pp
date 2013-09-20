@@ -20,10 +20,13 @@
 class site_openvpn {
   tag 'leap_service'
 
+  include site_config::x509::cert_key
+  include site_config::x509::ca_bundle
+
+
   Class['site_config::default'] -> Class['site_openvpn']
-  
+
   $openvpn_config   = hiera('openvpn')
-  $x509_config      = hiera('x509')
   $openvpn_ports    = $openvpn_config['ports']
 
   if $::ec2_instance_id {
@@ -58,8 +61,8 @@ class site_openvpn {
     $openvpn_limited_udp_cidr             = '21'
   }
 
-  # deploy ca + server keys
-  include site_openvpn::keys
+  # deploy dh keys
+  include site_openvpn::dh_key
 
   if $openvpn_allow_unlimited and $openvpn_allow_limited {
     $unlimited_gateway_address = $openvpn_gateway_address
@@ -134,7 +137,11 @@ class site_openvpn {
     command     => '/etc/init.d/openvpn restart',
     refreshonly => true,
     subscribe   => File['/etc/openvpn'],
-    require     => [ Package['openvpn'], File['/etc/openvpn'] ];
+    require     => [
+      Package['openvpn'],
+      File['/etc/openvpn'],
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca_bundle'] ];
   }
 
   cron { 'add_gateway_ips.sh':

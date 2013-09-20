@@ -36,10 +36,10 @@ class site_nickserver {
   # temporarily for now:
   $domain          = hiera('domain')
   $address_domain  = $domain['full_suffix']
-  $x509            = hiera('x509')
-  $x509_key        = $x509['key']
-  $x509_cert       = $x509['cert']
-  $x509_ca         = $x509['ca_cert']
+
+
+  include site_config::x509::cert_key
+  include site_config::x509::ca
 
   #
   # USER AND GROUP
@@ -124,7 +124,10 @@ class site_nickserver {
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => File['/etc/init.d/nickserver'];
+    require    => [
+      File['/etc/init.d/nickserver'],
+      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   #
@@ -160,18 +163,4 @@ class site_nickserver {
       content => template('site_nickserver/nickserver-proxy.conf.erb')
   }
 
-  x509::key { 'nickserver':
-    content => $x509_key,
-    notify  => Service[apache];
-  }
-
-  x509::cert { 'nickserver':
-    content => $x509_cert,
-    notify  => Service[apache];
-  }
-
-  x509::ca { 'nickserver':
-    content => $x509_ca,
-    notify  => Service[apache];
-  }
 }
