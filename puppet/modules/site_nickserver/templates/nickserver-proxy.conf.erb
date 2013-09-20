@@ -15,8 +15,8 @@ Listen 0.0.0.0:<%= @nickserver_port -%>
 
   SSLCACertificatePath /etc/ssl/certs
   SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::ca_name') %>.crt
-  SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key 
-  SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt 
+  SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key
+  SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt
 
   ProxyPass / http://localhost:<%= @nickserver_local_port %>/
   ProxyPreserveHost On  # preserve Host header in HTTP request
