@@ -4,6 +4,9 @@ class site_webapp::apache {
   $api_domain       = $web_api['domain']
   $api_port         = $web_api['port']
 
+  $web_domain       = hiera('domain')
+  $domain_name      = $web_domain['name']
+
   $x509             = hiera('x509')
   $commercial_key   = $x509['commercial_key']
   $commercial_cert  = $x509['commercial_cert']

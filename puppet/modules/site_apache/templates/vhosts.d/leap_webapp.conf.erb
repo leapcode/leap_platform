@@ -6,7 +6,8 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-  ServerName <%= domain %>
+  ServerName <%= domain_name %>
+  ServerAlias <%= domain %>
   ServerAlias www.<%= domain %>
 
   SSLEngine on
