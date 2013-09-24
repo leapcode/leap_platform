@@ -20,7 +20,8 @@
 class site_openvpn {
   tag 'leap_service'
 
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::ca_bundle
 
 
@@ -140,7 +141,8 @@ class site_openvpn {
     require     => [
       Package['openvpn'],
       File['/etc/openvpn'],
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca_bundle'] ];
   }
 

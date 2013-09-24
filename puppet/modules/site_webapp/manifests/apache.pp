@@ -7,19 +7,14 @@ class site_webapp::apache {
   $web_domain       = hiera('domain')
   $domain_name      = $web_domain['name']
 
-  $x509             = hiera('x509')
-  $commercial_key   = $x509['commercial_key']
-  $commercial_cert  = $x509['commercial_cert']
-  $commercial_root  = $x509['commercial_ca_cert']
-
-  include site_config::x509::cert_key
-  include site_config::x509::ca
-
   include x509::variables
+  include site_config::x509::commercial::cert
+  include site_config::x509::commercial::key
+  include site_config::x509::commercial::ca
 
-  X509::Cert[$site_config::params::cert_name] ~> Service[apache]
-  X509::Key[$site_config::params::cert_name]  ~> Service[apache]
-  X509::Ca[$site_config::params::ca_name]  ~> Service[apache]
+  Class['Site_config::X509::Commercial::Key'] ~> Service[apache]
+  Class['Site_config::X509::Commercial::Cert'] ~> Service[apache]
+  Class['Site_config::X509::Commercial::Ca'] ~> Service[apache]
 
   class { '::apache': no_default_site => true, ssl => true }
 
@@ -39,21 +34,4 @@ class site_webapp::apache {
       content => template('site_apache/vhosts.d/api.conf.erb')
   }
 
-  x509::key {
-    'leap_webapp':
-      content => $commercial_key,
-      notify  => Service[apache];
-  }
-
-  x509::cert {
-    'leap_webapp':
-      content => $commercial_cert,
-      notify  => Service[apache];
-  }
-
-  x509::ca {
-    'leap_webapp':
-      content => $commercial_root,
-      notify  => Service[apache];
-  }
 }

@@ -8,7 +8,8 @@ class site_postfix::mx {
   $root_mail_recipient = $mx_hash['contact']
   $postfix_smtp_listen = 'all'
 
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::client_ca
 
   postfix::config {
@@ -48,7 +49,8 @@ submission inet n        -       n       -       -       smtpd
   -o smtpd_recipient_restrictions=\$submission_recipient_restrictions
   -o smtpd_helo_restrictions=\$submission_helo_restrictions",
     require             => [
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Client_ca'],
       User['vmail'] ]
   }

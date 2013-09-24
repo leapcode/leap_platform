@@ -23,7 +23,8 @@ define site_stunnel::clients (
     rndfile    => $rndfile,
     debuglevel => $debuglevel,
     require    => [
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
 
   }

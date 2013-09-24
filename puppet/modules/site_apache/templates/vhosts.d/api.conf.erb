@@ -7,8 +7,7 @@
 Listen 0.0.0.0:<%= api_port %>
 
 <VirtualHost *:<%= api_port -%>>
-  ServerName <%= domain_name %>
-  ServerAlias <%= api_domain %>
+  ServerName <%= api_domain %>
 
   SSLEngine on
   SSLProtocol -all +SSLv3 +TLSv1

@@ -74,7 +74,7 @@ class site_webapp {
     '/srv/leap/webapp/public/ca.crt':
       ensure  => link,
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => '/usr/local/share/ca-certificates/leap_api.crt';
+      target  => "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt";
 
     "/srv/leap/webapp/public/${api_version}":
       ensure  => directory,
