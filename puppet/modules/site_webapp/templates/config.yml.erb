@@ -3,8 +3,8 @@ production:
   admins: <%= @webapp['admins'].inspect %>
   domain: <%= @provider_domain %>
   force_ssl: <%= @webapp['secure'] %>
-  client_ca_key: <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key
-  client_ca_cert: <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt
+  client_ca_key: <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::client_ca_name') %>.key
+  client_ca_cert: <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::client_ca_name') %>.crt
   secret_token: "<%= @secret_token %>"
   client_cert_lifespan: <%= cert_options['life_span'].to_i %>
   client_cert_bit_size: <%= cert_options['bit_size'].to_i %>

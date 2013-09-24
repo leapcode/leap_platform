@@ -17,8 +17,11 @@ class site_webapp {
   include site_webapp::apache
   include site_webapp::couchdb
   include site_webapp::haproxy
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::ca
+  include site_config::x509::client_ca::ca
+  include site_config::x509::client_ca::key
 
   group { 'leap-webapp':
     ensure    => present,
