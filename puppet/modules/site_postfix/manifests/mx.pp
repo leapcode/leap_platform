@@ -10,7 +10,8 @@ class site_postfix::mx {
 
   include site_config::x509::cert
   include site_config::x509::key
-  include site_config::x509::client_ca
+  include site_config::x509::client_ca::ca
+  include site_config::x509::client_ca::key
 
   postfix::config {
     'mydestination':
@@ -51,7 +52,8 @@ submission inet n        -       n       -       -       smtpd
     require             => [
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
-      Class['Site_config::X509::Client_ca'],
+      Class['Site_config::X509::Client_ca::Key'],
+      Class['Site_config::X509::Client_ca::Ca'],
       User['vmail'] ]
   }
 }

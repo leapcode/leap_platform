@@ -5,7 +5,8 @@ class site_mx {
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca
-  include site_config::x509::client_ca
+  include site_config::x509::client_ca::ca
+  include site_config::x509::client_ca::key
 
 
   include site_postfix::mx
