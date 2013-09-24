@@ -16,9 +16,9 @@
   SSLHonorCipherOrder on
 
   SSLCACertificatePath /etc/ssl/certs
-  SSLCertificateChainFile /etc/ssl/certs/leap_webapp.pem
-  SSLCertificateKeyFile /etc/x509/keys/leap_webapp.key
-  SSLCertificateFile /etc/x509/certs/leap_webapp.crt
+  SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::commercial_ca_name') %>.crt
+  SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.key
+  SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.crt 
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 
