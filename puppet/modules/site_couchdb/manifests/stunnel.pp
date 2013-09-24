@@ -20,7 +20,8 @@ class site_couchdb::stunnel {
 
 
 
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::ca
 
   include x509::variables
@@ -41,7 +42,8 @@ class site_couchdb::stunnel {
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4',
     require    => [
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
   }
 
@@ -60,7 +62,8 @@ class site_couchdb::stunnel {
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4',
     require    => [
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
   }
 
@@ -89,7 +92,8 @@ class site_couchdb::stunnel {
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => '4',
     require    => [
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
   }
 

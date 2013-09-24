@@ -38,7 +38,8 @@ class site_nickserver {
   $address_domain  = $domain['full_suffix']
 
 
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::ca
 
   #
@@ -126,7 +127,8 @@ class site_nickserver {
     hasstatus  => true,
     require    => [
       File['/etc/init.d/nickserver'],
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
   }
 

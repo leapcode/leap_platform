@@ -9,7 +9,8 @@ class soledad::server {
   $couchdb_user     = $couchdb['couchdb_admin_user']['username']
   $couchdb_password = $couchdb['couchdb_admin_user']['password']
 
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::ca
 
   $soledad      = hiera('soledad')
@@ -52,7 +53,8 @@ class soledad::server {
     require    => [
       Class['soledad'],
       Package['soledad-server'],
-      Class['Site_config::X509::Cert_key'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
   }
 

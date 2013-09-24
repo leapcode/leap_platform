@@ -12,7 +12,8 @@ class site_webapp::apache {
   $commercial_cert  = $x509['commercial_cert']
   $commercial_root  = $x509['commercial_ca_cert']
 
-  include site_config::x509::cert_key
+  include site_config::x509::cert
+  include site_config::x509::key
   include site_config::x509::ca
 
   include x509::variables
