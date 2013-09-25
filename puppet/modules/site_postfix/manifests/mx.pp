@@ -45,6 +45,7 @@ class site_postfix::mx {
     "smtps     inet  n       -       -       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_tls_security_level=encrypt
+  -o smtpd_recipient_restrictions=\$smtps_recipient_restrictions
 submission inet n        -       n       -       -       smtpd
   -o smtpd_tls_security_level=encrypt
   -o smtpd_recipient_restrictions=\$submission_recipient_restrictions
