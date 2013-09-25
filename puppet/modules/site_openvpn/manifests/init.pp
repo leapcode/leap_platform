@@ -167,7 +167,9 @@ class site_openvpn {
       ensure     => running,
       hasrestart => true,
       hasstatus  => true,
-      require    => Exec['concat_/etc/default/openvpn'];
+      require    => [
+        Package['openvpn'],
+        Exec['concat_/etc/default/openvpn'] ];
   }
 
   file {
