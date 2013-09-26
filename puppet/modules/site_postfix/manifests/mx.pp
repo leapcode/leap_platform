@@ -16,10 +16,16 @@ class site_postfix::mx {
   postfix::config {
     'mydestination':
       value => "\$myorigin, localhost, localhost.\$mydomain, ${domain}";
-    'mailbox_size_limit':   value => '0';
-    'home_mailbox':         value => 'Maildir/';
-    'virtual_alias_maps':   value => 'tcp:localhost:4242';
-    'luser_relay':          value => 'vmail';
+    'mailbox_size_limit':
+      value => '0';
+    'home_mailbox':
+      value => 'Maildir/';
+    'virtual_alias_maps':
+      value => 'tcp:localhost:4242';
+    'luser_relay':
+      value => 'vmail';
+    'smtpd_tls_received_header':
+      value => 'yes';
   }
 
   include site_postfix::mx::smtpd_checks
