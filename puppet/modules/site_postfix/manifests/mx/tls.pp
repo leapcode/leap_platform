@@ -14,6 +14,37 @@ class site_postfix::mx::tls {
     'smtpd_tls_ask_ccert':  value  => 'yes';
     'smtpd_tls_security_level':
       value  => 'may';
+    'smtpd_tls_eecdh_grade':
+      value => 'ultra'
+  }
+
+  # Setup DH parameters
+  # Instead of using the dh parameters that are created by leap cli, it is more
+  # secure to generate new parameter files that will only be used for postfix,
+  # for each machine
+
+  include site_config::packages::gnutls
+
+  exec { 'certtool-postfix-gendh-1024':
+    command => 'certtool --generate-dh-params --bits=1024 --outfile=/etc/postfix/dh_1024.pem',
+    user    => root,
+    group   => root,
+    creates => '/etc/postfix/dh_1024.pem',
+    require => Package['gnutls-bin']
+  }
+
+  # Make sure the dh params file has correct ownership and mode
+  file {
+    '/etc/postfix/dh_1024.pem':
+      owner   => root,
+      group   => root,
+      mode    => '0600',
+      require => Exec['certtool-postfix-gendh-1024'];
+  }
+
+  postfix::config { 'smtpd_tls_dh1024_param_file':
+    value   => '/etc/postfix/dh_1024.pem',
+    require => File['/etc/postfix/dh_1024.pem']
   }
 
 }
