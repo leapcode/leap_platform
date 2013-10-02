@@ -48,7 +48,7 @@ class site_config::default {
   }
 
   # install/remove base packages
-  include site_config::base_packages
+  include site_config::packages::base
 
   # include basic shorewall config
   include site_shorewall::defaults

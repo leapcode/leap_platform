@@ -1,4 +1,4 @@
-class site_config::base_packages {
+class site_config::packages::base {
 
   # base set of packages that we want to have installed everywhere
   package { [ 'etckeeper', 'screen', 'less' ]:
