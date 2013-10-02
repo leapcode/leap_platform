@@ -2,6 +2,7 @@ class site_postfix::mx {
 
   $domain_hash         = hiera ('domain')
   $domain              = $domain_hash['full_suffix']
+  $host_domain         = $domain_hash['full']
   $mx_hash             = hiera('mx')
   $cert_name           = hiera('name')
 
@@ -16,6 +17,8 @@ class site_postfix::mx {
   postfix::config {
     'mydestination':
       value => "\$myorigin, localhost, localhost.\$mydomain, ${domain}";
+    'myhostname':
+      value => $host_domain;
     'mailbox_size_limit':
       value => '0';
     'home_mailbox':
