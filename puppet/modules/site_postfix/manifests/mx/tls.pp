@@ -25,17 +25,21 @@ class site_postfix::mx::tls {
 
   include site_config::packages::gnutls
 
+  # Note, the file name is called dh_1024.pem, but we are generating 2048bit dh
+  # parameters Neither Postfix nor OpenSSL actually care about the size of the
+  # prime in "smtpd_tls_dh1024_param_file".  You can make it 2048 bits
+
   exec { 'certtool-postfix-gendh-1024':
-    command => 'certtool --generate-dh-params --bits=1024 --outfile=/etc/postfix/dh_1024.pem',
+    command => 'certtool --generate-dh-params --bits=2048 --outfile=/etc/postfix/smtpd_tls_dh_param.pem',
     user    => root,
     group   => root,
-    creates => '/etc/postfix/dh_1024.pem',
+    creates => '/etc/postfix/smtpd_tls_dh_param.pem',
     require => Package['gnutls-bin']
   }
 
   # Make sure the dh params file has correct ownership and mode
   file {
-    '/etc/postfix/dh_1024.pem':
+    '/etc/postfix/smtpd_tls_dh_param.pem':
       owner   => root,
       group   => root,
       mode    => '0600',
@@ -43,8 +47,8 @@ class site_postfix::mx::tls {
   }
 
   postfix::config { 'smtpd_tls_dh1024_param_file':
-    value   => '/etc/postfix/dh_1024.pem',
-    require => File['/etc/postfix/dh_1024.pem']
+    value   => '/etc/postfix/smtpd_tls_dh_param.pem',
+    require => File['/etc/postfix/smtpd_tls_dh_param.pem']
   }
 
 }
