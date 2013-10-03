@@ -29,8 +29,8 @@ class site_postfix::mx::tls {
   # parameters Neither Postfix nor OpenSSL actually care about the size of the
   # prime in "smtpd_tls_dh1024_param_file".  You can make it 2048 bits
 
-  exec { 'certtool-postfix-gendh-1024':
-    command => 'certtool --generate-dh-params --bits=2048 --outfile=/etc/postfix/smtpd_tls_dh_param.pem',
+  exec { 'certtool-postfix-gendh':
+    command => 'certtool --generate-dh-params --bits 2048 --outfile /etc/postfix/smtpd_tls_dh_param.pem',
     user    => root,
     group   => root,
     creates => '/etc/postfix/smtpd_tls_dh_param.pem',
@@ -43,7 +43,7 @@ class site_postfix::mx::tls {
       owner   => root,
       group   => root,
       mode    => '0600',
-      require => Exec['certtool-postfix-gendh-1024'];
+      require => Exec['certtool-postfix-gendh'];
   }
 
   postfix::config { 'smtpd_tls_dh1024_param_file':
