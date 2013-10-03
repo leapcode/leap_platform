@@ -70,6 +70,9 @@ class site_postfix::mx::tls {
       value => 'btree:${queue_directory}/smtp_cache';
     'smtp_tls_security_level':
       value  => 'may';
+    # see issue #4011
+    'smtp_tls_protocols':
+      value => '!SSLv2, !SSLv3';
   }
 
 
