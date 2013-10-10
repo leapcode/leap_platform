@@ -71,4 +71,8 @@ class site_config::default {
     include site_squid_deb_proxy::client
   }
 
+  if $::services !~ /\bmx\b/ {
+    include site_postfix::satellite
+  }
+
 }
