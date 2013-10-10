@@ -36,5 +36,8 @@
   },
   "name": "common",
   "location": null,
-  "enabled": true
+  "enabled": true,
+  "mail": {
+    "smarthost": "= nodes_like_me[:services => :mx].exclude(self).field('domain.full')"
+  }
 }
