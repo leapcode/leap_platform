@@ -3,6 +3,7 @@
   "environment": null,
   "services": [],
   "tags": [],
+  "contacts": "= global.provider.contacts.default",
   "domain": {
      "full_suffix": "= global.provider.domain",
      "internal_suffix": "= global.provider.domain_internal",
