@@ -1,4 +1,4 @@
-class site_postfix::checks {
+class site_postfix::mx::checks {
 
   file {
     '/etc/postfix/checks':
