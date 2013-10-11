@@ -1,8 +1,6 @@
 class site_config::ruby {
   Class[Ruby] -> Class[rubygems] -> Class[bundler::install]
-  class { '::ruby':
-    ruby_version => '1.9.3',
-  }
+  class { '::ruby': ruby_version => '1.9.3' }
   class { 'bundler::install': install_method => 'package' }
   include rubygems
 }

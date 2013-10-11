@@ -58,7 +58,7 @@ class site_webapp {
     require => [
       Class['bundler::install'],
       Vcsrepo['/srv/leap/webapp'],
-      Package['ruby-dev'],
+      Class['site_config::ruby::dev'],
       Service['shorewall'] ],
     notify  => Service['apache'];
   }
