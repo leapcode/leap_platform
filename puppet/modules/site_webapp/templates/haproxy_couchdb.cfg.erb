@@ -13,7 +13,7 @@ listen bigcouch-in
   default-server inter 3000 fastinter 1000 downinter 1000 rise 2 fall 1
 
 <%- if @haproxy['servers'] -%>
-<%-   @haproxy['servers'].each do |name,server| -%>
+<%-   @haproxy['servers'].sort.each do |name,server| -%>
 <%-     backup = server['backup'] ? 'backup' : '' -%>
   # <%=name%>
   server couchdb_<%=server['port']%> <%=server['host']%>:<%=server['port']%> <%=backup%> weight <%=server['weight']%> check
