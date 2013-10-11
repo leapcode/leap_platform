@@ -13,7 +13,7 @@ class site_webapp {
 
   Class['site_config::default'] -> Class['site_webapp']
 
-  include site_config::ruby
+  include site_config::ruby::dev
   include site_webapp::apache
   include site_webapp::couchdb
   include site_webapp::haproxy
@@ -55,7 +55,11 @@ class site_webapp {
     unless  => '/usr/bin/bundle check',
     user    => 'leap-webapp',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/webapp'], Service['shorewall'] ],
+    require => [
+      Class['bundler::install'],
+      Vcsrepo['/srv/leap/webapp'],
+      Class['site_config::ruby::dev'],
+      Service['shorewall'] ],
     notify  => Service['apache'];
   }
 

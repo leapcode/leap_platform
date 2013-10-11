@@ -13,7 +13,7 @@ class site_nickserver {
   tag 'leap_service'
   Class['site_config::default'] -> Class['site_nickserver']
 
-  include site_config::ruby
+  include site_config::ruby::dev
 
   #
   # VARIABLES
@@ -64,9 +64,7 @@ class site_nickserver {
   # before EventMachine gem is built/installed.
   #
 
-  package {
-    'libssl-dev': ensure => installed;
-  }
+  package { 'libssl-dev': ensure => installed }
 
   vcsrepo { '/srv/leap/nickserver':
     ensure   => present,
@@ -85,8 +83,10 @@ class site_nickserver {
     unless  => '/usr/bin/bundle check',
     user    => 'nickserver',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/nickserver'],
-                 Package['libssl-dev'] ],
+    require => [
+      Class['bundler::install'], Vcsrepo['/srv/leap/nickserver'],
+      Package['libssl-dev'], Class['site_config::ruby::dev'] ],
+
     notify  => Service['nickserver'];
   }
 

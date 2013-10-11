@@ -6,7 +6,7 @@ class site_config::packages::base {
   }
 
   # base set of packages that we want to remove everywhere
-  package { [ 'acpi', 'acpid', 'acpi-support-base',  'eject', 'ftp',
+  package { [ 'acpi', 'acpid', 'acpi-support-base',  'eject', 'ftp', 'fontconfig-config',
               'laptop-detect', 'lpr', 'nfs-common', 'nfs-kernel-server',
               'portmap', 'pppconfig', 'pppoe', 'pump', 'qstat', 'rpcbind',
               'samba-common', 'samba-common-bin', 'smbclient', 'tcl8.5',
@@ -15,14 +15,17 @@ class site_config::packages::base {
     ensure => absent;
   }
 
-  if $::virtual == 'virtualbox' {
-    $virtualbox_ensure = present
+  if $::virtual == 'virtualbox' or $::services =~ /\bwebapp\b/ {
+    $dev_packages_ensure = present
   } else {
-    $virtualbox_ensure = absent
+    $dev_packages_ensure = absent
   }
 
-  package { [ 'build-essential', 'fontconfig-config', 'g++', 'g++-4.7', 'gcc',
+  # g++ and ruby1.9.1-dev are needed for nickserver/eventmachine (#4079)
+  # dev_packages are needed for building gems on the webapp node
+
+  package { [ 'build-essential', 'g++', 'g++-4.7', 'gcc',
               'gcc-4.6', 'gcc-4.7', 'cpp', 'cpp-4.6', 'cpp-4.7', 'libc6-dev' ]:
-                ensure => $virtualbox_ensure
+    ensure => $dev_packages_ensure
   }
 }
