@@ -3,8 +3,10 @@ class site_config::params {
   $ip_address               = hiera('ip_address')
   $ip_address_interface     = getvar("interface_${ip_address}")
   $ec2_local_ipv4_interface = getvar("interface_${::ec2_local_ipv4}")
+  $environment              = hiera('environment')
 
-  if $::virtual == 'virtualbox' {
+
+  if $environment == 'local' {
     $interface = 'eth1'
   }
   elsif hiera('interface','') != '' {

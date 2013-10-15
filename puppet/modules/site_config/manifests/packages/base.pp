@@ -1,5 +1,7 @@
 class site_config::packages::base {
 
+  include site_config::params
+
   # base set of packages that we want to have installed everywhere
   package { [ 'etckeeper', 'screen', 'less' ]:
     ensure => installed,
@@ -15,7 +17,7 @@ class site_config::packages::base {
     ensure => absent;
   }
 
-  if $::virtual == 'virtualbox' or $::services =~ /\bwebapp\b/ {
+  if $::site_config::params::environment == 'local' or $::services =~ /\bwebapp\b/ {
     $dev_packages_ensure = present
   } else {
     $dev_packages_ensure = absent

@@ -2,6 +2,7 @@ class site_config::default {
   tag 'leap_base'
 
   $domain_hash = hiera('domain')
+  include site_config::params
 
   # make sure apt is updated before any packages are installed
   include apt::update
@@ -32,7 +33,7 @@ class site_config::default {
     include site_config::dhclient
   }
 
-  if ( $::virtual == 'virtualbox' ) {
+  if ( $::site_config::params::environment == 'local' ) {
     include site_config::vagrant
   }
 
