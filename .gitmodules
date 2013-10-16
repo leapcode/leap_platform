@@ -79,3 +79,6 @@
 [submodule "puppet/modules/vcsrepo"]
 	path = puppet/modules/vcsrepo
 	url = https://leap.se/git/puppet_vcsrepo
+[submodule "puppet/modules/rsyslog"]
+	path = puppet/modules/rsyslog
+	url = https://leap.se/git/puppet_rsyslog
