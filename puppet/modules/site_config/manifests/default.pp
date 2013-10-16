@@ -48,6 +48,9 @@ class site_config::default {
     stage => setup,
   }
 
+  # install/configure syslog
+  include site_config::syslog
+
   # install/remove base packages
   include site_config::packages::base
 
