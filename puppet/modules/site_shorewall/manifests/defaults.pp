@@ -4,7 +4,9 @@ class site_shorewall::defaults {
   include site_config::params
 
   # be safe for development
-  #if ( $::virtual == 'virtualbox') { $shorewall_startup='0' }
+  # if ( $::site_config::params::environment == 'local' ) {
+  #  $shorewall_startup='0'
+  # }
 
   # If you want logging:
   shorewall::params {
