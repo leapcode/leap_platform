@@ -5,6 +5,8 @@ $services = ''
 
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
+include site_config::params
+
 include concat::setup
 
 include site_config::hosts
@@ -26,7 +28,7 @@ if hiera('squid_deb_proxy_client', false) {
 # we need to include shorewall::interface{eth0} in setup.pp so
 # packages can be installed during main puppetrun, even before shorewall
 # is configured completly
-if ( $::virtual == 'virtualbox' ) {
+if ( $::site_config::params::environment == 'local' ) {
   include site_config::vagrant
 }
 
