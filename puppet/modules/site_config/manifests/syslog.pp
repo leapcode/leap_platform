@@ -3,7 +3,7 @@ class site_config::syslog {
   # we need to pull in rsyslog from the leap repository until it is availbale in
   # wheezy-backports
   apt::preferences_snippet { 'fixed_rsyslog_anon_package':
-    package  => 'rsyslog-*',
+    package  => 'rsyslog*',
     priority => '999',
     pin      => 'release o=leap.se',
     before   => Class['rsyslog::install']
