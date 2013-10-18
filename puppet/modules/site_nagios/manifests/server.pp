@@ -5,9 +5,9 @@ class site_nagios::server inherits nagios::base {
     stage => setup
   }
 
-  $nagios_hiera=hiera('nagios')
+  $nagios_hiera   = hiera('nagios')
   $nagiosadmin_pw = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
-  $hosts = $nagios_hiera['hosts']
+  $hosts          = $nagios_hiera['hosts']
 
   include nagios::defaults
   include nagios::base
@@ -35,6 +35,7 @@ class site_nagios::server inherits nagios::base {
     group  => 'nagios',
   }
 
-  site_nagios::add_host {$hosts:}
+  create_resources ( site_nagios::add_host, $hosts )
+
   include site_shorewall::monitor
 }

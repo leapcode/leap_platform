@@ -18,7 +18,7 @@
   SSLCACertificatePath /etc/ssl/certs
   SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::commercial_ca_name') %>.crt
   SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.key
-  SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.crt 
+  SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.crt
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 
@@ -49,6 +49,10 @@
  <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets)>
     PassengerEnabled off
     AllowOverride all
+    # Nagios won't work with setting this option to "DENY",
+    # as set in conf.d/security (#4169). Therefor we allow
+    # it here, only for nagios.
+    Header set X-Frame-Options: "ALLOW"
   </DirectoryMatch>
  <% end -%>
 </VirtualHost>
