@@ -79,4 +79,9 @@ class site_config::default {
     include site_postfix::satellite
   }
 
+  # if class site_custom exists, include it.
+  # possibility for users to define custom puppet recipes
+  if defined( '::site_custom') {
+    include ::site_custom
+  }
 }

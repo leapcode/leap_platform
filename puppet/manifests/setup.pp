@@ -32,3 +32,8 @@ if ( $::site_config::params::environment == 'local' ) {
   include site_config::vagrant
 }
 
+# if class site_custom::setup exists, include it.
+# possibility for users to define custom puppet recipes
+if defined( '::site_custom::setup') {
+  include ::site_custom::setup
+}
