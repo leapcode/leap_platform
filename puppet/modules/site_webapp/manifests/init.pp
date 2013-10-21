@@ -165,6 +165,12 @@ class site_webapp {
       user    => 'leap-webapp';
   }
 
+  exec { 'git-assume-unchanged':
+    cwd     => '/srv/leap/webapp',
+    command => '/bin/bash -c "/usr/bin/git update-index --assume-unchanged app/assets/stylesheets/head.scss app/assets/stylesheets/tail.scss public/favicon.ico"',
+    user    => 'leap-webapp'
+  }
+
   file {
     '/srv/leap/webapp/config/config.yml':
       content => template('site_webapp/config.yml.erb'),
