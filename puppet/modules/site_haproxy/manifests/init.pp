@@ -2,7 +2,6 @@ class site_haproxy {
 
     class { 'haproxy':
     enable           => true,
-    version          => '1.4.23-0.1~leap60+1',
     manage_service   => true,
     global_options   => {
       'log'     => '127.0.0.1 local0',
