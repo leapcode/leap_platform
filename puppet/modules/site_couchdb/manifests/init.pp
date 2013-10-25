@@ -65,22 +65,22 @@ class site_couchdb {
   }
 
   couchdb::create_db { 'users':
-    readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
+    members => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
   couchdb::create_db { 'tokens':
-    readers => "{ \"names\": [], \"roles\": [\"auth\"] }",
+    members => "{ \"names\": [], \"roles\": [\"auth\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
   couchdb::create_db { 'sessions':
-    readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
+    members => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
   couchdb::create_db { 'tickets':
-    readers => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
+    members => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
@@ -88,7 +88,7 @@ class site_couchdb {
   # via the auth group for now.
   # leap_mx could use that for a start.
   couchdb::create_db { 'identities':
-    readers => "{ \"names\": [], \"roles\": [\"auth\"] }",
+    members => "{ \"names\": [], \"roles\": [\"auth\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
