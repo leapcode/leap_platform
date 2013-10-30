@@ -16,6 +16,8 @@ class site_couchdb {
   $couchdb_soledad_pw     = $couchdb_soledad['password']
   $couchdb_soledad_salt   = $couchdb_soledad['salt']
 
+  $couchdb_backup         = $couchdb_config['backup']
+
   $bigcouch_config        = $couchdb_config['bigcouch']
   $bigcouch_cookie        = $bigcouch_config['cookie']
 
@@ -96,4 +98,27 @@ class site_couchdb {
 
   include site_shorewall::couchdb
   include site_shorewall::couchdb::bigcouch
+
+  # /etc/couchdb/couchdb.netrc is deployed by the couchdb module
+  # needed for couchdb_scripts (backup) and makes life easier
+  # for the admin (i.e. using curl/wget without passing credentials)
+
+  file { '/root/.netrc':
+    ensure => link,
+    target => '/etc/couchdb/couchdb.netrc'
+  }
+
+  file { '/srv/leap/couchdb':
+    ensure => directory
+  }
+
+  vcsrepo { '/srv/leap/couchdb/scripts':
+    ensure   => present,
+    provider => git,
+    source   => 'https://leap.se/git/couchdb_scripts',
+    revision => 'origin/master',
+    require  => File['/srv/leap/couchdb']
+  }
+
+  if $couchdb_backup { include site_couchdb::backup }
 }
