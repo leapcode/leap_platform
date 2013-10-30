@@ -22,7 +22,7 @@ class site_postfix::mx::checks {
   }
 
   # Anonymize the user's home IP from the email headers (Feature #3866)
-  package { 'postfix-pcre': ensure => installed }
+  package { 'postfix-pcre': ensure => installed, require => Package['postfix'] }
 
   file { '/etc/postfix/checks/received_anon':
     source  => 'puppet:///modules/site_postfix/checks/received_anon',
