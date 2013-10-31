@@ -82,3 +82,6 @@
 [submodule "puppet/modules/rsyslog"]
 	path = puppet/modules/rsyslog
 	url = https://leap.se/git/puppet_rsyslog
+[submodule "puppet/modules/backupninja"]
+	path = puppet/modules/backupninja
+	url = https://leap.se/git/puppet_backupninja
