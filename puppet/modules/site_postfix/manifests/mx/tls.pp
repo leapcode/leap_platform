@@ -34,7 +34,7 @@ class site_postfix::mx::tls {
     user    => root,
     group   => root,
     creates => '/etc/postfix/smtpd_tls_dh_param.pem',
-    require => Package['gnutls-bin']
+    require => [ Package['gnutls-bin'], Package['postfix'] ]
   }
 
   # Make sure the dh params file has correct ownership and mode
