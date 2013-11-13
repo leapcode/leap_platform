@@ -146,6 +146,14 @@ class site_webapp {
       mode    => '0644',
       require => Vcsrepo['/srv/leap/webapp'],
       source  => $webapp['img_dir'];
+
+    '/srv/leap/webapp/app/views/home/index.html.haml':
+      ensure  => present,
+      owner   => leap-webapp,
+      group   => leap-webapp,
+      mode    => '0644',
+      require => Vcsrepo['/srv/leap/webapp'],
+      source  => $webapp['home_page'];
   }
 
   git::changes {
@@ -160,6 +168,11 @@ class site_webapp {
       user    => 'leap-webapp';
 
     'public/favicon.ico':
+      cwd     => '/srv/leap/webapp',
+      require => Vcsrepo['/srv/leap/webapp'],
+      user    => 'leap-webapp';
+
+    'app/views/home/index.html.haml':
       cwd     => '/srv/leap/webapp',
       require => Vcsrepo['/srv/leap/webapp'],
       user    => 'leap-webapp';
