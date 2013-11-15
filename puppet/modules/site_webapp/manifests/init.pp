@@ -40,9 +40,9 @@ class site_webapp {
   vcsrepo { '/srv/leap/webapp':
     ensure   => present,
     force    => true,
-    revision => 'origin/master',
+    revision => $webapp['git']['revision'],
     provider => git,
-    source   => 'https://leap.se/git/leap_web',
+    source   => $webapp['git']['source'],
     owner    => 'leap-webapp',
     group    => 'leap-webapp',
     require  => [ User['leap-webapp'], Group['leap-webapp'] ],
@@ -63,6 +63,10 @@ class site_webapp {
     notify  => Service['apache'];
   }
 
+  #
+  # NOTE: in order to support a webapp that is running on a subpath and not the root of the domain
+  # assets:precompile needs to be run with RAILS_RELATIVE_URL_ROOT=/application-root
+  #
   exec { 'compile_assets':
     cwd       => '/srv/leap/webapp',
     command   => '/bin/bash -c "RAILS_ENV=production /usr/bin/bundle exec rake assets:precompile"',
@@ -110,69 +114,21 @@ class site_webapp {
   }
 
   try::file {
-    '/srv/leap/webapp/public/favicon.ico':
-      ensure  => present,
-      owner   => leap-webapp,
-      group   => leap-webapp,
-      mode    => '0644',
-      require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['favicon'];
-
-    '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
-      ensure  => present,
-      owner   => leap-webapp,
-      group   => leap-webapp,
-      mode    => '0644',
-      require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['tail_scss'],
-      before  => Exec['bundler_update'];
-
-    '/srv/leap/webapp/app/assets/stylesheets/head.scss':
-      ensure  => present,
-      owner   => leap-webapp,
-      group   => leap-webapp,
-      mode    => '0644',
-      require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['head_scss'],
-      before  => Exec['bundler_update'];
-
-    '/srv/leap/webapp/public/img':
+    '/srv/leap/webapp/config/customization':
       ensure  => directory,
       recurse => true,
       purge   => true,
       force   => true,
       owner   => leap-webapp,
       group   => leap-webapp,
-      mode    => '0644',
+      mode    => 'u=rwX,go=rX',
       require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['img_dir'];
-
-    '/srv/leap/webapp/app/views/home/index.html.haml':
-      ensure  => present,
-      owner   => leap-webapp,
-      group   => leap-webapp,
-      mode    => '0644',
-      require => Vcsrepo['/srv/leap/webapp'],
-      source  => $webapp['home_page'];
+      notify  => Exec['compile_assets'],
+      source  => $webapp['customization_dir'];
   }
 
   git::changes {
-    'app/assets/stylesheets/head.scss':
-      cwd     => '/srv/leap/webapp',
-      require => Vcsrepo['/srv/leap/webapp'],
-      user    => 'leap-webapp';
-
-    'app/assets/stylesheets/tail.scss':
-      cwd     => '/srv/leap/webapp',
-      require => Vcsrepo['/srv/leap/webapp'],
-      user    => 'leap-webapp';
-
     'public/favicon.ico':
-      cwd     => '/srv/leap/webapp',
-      require => Vcsrepo['/srv/leap/webapp'],
-      user    => 'leap-webapp';
-
-    'app/views/home/index.html.haml':
       cwd     => '/srv/leap/webapp',
       require => Vcsrepo['/srv/leap/webapp'],
       user    => 'leap-webapp';

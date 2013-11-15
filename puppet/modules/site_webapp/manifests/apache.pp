@@ -21,6 +21,7 @@ class site_webapp::apache {
   include site_apache::module::headers
   include site_apache::module::rewrite
   include site_apache::module::alias
+  include site_apache::module::expires
 
   class { 'passenger': use_munin => false }
 
