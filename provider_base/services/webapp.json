@@ -4,18 +4,18 @@
     "modules": ["user", "billing", "help"],
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
-    "favicon": "= file_path 'branding/favicon.ico'",
-    "tail_scss": "= file_path 'branding/tail.scss'",
-    "head_scss": "= file_path 'branding/head.scss'",
-    "img_dir": "= file_path 'branding/img'",
-    "home_page": "= file_path 'branding/views/home.html.haml'",
+    "customization_dir": "= file_path 'webapp'",
     "client_certificates": "= global.provider.ca.client_certificates",
     "allow_limited_certs": "= global.provider.service.allow_limited_bandwidth",
     "allow_unlimited_certs": "= global.provider.service.allow_unlimited_bandwidth",
     "allow_anonymous_certs": "= global.provider.service.allow_anonymous",
     "secret_token": "= secret :webapp_secret_token",
     "api_version": 1,
-    "secure": false
+    "secure": false,
+    "git": {
+      "source": "https://leap.se/git/leap_web",
+      "revision": "origin/master"
+    }
   },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"

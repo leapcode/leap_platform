@@ -45,6 +45,14 @@
   PassengerFriendlyErrorPages off
   SetEnv TMPDIR /var/tmp
 
+  # Allow rails assets to be cached for a very long time (since the URLs change whenever the content changes)
+  <Location /assets/>
+    Header unset ETag
+    FileETag None
+    ExpiresActive On
+    ExpiresDefault "access plus 1 year"
+  </Location>
+
  <% if (defined? @services) and (@services.include? 'monitor') -%>
  <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets)>
     PassengerEnabled off
