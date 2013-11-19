@@ -1,0 +1,8 @@
+{
+   "views": {
+       "by_expires": {
+           "reduce": "_sum",
+           "map": "function(doc) {\n  if(typeof doc.expires !== \"undefined\") {\n    emit(doc.expires, 1);\n  }\n}\n"
+       }
+   }
+}
