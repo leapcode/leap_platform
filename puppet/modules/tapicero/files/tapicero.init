@@ -1,0 +1,60 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          tapicero
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: tapicero initscript
+# Description:       Controls tapicero daemon
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+BUNDLER=/usr/bin/bundle
+NAME=tapicero
+HOME="/srv/leap"
+DAEMON="${HOME}/${NAME}/bin/${NAME}"
+BUNDLE_GEMFILE="${HOME}/${NAME}/Gemfile"
+
+export BUNDLE_GEMFILE
+
+# exit if the daemon doesn't exist
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+
+if [ "$VERBOSE" != no ]; then
+    OPTIONS="--verbose"
+else
+    OPTIONS=""
+fi
+
+case "$1" in
+    start)
+        $BUNDLER exec $DAEMON start $OPTIONS
+        exit $?
+        ;;
+    stop)
+        $BUNDLER exec $DAEMON stop $OPTIONS
+        exit $?
+        ;;
+    restart)
+        $BUNDLER exec $DAEMON restart $OPTIONS
+        exit $?
+        ;;
+    reload)
+        $BUNDLER exec $DAEMON reload $OPTIONS
+        exit $?
+        ;;
+    status)
+        $BUNDLER exec $DAEMON status $OPTIONS
+        exit $?
+        ;;
+    *)
+        echo "Usage: /etc/init.d/$NAME {start|stop|reload|restart|status}"
+        exit 1
+esac
+
+exit 0

@@ -14,6 +14,7 @@ if $services =~ /\bopenvpn\b/ {
 
 if $services =~ /\bcouchdb\b/ {
   include site_couchdb
+  include tapicero
 }
 
 if $services =~ /\bwebapp\b/ {
