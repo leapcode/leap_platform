@@ -2,6 +2,13 @@ class site_couchdb::create_dbs {
 
   # Couchdb databases
 
+  ### customer database
+  ### r/w: webapp,
+  couchdb::create_db { 'customer':
+    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
   ## identities database
   ## r: nickserver, leap_mx - needs to be restrict with design document
   ## r/w: webapp

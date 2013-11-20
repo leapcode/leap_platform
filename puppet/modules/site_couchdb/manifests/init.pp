@@ -70,14 +70,13 @@ class site_couchdb {
   # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
   # and makes life easier for the admin (i.e. using curl/wget without
   # passing credentials)
-  file { '/root/.netrc':
-    ensure  => link,
-    target  => '/etc/couchdb/couchdb.netrc',
-    require => Couchdb::Query::Setup['localhost']
-  }
+  file {
+    '/root/.netrc':
+      ensure  => link,
+      target  => '/etc/couchdb/couchdb.netrc';
 
-  file { '/srv/leap/couchdb':
-    ensure => directory
+    '/srv/leap/couchdb':
+      ensure => directory
   }
 
   couchdb::query::setup { 'localhost':
