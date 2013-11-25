@@ -1,0 +1,147 @@
+#!/usr/bin/ruby
+
+require 'minitest/unit'
+require 'yaml'
+
+##
+## CUSTOM TEST CLASSES
+##
+
+class SkipTest < Exception
+end
+
+#
+# Our custom unit test class. All tests should be subclasses of this.
+#
+class LeapTest < MiniTest::Unit::TestCase
+  class Pass < MiniTest::Assertion
+  end
+
+  #
+  # The default pass just does an `assert true`. In our case, we want to make the passes more explicit.
+  #
+  def pass
+    raise LeapTest::Pass
+  end
+
+  #
+  # Always runs tests in alphanumeric order
+  #
+  def self.test_order
+    :alpha
+  end
+end
+
+#
+# Custom test runner in order to modify the output.
+#
+class LeapRunner < MiniTest::Unit
+
+  attr_accessor :passes
+
+  def initialize
+    @passes = 0
+    super
+  end
+
+  #
+  # call stack:
+  #   MiniTest::Unit.new.run
+  #     MiniTest::Unit.runner
+  #       LeapTest._run
+  #
+  def _run args = []
+    suites = LeapTest.send "test_suites"
+    output.sync = true
+    results = _run_suites suites, :test
+    @test_count      = results.inject(0) { |sum, (tc, _)| sum + tc }
+    @assertion_count = results.inject(0) { |sum, (_, ac)| sum + ac }
+    report.each_with_index do |msg, i|
+      puts "%s" % msg
+    end
+    status
+    # return failures + errors if @test_count > 0 # or return nil...
+  rescue Interrupt
+    abort 'Interrupted'
+  end
+
+  #
+  # override puke to change what prints out.
+  #
+  def puke(klass, meth, e)
+    e = case e
+      when MiniTest::Skip then
+        @skips += 1
+        #if @verbose
+          report_line("SKIP", klass, meth, e, e.message)
+        #end
+      when LeapTest::Pass then
+        @passes += 1
+        report_line("PASS", klass, meth)
+      when MiniTest::Assertion then
+        @failures += 1
+        report_line("FAIL", klass, meth, e, e.message)
+      else
+        @errors += 1
+        bt = MiniTest::filter_backtrace(e.backtrace).join "\n"
+        report_line("ERROR", klass, meth, e, "#{e.class}: #{e.message}\n#{bt}")
+    end
+    @report << e
+    return "" # disable the marching ants
+  end
+
+  #
+  # override default status slightly
+  #
+  def status(io = self.output)
+    format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
+    io.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+  end
+
+  private
+
+  #
+  # returns a string for a PASS, SKIP, or FAIL error
+  #
+  def report_line(prefix, klass, meth, e=nil, message=nil)
+    if e && message
+      #indent = "\n" + (" " * (prefix.length+4))
+      indent = "\n  "
+      msg_txt = indent + message.split("\n").join(indent)
+      "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}\n"
+    else
+      "#{prefix}: #{readable(klass.name)} > #{readable(meth)}\n"
+    end
+  end
+
+  #
+  # Converts snake_case and CamelCase to something more pleasant for humans to read.
+  #
+  def readable(str)
+    str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1 \2').
+    gsub(/([a-z])([A-Z])/, '\1 \2').
+    gsub(/_/, ' ').
+    sub(/^test /i, '').
+    downcase
+  end
+end
+
+##
+## RUN THE TESTS
+##
+
+if File.exists?('/etc/leap/hiera.yaml')
+  $node = YAML.load_file('/etc/leap/hiera.yaml')
+else
+  $node = {"services" => [], "dummy" => true}
+end
+
+Dir[File.expand_path('../../tests/*.rb', __FILE__)].each do |test_file|
+  begin
+    require test_file
+  rescue SkipTest
+  end
+end
+
+MiniTest::Unit.runner = LeapRunner.new
+MiniTest::Unit.new.run
