@@ -58,14 +58,14 @@ define try::file (
         exec { "rsync_${name}":
           command => "/usr/bin/rsync -r --delete '${source}/' '${name}'",
           onlyif => "/usr/bin/test -d '${source}'",
-          unless => "/usr/bin/diff -q '${source}' '${name}'",
+          unless => "/usr/bin/diff -rq '${source}' '${name}'",
           notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
         }
       } else {
         exec { "cp_r_${name}":
           command => "/bin/cp -r '${source}' '${name}'",
           onlyif => "/usr/bin/test -d '${source}'",
-          unless => "/usr/bin/diff -q '${source}' '${name}'",
+          unless => "/usr/bin/diff -rq '${source}' '${name}'",
           notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
         }
       }
