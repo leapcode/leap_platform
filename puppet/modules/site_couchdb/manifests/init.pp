@@ -34,9 +34,11 @@ class site_couchdb {
   class { 'couchdb::bigcouch::package::cloudant': }
 
   Class['site_config::default']
-    -> Class ['couchdb::bigcouch::package::cloudant']
-    -> Service ['couchdb']
-    -> Class ['site_couchdb::bigcouch::add_nodes']
+    -> Class['couchdb::bigcouch::package::cloudant']
+    -> Service['couchdb']
+    -> Class['site_couchdb::stunnel']
+    -> File['/root/.netrc']
+    -> Class['site_couchdb::bigcouch::add_nodes']
     -> Couchdb::Create_db['users']
     -> Couchdb::Create_db['tokens']
     -> Couchdb::Add_user[$couchdb_webapp_user]
@@ -46,9 +48,19 @@ class site_couchdb {
 
   class { 'site_couchdb::bigcouch::add_nodes': }
 
+  # /etc/couchdb/couchdb.netrc is deployed by couchdb::query::setup
+  # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
+  # and makes life easier for the admin (i.e. using curl/wget without
+  # passing credentials)
   couchdb::query::setup { 'localhost':
     user  => $couchdb_admin_user,
     pw    => $couchdb_admin_pw,
+  }
+
+  file { '/root/.netrc':
+    ensure  => link,
+    target  => '/etc/couchdb/couchdb.netrc',
+    require => Couchdb::Query::Setup['localhost']
   }
 
   # Populate couchdb
@@ -98,15 +110,6 @@ class site_couchdb {
 
   include site_shorewall::couchdb
   include site_shorewall::couchdb::bigcouch
-
-  # /etc/couchdb/couchdb.netrc is deployed by the couchdb module
-  # needed for couchdb_scripts (backup) and makes life easier
-  # for the admin (i.e. using curl/wget without passing credentials)
-
-  file { '/root/.netrc':
-    ensure => link,
-    target => '/etc/couchdb/couchdb.netrc'
-  }
 
   file { '/srv/leap/couchdb':
     ensure => directory
