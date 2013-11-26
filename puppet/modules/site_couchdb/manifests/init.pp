@@ -52,68 +52,28 @@ class site_couchdb {
   # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
   # and makes life easier for the admin (i.e. using curl/wget without
   # passing credentials)
-  couchdb::query::setup { 'localhost':
-    user  => $couchdb_admin_user,
-    pw    => $couchdb_admin_pw,
-  }
-
   file { '/root/.netrc':
     ensure  => link,
     target  => '/etc/couchdb/couchdb.netrc',
     require => Couchdb::Query::Setup['localhost']
   }
 
-  # Populate couchdb
-  couchdb::add_user { $couchdb_webapp_user:
-    roles   => '["auth"]',
-    pw      => $couchdb_webapp_pw,
-    salt    => $couchdb_webapp_salt,
-    require => Couchdb::Query::Setup['localhost']
+  file { '/srv/leap/couchdb':
+    ensure => directory
   }
 
-  couchdb::add_user { $couchdb_soledad_user:
-    roles   => '["auth"]',
-    pw      => $couchdb_soledad_pw,
-    salt    => $couchdb_soledad_salt,
-    require => Couchdb::Query::Setup['localhost']
+  couchdb::query::setup { 'localhost':
+    user  => $couchdb_admin_user,
+    pw    => $couchdb_admin_pw,
   }
 
-  couchdb::create_db { 'users':
-    members => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
-    require => Couchdb::Query::Setup['localhost']
-  }
-
-  couchdb::create_db { 'tokens':
-    members => "{ \"names\": [], \"roles\": [\"auth\"] }",
-    require => Couchdb::Query::Setup['localhost']
-  }
-
-  couchdb::create_db { 'sessions':
-    members => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
-    require => Couchdb::Query::Setup['localhost']
-  }
-
-  couchdb::create_db { 'tickets':
-    members => "{ \"names\": [\"$couchdb_webapp_user\"], \"roles\": [] }",
-    require => Couchdb::Query::Setup['localhost']
-  }
-
-  # leap_mx will want access to this. Granting access to the soledad user
-  # via the auth group for now.
-  # leap_mx could use that for a start.
-  couchdb::create_db { 'identities':
-    members => "{ \"names\": [], \"roles\": [\"auth\"] }",
-    require => Couchdb::Query::Setup['localhost']
-  }
-
+  include site_couchdb::create_dbs
+  include site_couchdb::add_users
+  include site_couchdb::designs
   include site_couchdb::logrotate
 
   include site_shorewall::couchdb
   include site_shorewall::couchdb::bigcouch
-
-  file { '/srv/leap/couchdb':
-    ensure => directory
-  }
 
   vcsrepo { '/srv/leap/couchdb/scripts':
     ensure   => present,
