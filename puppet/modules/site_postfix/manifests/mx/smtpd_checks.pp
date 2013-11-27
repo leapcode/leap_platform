@@ -22,9 +22,7 @@ class site_postfix::mx::smtpd_checks {
     # we use permit_tls_clientcerts with the $relay_clientcerts lookup
     'smtps_recipient_restrictions':
       value => 'permit_tls_all_clientcerts, check_recipient_access tcp:localhost:2244, reject_unauth_destination, permit';
-    'submission_recipient_restrictions':
-      value => 'permit_tls_all_clientcerts, check_recipient_access tcp:localhost:2244, reject_unauth_destination, permit';
-    'submission_helo_restrictions':
+    'smtps_helo_restrictions':
       value => 'permit_mynetworks, check_helo_access hash:$checks_dir/helo_checks, permit';
     'smtpd_sender_restrictions':
       value => 'permit_mynetworks, reject_non_fqdn_sender, reject_unknown_sender_domain, permit';
