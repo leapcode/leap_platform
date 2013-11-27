@@ -10,6 +10,13 @@ class site_couchdb::create_dbs {
     require => Couchdb::Query::Setup['localhost']
   }
 
+  ## keycache database
+  ## r/w: nickserver
+  couchdb::create_db { 'keycache':
+    members => "{ \"names\": [], \"roles\": [\"keycache\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+  
   ## sessions database
   ## r/w: webapp
   couchdb::create_db { 'sessions':

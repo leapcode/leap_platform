@@ -16,7 +16,7 @@ class site_couchdb::add_users {
   ## r: identities
   ## r/w: keycache
   couchdb::add_user { $site_couchdb::couchdb_nickserver_user:
-    roles   => '["identities"]',
+    roles   => '["identities","keycache"]',
     pw      => $site_couchdb::couchdb_nickserver_pw,
     salt    => $site_couchdb::couchdb_nickserver_salt,
     require => Couchdb::Query::Setup['localhost']
