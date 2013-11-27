@@ -38,6 +38,11 @@
                 "password": "= secret :couch_soledad_password",
                 "salt": "= hex_secret :couch_soledad_password_salt, 128"
             },
+            "tapicero": {
+                "username": "tapicero",
+                "password": "= secret :couch_tapicero_password",
+                "salt": "= hex_secret :couch_tapicero_password_salt, 128"
+            },
             "webapp": {
                 "username": "webapp",
                 "password": "= secret :couch_webapp_password",

@@ -23,8 +23,8 @@ class site_couchdb::add_users {
   }
 
   ## soledad couchdb user
-  ## read: tokens, user-<uuid>, shared
-  ## write: user-<uuid>, shared
+  ## r/w: user-<uuid>, shared
+  ## read: tokens
   couchdb::add_user { $site_couchdb::couchdb_soledad_user:
     roles   => '["tokens"]',
     pw      => $site_couchdb::couchdb_soledad_pw,
@@ -32,10 +32,20 @@ class site_couchdb::add_users {
     require => Couchdb::Query::Setup['localhost']
   }
 
+  ### tapicero couchdb user
+  ### admin: needs to be able to create user-<uuid> databases
+  ### read: users
+  couchdb::add_user { $site_couchdb::couchdb_tapicero_user:
+    roles   => '["users"]',
+    pw      => $site_couchdb::couchdb_tapicero_pw,
+    salt    => $site_couchdb::couchdb_tapicero_salt,
+    require => Couchdb::Query::Setup['localhost']
+  }
+
   ## webapp couchdb user
   ## read/write: users, tokens, sessions, tickets, identities, customer
   couchdb::add_user { $site_couchdb::couchdb_webapp_user:
-    roles   => '["tokens","identities"]',
+    roles   => '["tokens","identities","users"]',
     pw      => $site_couchdb::couchdb_webapp_pw,
     salt    => $site_couchdb::couchdb_webapp_salt,
     require => Couchdb::Query::Setup['localhost']

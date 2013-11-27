@@ -19,6 +19,11 @@ class site_couchdb {
   $couchdb_soledad_pw     = $couchdb_soledad['password']
   $couchdb_soledad_salt   = $couchdb_soledad['salt']
 
+  $couchdb_tapicero        = $couchdb_users['tapicero']
+  $couchdb_tapicero_user   = $couchdb_tapicero['username']
+  $couchdb_tapicero_pw     = $couchdb_tapicero['password']
+  $couchdb_tapicero_salt   = $couchdb_tapicero['salt']
+
   $couchdb_webapp         = $couchdb_users['webapp']
   $couchdb_webapp_user    = $couchdb_webapp['username']
   $couchdb_webapp_pw      = $couchdb_webapp['password']

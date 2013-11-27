@@ -49,7 +49,7 @@ class site_couchdb::create_dbs {
   ## users database
   ## r/w: webapp
   couchdb::create_db { 'users':
-    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [] }",
+    members => "{ \"names\": [], \"roles\": [\"users\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 }
