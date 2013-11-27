@@ -26,16 +26,16 @@ class site_couchdb::add_users {
   ## read: tokens, user-<uuid>, shared
   ## write: user-<uuid>, shared
   couchdb::add_user { $site_couchdb::couchdb_soledad_user:
-    roles   => '["auth"]',
+    roles   => '["tokens"]',
     pw      => $site_couchdb::couchdb_soledad_pw,
     salt    => $site_couchdb::couchdb_soledad_salt,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## webapp couchdb user
-  ## read/write: users, tokens, sessions, tickets, identities
+  ## read/write: users, tokens, sessions, tickets, identities, customer
   couchdb::add_user { $site_couchdb::couchdb_webapp_user:
-    roles   => '["auth","identities"]',
+    roles   => '["tokens","identities"]',
     pw      => $site_couchdb::couchdb_webapp_pw,
     salt    => $site_couchdb::couchdb_webapp_salt,
     require => Couchdb::Query::Setup['localhost']

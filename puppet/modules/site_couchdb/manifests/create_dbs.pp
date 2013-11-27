@@ -42,7 +42,7 @@ class site_couchdb::create_dbs {
   ## r: soledad - needs to be restricted with a design document
   ## r/w: webapp
   couchdb::create_db { 'tokens':
-    members => "{ \"names\": [], \"roles\": [\"auth\"] }",
+    members => "{ \"names\": [], \"roles\": [\"tokens\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
