@@ -9,6 +9,11 @@ class site_couchdb {
   $couchdb_admin_pw       = $couchdb_admin['password']
   $couchdb_admin_salt     = $couchdb_admin['salt']
 
+  $couchdb_leap_mx        = $couchdb_users['leap_mx']
+  $couchdb_leap_mx_user   = $couchdb_leap_mx['username']
+  $couchdb_leap_mx_pw     = $couchdb_leap_mx['password']
+  $couchdb_leap_mx_salt   = $couchdb_leap_mx['salt']
+
   $couchdb_soledad        = $couchdb_users['soledad']
   $couchdb_soledad_user   = $couchdb_soledad['username']
   $couchdb_soledad_pw     = $couchdb_soledad['password']

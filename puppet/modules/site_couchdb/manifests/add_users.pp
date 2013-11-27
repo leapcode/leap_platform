@@ -2,6 +2,13 @@ class site_couchdb::add_users {
 
   # Populate couchdb
 
+  couchdb::add_user { $site_couchdb::couchdb_leap_mx_user:
+    roles   => '["identities"]',
+    pw      => $site_couchdb::couchdb_leap_mx_pw,
+    salt    => $site_couchdb::couchdb_leap_mx_salt,
+    require => Couchdb::Query::Setup['localhost']
+  }
+
   couchdb::add_user { $site_couchdb::couchdb_soledad_user:
     roles   => '["auth"]',
     pw      => $site_couchdb::couchdb_soledad_pw,

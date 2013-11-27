@@ -23,6 +23,11 @@
                 "password": "= secret :couch_admin_password",
                 "salt": "= hex_secret :couch_admin_password_salt, 128"
             },
+            "leap_mx": {
+                "username": "leap_mx",
+                "password": "= secret :couch_leap_mx_password",
+                "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
+            },
             "soledad": {
                 "username": "soledad",
                 "password": "= secret :couch_soledad_password",
