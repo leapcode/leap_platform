@@ -1,10 +1,10 @@
 class site_couchdb::create_dbs {
 
-  # leap_mx will want access to this. Granting access to the soledad user
-  # via the auth group for now.
-  # leap_mx could use that for a start.
+  # identities database
+  # r/w: webapp
+  # r: nickserver, leap_mx - need to restrict with design document
   couchdb::create_db { 'identities':
-    members => "{ \"names\": [], \"roles\": [\"auth\"] }",
+    members => "{ \"names\": [], \"roles\": [\"identities\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 

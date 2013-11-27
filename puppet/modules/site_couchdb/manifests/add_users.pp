@@ -17,7 +17,7 @@ class site_couchdb::add_users {
   }
 
   couchdb::add_user { $site_couchdb::couchdb_webapp_user:
-    roles   => '["auth"]',
+    roles   => '["auth","identities"]',
     pw      => $site_couchdb::couchdb_webapp_pw,
     salt    => $site_couchdb::couchdb_webapp_salt,
     require => Couchdb::Query::Setup['localhost']
