@@ -16,11 +16,18 @@ class site_couchdb::create_dbs {
     members => "{ \"names\": [], \"roles\": [\"keycache\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
-  
+
   ## sessions database
   ## r/w: webapp
   couchdb::create_db { 'sessions':
     members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
+  ## shared database
+  ## r/w: soledad
+  couchdb::create_db { 'shared':
+    members => "{ \"names\": [\"$site_couchdb::couchdb_soledad_user\"], \"roles\": [] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
