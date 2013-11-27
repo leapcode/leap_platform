@@ -9,6 +9,16 @@ class site_couchdb::add_users {
     require => Couchdb::Query::Setup['localhost']
   }
 
+  # nickserver couchdb user
+  # read: identities, keycache
+  # write: keycache (a cache of discovered key, doesn’t exist yet)
+  couchdb::add_user { $site_couchdb::couchdb_nickserver_user:
+    roles   => '["identities"]',
+    pw      => $site_couchdb::couchdb_nickserver_pw,
+    salt    => $site_couchdb::couchdb_nickserver_salt,
+    require => Couchdb::Query::Setup['localhost']
+  }
+
   couchdb::add_user { $site_couchdb::couchdb_soledad_user:
     roles   => '["auth"]',
     pw      => $site_couchdb::couchdb_soledad_pw,

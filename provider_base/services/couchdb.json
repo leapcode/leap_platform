@@ -28,6 +28,11 @@
                 "password": "= secret :couch_leap_mx_password",
                 "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
             },
+            "nickserver": {
+                "username": "nickserver",
+                "password": "= secret :couch_nickserver_password",
+                "salt": "= hex_secret :couch_nickserver_password_salt, 128"
+            },
             "soledad": {
                 "username": "soledad",
                 "password": "= secret :couch_soledad_password",
