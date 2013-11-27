@@ -3,18 +3,21 @@ class site_couchdb {
 
   $couchdb_config         = hiera('couch')
   $couchdb_users          = $couchdb_config['users']
+
   $couchdb_admin          = $couchdb_users['admin']
   $couchdb_admin_user     = $couchdb_admin['username']
   $couchdb_admin_pw       = $couchdb_admin['password']
   $couchdb_admin_salt     = $couchdb_admin['salt']
-  $couchdb_webapp         = $couchdb_users['webapp']
-  $couchdb_webapp_user    = $couchdb_webapp['username']
-  $couchdb_webapp_pw      = $couchdb_webapp['password']
-  $couchdb_webapp_salt    = $couchdb_webapp['salt']
+
   $couchdb_soledad        = $couchdb_users['soledad']
   $couchdb_soledad_user   = $couchdb_soledad['username']
   $couchdb_soledad_pw     = $couchdb_soledad['password']
   $couchdb_soledad_salt   = $couchdb_soledad['salt']
+
+  $couchdb_webapp         = $couchdb_users['webapp']
+  $couchdb_webapp_user    = $couchdb_webapp['username']
+  $couchdb_webapp_pw      = $couchdb_webapp['password']
+  $couchdb_webapp_salt    = $couchdb_webapp['salt']
 
   $couchdb_backup         = $couchdb_config['backup']
 

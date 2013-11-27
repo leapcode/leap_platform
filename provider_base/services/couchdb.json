@@ -1,38 +1,38 @@
 {
-  "x509": {
-    "use": true
-  },
-  "stunnel": {
-    "couch_server": "= stunnel_server(couch.port)",
-    "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
-    "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.epmd_port)",
-    "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)",
-    "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.ednp_port)"
-  },
-  "couch": {
-    "port": 5984,
-    "bigcouch": {
-      "epmd_port": 4369,
-      "ednp_port": 9002,
-      "cookie": "= secret :bigcouch_cookie",
-      "neighbors": "= nodes_like_me[:services => :couchdb].exclude(self).field('domain.full')"
+    "x509": {
+        "use": true
     },
-    "users": {
-      "admin": {
-        "username": "admin",
-        "password": "= secret :couch_admin_password",
-        "salt": "= hex_secret :couch_admin_password_salt, 128"
-      },
-      "webapp": {
-        "username": "webapp",
-        "password": "= secret :couch_webapp_password",
-        "salt": "= hex_secret :couch_webapp_password_salt, 128"
-      },
-      "soledad": {
-        "username": "soledad",
-        "password": "= secret :couch_soledad_password",
-        "salt": "= hex_secret :couch_soledad_password_salt, 128"
-      }
+    "stunnel": {
+        "couch_server": "= stunnel_server(couch.port)",
+        "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
+        "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.epmd_port)",
+        "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)",
+        "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.ednp_port)"
+    },
+    "couch": {
+        "port": 5984,
+        "bigcouch": {
+            "epmd_port": 4369,
+            "ednp_port": 9002,
+            "cookie": "= secret :bigcouch_cookie",
+            "neighbors": "= nodes_like_me[:services => :couchdb].exclude(self).field('domain.full')"
+        },
+        "users": {
+            "admin": {
+                "username": "admin",
+                "password": "= secret :couch_admin_password",
+                "salt": "= hex_secret :couch_admin_password_salt, 128"
+            },
+            "soledad": {
+                "username": "soledad",
+                "password": "= secret :couch_soledad_password",
+                "salt": "= hex_secret :couch_soledad_password_salt, 128"
+            },
+            "webapp": {
+                "username": "webapp",
+                "password": "= secret :couch_webapp_password",
+                "salt": "= hex_secret :couch_webapp_password_salt, 128"
+            }
+        }
     }
-  }
 }
