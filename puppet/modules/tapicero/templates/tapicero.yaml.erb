@@ -19,7 +19,11 @@ couch_connection:
 # security settings to be used for the per user databases
 security:
   admins:
-    names: []
+    names:
+      # We explicitly allow the admin user to access per user databases, even
+      # though admin access ignores per database security we just do this to be
+      # explicit about this
+      - <%= @couchdb_admin_user %>
     roles: []
   readers:
     names: 
