@@ -5,12 +5,11 @@ class soledad::server {
 
   $soledad           = hiera('soledad')
   $couchdb_user      = $soledad['couchdb_soledad_user']['username']
-  $couchdb_password  = $soledad['couchdb_soledad_password']['password']
+  $couchdb_password  = $soledad['couchdb_soledad_user']['password']
 
   $couchdb_host = 'localhost'
   $couchdb_port = '5984'
 
-  $soledad      = hiera('soledad')
   $soledad_port = $soledad['port']
 
   include site_config::x509::cert
