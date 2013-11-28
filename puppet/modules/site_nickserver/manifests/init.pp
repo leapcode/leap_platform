@@ -21,11 +21,8 @@ class site_nickserver {
 
   $nickserver        = hiera('nickserver')
   $nickserver_domain = $nickserver['domain']
-
-  $couchdb           = hiera('couch')
-  $couchdb_users     = $couchdb['users']
-  $couchdb_user      = $couchdb_users['nickserver']['username']
-  $couchdb_password  = $couchdb_users['nickserver']['password']
+  $couchdb_user      = $nickserver['couchdb_nickserver_user']['username']
+  $couchdb_password  = $nickserver['couchdb_nickserver_user']['password']
 
   # the port that public connects to (should be 6425)
   $nickserver_port   = $nickserver['port']
