@@ -3,18 +3,20 @@ class soledad::server {
   include soledad
   include site_apt::preferences::twisted
 
-  $couchdb          = hiera('soledad')
-  $couchdb_host     = 'localhost'
-  $couchdb_port     = '5984'
-  $couchdb_user     = $couchdb['couchdb_admin_user']['username']
-  $couchdb_password = $couchdb['couchdb_admin_user']['password']
+  $couchdb           = hiera('couch')
+  $couchdb_users     = $couchdb['users']
+  $couchdb_user      = $couchdb_users['soledad']['username']
+  $couchdb_password  = $couchdb_users['soledad']['password']
+
+  $couchdb_host = 'localhost'
+  $couchdb_port = '5984'
+
+  $soledad      = hiera('soledad')
+  $soledad_port = $soledad['port']
 
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca
-
-  $soledad      = hiera('soledad')
-  $soledad_port = $soledad['port']
 
   #
   # SOLEDAD CONFIG
