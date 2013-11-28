@@ -65,9 +65,11 @@ class site_webapp {
   }
 
   #
-  # NOTE: in order to support a webapp that is running on a subpath and not the root of the domain
-  # assets:precompile needs to be run with RAILS_RELATIVE_URL_ROOT=/application-root
+  # NOTE: in order to support a webapp that is running on a subpath and not the
+  # root of the domain assets:precompile needs to be run with
+  # RAILS_RELATIVE_URL_ROOT=/application-root
   #
+
   exec { 'compile_assets':
     cwd       => '/srv/leap/webapp',
     command   => '/bin/bash -c "RAILS_ENV=production /usr/bin/bundle exec rake assets:precompile"',

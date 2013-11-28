@@ -4,8 +4,6 @@ class site_webapp::couchdb {
   # haproxy listener on port localhost:4096, see site_webapp::haproxy
   $couchdb_host            = 'localhost'
   $couchdb_port            = '4096'
-  $couchdb_admin_user      = $webapp['couchdb_admin_user']['username']
-  $couchdb_admin_password  = $webapp['couchdb_admin_user']['password']
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
 
@@ -16,13 +14,6 @@ class site_webapp::couchdb {
   include x509::variables
 
   file {
-    '/srv/leap/webapp/config/couchdb.yml.admin':
-      content => template('site_webapp/couchdb.yml.admin.erb'),
-      owner   => leap-webapp,
-      group   => leap-webapp,
-      mode    => '0600',
-      require => Vcsrepo['/srv/leap/webapp'];
-
     '/srv/leap/webapp/config/couchdb.yml.webapp':
       content => template('site_webapp/couchdb.yml.erb'),
       owner   => leap-webapp,
@@ -43,22 +34,9 @@ class site_webapp::couchdb {
       group   => leap-webapp,
       mode    => '0666',
       require => Vcsrepo['/srv/leap/webapp'];
-
-    '/usr/local/sbin/migrate_design_documents':
-      source => 'puppet:///modules/site_webapp/migrate_design_documents',
-      owner  => root,
-      group  => root,
-      mode   => '0744';
   }
 
   include site_stunnel
-
-  exec { 'migrate_design_documents':
-    cwd      => '/srv/leap/webapp',
-    command  => '/usr/local/sbin/migrate_design_documents',
-    require  => Exec['bundler_update'],
-    notify   => Service['apache'];
-  }
 
   $couchdb_stunnel_client_defaults = {
     'connect_port' => $couch_client_connect,
