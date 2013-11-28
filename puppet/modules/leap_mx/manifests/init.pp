@@ -1,8 +1,8 @@
 class leap_mx {
 
-  $mx               = hiera('mx')
-  $couchdb_user     = $mx['couchdb_leap_mx_user']['username']
-  $couchdb_password = $mx['couchdb_leap_mx_password']['password']
+  $leap_mx          = hiera('couchdb_leap_mx_user')
+  $couchdb_user     = $leap_mx['username']
+  $couchdb_password = $leap_mx['password']
 
   $couchdb_port     = '4096'
 
