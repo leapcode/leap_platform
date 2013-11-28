@@ -36,8 +36,7 @@
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",
-    "port": 6425,
-    "couchdb_user": "= global.services[:couchdb].couch.users[:admin]"
+    "port": 6425
   },
   "dns": {
     "aliases": "= [domain.full_suffix, domain.full, api.domain, nickserver.domain]"

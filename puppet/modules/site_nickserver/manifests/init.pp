@@ -20,14 +20,18 @@ class site_nickserver {
   #
 
   $nickserver        = hiera('nickserver')
+  $nickserver_domain = $nickserver['domain']
+
+  $couchdb           = hiera('couch')
+  $couchdb_users     = $couchdb['users']
+  $couchdb_user      = $couchdb_users['nickserver']['username']
+  $couchdb_password  = $couchdb_users['nickserver']['password']
+
   # the port that public connects to (should be 6425)
   $nickserver_port   = $nickserver['port']
   # the port that nickserver is actually running on
   $nickserver_local_port = '64250'
-  $nickserver_domain = $nickserver['domain']
 
-  $couchdb_user      = $nickserver['couchdb_user']['username']
-  $couchdb_password  = $nickserver['couchdb_user']['password']
   # couchdb is available on localhost via haproxy, which is bound to 4096.
   $couchdb_host      = 'localhost'
   # See site_webapp/templates/haproxy_couchdb.cfg.erg
