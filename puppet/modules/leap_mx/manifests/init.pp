@@ -1,10 +1,11 @@
 class leap_mx {
 
-  $couchdb_admin_user = hiera('couchdb_admin_user')
-  $couchdb_host     = 'localhost'
+  $couchdb          = hiera('couch')
+  $couchdb_users    = $couchdb['users']
+  $couchdb_user     = $couchdb_users['leap_mx']['username']
+  $couchdb_password = $couchdb_users['leap_mx']['password']
+
   $couchdb_port     = '4096'
-  $couchdb_user     = $couchdb_admin_user['username']
-  $couchdb_password = $couchdb_admin_user['password']
 
   include soledad::common
   include site_apt::preferences::twisted
