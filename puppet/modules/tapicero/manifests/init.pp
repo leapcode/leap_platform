@@ -9,11 +9,8 @@ class tapicero {
   $couchdb_admin_user      = $couchdb_users['admin']['username']
   $couchdb_admin_password  = $couchdb_users['admin']['password']
 
-  $couchdb_soledad_user      = $couchdb_users['soledad']['username']
-  $couchdb_soledad_password  = $couchdb_users['soledad']['password']
-
-  $couchdb_leap_mx_user      = $couchdb_users['leap_mx']['username']
-  $couchdb_leap_mx_password  = $couchdb_users['leap_mx']['password']
+  $couchdb_soledad_user    = $couchdb_users['soledad']['username']
+  $couchdb_leap_mx_user    = $couchdb_users['leap_mx']['username']
 
 
   Class['site_config::default'] -> Class['tapicero']
