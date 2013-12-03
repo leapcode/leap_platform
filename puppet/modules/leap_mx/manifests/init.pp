@@ -4,6 +4,7 @@ class leap_mx {
   $couchdb_user     = $leap_mx['username']
   $couchdb_password = $leap_mx['password']
 
+  $couchdb_host     = 'localhost'
   $couchdb_port     = '4096'
 
   include soledad::common
