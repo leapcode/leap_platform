@@ -1,20 +1,56 @@
 #!/usr/bin/ruby
 
+#
+# this script will run the unit tests in ../tests/*.rb.
+#
+# Tests for the platform differ from traditional ruby unit tests in a few ways:
+#
+# (1) at the end of every test function, you should call 'pass()'
+# (2) you can specify test dependencies by calling depends_on("TestFirst") in the test class definition.
+# (3) test functions are always run in alphabetical order.
+# (4) any halt or error will stop the testing unless --continue is specified.
+#
+
 require 'minitest/unit'
 require 'yaml'
+require 'tsort'
 
 ##
-## CUSTOM TEST CLASSES
+## EXCEPTIONS
 ##
 
+# this class is raised if a test file wants to be skipped entirely.
 class SkipTest < Exception
 end
+
+# raised if --no-continue and there is an error
+class TestError < Exception
+end
+
+# raised if --no-continue and there is a failure
+class TestFailure < Exception
+end
+
+##
+## CUSTOM UNIT TEST CLASS
+##
 
 #
 # Our custom unit test class. All tests should be subclasses of this.
 #
 class LeapTest < MiniTest::Unit::TestCase
   class Pass < MiniTest::Assertion
+  end
+
+  #
+  # Test class dependencies
+  #
+  def self.depends_on(*class_names)
+    @dependencies ||= []
+    @dependencies += class_names
+  end
+  def self.dependencies
+    @dependencies || []
   end
 
   #
@@ -25,7 +61,7 @@ class LeapTest < MiniTest::Unit::TestCase
   end
 
   #
-  # Always runs tests in alphanumeric order
+  # Always runs test methods within a test class in alphanumeric order
   #
   def self.test_order
     :alpha
@@ -53,40 +89,50 @@ class LeapRunner < MiniTest::Unit
   def _run args = []
     suites = LeapTest.send "test_suites"
     output.sync = true
-    results = _run_suites suites, :test
+    suites = TestDependencyGraph.new(suites).sorted
+    results = _run_suites(suites, :test)
     @test_count      = results.inject(0) { |sum, (tc, _)| sum + tc }
     @assertion_count = results.inject(0) { |sum, (_, ac)| sum + ac }
-    report.each_with_index do |msg, i|
-      puts "%s" % msg
-    end
+    report.each {|msg| output.puts msg}
     status
-    # return failures + errors if @test_count > 0 # or return nil...
   rescue Interrupt
-    abort 'Interrupted'
+    report.each {|msg| output.puts msg}
+    abort 'Tests halted on interrupt.'
+  rescue TestFailure
+    report.each {|msg| output.puts msg}
+    abort 'Tests halted on failure (because of --no-continue).'
+  rescue TestError
+    report.each {|msg| output.puts msg}
+    abort 'Tests halted on error (because of --no-continue).'
   end
 
   #
   # override puke to change what prints out.
   #
   def puke(klass, meth, e)
-    e = case e
+    case e
       when MiniTest::Skip then
         @skips += 1
         #if @verbose
-          report_line("SKIP", klass, meth, e, e.message)
+          @report << report_line("SKIP", klass, meth, e, e.message)
         #end
       when LeapTest::Pass then
         @passes += 1
-        report_line("PASS", klass, meth)
+        @report << report_line("PASS", klass, meth)
       when MiniTest::Assertion then
         @failures += 1
-        report_line("FAIL", klass, meth, e, e.message)
+        @report << report_line("FAIL", klass, meth, e, e.message)
+        if $halt_on_failure
+          raise TestFailure.new
+        end
       else
         @errors += 1
         bt = MiniTest::filter_backtrace(e.backtrace).join "\n"
-        report_line("ERROR", klass, meth, e, "#{e.class}: #{e.message}\n#{bt}")
+        @report << report_line("ERROR", klass, meth, e, "#{e.class}: #{e.message}\n#{bt}")
+        if $halt_on_failure
+          raise TestError.new
+        end
     end
-    @report << e
     return "" # disable the marching ants
   end
 
@@ -127,15 +173,48 @@ class LeapRunner < MiniTest::Unit
 end
 
 ##
+## Dependency resolution
+## Use a topographical sort to manage test dependencies
+##
+
+class TestDependencyGraph
+  include TSort
+
+  def initialize(test_classes)
+    @dependencies = {}  # each key is a test class name, and the values
+                        # are arrays of test class names that the key depends on.
+    test_classes.each do |test_class|
+      @dependencies[test_class.name] = test_class.dependencies
+    end
+  end
+
+  def tsort_each_node(&block)
+    @dependencies.each_key(&block)
+  end
+
+  def tsort_each_child(test_class_name, &block)
+    @dependencies[test_class_name].each(&block)
+  end
+
+  def sorted
+    self.tsort.collect {|class_name|
+      Kernel.const_get(class_name)
+    }
+  end
+end
+
+##
 ## RUN THE TESTS
 ##
 
+# load node data from hiera file
 if File.exists?('/etc/leap/hiera.yaml')
   $node = YAML.load_file('/etc/leap/hiera.yaml')
 else
-  $node = {"services" => [], "dummy" => true}
+  $node = {"services" => ['webapp'], "dummy" => true}
 end
 
+# load all test classes
 Dir[File.expand_path('../../tests/*.rb', __FILE__)].each do |test_file|
   begin
     require test_file
@@ -143,5 +222,15 @@ Dir[File.expand_path('../../tests/*.rb', __FILE__)].each do |test_file|
   end
 end
 
+# parse command line options
+$halt_on_failure = true
+loop do
+  case ARGV[0]
+    when '--continue' then ARGV.shift; $halt_on_failure = false
+    else break
+  end
+end
+
+# run some tests already
 MiniTest::Unit.runner = LeapRunner.new
 MiniTest::Unit.new.run
