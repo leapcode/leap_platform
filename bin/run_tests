@@ -1,0 +1,307 @@
+#!/usr/bin/ruby
+
+#
+# this script will run the unit tests in ../tests/*.rb.
+#
+# Tests for the platform differ from traditional ruby unit tests in a few ways:
+#
+# (1) at the end of every test function, you should call 'pass()'
+# (2) you can specify test dependencies by calling depends_on("TestFirst") in the test class definition.
+# (3) test functions are always run in alphabetical order.
+# (4) any halt or error will stop the testing unless --continue is specified.
+#
+
+require 'minitest/unit'
+require 'yaml'
+require 'tsort'
+require 'net/http'
+
+##
+## EXCEPTIONS
+##
+
+# this class is raised if a test file wants to be skipped entirely.
+class SkipTest < Exception
+end
+
+# raised if --no-continue and there is an error
+class TestError < Exception
+end
+
+# raised if --no-continue and there is a failure
+class TestFailure < Exception
+end
+
+##
+## CUSTOM UNIT TEST CLASS
+##
+
+#
+# Our custom unit test class. All tests should be subclasses of this.
+#
+class LeapTest < MiniTest::Unit::TestCase
+  class Pass < MiniTest::Assertion
+  end
+
+  #
+  # Test class dependencies
+  #
+  def self.depends_on(*class_names)
+    @dependencies ||= []
+    @dependencies += class_names
+  end
+  def self.dependencies
+    @dependencies || []
+  end
+
+  #
+  # The default pass just does an `assert true`. In our case, we want to make the passes more explicit.
+  #
+  def pass
+    raise LeapTest::Pass
+  end
+
+  #
+  # the default fail() is part of the kernel and it just throws a runtime exception. for tests,
+  # we want the same behavior as assert(false)
+  #
+  def fail(msg=nil)
+    assert(false, msg)
+  end
+
+  # Always runs test methods within a test class in alphanumeric order
+  #
+  def self.test_order
+    :alpha
+  end
+
+  #
+  # attempts a http GET on the url, yields |body, response, error|
+  #
+  def get(url, params=nil)
+    uri = URI(url)
+    if params
+      uri.query = URI.encode_www_form(params)
+    end
+    response = Net::HTTP.get_response(uri)
+    if response.is_a?(Net::HTTPSuccess)
+      yield response.body, response, nil
+    else
+      yield nil, response, nil
+    end
+  rescue => exc
+    yield nil, nil, exc
+  end
+
+  def assert_get(url, params=nil)
+    get(url, params) do |body, response, error|
+      if body
+        yield body
+      elsif response
+        fail "Expected a 200 status code from #{url}, but got #{response.code} instead."
+      else
+        fail "Expected a response from #{url}, but got \"#{error}\" instead."
+      end
+    end
+  end
+
+  #
+  # Matches the regexp in the file, and returns the first matched string (or fails if no match).
+  #
+  def file_match(filename, regexp)
+    if match = File.read(filename).match(regexp)
+      match.captures.first
+    else
+      fail "Regexp #{regexp.inspect} not found in file #{filename.inspect}."
+    end
+  end
+
+  #
+  # Matches the regexp in the file, and returns array of matched strings (or fails if no match).
+  #
+  def file_matches(filename, regexp)
+    if match = File.read(filename).match(regexp)
+      match.captures
+    else
+      fail "Regexp #{regexp.inspect} not found in file #{filename.inspect}."
+    end
+  end
+
+  #
+  # checks to make sure the given property path exists in $node (e.g. hiera.yaml)
+  # and returns the value
+  #
+  def assert_property(property)
+    latest = $node
+    property.split('.').each do |segment|
+      latest = latest[segment]
+      fail "Required node property `#{property}` is missing." if latest.nil?
+    end
+    return latest
+  end
+
+end
+
+#
+# Custom test runner in order to modify the output.
+#
+class LeapRunner < MiniTest::Unit
+
+  attr_accessor :passes
+
+  def initialize
+    @passes = 0
+    super
+  end
+
+  #
+  # call stack:
+  #   MiniTest::Unit.new.run
+  #     MiniTest::Unit.runner
+  #       LeapTest._run
+  #
+  def _run args = []
+    suites = LeapTest.send "test_suites"
+    output.sync = true
+    suites = TestDependencyGraph.new(suites).sorted
+    results = _run_suites(suites, :test)
+    @test_count      = results.inject(0) { |sum, (tc, _)| sum + tc }
+    @assertion_count = results.inject(0) { |sum, (_, ac)| sum + ac }
+    status
+  rescue Interrupt
+    abort 'Tests halted on interrupt.'
+  rescue TestFailure
+    abort 'Tests halted on failure (because of --no-continue).'
+  rescue TestError
+    abort 'Tests halted on error (because of --no-continue).'
+  end
+
+  #
+  # override puke to change what prints out.
+  #
+  def puke(klass, meth, e)
+    case e
+      when MiniTest::Skip then
+        @skips += 1
+        #if @verbose
+          report_line("SKIP", klass, meth, e, e.message)
+        #end
+      when LeapTest::Pass then
+        @passes += 1
+        @report << report_line("PASS", klass, meth)
+      when MiniTest::Assertion then
+        @failures += 1
+        report_line("FAIL", klass, meth, e, e.message)
+        if $halt_on_failure
+          raise TestFailure.new
+        end
+      else
+        @errors += 1
+        bt = MiniTest::filter_backtrace(e.backtrace).join "\n"
+        report_line("ERROR", klass, meth, e, "#{e.class}: #{e.message}\n#{bt}")
+        if $halt_on_failure
+          raise TestError.new
+        end
+    end
+    return "" # disable the marching ants
+  end
+
+  #
+  # override default status slightly
+  #
+  def status(io = self.output)
+    format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
+    output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+  end
+
+  private
+
+  #
+  # returns a string for a PASS, SKIP, or FAIL error
+  #
+  def report_line(prefix, klass, meth, e=nil, message=nil)
+    if e && message
+      indent = "\n  "
+      msg_txt = indent + message.split("\n").join(indent)
+      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
+    else
+      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
+    end
+                    # I don't understand at all why, but adding a very tiny sleep here will
+    sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
+  end
+
+  #
+  # Converts snake_case and CamelCase to something more pleasant for humans to read.
+  #
+  def readable(str)
+    str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1 \2').
+    gsub(/([a-z])([A-Z])/, '\1 \2').
+    gsub(/_/, ' ').
+    sub(/^test (\d* )?/i, '').
+    downcase.capitalize
+  end
+end
+
+##
+## Dependency resolution
+## Use a topographical sort to manage test dependencies
+##
+
+class TestDependencyGraph
+  include TSort
+
+  def initialize(test_classes)
+    @dependencies = {}  # each key is a test class name, and the values
+                        # are arrays of test class names that the key depends on.
+    test_classes.each do |test_class|
+      @dependencies[test_class.name] = test_class.dependencies
+    end
+  end
+
+  def tsort_each_node(&block)
+    @dependencies.each_key(&block)
+  end
+
+  def tsort_each_child(test_class_name, &block)
+    @dependencies[test_class_name].each(&block)
+  end
+
+  def sorted
+    self.tsort.collect {|class_name|
+      Kernel.const_get(class_name)
+    }
+  end
+end
+
+##
+## RUN THE TESTS
+##
+
+# load node data from hiera file
+if File.exists?('/etc/leap/hiera.yaml')
+  $node = YAML.load_file('/etc/leap/hiera.yaml')
+else
+  $node = {"services" => [], "dummy" => true}
+end
+
+# load all test classes
+Dir[File.expand_path('../../tests/white-box/*.rb', __FILE__)].each do |test_file|
+  begin
+    require test_file
+  rescue SkipTest
+  end
+end
+
+# parse command line options
+$halt_on_failure = true
+loop do
+  case ARGV[0]
+    when '--continue' then ARGV.shift; $halt_on_failure = false
+    else break
+  end
+end
+
+# run some tests already
+MiniTest::Unit.runner = LeapRunner.new
+MiniTest::Unit.new.run
