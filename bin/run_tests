@@ -14,6 +14,7 @@
 require 'minitest/unit'
 require 'yaml'
 require 'tsort'
+require 'net/http'
 
 ##
 ## EXCEPTIONS
@@ -61,11 +62,84 @@ class LeapTest < MiniTest::Unit::TestCase
   end
 
   #
+  # the default fail() is part of the kernel and it just throws a runtime exception. for tests,
+  # we want the same behavior as assert(false)
+  #
+  def fail(msg=nil)
+    assert(false, msg)
+  end
+
   # Always runs test methods within a test class in alphanumeric order
   #
   def self.test_order
     :alpha
   end
+
+  #
+  # attempts a http GET on the url, yields |body, response, error|
+  #
+  def get(url, params=nil)
+    uri = URI(url)
+    if params
+      uri.query = URI.encode_www_form(params)
+    end
+    response = Net::HTTP.get_response(uri)
+    if response.is_a?(Net::HTTPSuccess)
+      yield response.body, response, nil
+    else
+      yield nil, response, nil
+    end
+  rescue => exc
+    yield nil, nil, exc
+  end
+
+  def assert_get(url, params=nil)
+    get(url, params) do |body, response, error|
+      if body
+        yield body
+      elsif response
+        fail "Expected a 200 status code from #{url}, but got #{response.code} instead."
+      else
+        fail "Expected a response from #{url}, but got \"#{error}\" instead."
+      end
+    end
+  end
+
+  #
+  # Matches the regexp in the file, and returns the first matched string (or fails if no match).
+  #
+  def file_match(filename, regexp)
+    if match = File.read(filename).match(regexp)
+      match.captures.first
+    else
+      fail "Regexp #{regexp.inspect} not found in file #{filename.inspect}."
+    end
+  end
+
+  #
+  # Matches the regexp in the file, and returns array of matched strings (or fails if no match).
+  #
+  def file_matches(filename, regexp)
+    if match = File.read(filename).match(regexp)
+      match.captures
+    else
+      fail "Regexp #{regexp.inspect} not found in file #{filename.inspect}."
+    end
+  end
+
+  #
+  # checks to make sure the given property path exists in $node (e.g. hiera.yaml)
+  # and returns the value
+  #
+  def assert_property(property)
+    latest = $node
+    property.split('.').each do |segment|
+      latest = latest[segment]
+      fail "Required node property `#{property}` is missing." if latest.nil?
+    end
+    return latest
+  end
+
 end
 
 #
@@ -93,16 +167,12 @@ class LeapRunner < MiniTest::Unit
     results = _run_suites(suites, :test)
     @test_count      = results.inject(0) { |sum, (tc, _)| sum + tc }
     @assertion_count = results.inject(0) { |sum, (_, ac)| sum + ac }
-    report.each {|msg| output.puts msg}
     status
   rescue Interrupt
-    report.each {|msg| output.puts msg}
     abort 'Tests halted on interrupt.'
   rescue TestFailure
-    report.each {|msg| output.puts msg}
     abort 'Tests halted on failure (because of --no-continue).'
   rescue TestError
-    report.each {|msg| output.puts msg}
     abort 'Tests halted on error (because of --no-continue).'
   end
 
@@ -114,21 +184,21 @@ class LeapRunner < MiniTest::Unit
       when MiniTest::Skip then
         @skips += 1
         #if @verbose
-          @report << report_line("SKIP", klass, meth, e, e.message)
+          report_line("SKIP", klass, meth, e, e.message)
         #end
       when LeapTest::Pass then
         @passes += 1
         @report << report_line("PASS", klass, meth)
       when MiniTest::Assertion then
         @failures += 1
-        @report << report_line("FAIL", klass, meth, e, e.message)
+        report_line("FAIL", klass, meth, e, e.message)
         if $halt_on_failure
           raise TestFailure.new
         end
       else
         @errors += 1
         bt = MiniTest::filter_backtrace(e.backtrace).join "\n"
-        @report << report_line("ERROR", klass, meth, e, "#{e.class}: #{e.message}\n#{bt}")
+        report_line("ERROR", klass, meth, e, "#{e.class}: #{e.message}\n#{bt}")
         if $halt_on_failure
           raise TestError.new
         end
@@ -141,7 +211,7 @@ class LeapRunner < MiniTest::Unit
   #
   def status(io = self.output)
     format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
-    io.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+    output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
   end
 
   private
@@ -151,13 +221,14 @@ class LeapRunner < MiniTest::Unit
   #
   def report_line(prefix, klass, meth, e=nil, message=nil)
     if e && message
-      #indent = "\n" + (" " * (prefix.length+4))
       indent = "\n  "
       msg_txt = indent + message.split("\n").join(indent)
-      "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}\n"
+      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
     else
-      "#{prefix}: #{readable(klass.name)} > #{readable(meth)}\n"
+      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
     end
+                    # I don't understand at all why, but adding a very tiny sleep here will
+    sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
   end
 
   #
@@ -167,8 +238,8 @@ class LeapRunner < MiniTest::Unit
     str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1 \2').
     gsub(/([a-z])([A-Z])/, '\1 \2').
     gsub(/_/, ' ').
-    sub(/^test /i, '').
-    downcase
+    sub(/^test (\d* )?/i, '').
+    downcase.capitalize
   end
 end
 
@@ -211,11 +282,11 @@ end
 if File.exists?('/etc/leap/hiera.yaml')
   $node = YAML.load_file('/etc/leap/hiera.yaml')
 else
-  $node = {"services" => ['webapp'], "dummy" => true}
+  $node = {"services" => [], "dummy" => true}
 end
 
 # load all test classes
-Dir[File.expand_path('../../tests/*.rb', __FILE__)].each do |test_file|
+Dir[File.expand_path('../../tests/white-box/*.rb', __FILE__)].each do |test_file|
   begin
     require test_file
   rescue SkipTest

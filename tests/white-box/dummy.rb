@@ -27,11 +27,11 @@ class TestDummy < LeapTest
   end
 
   def test_blah
-    assert false
+    fail "blah" #assert false
     pass
   end
 
-  def test_that_will_be_skipped
+  def test_01_will_be_skipped
     skip "test this later"
     pass
   end
