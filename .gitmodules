@@ -85,3 +85,6 @@
 [submodule "puppet/modules/backupninja"]
 	path = puppet/modules/backupninja
 	url = https://leap.se/git/puppet_backupninja
+[submodule "puppet/modules/sysctl"]
+	path = puppet/modules/sysctl
+	url = https://leap.se/git/puppet_sysctl

@@ -12,7 +12,6 @@ class site_config::default {
 
   include site_config::slow
 
-
   include concat::setup
 
   # default class, used by all hosts
@@ -21,6 +20,9 @@ class site_config::default {
 
   # configure apt
   include site_apt
+
+  # configure sysctl parameters
+  include site_config::sysctl
 
   # configure ssh and include ssh-keys
   include site_config::sshd
