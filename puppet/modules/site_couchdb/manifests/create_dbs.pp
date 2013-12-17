@@ -4,7 +4,7 @@ class site_couchdb::create_dbs {
 
   ### customer database
   ### r/w: webapp,
-  couchdb::create_db { 'customer':
+  couchdb::create_db { 'customers':
     members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [] }",
     require => Couchdb::Query::Setup['localhost']
   }
