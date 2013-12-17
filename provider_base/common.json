@@ -25,7 +25,7 @@
   },
   "hosts": "=> hosts_file",
   "x509": {
-    "use": false,
+    "use": true,
     "cert": "= x509.use ? file(:node_x509_cert, :missing => 'x509 certificate for node $node. Run `leap cert update`') : nil",
     "key": "= x509.use ? file(:node_x509_key, :missing => 'x509 key for node $node. Run `leap cert update`') : nil",
     "ca_cert": "= try_file :ca_cert"
