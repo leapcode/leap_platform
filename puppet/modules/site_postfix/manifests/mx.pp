@@ -32,7 +32,8 @@ class site_postfix::mx {
 
   include site_postfix::mx::smtpd_checks
   include site_postfix::mx::checks
-  include site_postfix::mx::tls
+  include site_postfix::mx::smtp_tls
+  include site_postfix::mx::smtpd_tls
   include site_postfix::mx::reserved_aliases
 
   # greater verbosity for debugging, take out for production
