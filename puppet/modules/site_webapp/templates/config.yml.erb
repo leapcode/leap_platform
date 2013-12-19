@@ -14,3 +14,13 @@ production:
   allow_anonymous_certs: <%= @webapp['allow_anonymous_certs'].inspect %>
   limited_cert_prefix: "<%= cert_options['limited_prefix'] %>"
   unlimited_cert_prefix: "<%= cert_options['unlimited_prefix'] %>"
+<%- if @webapp['billing'] -%>
+<%-   if @webapp['billing']['braintree'] -%>
+  billing:
+    braintree:
+      environment: <%= @webapp['billing']['braintree']['environment'] %>
+      merchant_id: <%= @webapp['billing']['braintree']['merchant_id'] %>
+      public_key: <%= @webapp['billing']['braintree']['public_key'] %>
+      private_key: <%= @webapp['billing']['braintree']['private_key'] %>
+<%-   end -%>
+<%- end -%>
