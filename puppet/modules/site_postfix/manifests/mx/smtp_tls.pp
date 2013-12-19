@@ -19,7 +19,7 @@ class site_postfix::mx::smtp_tls {
     'smtp_tls_fingerprint_digest':
       value => 'sha1';
     'smtp_tls_session_cache_database':
-      value => 'btree:${queue_directory}/smtp_cache';
+      value => 'btree:${data_directory}/smtp_cache';
     'smtp_tls_security_level':
       value  => 'may';
     # see issue #4011

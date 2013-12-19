@@ -15,7 +15,9 @@ class site_postfix::mx::smtpd_tls {
     'smtpd_tls_security_level':
       value  => 'may';
     'smtpd_tls_eecdh_grade':
-      value => 'ultra'
+      value => 'ultra';
+    'smtpd_tls_session_cache_database':
+      value => 'btree:${data_directory}/smtpd_scache';
   }
 
   # Setup DH parameters
