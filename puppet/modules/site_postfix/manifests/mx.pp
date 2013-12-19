@@ -4,6 +4,7 @@ class site_postfix::mx {
   $domain              = $domain_hash['full_suffix']
   $host_domain         = $domain_hash['full']
   $cert_name           = hiera('name')
+  $mynetworks          = join(hiera('mx_nodes'), ' ')
 
   $root_mail_recipient = hiera ('contacts')
   $postfix_smtp_listen = 'all'
@@ -14,6 +15,8 @@ class site_postfix::mx {
   include site_config::x509::client_ca::key
 
   postfix::config {
+    'mynetworks':
+      value => "127.0.0.0/8 [::1]/128 [fe80::]/64 ${mynetworks}";
     'mydestination':
       value => "\$myorigin, localhost, localhost.\$mydomain, ${domain}";
     'myhostname':
