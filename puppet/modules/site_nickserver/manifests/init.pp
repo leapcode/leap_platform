@@ -95,7 +95,7 @@ class site_nickserver {
   # NICKSERVER CONFIG
   #
 
-  file { '/etc/leap/nickserver.yml':
+  file { '/etc/nickserver.yml':
     content => template('site_nickserver/nickserver.yml.erb'),
     owner   => nickserver,
     group   => nickserver,
