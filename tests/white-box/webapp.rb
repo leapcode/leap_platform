@@ -1,5 +1,7 @@
 raise SkipTest unless $node["services"].include?("webapp")
 
+require 'socket'
+
 class TestWebapp < LeapTest
   depends_on "TestNetwork"
 
@@ -18,12 +20,14 @@ class TestWebapp < LeapTest
   #       connect: couch1.bitmask.i
   #       connect_port: 15984
   #
-  def test_01_stunnel_is_working
+  def test_01_can_contact_couchdb
     assert_property('stunnel.couch_client')
     $node['stunnel']['couch_client'].values.each do |stunnel_conf|
       assert port = stunnel_conf['accept_port'], 'Field `accept_port` must be present in `stunnel` property.'
       local_stunnel_url = "http://localhost:#{port}"
-      assert_get(local_stunnel_url) do |body|
+      remote_ip_address = TCPSocket.gethostbyname(stunnel_conf['connect']).last
+      msg = "(stunnel to %s:%s, aka %s)" % [stunnel_conf['connect'], stunnel_conf['connect_port'], remote_ip_address]
+      assert_get(local_stunnel_url, nil, error_msg: msg) do |body|
         assert_match /"couchdb":"Welcome"/, body, "Request to #{local_stunnel_url} should return couchdb welcome message."
       end
     end

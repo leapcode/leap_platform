@@ -26,8 +26,8 @@ class TestDummy < LeapTest
     pass
   end
 
-  def test_blah
-    fail "blah" #assert false
+  def test_fail
+    fail "fail"
     pass
   end
 
@@ -36,8 +36,24 @@ class TestDummy < LeapTest
     pass
   end
 
-  def test_err
-    12/0
+  def test_socket_failure
+    assert_tcp_socket('localhost', 900000)
+    pass
+  end
+
+  def test_socket_success
+    fork {
+      Socket.tcp_server_loop('localhost', 12345) do |sock, client_addrinfo|
+        begin
+          sock.write('hi')
+        ensure
+          sock.close
+          exit
+        end
+      end
+    }
+    sleep 0.2
+    assert_tcp_socket('localhost', 12345)
     pass
   end
 
