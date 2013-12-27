@@ -21,7 +21,7 @@ class TestCouchdb < LeapTest
   # compare the configured nodes to the nodes that are actually listed in bigcouch
   #
   def test_02_nodes_are_in_replication_database
-    url = couchdb_admin_url("/nodes/_all_docs")
+    url = couchdb_backend_url("/nodes/_all_docs")
     neighbors = assert_property('couch.bigcouch.neighbors')
     neighbors << assert_property('domain.full')
     neighbors.sort!
@@ -31,6 +31,24 @@ class TestCouchdb < LeapTest
       assert_equal neighbors, nodes_in_db, "The couchdb replication node list is wrong (/nodes/_all_docs)"
     end
     pass
+  end
+
+  def test_03_replica_membership
+    url = couchdb_url("/_membership")
+    assert_get(url) do |body|
+      response = JSON.parse(body)
+      nodes_configured_but_not_available = response['cluster_nodes'] - response['all_nodes']
+      nodes_available_but_not_configured = response['cluster_nodes'] - response['all_nodes']
+      if nodes_configured_but_not_available.any?
+        warn "These nodes are configured but not available:", nodes_configured_but_not_available
+      end
+      if nodes_available_but_not_configured.any?
+        warn "These nodes are available but not configured:", nodes_available_but_not_configured
+      end
+      if response['cluster_nodes'] == response['all_nodes']
+        pass
+      end
+    end
   end
 
   private
@@ -47,8 +65,8 @@ class TestCouchdb < LeapTest
     "http://admin:#{@password}@localhost:#{port || @port}#{path}"
   end
 
-  def couchdb_admin_url(path="")
-    couchdb_url(path, "5986") # admin port is hardcoded for now.
+  def couchdb_backend_url(path="")
+    couchdb_url(path, "5986") # TODO: admin port is hardcoded for now but should be configurable.
   end
 
 end

@@ -41,6 +41,17 @@ class TestDummy < LeapTest
     pass
   end
 
+  def test_warn
+    block_test do
+      warn "not everything", "is a success or failure"
+    end
+  end
+
+  # used to test extracting the proper caller even when in a block
+  def block_test
+    yield
+  end
+
   def test_socket_success
     fork {
       Socket.tcp_server_loop('localhost', 12345) do |sock, client_addrinfo|

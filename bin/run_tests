@@ -43,6 +43,11 @@ class LeapTest < MiniTest::Unit::TestCase
   class Pass < MiniTest::Assertion
   end
 
+  def initialize(name)
+    super(name)
+    io # << calling this will suppress the marching ants
+  end
+
   #
   # Test class dependencies
   #
@@ -67,6 +72,11 @@ class LeapTest < MiniTest::Unit::TestCase
   #
   def fail(msg=nil)
     assert(false, msg)
+  end
+
+  def warn(*msg)
+    method_name = caller.first.split('`').last.gsub(/(block in |')/,'')
+    MiniTest::Unit.runner.report_line("WARN", self.class, method_name, nil, msg.join("\n"))
   end
 
   # Always runs test methods within a test class in alphanumeric order
@@ -295,22 +305,26 @@ class LeapRunner < MiniTest::Unit
     output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
   end
 
-  private
-
   #
   # returns a string for a PASS, SKIP, or FAIL error
   #
   def report_line(prefix, klass, meth, e=nil, message=nil)
-    if e && message
+    if message
       indent = "\n  "
       msg_txt = indent + message.split("\n").join(indent)
+    end
+    if e && message
       output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
+    elsif message
+      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}:#{msg_txt}"
     else
       output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
     end
                     # I don't understand at all why, but adding a very tiny sleep here will
     sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
   end
+
+  private
 
   #
   # Converts snake_case and CamelCase to something more pleasant for humans to read.
