@@ -107,7 +107,7 @@ class LeapTest < MiniTest::Unit::TestCase
     options ||= {}
     get(url, params) do |body, response, error|
       if body
-        yield body
+        yield body if block_given?
       elsif response
         fail ["Expected a 200 status code from #{url}, but got #{response.code} instead.", options[:error_msg]].compact.join("\n")
       else
@@ -231,6 +231,22 @@ class LeapTest < MiniTest::Unit::TestCase
     return latest
   end
 
+  #
+  # works like pgrep command line
+  # return an array of hashes like so [{:pid => "1234", :process => "ls"}]
+  #
+  def pgrep(match)
+    output = `pgrep --full --list-name '#{match}'`
+    output.each_line.map{|line|
+      pid = line.split(' ')[0]
+      process = line.gsub(/(#{pid} |\n)/, '')
+      if process =~ /pgrep --full --list-name/
+        nil
+      else
+        {:pid => pid, :process => process}
+      end
+    }.compact
+  end
 end
 
 #
@@ -310,6 +326,7 @@ class LeapRunner < MiniTest::Unit
   #
   def report_line(prefix, klass, meth, e=nil, message=nil)
     if message
+      message = message.sub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:password@")
       indent = "\n  "
       msg_txt = indent + message.split("\n").join(indent)
     end
