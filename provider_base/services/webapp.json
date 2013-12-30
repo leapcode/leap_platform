@@ -14,7 +14,8 @@
     "git": {
       "source": "https://leap.se/git/leap_web",
       "revision": "origin/master"
-    }
+    },
+    "client_version": "= global.provider.client_version"
   },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"

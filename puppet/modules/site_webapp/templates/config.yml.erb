@@ -14,3 +14,4 @@ production:
   allow_anonymous_certs: <%= @webapp['allow_anonymous_certs'].inspect %>
   limited_cert_prefix: "<%= cert_options['limited_prefix'] %>"
   unlimited_cert_prefix: "<%= cert_options['unlimited_prefix'] %>"
+  minimum_client_version: "<%= @webapp['client_version']['min'] %>"
