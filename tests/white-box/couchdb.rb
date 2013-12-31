@@ -8,10 +8,17 @@ class TestCouchdb < LeapTest
   def setup
   end
 
+  def test_00_daemons_running
+    assert_running 'tapicero'
+    assert_running 'bin/beam'
+    assert_running 'bin/epmd'
+    pass
+  end
+
   #
   # check to make sure we can get welcome response from local couchdb
   #
-  def test_01_couch_is_running
+  def test_01_couch_is_working
     assert_get(couchdb_url) do |body|
       assert_match /"couchdb":"Welcome"/, body, "Could not get welcome message from #{couchdb_url}. Probably couchdb is not running."
     end

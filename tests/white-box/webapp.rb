@@ -54,4 +54,10 @@ class TestWebapp < LeapTest
     pass
   end
 
+  def test_03_daemons_running
+    assert_running '/usr/sbin/apache2'
+    assert_running '/usr/bin/nickserver'
+    pass
+  end
+
 end

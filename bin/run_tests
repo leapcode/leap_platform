@@ -249,6 +249,10 @@ class LeapTest < MiniTest::Unit::TestCase
   end
 end
 
+def assert_running(process)
+  assert pgrep(process).any?, "No running process for #{process}"
+end
+
 #
 # Custom test runner in order to modify the output.
 #
