@@ -1,0 +1,11 @@
+{
+   "views" : {
+      "log" : {
+         "map" : "function(doc) {\n    if (doc._id == 'u1db_sync_log') {\n        if (doc.syncs)\n            doc.syncs.forEach(function (entry) {\n                emit(entry[0],\n                    {\n                        'known_generation': entry[1],\n                        'known_transaction_id': entry[2]\n                    });\n            });\n    }\n}\n"
+      }
+   },
+   "_id" : "_design/syncs",
+   "updates" : {
+      "put" : "function(doc, req){\n    if (!doc) {\n        doc = {}\n        doc['_id'] = 'u1db_sync_log';\n        doc['syncs'] = [];\n    }\n    body = JSON.parse(req.body);\n    // remove outdated info\n    doc['syncs'] = doc['syncs'].filter(\n        function (entry) {\n            return entry[0] != body['other_replica_uid'];\n        }\n    );\n    // store u1db rev\n    doc['syncs'].push([\n        body['other_replica_uid'],\n        body['other_generation'],\n        body['other_transaction_id']\n    ]);\n    return [doc, 'ok'];\n}\n\n"
+   }
+}
