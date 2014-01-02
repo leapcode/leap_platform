@@ -80,10 +80,19 @@ class site_webapp {
   }
 
   file {
-    '/srv/leap/webapp/public/provider.json':
+    "/srv/leap/webapp/config/provider":
+      ensure  => directory,
+      require => Vcsrepo['/srv/leap/webapp'],
+      owner   => leap-webapp, group => leap-webapp, mode => '0755';
+
+    '/srv/leap/webapp/config/provider/provider.json':
       content => $provider,
       require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
+
+    # old provider.json location. this can be removed after everyone upgrades.
+    '/srv/leap/webapp/public/provider.json':
+      ensure => absent;
 
     '/srv/leap/webapp/public/ca.crt':
       ensure  => link,

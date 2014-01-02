@@ -50,5 +50,9 @@
       "unlimited_prefix": "UNLIMITED"
     }
   },
-  "hiera_sync_destination": "/etc/leap"
+  "hiera_sync_destination": "/etc/leap",
+  "client_version": {
+    "min": "0.5",
+    "max": null
+  }
 }
