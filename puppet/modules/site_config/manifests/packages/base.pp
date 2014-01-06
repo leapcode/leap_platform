@@ -3,7 +3,7 @@ class site_config::packages::base {
   include site_config::params
 
   # base set of packages that we want to have installed everywhere
-  package { [ 'etckeeper', 'screen', 'less' ]:
+  package { [ 'etckeeper', 'screen', 'less', 'ntp' ]:
     ensure => installed,
   }
 
