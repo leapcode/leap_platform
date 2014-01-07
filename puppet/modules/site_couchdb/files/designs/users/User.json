@@ -9,18 +9,10 @@
     "all": {
       "map": "                function(doc) {\n                  if (doc['type'] == 'User') {\n                    emit(doc._id, null);\n                  }\n                }\n"
     },
-    "by_alias": {
-      "map": "function(doc) {\n  if (doc.type != 'User') {\n    return;\n  }\n  doc.email_aliases.forEach(function(alias){\n    emit(alias.username, 1);\n  });\n}\n",
-      "reduce": "function(key, values, rereduce) { return sum(values); }"
-    },
-    "by_login_or_alias": {
-      "map": "function(doc) {\n  if (doc.type != 'User') {\n    return;\n  }\n  emit(doc.login, 1);\n  doc.email_aliases.forEach(function(alias){\n    emit(alias.username, 1);\n  });\n}\n",
-      "reduce": "function(key, values, rereduce) { return sum(values); }"
-    },
     "by_created_at": {
       "map": "                function(doc) {\n                  if ((doc['type'] == 'User') && (doc['created_at'] != null)) {\n                    emit(doc['created_at'], 1);\n                  }\n                }\n",
       "reduce": "_sum"
     }
   },
-  "couchrest-hash": "26adb5c9480663de3fe60d959b60a7b2"
+  "couchrest-hash": "3bdbcd85b928ad911e0c89a8924e015c"
 }
