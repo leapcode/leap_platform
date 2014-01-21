@@ -49,8 +49,15 @@ class site_couchdb {
     ednp_port       => $ednp_port
   }
 
+  # ensure that we don't have leftovers from previous installations
+  # where we installed the cloudant bigcouch package
+  # https://leap.se/code/issues/4971
+  class { 'couchdb::bigcouch::package::cloudant':
+    ensure => absent
+  }
 
   Class['site_config::default']
+    -> Class['couchdb::bigcouch::package::cloudant']
     -> Service['couchdb']
     -> Class['site_couchdb::stunnel']
     -> File['/root/.netrc']
