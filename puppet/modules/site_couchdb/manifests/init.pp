@@ -49,7 +49,12 @@ class site_couchdb {
     ednp_port       => $ednp_port
   }
 
-  class { 'couchdb::bigcouch::package::cloudant': }
+  # ensure that we don't have leftovers from previous installations
+  # where we installed the cloudant bigcouch package
+  # https://leap.se/code/issues/4971
+  class { 'couchdb::bigcouch::package::cloudant':
+    ensure => absent
+  }
 
   Class['site_config::default']
     -> Class['couchdb::bigcouch::package::cloudant']
