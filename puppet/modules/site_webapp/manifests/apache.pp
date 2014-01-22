@@ -22,6 +22,7 @@ class site_webapp::apache {
   include site_apache::module::rewrite
   include site_apache::module::alias
   include site_apache::module::expires
+  include site_apache::module::removeip
 
   class { 'passenger': use_munin => false }
 
