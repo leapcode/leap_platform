@@ -42,11 +42,12 @@ class site_couchdb {
   $ednp_port               = $bigcouch_config['ednp_port']
 
   class { 'couchdb':
-    bigcouch        => true,
-    admin_pw        => $couchdb_admin_pw,
-    admin_salt      => $couchdb_admin_salt,
-    bigcouch_cookie => $bigcouch_cookie,
-    ednp_port       => $ednp_port
+    bigcouch            => true,
+    admin_pw            => $couchdb_admin_pw,
+    admin_salt          => $couchdb_admin_salt,
+    bigcouch_cookie     => $bigcouch_cookie,
+    ednp_port           => $ednp_port,
+    chttpd_bind_address => '127.0.0.1'
   }
 
   # ensure that we don't have leftovers from previous installations
