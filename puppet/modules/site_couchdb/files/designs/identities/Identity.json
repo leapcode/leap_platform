@@ -15,7 +15,7 @@
       "reduce": "_sum"
     },
     "pgp_key_by_email": {
-      "map": "      function(doc) {\n        if (doc.type != 'Identity') {\n          return;\n        }\n        emit(doc.address, doc.keys[\"pgp\"]);\n      }\n"
+      "map": "      function(doc) {\n        if (doc.type != 'Identity') {\n          return;\n        }\n        if (typeof doc.keys === \"object\") {\n          emit(doc.address, doc.keys[\"pgp\"]);\n        }\n      }\n"
     },
     "disabled": {
       "map": "      function(doc) {\n        if (doc.type != 'Identity') {\n          return;\n        }\n        if (typeof doc.user_id === \"undefined\") {\n          emit(doc._id, 1);\n        }\n      }\n"
@@ -24,5 +24,5 @@
       "map": "                function(doc) {\n                  if (doc['type'] == 'Identity') {\n                    emit(doc._id, null);\n                  }\n                }\n"
     }
   },
-  "couchrest-hash": "5b0ece9d28b3025d18ea71fddf3a532f"
+  "couchrest-hash": "e9004d70e26770c621a9667536429a68"
 }

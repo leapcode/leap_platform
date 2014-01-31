@@ -7,6 +7,7 @@ class site_couchdb::designs {
     ensure  => directory,
     source  => 'puppet:///modules/site_couchdb/designs',
     recurse => true,
+    purge   => true,
     mode    => '0755'
   }
 

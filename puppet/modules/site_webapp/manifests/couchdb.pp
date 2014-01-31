@@ -14,7 +14,7 @@ class site_webapp::couchdb {
   include x509::variables
 
   file {
-    '/srv/leap/webapp/config/couchdb.yml.webapp':
+    '/srv/leap/webapp/config/couchdb.yml':
       content => template('site_webapp/couchdb.yml.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
