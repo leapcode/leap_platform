@@ -88,3 +88,6 @@
 [submodule "puppet/modules/sysctl"]
 	path = puppet/modules/sysctl
 	url = https://leap.se/git/puppet_sysctl
+[submodule "puppet/modules/check_mk"]
+	path = puppet/modules/check_mk
+	url = https://git.codecoop.org/varacanero/puppet_check_mk.git
