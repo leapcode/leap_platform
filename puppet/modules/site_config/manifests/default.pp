@@ -86,4 +86,6 @@ class site_config::default {
   if defined( '::site_custom') {
     include ::site_custom
   }
+
+  include site_nagios::client
 }
