@@ -11,18 +11,26 @@ class site_nagios::server inherits nagios::base {
 
   include nagios::defaults
   include nagios::base
-  #Class ['nagios'] -> Class ['nagios::defaults']
-  class {'nagios::apache':
+  class {'nagios':
+    # don't manage apache class from nagios, cause we already include
+    # it in site_apache::common
+    httpd              => 'absent',
     allow_external_cmd => true,
     stored_config      => false,
-    #before             => Class ['nagios::defaults']
   }
 
+  file { '/etc/apache2/conf.d/nagios3.conf':
+    ensure => link,
+    target => '/usr/share/doc/nagios3-common/examples/apache2.conf',
+    notify => Service['apache']
+  }
+
+  include site_apache::common
   include site_apache::module::headers
 
   File ['nagios_htpasswd'] {
     source  => undef,
-    content => "nagiosadmin:$nagiosadmin_pw",
+    content => "nagiosadmin:${nagiosadmin_pw}",
     mode    => '0640',
   }
 
