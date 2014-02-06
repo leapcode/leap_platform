@@ -23,13 +23,14 @@
   RequestHeader set X_FORWARDED_PROTO 'https'
 
   <IfModule mod_headers.c>
-<% if @webapp['secure'] -%>
+<% if (defined? @services) and (@services.include? 'webapp') and (@webapp['secure']) -%>
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 <% end -%>
     Header always unset X-Powered-By
     Header always unset X-Runtime
   </IfModule>
 
+<% if (defined? @services) and (@services.include? 'webapp') -%>
   DocumentRoot /srv/leap/webapp/public
 
   RewriteEngine On
@@ -52,16 +53,20 @@
     ExpiresActive On
     ExpiresDefault "access plus 1 year"
   </Location>
+<% end -%>
 
- <% if (defined? @services) and (@services.include? 'monitor') -%>
+
+<% if (defined? @services) and (@services.include? 'monitor') -%>
  <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets)>
+ <% if (defined? @services) and (@services.include? 'webapp') -%>
     PassengerEnabled off
+ <% end -%>
     AllowOverride all
     # Nagios won't work with setting this option to "DENY",
     # as set in conf.d/security (#4169). Therefor we allow
     # it here, only for nagios.
     Header set X-Frame-Options: "ALLOW"
   </DirectoryMatch>
- <% end -%>
+<% end -%>
 </VirtualHost>
 
