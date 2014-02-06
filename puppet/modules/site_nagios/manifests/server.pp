@@ -37,5 +37,6 @@ class site_nagios::server inherits nagios::base {
 
   create_resources ( site_nagios::add_host, $hosts )
 
+  include site_nagios::apache
   include site_shorewall::monitor
 }
