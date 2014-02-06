@@ -7,29 +7,13 @@ class site_webapp::apache {
   $web_domain       = hiera('domain')
   $domain_name      = $web_domain['name']
 
-  include x509::variables
-  include site_config::x509::commercial::cert
-  include site_config::x509::commercial::key
-  include site_config::x509::commercial::ca
-
-  Class['Site_config::X509::Commercial::Key'] ~> Service[apache]
-  Class['Site_config::X509::Commercial::Cert'] ~> Service[apache]
-  Class['Site_config::X509::Commercial::Ca'] ~> Service[apache]
-
-  class { '::apache': no_default_site => true, ssl => true }
-
+  include site_apache::common
   include site_apache::module::headers
-  include site_apache::module::rewrite
   include site_apache::module::alias
   include site_apache::module::expires
   include site_apache::module::removeip
 
   class { 'passenger': use_munin => false }
-
-  apache::vhost::file {
-    'leap_webapp':
-      content => template('site_apache/vhosts.d/leap_webapp.conf.erb')
-  }
 
   apache::vhost::file {
     'api':

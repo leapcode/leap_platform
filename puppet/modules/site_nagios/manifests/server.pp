@@ -11,18 +11,32 @@ class site_nagios::server inherits nagios::base {
 
   include nagios::defaults
   include nagios::base
-  #Class ['nagios'] -> Class ['nagios::defaults']
-  class {'nagios::apache':
+  class {'nagios':
+    # don't manage apache class from nagios, cause we already include
+    # it in site_apache::common
+    httpd              => 'absent',
     allow_external_cmd => true,
     stored_config      => false,
-    #before             => Class ['nagios::defaults']
   }
 
+  # - [monitor2] err: /Stage[main]/Site_nagios::Server/Apache::Config::Global[nagios3.conf]/Apache::Config::File[nagios3.conf]/File[apache_nagios3.conf]/ensure: change from absent to link failed: Cannot create a symlink without a target at /srv/leap/puppet/modules/apache/manifests/config/file.pp:32
+  #apache::config::global { 'nagios3.conf':
+  #  ensure  => link,
+  #  target  => '/usr/share/doc/nagios3-common/examples/apache2.conf',
+  #}
+
+  file { '/etc/apache2/conf.d/nagios3.conf':
+    ensure => link,
+    target => '/usr/share/doc/nagios3-common/examples/apache2.conf',
+    notify => Service['apache']
+  }
+
+  include site_apache::common
   include site_apache::module::headers
 
   File ['nagios_htpasswd'] {
     source  => undef,
-    content => "nagiosadmin:$nagiosadmin_pw",
+    content => "nagiosadmin:${nagiosadmin_pw}",
     mode    => '0640',
   }
 
