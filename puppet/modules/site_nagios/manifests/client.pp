@@ -16,7 +16,7 @@ class site_nagios::client {
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => "command=\"/usr/bin/check_mk_agent\",no-port-forwarding,no-x11-forwarding,no-agent-forwarding ${type} ${pubkey} monitor"
+    content => "command=\"/usr/bin/check_mk_agent\",no-port-forwarding,no-x11-forwarding,no-agent-forwarding,no-pty,no-user-rc, ${type} ${pubkey} monitor"
   }
 
 }
