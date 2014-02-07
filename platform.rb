@@ -3,8 +3,8 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.2.4"
-  self.compatible_cli = "1.2.4".."1.99"
+  self.version = "0.3.0"
+  self.compatible_cli = "1.3.0".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -43,6 +43,8 @@ Leap::Platform.define do
     :user_pgp         => 'users/#{arg}/#{arg}_pgp.pub',
     :known_hosts      => 'files/ssh/known_hosts',
     :authorized_keys  => 'files/ssh/authorized_keys',
+    :monitor_pub_key  => 'files/ssh/monitor_ssh.pub',
+    :monitor_priv_key => 'files/ssh/monitor_ssh',
     :ca_key           => 'files/ca/ca.key',
     :ca_cert          => 'files/ca/ca.crt',
     :client_ca_key    => 'files/ca/client_ca.key',
@@ -73,5 +75,9 @@ Leap::Platform.define do
   self.node_files = [
     :node_config, :hiera, :node_x509_cert, :node_x509_key, :node_ssh_pub_key
   ]
+
+  self.monitor_username = 'monitor'
+
+  self.reserved_usernames = ['monitor']
 end
 
