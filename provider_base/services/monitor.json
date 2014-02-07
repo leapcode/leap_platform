@@ -3,6 +3,13 @@
     "nagiosadmin_pw": "= secret :nagios_admin_password",
     "hosts": "= nodes_like_me.pick_fields('domain.internal', 'ip_address', 'services', 'openvpn.gateway_address')"
   },
+  "hosts": "= hosts_file(nodes_like_me[:services => '!monitor'])",
+  "ssh": {
+    "monitor": {
+      "username": "= Leap::Platform.monitor_username",
+      "private_key": "= file(:monitor_priv_key)"
+    }
+  },
   "x509": {
     "use": true,
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
