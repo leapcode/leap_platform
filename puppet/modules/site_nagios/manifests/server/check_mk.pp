@@ -20,6 +20,8 @@ class site_nagios::server::check_mk {
     require       => Package['check-mk-server']
   }
 
+  Exec['check_mk-reload'] -> Service['nagios']
+
   file {
     '/etc/check_mk/conf.d/use_ssh.mk':
       source => 'puppet:///modules/site_check_mk/use_ssh.mk',
