@@ -19,12 +19,6 @@ class site_nagios::server inherits nagios::base {
     stored_config      => false,
   }
 
-  # - [monitor2] err: /Stage[main]/Site_nagios::Server/Apache::Config::Global[nagios3.conf]/Apache::Config::File[nagios3.conf]/File[apache_nagios3.conf]/ensure: change from absent to link failed: Cannot create a symlink without a target at /srv/leap/puppet/modules/apache/manifests/config/file.pp:32
-  #apache::config::global { 'nagios3.conf':
-  #  ensure  => link,
-  #  target  => '/usr/share/doc/nagios3-common/examples/apache2.conf',
-  #}
-
   file { '/etc/apache2/conf.d/nagios3.conf':
     ensure => link,
     target => '/usr/share/doc/nagios3-common/examples/apache2.conf',
