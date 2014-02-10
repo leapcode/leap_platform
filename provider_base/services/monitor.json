@@ -1,7 +1,7 @@
 {
   "nagios": {
     "nagiosadmin_pw": "= secret :nagios_admin_password",
-    "hosts": "= nodes_like_me.pick_fields('domain.internal', 'ip_address', 'services', 'openvpn.gateway_address')"
+    "hosts": "= nodes_like_me[:services => '!monitor'].pick_fields('domain.internal', 'ip_address', 'services', 'openvpn.gateway_address')"
   },
   "hosts": "= hosts_file(nodes_like_me[:services => '!monitor'])",
   "ssh": {

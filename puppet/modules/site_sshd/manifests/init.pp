@@ -1,5 +1,6 @@
 class site_sshd {
   $ssh = hiera_hash('ssh')
+  $hosts = hiera_hash('hosts')
 
   ##
   ## SETUP AUTHORIZED KEYS
@@ -9,6 +10,14 @@ class site_sshd {
 
   class { 'site_sshd::deploy_authorized_keys':
     keys => $authorized_keys
+  }
+
+  ##
+  ## SETUP KNOWN HOSTS
+  ##
+
+  class { 'site_sshd::known_hosts':
+    hosts => $hosts
   }
 
   ##
