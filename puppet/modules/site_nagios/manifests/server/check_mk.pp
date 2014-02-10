@@ -4,7 +4,10 @@ class site_nagios::server::check_mk {
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
   $seckey   = $ssh_hash['monitor']['private_key']
-  $all_hosts = '"localhost", "plain1"'
+
+  $nagios_hiera   = hiera_hash('nagios')
+  $hosts          = $nagios_hiera['hosts']
+  $all_hosts = inline_template("<% @hosts.keys.sort.each do |key| -%>\"<%= key %>\", <% end -%>")
 
   package { 'check-mk-server':
     ensure => installed,
