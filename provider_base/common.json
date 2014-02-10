@@ -16,7 +16,6 @@
   },
   "ssh": {
     "authorized_keys": "= authorized_keys",
-    "known_hosts": "=> known_hosts_file",
     "port": 22,
     "mosh": {
       "ports": "60000:61000",
