@@ -4,6 +4,7 @@ class site_nagios::server::check_mk {
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
   $seckey   = $ssh_hash['monitor']['private_key']
+  $ssh_port = $ssh_hash['port']
 
   $nagios_hiera   = hiera_hash('nagios')
   $hosts          = $nagios_hiera['hosts']
@@ -27,8 +28,8 @@ class site_nagios::server::check_mk {
 
   file {
     '/etc/check_mk/conf.d/use_ssh.mk':
-      source => 'puppet:///modules/site_check_mk/use_ssh.mk',
-      notify => Exec['check_mk-refresh'];
+      content => template('site_check_mk/use_ssh.mk'),
+      notify  => Exec['check_mk-refresh'];
     '/etc/check_mk/all_hosts_static':
       content => $all_hosts,
       notify  => Exec['check_mk-refresh'];
