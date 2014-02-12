@@ -87,5 +87,5 @@ class site_config::default {
     include ::site_custom
   }
 
-  include site_nagios::client
+  include site_check_mk::client
 }

@@ -1,8 +1,10 @@
-class site_nagios::client {
+class site_check_mk::client {
 
   $ssh_hash = hiera('ssh')
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
+
+  include site_apt::preferences::check_mk
 
   class { 'check_mk::agent':
     agent_package_name          => 'check-mk-agent',

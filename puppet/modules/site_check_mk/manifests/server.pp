@@ -1,4 +1,4 @@
-class site_nagios::server::check_mk {
+class site_check_mk::server {
 
   $ssh_hash = hiera('ssh')
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
@@ -44,5 +44,5 @@ class site_nagios::server::check_mk {
       owner   => 'nagios',
       mode    => '0644';
   }
-
+  include check_mk::agent::local_checks
 }
