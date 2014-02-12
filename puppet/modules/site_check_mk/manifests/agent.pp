@@ -21,4 +21,5 @@ class site_check_mk::agent {
     content => "command=\"/usr/bin/check_mk_agent\",no-port-forwarding,no-x11-forwarding,no-agent-forwarding,no-pty,no-user-rc, ${type} ${pubkey} monitor"
   }
 
+  include site_check_mk::agent::mrpe
 }
