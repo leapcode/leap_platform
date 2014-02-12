@@ -13,11 +13,20 @@ class site_sshd {
   }
 
   ##
-  ## SETUP KNOWN HOSTS
+  ## SETUP KNOWN HOSTS and SSH_CONFIG
   ##
 
-  class { 'site_sshd::known_hosts':
-    hosts => $hosts
+  file {
+    '/etc/ssh/ssh_known_hosts':
+      owner   => root,
+      group   => root,
+      mode    => '0644',
+      content => template('site_sshd/ssh_known_hosts.erb');
+    '/etc/ssh/ssh_config':
+      owner => root,
+      group => root,
+      mode => '0644',
+      content => template('site_sshd/ssh_config.erb');
   }
 
   ##
