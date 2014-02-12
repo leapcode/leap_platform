@@ -1,4 +1,4 @@
-class site_check_mk::client {
+class site_check_mk::agent {
 
   $ssh_hash = hiera('ssh')
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
