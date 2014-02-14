@@ -14,12 +14,5 @@ class site_check_mk::agent {
     register_agent              => false
   }
 
-  file { '/root/.ssh/authorized_keys2':
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    content => "command=\"/usr/bin/check_mk_agent\",no-port-forwarding,no-x11-forwarding,no-agent-forwarding,no-pty,no-user-rc, ${type} ${pubkey} monitor"
-  }
-
   include site_check_mk::agent::mrpe
 }
