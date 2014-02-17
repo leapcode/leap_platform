@@ -1,6 +1,6 @@
 class site_sshd {
   $ssh = hiera_hash('ssh')
-  $hosts = hiera_hash('hosts')
+  $hosts = hiera('hosts', '')
 
   ##
   ## SETUP AUTHORIZED KEYS
