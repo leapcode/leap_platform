@@ -43,7 +43,7 @@ class site_nagios::server inherits nagios::base {
     group  => 'nagios',
   }
 
-  create_resources ( site_nagios::add_host, $hosts )
+  create_resources ( site_nagios::add_host_services, $hosts )
 
   include site_nagios::server::apache
   include site_check_mk::server

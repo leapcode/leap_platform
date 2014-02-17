@@ -1,16 +1,10 @@
-define site_nagios::add_host (
+define site_nagios::add_host_services (
   $domain_internal,
   $ip_address,
   $services,
   $openvpn_gateway_address='' ) {
 
     $nagios_hostname = $domain_internal
-
-    # Add Nagios host
-    nagios_host { $nagios_hostname:
-      address => $ip_address,
-      use     => 'generic-host',
-    }
 
     # Add Nagios service
 

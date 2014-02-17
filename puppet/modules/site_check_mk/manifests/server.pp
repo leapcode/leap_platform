@@ -8,7 +8,7 @@ class site_check_mk::server {
 
   $nagios_hiera   = hiera_hash('nagios')
   $hosts          = $nagios_hiera['hosts']
-  $all_hosts = inline_template("<% @hosts.keys.sort.each do |key| -%>\"<%= key %>\", <% end -%>")
+  $all_hosts      = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
 
   package { 'check-mk-server':
     ensure => installed,
