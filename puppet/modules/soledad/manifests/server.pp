@@ -59,4 +59,5 @@ class soledad::server {
   }
 
   include site_shorewall::soledad
+  include site_check_mk::agent::soledad
 }
