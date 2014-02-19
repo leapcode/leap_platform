@@ -8,4 +8,8 @@ class site_check_mk::agent::logwatch {
     mode   => '0755'
   }
 
+  file { '/etc/check_mk/logwatch.d':
+    ensure => directory
+  }
+
 }
