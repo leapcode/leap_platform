@@ -15,4 +15,5 @@ class site_check_mk::agent {
   }
 
   include site_check_mk::agent::mrpe
+  include site_check_mk::agent::logwatch
 }
