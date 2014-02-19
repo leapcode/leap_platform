@@ -1,5 +1,9 @@
 class site_check_mk::agent::tapicero {
 
+  file { '/etc/check_mk/logwatch.d/tapicero.cfg':
+    source => 'puppet:///modules/site_check_mk/agent/logwatch/tapicero.cfg',
+  }
+
   # local nagios plugin checks via mrpe
   file_line {
     'Tapicero_Procs':
