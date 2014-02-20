@@ -8,8 +8,27 @@ class site_check_mk::agent::logwatch {
     mode   => '0755'
   }
 
+  # only config files that watch a distinct logfile should go in logwatch.d/
   file { '/etc/check_mk/logwatch.d':
-    ensure => directory
+    ensure  => directory,
+    recurse => true,
+    purge   => true,
   }
 
+  # service that share a common logfile (i.e. /var/log/syslog) need to get
+  # concanated in one file, otherwise the last file sourced will override
+  # the config before
+  # see mk_logwatch: "logwatch.cfg overwrites config files in logwatch.d",
+  # https://leap.se/code/issues/5155
+
+  # first, we need to deploy a custom logwatch.cfg that doesn't include
+  # a section about /var/log/syslog
+
+  file { '/etc/check_mk/logwatch.cfg':
+    source  => 'puppet:///modules/site_check_mk/agent/logwatch/logwatch.cfg',
+    require => Package['check_mk-agent-logwatch']
+  }
+
+  include concat::setup
+  include site_check_mk::agent::logwatch::syslog
 }
