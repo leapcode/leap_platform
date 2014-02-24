@@ -1,7 +1,9 @@
 define site_nagios::add_host_services (
+  $domain_full_suffix,
   $domain_internal,
   $ip_address,
   $services,
+  $ssh_port,
   $openvpn_gateway_address='' ) {
 
     $nagios_hostname = $domain_internal

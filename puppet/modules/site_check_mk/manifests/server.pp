@@ -4,10 +4,11 @@ class site_check_mk::server {
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
   $seckey   = $ssh_hash['monitor']['private_key']
-  $ssh_port = $ssh_hash['port']
 
   $nagios_hiera   = hiera_hash('nagios')
-  $hosts          = $nagios_hiera['hosts']
+  $nagios_hosts   = $nagios_hiera['hosts']
+
+  $hosts          = hiera_hash('hosts')
   $all_hosts      = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
 
   package { 'check-mk-server':
