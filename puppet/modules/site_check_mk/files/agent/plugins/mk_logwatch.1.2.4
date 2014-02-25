@@ -1,0 +1,374 @@
+#!/usr/bin/python
+# -*- encoding: utf-8; py-indent-offset: 4 -*-
+# +------------------------------------------------------------------+
+# |             ____ _               _        __  __ _  __           |
+# |            / ___| |__   ___  ___| | __   |  \/  | |/ /           |
+# |           | |   | '_ \ / _ \/ __| |/ /   | |\/| | ' /            |
+# |           | |___| | | |  __/ (__|   <    | |  | | . \            |
+# |            \____|_| |_|\___|\___|_|\_\___|_|  |_|_|\_\           |
+# |                                                                  |
+# | Copyright Mathias Kettner 2010             mk@mathias-kettner.de |
+# +------------------------------------------------------------------+
+#
+# This file is part of Check_MK.
+# The official homepage is at http://mathias-kettner.de/check_mk.
+#
+# check_mk is free software;  you can redistribute it and/or modify it
+# under the  terms of the  GNU General Public License  as published by
+# the Free Software Foundation in version 2.  check_mk is  distributed
+# in the hope that it will be useful, but WITHOUT ANY WARRANTY;  with-
+# out even the implied warranty of  MERCHANTABILITY  or  FITNESS FOR A
+# PARTICULAR PURPOSE. See the  GNU General Public License for more de-
+# ails.  You should have  received  a copy of the  GNU  General Public
+# License along with GNU Make; see the file  COPYING.  If  not,  write
+# to the Free Software Foundation, Inc., 51 Franklin St,  Fifth Floor,
+# Boston, MA 02110-1301 USA.
+
+# Call with -d for debug mode: colored output, no saving of status
+
+import sys, os, re, time
+import glob
+
+if '-d' in sys.argv[1:] or '--debug' in sys.argv[1:]:
+    tty_red     = '\033[1;31m'
+    tty_green   = '\033[1;32m'
+    tty_yellow  = '\033[1;33m'
+    tty_blue    = '\033[1;34m'
+    tty_normal  = '\033[0m'
+    debug = True
+else:
+    tty_red     = ''
+    tty_green   = ''
+    tty_yellow  = ''
+    tty_blue    = ''
+    tty_normal  = ''
+    debug = False
+
+# The configuration file and status file are searched
+# in the directory named by the environment variable
+# LOGWATCH_DIR. If that is not set, MK_CONFDIR is used.
+# If that is not set either, the current directory ist
+# used.
+logwatch_dir = os.getenv("LOGWATCH_DIR")
+if not logwatch_dir:
+    logwatch_dir = os.getenv("MK_CONFDIR")
+    if not logwatch_dir:
+        logwatch_dir = "."
+
+print "<<<logwatch>>>"
+
+config_filename = logwatch_dir + "/logwatch.cfg"
+status_filename = logwatch_dir + "/logwatch.state"
+config_dir      = logwatch_dir + "/logwatch.d/*.cfg"
+
+def is_not_comment(line):
+    if line.lstrip().startswith('#') or \
+       line.strip() == '':
+        return False
+    return True
+
+def parse_filenames(line):
+    return line.split()
+
+def parse_pattern(level, pattern):
+    if level not in [ 'C', 'W', 'I', 'O' ]:
+        raise(Exception("Invalid pattern line '%s'" % line))
+    try:
+        compiled = re.compile(pattern)
+    except:
+        raise(Exception("Invalid regular expression in line '%s'" % line))
+    return (level, compiled)
+
+def read_config():
+    config_lines = [ line.rstrip() for line in filter(is_not_comment, file(config_filename).readlines()) ]
+    # Add config from a logwatch.d folder
+    for config_file in glob.glob(config_dir):
+        config_lines += [ line.rstrip() for line in filter(is_not_comment, file(config_file).readlines()) ]
+
+    have_filenames = False
+    config = []
+
+    for line in config_lines:
+        rewrite = False
+        if line[0].isspace(): # pattern line
+            if not have_filenames:
+                raise Exception("Missing logfile names")
+            level, pattern = line.split(None, 1)
+            if level == 'A':
+                cont_list.append(parse_cont_pattern(pattern))
+            elif level == 'R':
+                rewrite_list.append(pattern)
+            else:
+                level, compiled = parse_pattern(level, pattern)
+                cont_list = [] # List of continuation patterns
+                rewrite_list = [] # List of rewrite patterns
+                patterns.append((level, compiled, cont_list, rewrite_list))
+        else: # filename line
+            patterns = []
+            config.append((parse_filenames(line), patterns))
+            have_filenames = True
+    return config
+
+def parse_cont_pattern(pattern):
+    try:
+        return int(pattern)
+    except:
+        try:
+            return re.compile(pattern)
+        except:
+            if debug:
+                raise
+            raise Exception("Invalid regular expression in line '%s'" % pattern) 
+
+# structure of statusfile
+# # LOGFILE         OFFSET    INODE
+# /var/log/messages|7767698|32455445
+# /var/test/x12134.log|12345|32444355
+def read_status():
+    if debug:
+        return {}
+
+    status = {}
+    for line in file(status_filename):
+        # TODO: Remove variants with spaces. rsplit is
+        # not portable. split fails if logfilename contains
+        # spaces
+        inode = -1
+        try:
+            parts = line.split('|')
+            filename = parts[0]
+            offset = parts[1]
+            if len(parts) >= 3:
+                inode = parts[2]
+
+        except:
+            try:
+                filename, offset = line.rsplit(None, 1)
+            except:
+                filename, offset = line.split(None, 1)
+        status[filename] = int(offset), int(inode)
+    return status
+
+def save_status(status):
+    f = file(status_filename, "w")
+    for filename, (offset, inode) in status.items():
+        f.write("%s|%d|%d\n" % (filename, offset, inode))
+
+pushed_back_line = None
+def next_line(f):
+    global pushed_back_line
+    if pushed_back_line != None:
+        line = pushed_back_line
+        pushed_back_line = None
+        return line
+    else:
+        try:
+            line = f.next()
+            return line
+        except:
+            return None
+
+
+def process_logfile(logfile, patterns):
+    global pushed_back_line
+
+    # Look at which file offset we have finished scanning
+    # the logfile last time. If we have never seen this file
+    # before, we set the offset to -1
+    offset, prev_inode = status.get(logfile, (-1, -1))
+    try:
+        fl = os.open(logfile, os.O_RDONLY)
+        inode = os.fstat(fl)[1] # 1 = st_ino
+    except:
+        if debug:
+            raise
+        print "[[[%s:cannotopen]]]" % logfile
+        return
+
+    print "[[[%s]]]" % logfile
+
+    # Seek to the current end in order to determine file size
+    current_end = os.lseek(fl, 0, 2) # os.SEEK_END not available in Python 2.4
+    status[logfile] = current_end, inode
+        
+    # If we have never seen this file before, we just set the
+    # current pointer to the file end. We do not want to make
+    # a fuss about ancient log messages...
+    if offset == -1:
+	if not debug:
+            return
+    	else:
+	    offset = 0
+   
+
+    # If the inode of the logfile has changed it has appearently
+    # been started from new (logfile rotation). At least we must
+    # assume that. In some rare cases (restore of a backup, etc)
+    # we are wrong and resend old log messages
+    if prev_inode >= 0 and inode != prev_inode:
+        offset = 0
+
+    # Our previously stored offset is the current end ->
+    # no new lines in this file
+    if offset == current_end:
+        return # nothing new
+
+    # If our offset is beyond the current end, the logfile has been
+    # truncated or wrapped while keeping the same inode. We assume
+    # that it contains all new data in that case and restart from
+    # offset 0.
+    if offset > current_end:
+        offset = 0
+
+    # now seek to offset where interesting data begins
+    os.lseek(fl, offset, 0) # os.SEEK_SET not available in Python 2.4
+    f = os.fdopen(fl)
+    worst = -1
+    outputtxt = ""
+    lines_parsed = 0
+    start_time = time.time()
+
+    while True:
+        line = next_line(f)
+        if line == None:
+            break # End of file
+
+        lines_parsed += 1
+        # Check if maximum number of new log messages is exceeded
+        if opt_maxlines != None and lines_parsed > opt_maxlines:
+            outputtxt += "%s Maximum number (%d) of new log messages exceeded.\n" % (
+               opt_overflow, opt_maxlines)
+            worst = max(worst, opt_overflow_level)
+            os.lseek(fl, 0, 2) # Seek to end of file, skip all other messages
+            break
+
+        # Check if maximum processing time (per file) is exceeded. Check only
+        # every 100'th line in order to save system calls
+        if opt_maxtime != None and lines_parsed % 100 == 10 \
+            and time.time() - start_time > opt_maxtime:
+            outputtxt += "%s Maximum parsing time (%.1f sec) of this log file exceeded.\n" % (
+               opt_overflow, opt_maxtime)
+            worst = max(worst, opt_overflow_level)
+            os.lseek(fl, 0, 2) # Seek to end of file, skip all other messages
+            break
+
+        level = "."
+        for lev, pattern, cont_patterns, replacements in patterns:
+            matches = pattern.search(line[:-1])
+            if matches:
+                level = lev
+                levelint = {'C': 2, 'W': 1, 'O': 0, 'I': -1, '.': -1}[lev]
+                worst = max(levelint, worst)
+
+                # Check for continuation lines
+                for cont_pattern in cont_patterns:
+                    if type(cont_pattern) == int: # add that many lines
+                        for x in range(cont_pattern):
+                            cont_line = next_line(f)
+                            if cont_line == None: # end of file
+                                break
+                            line = line[:-1] + "\1" + cont_line 
+
+                    else: # pattern is regex
+                        while True:
+                            cont_line = next_line(f)
+                            if cont_line == None: # end of file
+                                break
+                            elif cont_pattern.search(cont_line[:-1]):
+                                line = line[:-1] + "\1" + cont_line 
+                            else:
+                                pushed_back_line = cont_line # sorry for stealing this line
+                                break
+
+                # Replacement
+                for replace in replacements:
+                    line = replace.replace('\\0', line) + "\n"
+                    for nr, group in enumerate(matches.groups()):
+                        line = line.replace('\\%d' % (nr+1), group)
+
+                break # matching rule found and executed
+
+        color = {'C': tty_red, 'W': tty_yellow, 'O': tty_green, 'I': tty_blue, '.': ''}[level]
+        if debug:
+            line = line.replace("\1", "\nCONT:")
+        if level == "I":
+            level = "."
+        if opt_nocontext and level == '.':
+            continue
+        outputtxt += "%s%s %s%s\n" % (color, level, line[:-1], tty_normal)
+
+    new_offset = os.lseek(fl, 0, 1) # os.SEEK_CUR not available in Python 2.4
+    status[logfile] = new_offset, inode
+
+    # output all lines if at least one warning, error or ok has been found
+    if worst > -1:
+        sys.stdout.write(outputtxt)
+        sys.stdout.flush()
+
+try:
+    config = read_config()
+except Exception, e:
+    if debug:
+        raise
+    print "CANNOT READ CONFIG FILE: %s" % e
+    sys.exit(1)
+
+# Simply ignore errors in the status file.  In case of a corrupted status file we simply begin
+# with an empty status. That keeps the monitoring up and running - even if we might loose a
+# message in the extreme case of a corrupted status file.
+try:
+    status = read_status()
+except Exception, e:
+    status = {}
+
+
+# The filename line may contain options like 'maxlines=100' or 'maxtime=10'
+for filenames, patterns in config:
+    # Initialize options with default values
+    opt_maxlines = None
+    opt_maxtime = None
+    opt_regex = None
+    opt_overflow = 'C'
+    opt_overflow_level = 2
+    opt_nocontext = False
+    try:
+        options = [ o.split('=', 1) for o in filenames if '=' in o ]
+        for key, value in options:
+            if key == 'maxlines':
+                opt_maxlines = int(value)
+            elif key == 'maxtime':
+                opt_maxtime = float(value)
+            elif key == 'overflow':
+                if value not in [ 'C', 'I', 'W', 'O' ]:
+                    raise Exception("Invalid value %s for overflow. Allowed are C, I, O and W" % value)
+                opt_overflow = value
+                opt_overflow_level = {'C':2, 'W':1, 'O':0, 'I':0}[value]
+            elif key == 'regex':
+                opt_regex = re.compile(value)
+            elif key == 'iregex':
+                opt_regex = re.compile(value, re.I)
+            elif key == 'nocontext':
+                opt_nocontext = True
+            else:
+                raise Exception("Invalid option %s" % key)
+    except Exception, e:
+        if debug:
+            raise
+        print "INVALID CONFIGURATION: %s" % e
+        sys.exit(1)
+
+
+    for glob in filenames:
+        if '=' in glob:
+            continue
+        logfiles = [ l.strip() for l in os.popen("ls %s 2>/dev/null" % glob).readlines() ]
+        if opt_regex:
+            logfiles = [ f for f in logfiles if opt_regex.search(f) ]
+        if len(logfiles) == 0:
+            print '[[[%s:missing]]]' % glob
+        else:
+            for logfile in logfiles:
+                process_logfile(logfile, patterns)
+
+if not debug:
+    save_status(status)

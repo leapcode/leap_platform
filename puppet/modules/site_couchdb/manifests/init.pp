@@ -109,4 +109,5 @@ class site_couchdb {
   if $couchdb_backup { include site_couchdb::backup }
 
   include site_check_mk::agent::couchdb
+  include site_check_mk::agent::tapicero
 }
