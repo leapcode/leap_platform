@@ -1,9 +1,9 @@
 {
   "nagios": {
     "nagiosadmin_pw": "= secret :nagios_admin_password",
-    "hosts": "= nodes_like_me.pick_fields('domain.internal', 'ip_address', 'services', 'openvpn.gateway_address')"
+    "hosts": "= (self.environment == 'local' ? nodes_like_me : nodes[:environment => '!local']).pick_fields('domain.internal', 'domain.full_suffix', 'ip_address', 'services', 'openvpn.gateway_address', 'ssh.port')"
   },
-  "hosts": "= hosts_file(nodes_like_me)",
+  "hosts": "= self.environment == 'local' ? hosts_file(nodes_like_me) : hosts_file(nodes[:environment => '!local'])",
   "ssh": {
     "monitor": {
       "username": "= Leap::Platform.monitor_username",
