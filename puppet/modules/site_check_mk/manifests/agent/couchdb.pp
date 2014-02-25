@@ -21,5 +21,16 @@ class site_check_mk::agent::couchdb {
       path => '/etc/check_mk/mrpe.cfg';
   }
 
+  # check open files for bigcouch proc
+  include site_check_mk::agent::package::perl_plugin
+  file { '/srv/leap/nagios/plugins/check_unix_open_fds.pl':
+    source => 'puppet:///modules/site_check_mk/agent/nagios_plugins/check_unix_open_fds.pl',
+    mode   => '0755'
+  }
+  file_line {
+    'Bigcouch_open_files':
+      line => 'Bigcouch_open_files /srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 750,750 -c 1000,1000',
+      path => '/etc/check_mk/mrpe.cfg';
+  }
 
 }
