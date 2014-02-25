@@ -26,7 +26,4 @@ class soledad {
       group   => 'soledad',
       require => User['soledad'];
   }
-
-  include site_check_mk::agent::soledad
-
 }
