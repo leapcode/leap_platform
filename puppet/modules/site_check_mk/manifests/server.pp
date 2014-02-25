@@ -44,6 +44,13 @@ class site_check_mk::server {
       content => "${type} ${pubkey} monitor",
       owner   => 'nagios',
       mode    => '0644';
+    # check_icmp must be suid root or called by sudo
+    # see https://leap.se/code/issues/5171
+    '/usr/lib/nagios/plugins/check_icmp':
+      mode    => '4755',
+      require => Package['nagios-plugins-basic'];
   }
+
+
   include check_mk::agent::local_checks
 }
