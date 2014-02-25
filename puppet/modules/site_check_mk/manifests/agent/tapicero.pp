@@ -1,7 +1,7 @@
 class site_check_mk::agent::tapicero {
 
   concat::fragment { 'syslog_tapicero':
-    source  => 'puppet:///modules/site_check_mk/agent/logwatch/tapicero.cfg',
+    source  => 'puppet:///modules/site_check_mk/agent/logwatch/syslog/tapicero.cfg',
     target  => '/etc/check_mk/logwatch.d/syslog.cfg',
     order   => '02';
   }
