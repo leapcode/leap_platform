@@ -157,5 +157,5 @@ class site_webapp {
   }
 
   include site_shorewall::webapp
-
+  include site_check_mk::agent::webapp
 }
