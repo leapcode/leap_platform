@@ -318,34 +318,56 @@ class LeapRunner < MiniTest::Unit
   end
 
   #
-  # override default status slightly
+  # override default status summary
   #
   def status(io = self.output)
-    format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
-    output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+    if $output_format == :human
+      format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
+      output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+    end
   end
 
   #
   # returns a string for a PASS, SKIP, or FAIL error
   #
   def report_line(prefix, klass, meth, e=nil, message=nil)
+    msg_txt = nil
     if message
       message = message.sub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:password@")
-      indent = "\n  "
-      msg_txt = indent + message.split("\n").join(indent)
+      if $output_format == :human
+        indent = "\n  "
+        msg_txt = indent + message.split("\n").join(indent)
+      else
+        msg_txt = message.gsub("\n", ' ')
+      end
     end
-    if e && message
-      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
-    elsif message
-      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}:#{msg_txt}"
-    else
-      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
+
+    if $output_format == :human
+      if e && msg_txt
+        output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
+      elsif msg_txt
+        output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}:#{msg_txt}"
+      else
+        output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
+      end
+                      # I don't understand at all why, but adding a very tiny sleep here will
+      sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
+    elsif $output_format == :checkmk
+      code = CHECKMK_CODES[prefix]
+      msg_txt ||= "Success" if prefix == "PASS"
+      if e && msg_txt
+        output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - [#{File.basename(location(e))}]:#{msg_txt}"
+      elsif msg_txt
+        output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - #{msg_txt}"
+      else
+        output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - no message"
+      end
     end
-                    # I don't understand at all why, but adding a very tiny sleep here will
-    sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
   end
 
   private
+
+  CHECKMK_CODES = {"PASS" => 0, "SKIP" => 1, "FAIL" => 2, "ERROR" => 3}
 
   #
   # Converts snake_case and CamelCase to something more pleasant for humans to read.
@@ -357,6 +379,11 @@ class LeapRunner < MiniTest::Unit
     sub(/^test (\d* )?/i, '').
     downcase.capitalize
   end
+
+  def machine_readable(str)
+    str.sub(/^test_(\d+_)?/i, '')
+  end
+
 end
 
 ##
@@ -402,7 +429,8 @@ else
 end
 
 # load all test classes
-Dir[File.expand_path('../../tests/white-box/*.rb', __FILE__)].each do |test_file|
+this_file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+Dir[File.expand_path('../../tests/white-box/*.rb', this_file)].each do |test_file|
   begin
     require test_file
   rescue SkipTest
@@ -411,9 +439,11 @@ end
 
 # parse command line options
 $halt_on_failure = true
+$output_format = :human
 loop do
   case ARGV[0]
     when '--continue' then ARGV.shift; $halt_on_failure = false
+    when '--checkmk' then ARGV.shift; $output_format = :checkmk; $halt_on_failure = false
     else break
   end
 end
