@@ -59,4 +59,12 @@ class site_couchdb::create_dbs {
     members => "{ \"names\": [], \"roles\": [\"users\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
+
+  ## messages db
+  ## store messages to the clients such as payment reminders
+  ## r/w: webapp
+  couchdb::create_db { 'messages':
+    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
 }
