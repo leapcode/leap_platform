@@ -2,7 +2,11 @@
   "webapp": {
     "admins": [],
     "modules": ["user", "billing", "help"],
-    "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
+    "couchdb_webapp_user": {
+      "username": "= global.services[:couchdb].couch.users[:webapp].username",
+      "password": "= secret :couch_webapp_password",
+      "salt": "= hex_secret :couch_webapp_password_salt, 128"
+    },
     "customization_dir": "= file_path 'webapp'",
     "client_certificates": "= global.provider.ca.client_certificates",
     "allow_limited_certs": "= global.provider.service.allow_limited_bandwidth",
@@ -36,7 +40,11 @@
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",
-    "couchdb_nickserver_user": "= global.services[:couchdb].couch.users[:nickserver]",
+    "couchdb_nickserver_user": {
+      "username": "= global.services[:couchdb].couch.users[:nickserver].username",
+      "password": "= secret :couch_nickserver_password",
+      "salt": "= hex_secret :couch_nickserver_password_salt, 128"
+    },
     "port": 6425
   },
   "dns": {

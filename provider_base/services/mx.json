@@ -5,7 +5,11 @@
   "haproxy": {
     "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.couch_client)"
   },
-  "couchdb_leap_mx_user": "= global.services[:couchdb].couch.users[:leap_mx]",
+  "couchdb_leap_mx_user": {
+    "username": "= global.services[:couchdb].couch.users[:leap_mx].username",
+    "password": "= secret :couch_leap_mx_password",
+    "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
+  },
   "mx_nodes": "= nodes['services' => 'mx']['environment' => '!local'].field('ip_address')",
   "x509": {
     "use": true,
