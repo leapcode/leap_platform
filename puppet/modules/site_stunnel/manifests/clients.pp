@@ -28,4 +28,6 @@ define site_stunnel::clients (
       Class['Site_config::X509::Ca'] ];
 
   }
+
+  include site_check_mk::agent::stunnel
 }

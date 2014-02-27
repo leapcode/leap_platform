@@ -4,10 +4,11 @@ class site_check_mk::server {
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
   $seckey   = $ssh_hash['monitor']['private_key']
-  $ssh_port = $ssh_hash['port']
 
   $nagios_hiera   = hiera_hash('nagios')
-  $hosts          = $nagios_hiera['hosts']
+  $nagios_hosts   = $nagios_hiera['hosts']
+
+  $hosts          = hiera_hash('hosts')
   $all_hosts      = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
 
   package { 'check-mk-server':
@@ -43,6 +44,13 @@ class site_check_mk::server {
       content => "${type} ${pubkey} monitor",
       owner   => 'nagios',
       mode    => '0644';
+    # check_icmp must be suid root or called by sudo
+    # see https://leap.se/code/issues/5171
+    '/usr/lib/nagios/plugins/check_icmp':
+      mode    => '4755',
+      require => Package['nagios-plugins-basic'];
   }
+
+
   include check_mk::agent::local_checks
 }

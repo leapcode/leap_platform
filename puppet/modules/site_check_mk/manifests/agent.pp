@@ -14,6 +14,10 @@ class site_check_mk::agent {
     register_agent              => false
   }
 
+  file { [ '/srv/leap/nagios', '/srv/leap/nagios/plugins' ]:
+    ensure  => directory,
+  }
+
   include site_check_mk::agent::mrpe
   include site_check_mk::agent::logwatch
 }

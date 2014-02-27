@@ -7,7 +7,7 @@ class site_nagios::server inherits nagios::base {
 
   $nagios_hiera   = hiera('nagios')
   $nagiosadmin_pw = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
-  $hosts          = $nagios_hiera['hosts']
+  $nagios_hosts   = $nagios_hiera['hosts']
 
   include nagios::defaults
   include nagios::base
@@ -43,7 +43,7 @@ class site_nagios::server inherits nagios::base {
     group  => 'nagios',
   }
 
-  create_resources ( site_nagios::add_host_services, $hosts )
+  create_resources ( site_nagios::add_host_services, $nagios_hosts )
 
   include site_nagios::server::apache
   include site_check_mk::server
