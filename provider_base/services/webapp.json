@@ -15,7 +15,8 @@
       "source": "https://leap.se/git/leap_web",
       "revision": "origin/master"
     },
-    "client_version": "= global.provider.client_version"
+    "client_version": "= global.provider.client_version",
+    "nagios_test_pw": "= secret :nagios_test_password"
   },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
