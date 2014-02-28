@@ -18,6 +18,11 @@ class site_check_mk::agent {
     ensure  => directory,
   }
 
+  file { '/usr/lib/check_mk_agent/local/run_node_tests.sh':
+    source => 'puppet:///modules/site_check_mk/agent/local_checks/all_hosts/run_node_tests.sh',
+    mode   => '0755'
+  }
+
   include site_check_mk::agent::mrpe
   include site_check_mk::agent::logwatch
 }
