@@ -17,12 +17,13 @@ class site_check_mk::server {
 
   # override paths to use the system check_mk rather than OMD
   class { 'check_mk::config':
-    site          => '',
-    etc_dir       => '/etc',
-    nagios_subdir => 'nagios3',
-    bin_dir       => '/usr/bin',
-    host_groups   => undef,
-    require       => Package['check-mk-server']
+    site              => '',
+    etc_dir           => '/etc',
+    nagios_subdir     => 'nagios3',
+    bin_dir           => '/usr/bin',
+    host_groups       => undef,
+    use_storedconfigs => false,
+    require           => Package['check-mk-server']
   }
 
   Exec['check_mk-reload'] ->
