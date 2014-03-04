@@ -25,25 +25,32 @@ class site_check_mk::server {
     require       => Package['check-mk-server']
   }
 
-  Exec['check_mk-reload'] -> Service['nagios']
+  Exec['check_mk-reload'] ->
+    Exec['check_mk-refresh-inventory-daily'] ->
+    Service['nagios']
 
   file {
     '/etc/check_mk/conf.d/use_ssh.mk':
       content => template('site_check_mk/use_ssh.mk'),
-      notify  => Exec['check_mk-refresh'];
+      notify  => Exec['check_mk-refresh'],
+      require => Package['check-mk-server'];
     '/etc/check_mk/all_hosts_static':
       content => $all_hosts,
-      notify  => Exec['check_mk-refresh'];
+      notify  => Exec['check_mk-refresh'],
+      require => Package['check-mk-server'];
     '/etc/check_mk/.ssh':
-      ensure => directory;
+      ensure  => directory,
+      require => Package['check-mk-server'];
     '/etc/check_mk/.ssh/id_rsa':
       content => $seckey,
       owner   => 'nagios',
-      mode    => '0600';
+      mode    => '0600',
+      require => Package['check-mk-server'];
     '/etc/check_mk/.ssh/id_rsa.pub':
       content => "${type} ${pubkey} monitor",
       owner   => 'nagios',
-      mode    => '0644';
+      mode    => '0644',
+      require => Package['check-mk-server'];
     # check_icmp must be suid root or called by sudo
     # see https://leap.se/code/issues/5171
     '/usr/lib/nagios/plugins/check_icmp':
