@@ -10,9 +10,10 @@ class site_nagios::server::purge inherits nagios::base {
     purge => false
   }
 
-  # only purge find in the /etc/nagios3/conf.d/ dir, not in any subdir
+  # only purge files in the /etc/nagios3/conf.d/ dir, not in any subdir
   exec {'purge_conf.d':
     command => '/usr/bin/find /etc/nagios3/conf.d/ -maxdepth 1 -type f -exec rm {} \;',
-    onlyif  => '/usr/bin/find /etc/nagios3/conf.d/ -maxdepth 1 -type f | grep -q "/etc/nagios3/conf.d"'
+    onlyif  => '/usr/bin/find /etc/nagios3/conf.d/ -maxdepth 1 -type f | grep -q "/etc/nagios3/conf.d"',
+    require => Package['nagios']
   }
 }
