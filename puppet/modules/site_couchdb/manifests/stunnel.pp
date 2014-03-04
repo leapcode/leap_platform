@@ -107,4 +107,6 @@ class site_couchdb::stunnel {
   }
 
   create_resources(site_stunnel::clients, $ednp_clients, $ednp_client_defaults)
+
+  include site_check_mk::agent::stunnel
 }
