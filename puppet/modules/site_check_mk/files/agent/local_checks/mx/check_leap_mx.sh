@@ -29,5 +29,5 @@ else
   fi
 fi
 
-echo "$exitcode $CHECKNAME stale_files=$total ${STATUS[exitcode]}: $total stale files (>=$MAXAGE min) in $WATCHDIR."
+echo "${exitcode} ${CHECKNAME} stale_files=${total} ${STATUS[exitcode]}: ${total} stale files (>=${MAXAGE} min) in ${WATCHDIR}."
 
