@@ -6,7 +6,7 @@ class site_check_mk::agent::logwatch {
   file { '/usr/lib/check_mk_agent/plugins/mk_logwatch':
     source  => 'puppet:///modules/site_check_mk/agent/plugins/mk_logwatch.1.2.4',
     mode    => '0755',
-    require => Package['check-mk-agent']
+    require => Package['check-mk-agent-logwatch']
   }
 
   # only config files that watch a distinct logfile should go in logwatch.d/
@@ -14,7 +14,7 @@ class site_check_mk::agent::logwatch {
     ensure  => directory,
     recurse => true,
     purge   => true,
-    require => Package['check-mk-server']
+    require => Package['check-mk-agent-logwatch']
   }
 
   # service that share a common logfile (i.e. /var/log/syslog) need to get

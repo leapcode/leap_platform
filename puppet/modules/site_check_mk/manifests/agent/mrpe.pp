@@ -9,7 +9,7 @@ class site_check_mk::agent::mrpe {
 
   file { '/etc/check_mk/mrpe.cfg':
     ensure  => present,
-    require => Package['check-mk-server']
+    require => Package['check-mk-agent']
   } ->
   file_line { 'Apt':
     line => 'APT    /usr/lib/nagios/plugins/check_apt',
