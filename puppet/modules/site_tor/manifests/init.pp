@@ -19,12 +19,17 @@ class site_tor {
     my_family        => '$2A431444756B0E7228A7918C85A8DACFF7E3B050',
   }
 
-  tor::daemon::directory { $::hostname: port => 80 }
-
-  include site_shorewall::tor
-
-  if ( $tor_type != 'exit' ) {
+  if ( $tor_type == 'exit'){
+    tor::daemon::directory { $::hostname: port => 80 }
+  }
+  else {
+    tor::daemon::directory { $::hostname:
+      port => 80,
+      port_front_page => '';
+    }
     include site_tor::disable_exit
   }
+
+  include site_shorewall::tor
 
 }
