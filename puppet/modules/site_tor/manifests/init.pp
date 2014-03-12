@@ -24,7 +24,7 @@ class site_tor {
   }
   else {
     tor::daemon::directory { $::hostname:
-      port => 80,
+      port            => 80,
       port_front_page => '';
     }
     include site_tor::disable_exit
