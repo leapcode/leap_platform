@@ -46,4 +46,13 @@ class site_nagios::server inherits nagios::base {
   include site_nagios::server::apache
   include site_check_mk::server
   include site_shorewall::monitor
+
+  augeas {
+    'logrotate_nagios':
+      context => '/files/etc/logrotate.d/nagios/rule',
+      changes => [ 'set file /var/log/nagios3/nagios.log', 'set rotate 7',
+        'set schedule daily', 'set compress compress',
+        'set missingok missingok', 'set ifempty notifempty',
+        'set copytruncate copytruncate' ]
+  }
 }
