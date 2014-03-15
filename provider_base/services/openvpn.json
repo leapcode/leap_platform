@@ -14,10 +14,10 @@
     "filter_dns": false,
     "adblock": false,
     "user_ips": false,
-    "allow_limited": "= global.provider.service.allow_limited_bandwidth",
-    "allow_unlimited": "= global.provider.service.allow_unlimited_bandwidth",
-    "limited_prefix": "= global.provider.ca.client_certificates.limited_prefix",
-    "unlimited_prefix": "= global.provider.ca.client_certificates.unlimited_prefix",
-    "rate_limit": "= openvpn.allow_limited ? global.provider.service.bandwidth_limit : nil"
+    "allow_limited": "= provider.service.allow_limited_bandwidth",
+    "allow_unlimited": "= provider.service.allow_unlimited_bandwidth",
+    "limited_prefix": "= provider.ca.client_certificates.limited_prefix",
+    "unlimited_prefix": "= provider.ca.client_certificates.unlimited_prefix",
+    "rate_limit": "= openvpn.allow_limited ? provider.service.bandwidth_limit : nil"
   }
 }

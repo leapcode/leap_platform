@@ -1,7 +1,7 @@
 {
   "environment": "development",
   "domain": {
-     "full_suffix": "= 'dev.' + global.provider.domain",
-     "internal_suffix": "= 'dev.' + global.provider.domain_internal"
+     "full_suffix": "= 'dev.' + provider.domain",
+     "internal_suffix": "= 'dev.' + provider.domain_internal"
   }
 }

@@ -1,6 +1,6 @@
 <%=
   # grab some fields from provider.json
-  hsh = global.provider.pick(
+  hsh = provider.pick(
     :languages, :description, :name,
     :enrollment_policy, :default_language, :service
   )

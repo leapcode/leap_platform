@@ -3,10 +3,10 @@
   "environment": null,
   "services": [],
   "tags": [],
-  "contacts": "= global.provider.contacts.default",
+  "contacts": "= provider.contacts.default",
   "domain": {
-     "full_suffix": "= global.provider.domain",
-     "internal_suffix": "= global.provider.domain_internal",
+     "full_suffix": "= provider.domain",
+     "internal_suffix": "= provider.domain_internal",
      "full": "= node.name + '.' + domain.full_suffix",
      "internal": "= node.name + '.' + domain.internal_suffix",
      "name": "= node.name + '.' + (dns.public ? domain.full_suffix : domain.internal_suffix)"
