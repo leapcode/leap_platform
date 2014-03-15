@@ -4,7 +4,7 @@
 
 Leap::Platform.define do
   self.version = "0.4.0"
-  self.compatible_cli = "1.4.0".."1.99"
+  self.compatible_cli = "1.5.0".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -26,6 +26,7 @@ Leap::Platform.define do
     # input config files
     :common_config    => 'common.json',
     :provider_config  => 'provider.json',
+    :provider_env_config => 'provider.#{arg}.json',
     :secrets_config   => 'secrets.json',
     :node_config      => 'nodes/#{arg}.json',
     :service_config   => 'services/#{arg}.json',
