@@ -8,10 +8,10 @@
       "salt": "= hex_secret :couch_webapp_password_salt, 128"
     },
     "customization_dir": "= file_path 'webapp'",
-    "client_certificates": "= global.provider.ca.client_certificates",
-    "allow_limited_certs": "= global.provider.service.allow_limited_bandwidth",
-    "allow_unlimited_certs": "= global.provider.service.allow_unlimited_bandwidth",
-    "allow_anonymous_certs": "= global.provider.service.allow_anonymous",
+    "client_certificates": "= provider.ca.client_certificates",
+    "allow_limited_certs": "= provider.service.allow_limited_bandwidth",
+    "allow_unlimited_certs": "= provider.service.allow_unlimited_bandwidth",
+    "allow_anonymous_certs": "= provider.service.allow_anonymous",
     "secret_token": "= secret :webapp_secret_token",
     "api_version": 1,
     "secure": false,
@@ -19,7 +19,7 @@
       "source": "https://leap.se/git/leap_web",
       "revision": "origin/master"
     },
-    "client_version": "= global.provider.client_version",
+    "client_version": "= provider.client_version",
     "nagios_test_user": {
       "username": "nagios_test",
       "password": "= secret :nagios_test_password"
