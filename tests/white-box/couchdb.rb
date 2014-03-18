@@ -2,13 +2,13 @@ raise SkipTest unless $node["services"].include?("couchdb")
 
 require 'json'
 
-class TestCouchdb < LeapTest
-  depends_on "TestNetwork"
+class CouchDB < LeapTest
+  depends_on "Network"
 
   def setup
   end
 
-  def test_00_daemons_running
+  def test_00_Are_daemons_running?
     assert_running 'tapicero'
     assert_running 'bin/beam'
     assert_running 'bin/epmd'
@@ -18,7 +18,7 @@ class TestCouchdb < LeapTest
   #
   # check to make sure we can get welcome response from local couchdb
   #
-  def test_01_couch_is_working
+  def test_01_Is_CouchDB_running?
     assert_get(couchdb_url) do |body|
       assert_match /"couchdb":"Welcome"/, body, "Could not get welcome message from #{couchdb_url}. Probably couchdb is not running."
     end
@@ -28,7 +28,7 @@ class TestCouchdb < LeapTest
   #
   # compare the configured nodes to the nodes that are actually listed in bigcouch
   #
-  def test_02_nodes_are_in_replication_database
+  def test_02_Is_cluster_membership_ok?
     url = couchdb_backend_url("/nodes/_all_docs")
     neighbors = assert_property('couch.bigcouch.neighbors')
     neighbors << assert_property('domain.full')
@@ -47,7 +47,7 @@ class TestCouchdb < LeapTest
   #
   # this seems backward to me, so it might be the other way around.
   #
-  def test_03_replica_membership_is_kosher
+  def test_03_Are_configured_nodes_online?
     url = couchdb_url("/_membership")
     assert_get(url) do |body|
       response = JSON.parse(body)
@@ -65,7 +65,7 @@ class TestCouchdb < LeapTest
     end
   end
 
-  def test_04_acl_users_exist
+  def test_04_Do_ACL_users_exist?
     acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp']
     url = couchdb_backend_url("/_users/_all_docs")
     assert_get(url) do |body|
@@ -77,7 +77,7 @@ class TestCouchdb < LeapTest
     pass
   end
 
-  def test_05_required_databases_exist
+  def test_05_Do_required_databases_exist?
     dbs_that_should_exist = ["customers","identities","keycache","sessions","shared","tickets","tokens","users"]
     dbs_that_should_exist.each do |db_name|
       assert_get(couchdb_url("/"+db_name)) do |body|
