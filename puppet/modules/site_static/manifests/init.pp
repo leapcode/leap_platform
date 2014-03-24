@@ -10,4 +10,8 @@ class site_static {
   }
 
   create_resources(site_static::domain, $domains)
+
+  include site_shorewall::defaults
+  include site_shorewall::service::http
+  include site_shorewall::service::https
 }

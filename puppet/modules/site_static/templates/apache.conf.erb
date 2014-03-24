@@ -1,0 +1,109 @@
+<%-
+  ##
+  ## An apache config for static websites.
+  ##
+  def location_directory(name, location)
+    if location['format'] == 'amber'
+      File.join(@base_dir, name, 'public')
+    else
+      File.join(@base_dir, name)
+    end
+  end
+  document_root = '/var/www'
+  @locations.each do |name, location|
+    if location['path'] == '/'
+      document_root = location_directory(name, location)
+    end
+  end
+-%>
+
+<VirtualHost *:80>
+  ServerName <%= @domain %>
+  ServerAlias www.<%= @domain %>
+  RewriteEngine On
+  RewriteRule ^.*$ https://<%= @domain -%>%{REQUEST_URI} [R=permanent,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName <%= @domain %>
+  ServerAlias www.<%= @domain %>
+
+  #RewriteLog "/var/log/apache2/rewrite.log"
+  #RewriteLogLevel 3
+
+  SSLEngine on
+  SSLProtocol -all +SSLv3 +TLSv1
+  SSLCipherSuite HIGH:MEDIUM:!aNULL:!SSLv2:!MD5:@STRENGTH
+  SSLHonorCipherOrder on
+
+  Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+  Header set X-Frame-Options "deny"
+
+  SSLCertificateKeyFile    /etc/x509/keys/<%= @domain %>.key
+  SSLCertificateFile       /etc/x509/certs/<%= @domain %>.crt
+  SSLCertificateChainFile  /etc/ssl/certs/<%= @domain %>_ca.pem
+
+  RequestHeader set X_FORWARDED_PROTO 'https'
+
+  DocumentRoot <%= document_root %>
+
+<%- @locations.each do |name, location| -%>
+  ##
+  ## <%= name %>
+  ##
+  <%- if location['path'] == '/' -%>
+  # Location /
+  <%- else -%>
+  Alias <%= location['path'] %> <%= location_directory(name, location) %>
+  <Location <%= location['path'] %>>
+  <%- end -%>
+    # remove trailing slashes
+    RewriteEngine On
+    RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+    # e.g. /de/blah => /blah/index.de.html
+    RewriteCond %{DOCUMENT_ROOT}/$2/index.$1.html -f
+    RewriteRule ^/([a-z]{2})/(.*) /$2/index.$1.html [L]
+
+    # e.g. /de/foo/bar => /foo/bar.de.html
+    RewriteCond %{DOCUMENT_ROOT}/$2.$1.html -f
+    RewriteRule ^/([a-z]{2})/(.*) /$2.$1.html [L]
+
+    # e.g. /de => /index.de.html
+    RewriteCond %{DOCUMENT_ROOT}/index.$1.html -f
+    RewriteRule ^/([a-z]{2})$ /index.$1.html [L]
+
+    # e.g. /de/img.png => /img.png
+    RewriteCond %{DOCUMENT_ROOT}/$2 -f
+    RewriteRule ^/([a-z]{2})/(.*) /$2 [L]
+
+    # Simulate "DirectorySlash On"
+    # e.g. /foo/bar => /foo/bar/ (so that MultiViews will negotiate correct locale file)
+    RewriteCond %{DOCUMENT_ROOT}/$1 -d
+    RewriteRule ^/(.*[^/])$ /$1/ [PT]
+  <%- if location['path'] == '/' -%>
+  # end Location /
+  <%- else -%>
+  </Location>
+  <%- end -%>
+  <Directory <%= location_directory(name, location) %>>
+    ##
+    ## PERMISSIONS
+    ##
+    AllowOverride None
+    Order deny,allow
+    Allow from all
+
+    ##
+    ## LOCALE SUPPORT (e.g. index.en.html)
+    ##
+    LanguagePriority en
+    ForceLanguagePriority Prefer Fallback
+    DirectoryIndex index
+    DirectorySlash Off
+    Options +MultiViews
+  </Directory>
+
+<%- end -%>
+
+</VirtualHost>
