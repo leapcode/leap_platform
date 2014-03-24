@@ -1,3 +1,4 @@
+# encoding: utf-8
 #
 # These are variables defined by this leap_platform and used by leap_cli.
 #
