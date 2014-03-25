@@ -5,6 +5,7 @@ Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 $services=join(hiera_array('services', ['']), ' ')
 notice("Services for ${fqdn}: ${services}")
 
+include site_config::setup
 include site_config::default
 
 # configure eip
