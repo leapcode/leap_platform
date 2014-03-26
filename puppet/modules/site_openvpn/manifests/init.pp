@@ -213,4 +213,7 @@ class site_openvpn {
       target  => '/etc/default/openvpn',
       order   => 10;
   }
+
+  include site_check_mk::agent::openvpn
+
 }
