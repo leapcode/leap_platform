@@ -53,8 +53,8 @@ class TestNetwork < LeapTest
       end
       all_stunnel_pids = pgrep('/usr/bin/stunnel').collect{|process| process[:pid]}.uniq
       assert_equal good_stunnel_pids.sort, all_stunnel_pids.sort, "There should not be any extra stunnel processes that are not configured in /etc/stunnel"
+      pass
     end
-    pass
   end
 
 end
