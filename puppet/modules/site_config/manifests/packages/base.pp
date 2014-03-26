@@ -17,10 +17,12 @@ class site_config::packages::base {
     ensure => absent;
   }
 
-  if $::site_config::params::environment == 'local' or $::services =~ /\bwebapp\b/ {
-    $dev_packages_ensure = present
+  if $::site_config::params::environment == 'local'
+    or $::services =~ /\bwebapp\b/
+    or $::services =~ /\bcouchdb\b/ {
+      $dev_packages_ensure = present
   } else {
-    $dev_packages_ensure = absent
+      $dev_packages_ensure = absent
   }
 
   # g++ and ruby1.9.1-dev are needed for nickserver/eventmachine (#4079)
