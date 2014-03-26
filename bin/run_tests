@@ -394,11 +394,9 @@ class LeapRunner < MiniTest::Unit
   # Converts snake_case and CamelCase to something more pleasant for humans to read.
   #
   def readable(str)
-    str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1 \2').
-    gsub(/([a-z])([A-Z])/, '\1 \2').
+    str.
     gsub(/_/, ' ').
-    sub(/^test (\d* )?/i, '').
-    downcase.capitalize
+    sub(/^test (\d* )?/i, '')
   end
 
   def machine_readable(str)
@@ -428,7 +426,12 @@ class TestDependencyGraph
   end
 
   def tsort_each_child(test_class_name, &block)
-    @dependencies[test_class_name].each(&block)
+    if @dependencies[test_class_name]
+      @dependencies[test_class_name].each(&block)
+    else
+      puts "ERROR: bad dependency, no such class `#{test_class_name}`"
+      exit(1)
+    end
   end
 
   def sorted
@@ -476,7 +479,7 @@ def pin_test_name(name)
     die name, "there is no test class `#{test_class}`"
   end
   if test_name
-    $pinned_test_method = $pinned_test_class.tests.detect{|m| m.to_s =~ /^test_(\d+_)?#{test_name}$/}
+    $pinned_test_method = $pinned_test_class.tests.detect{|m| m.to_s =~ /^test_(\d+_)?#{Regexp.escape(test_name)}$/}
     unless $pinned_test_method
       die name, "there is no test `#{test_name}` in class `#{test_class}`"
     end
