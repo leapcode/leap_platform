@@ -2,12 +2,12 @@ require 'socket'
 
 raise SkipTest if $node["dummy"]
 
-class TestNetwork < LeapTest
+class Network < LeapTest
 
   def setup
   end
 
-  def test_01_can_connect_to_internet
+  def test_01_Can_connect_to_internet?
     assert_get('http://www.google.com/images/srpr/logo11w.png')
     pass
   end
@@ -25,7 +25,7 @@ class TestNetwork < LeapTest
   #     accept: 15984
   #     connect: "127.0.0.1:5984"
   #
-  def test_02_stunnel_is_running
+  def test_02_Is_stunnel_running?
     if $node['stunnel']
       good_stunnel_pids = []
       $node['stunnel'].each do |stunnel_type, stunnel_configs|
