@@ -38,3 +38,8 @@ if $services =~ /\bmx\b/ {
   include site_mx
 }
 
+if $services =~ /\bstatic\b/ {
+  include site_static
+}
+
+include site_config::packages::uninstall

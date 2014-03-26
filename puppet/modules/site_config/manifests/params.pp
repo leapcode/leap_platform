@@ -8,6 +8,7 @@ class site_config::params {
 
   if $environment == 'local' {
     $interface = 'eth1'
+    include site_config::packages::build_essential
   }
   elsif hiera('interface','') != '' {
     $interface = hiera('interface')
