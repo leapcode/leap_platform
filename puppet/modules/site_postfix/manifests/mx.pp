@@ -4,7 +4,7 @@ class site_postfix::mx {
   $domain              = $domain_hash['full_suffix']
   $host_domain         = $domain_hash['full']
   $cert_name           = hiera('name')
-  $mynetworks          = join(hiera('mx_nodes'), ' ')
+  $mynetworks          = join(hiera('mynetworks'), ' ')
 
   $root_mail_recipient = hiera ('contacts')
   $postfix_smtp_listen = 'all'
