@@ -20,8 +20,6 @@ class site_postfix::mx::smtp_tls {
       value => 'sha1';
     'smtp_tls_session_cache_database':
       value => 'btree:${data_directory}/smtp_cache';
-    'smtp_tls_security_level':
-      value  => 'may';
     # see issue #4011
     'smtp_tls_protocols':
       value => '!SSLv2, !SSLv3';

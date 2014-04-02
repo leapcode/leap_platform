@@ -32,7 +32,16 @@ class site_postfix::satellite {
   # we could also make this an optional parameter for providers without
   # dns / local domains
 
-  postfix::config { 'smtp_host_lookup': value => 'native'; }
+  postfix::config {
+    'smtp_host_lookup':
+      value => 'native';
+
+    # Note: we are setting this here, instead of in site_postfix::mx::smtp_tls
+    # because the mx server has to have a different value
+    'smtp_tls_security_level':
+      value => 'encrypt';
+  }
 
   include site_postfix::mx::smtp_tls
+
 }

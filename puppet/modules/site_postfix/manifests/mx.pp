@@ -31,6 +31,10 @@ class site_postfix::mx {
       value => 'vmail';
     'smtpd_tls_received_header':
       value => 'yes';
+    # Note: we are setting this here, instead of in site_postfix::mx::smtp_tls
+    # because the satellites need to have a different value
+    'smtp_tls_security_level':
+      value => 'may';
   }
 
   include site_postfix::mx::smtpd_checks
