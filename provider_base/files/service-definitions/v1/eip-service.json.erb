@@ -27,6 +27,7 @@
   hsh["version"] = 1
   locations = {}
   gateways = []
+  configuration = nil
   nodes_like_me[:services => 'openvpn'].each_node do |node|
     if node.openvpn.allow_limited && node.openvpn.allow_unlimited
       gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
@@ -36,13 +37,13 @@
     elsif node.openvpn.allow_limited
       gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => true)
     end
+    if configuration && node.openvpn.configuration != configuration
+      log :error, "OpenVPN nodes in the environment `#{node.environment}` have conflicting `openvpn.configuration` values. This will result in bad errors."
+    end
+    configuration = node.openvpn.configuration
   end
   hsh["gateways"] = gateways.compact
   hsh["locations"] = locations
-  hsh["openvpn_configuration"] = {
-    "tls-cipher" => "DHE-RSA-AES128-SHA",
-    "auth" => "SHA1",
-    "cipher" => "AES-128-CBC"
-  }
+  hsh["openvpn_configuration"] = configuration
   JSON.sorted_generate hsh
 %>
