@@ -18,6 +18,11 @@
     "allow_unlimited": "= provider.service.allow_unlimited_bandwidth",
     "limited_prefix": "= provider.ca.client_certificates.limited_prefix",
     "unlimited_prefix": "= provider.ca.client_certificates.unlimited_prefix",
-    "rate_limit": "= openvpn.allow_limited ? provider.service.bandwidth_limit : nil"
+    "rate_limit": "= openvpn.allow_limited ? provider.service.bandwidth_limit : nil",
+    "configuration": {
+      "tls-cipher": "TLS-DHE-RSA-WITH-AES-128-CBC-SHA",
+      "auth": "SHA1",
+      "cipher": "AES-128-CBC"
+    }
   }
 }

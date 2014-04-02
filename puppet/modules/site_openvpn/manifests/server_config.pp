@@ -54,7 +54,7 @@
 
 define site_openvpn::server_config(
   $port, $proto, $local, $server, $push,
-  $management, $tls_remote = undef) {
+  $management, $config, $tls_remote = undef) {
 
   $openvpn_configname = $name
 
@@ -96,15 +96,15 @@ define site_openvpn::server_config(
         server  => $openvpn_configname;
     "tls-cipher ${openvpn_configname}":
         key     => 'tls-cipher',
-        value   => 'DHE-RSA-AES128-SHA',
+        value   => $config['tls-cipher'],
         server  => $openvpn_configname;
     "auth ${openvpn_configname}":
         key     => 'auth',
-        value   => 'SHA1',
+        value   => $config['auth'],
         server  => $openvpn_configname;
     "cipher ${openvpn_configname}":
         key     => 'cipher',
-        value   => 'AES-128-CBC',
+        value   => $config['cipher'],
         server  => $openvpn_configname;
     "dev ${openvpn_configname}":
         key    => 'dev',
