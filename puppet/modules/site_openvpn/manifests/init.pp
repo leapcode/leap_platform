@@ -27,22 +27,23 @@ class site_openvpn {
 
   Class['site_config::default'] -> Class['site_openvpn']
 
-  $openvpn_config   = hiera('openvpn')
-  $openvpn_ports    = $openvpn_config['ports']
+  $openvpn          = hiera('openvpn')
+  $openvpn_ports    = $openvpn['ports']
+  $openvpn_config   = $openvpn['configuration']
 
   if $::ec2_instance_id {
     $openvpn_gateway_address = $::ipaddress
   } else {
-    $openvpn_gateway_address         = $openvpn_config['gateway_address']
-    if $openvpn_config['second_gateway_address'] {
-      $openvpn_second_gateway_address = $openvpn_config['second_gateway_address']
+    $openvpn_gateway_address         = $openvpn['gateway_address']
+    if $openvpn['second_gateway_address'] {
+      $openvpn_second_gateway_address = $openvpn['second_gateway_address']
     } else {
       $openvpn_second_gateway_address = undef
     }
   }
 
-  $openvpn_allow_unlimited              = $openvpn_config['allow_unlimited']
-  $openvpn_unlimited_prefix             = $openvpn_config['unlimited_prefix']
+  $openvpn_allow_unlimited              = $openvpn['allow_unlimited']
+  $openvpn_unlimited_prefix             = $openvpn['unlimited_prefix']
   $openvpn_unlimited_tcp_network_prefix = '10.41.0'
   $openvpn_unlimited_tcp_netmask        = '255.255.248.0'
   $openvpn_unlimited_tcp_cidr           = '21'
@@ -51,9 +52,9 @@ class site_openvpn {
   $openvpn_unlimited_udp_cidr           = '21'
 
   if !$::ec2_instance_id {
-    $openvpn_allow_limited                = $openvpn_config['allow_limited']
-    $openvpn_limited_prefix               = $openvpn_config['limited_prefix']
-    $openvpn_rate_limit                   = $openvpn_config['rate_limit']
+    $openvpn_allow_limited                = $openvpn['allow_limited']
+    $openvpn_limited_prefix               = $openvpn['limited_prefix']
+    $openvpn_rate_limit                   = $openvpn['rate_limit']
     $openvpn_limited_tcp_network_prefix   = '10.43.0'
     $openvpn_limited_tcp_netmask          = '255.255.248.0'
     $openvpn_limited_tcp_cidr             = '21'
@@ -90,7 +91,8 @@ class site_openvpn {
       tls_remote  => "\"${openvpn_unlimited_prefix}\"",
       server      => "${openvpn_unlimited_tcp_network_prefix}.0 ${openvpn_unlimited_tcp_netmask}",
       push        => "\"dhcp-option DNS ${openvpn_unlimited_tcp_network_prefix}.1\"",
-      management  => '127.0.0.1 1000'
+      management  => '127.0.0.1 1000',
+      config      => $openvpn_config
     }
     site_openvpn::server_config { 'udp_config':
       port        => '1194',
@@ -99,7 +101,8 @@ class site_openvpn {
       tls_remote  => "\"${openvpn_unlimited_prefix}\"",
       server      => "${openvpn_unlimited_udp_network_prefix}.0 ${openvpn_unlimited_udp_netmask}",
       push        => "\"dhcp-option DNS ${openvpn_unlimited_udp_network_prefix}.1\"",
-      management  => '127.0.0.1 1001'
+      management  => '127.0.0.1 1001',
+      config      => $openvpn_config
     }
   } else {
     tidy { '/etc/openvpn/tcp_config.conf': }
@@ -114,7 +117,8 @@ class site_openvpn {
       tls_remote  => "\"${openvpn_limited_prefix}\"",
       server      => "${openvpn_limited_tcp_network_prefix}.0 ${openvpn_limited_tcp_netmask}",
       push        => "\"dhcp-option DNS ${openvpn_limited_tcp_network_prefix}.1\"",
-      management  => '127.0.0.1 1002'
+      management  => '127.0.0.1 1002',
+      config      => $openvpn_config
     }
     site_openvpn::server_config { 'limited_udp_config':
       port        => '1194',
@@ -123,7 +127,8 @@ class site_openvpn {
       tls_remote  => "\"${openvpn_limited_prefix}\"",
       server      => "${openvpn_limited_udp_network_prefix}.0 ${openvpn_limited_udp_netmask}",
       push        => "\"dhcp-option DNS ${openvpn_limited_udp_network_prefix}.1\"",
-      management  => '127.0.0.1 1003'
+      management  => '127.0.0.1 1003',
+      config      => $openvpn_config
     }
   } else {
     tidy { '/etc/openvpn/limited_tcp_config.conf': }
@@ -213,4 +218,7 @@ class site_openvpn {
       target  => '/etc/default/openvpn',
       order   => 10;
   }
+
+  include site_check_mk::agent::openvpn
+
 }

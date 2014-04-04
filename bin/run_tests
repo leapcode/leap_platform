@@ -60,6 +60,20 @@ class LeapTest < MiniTest::Unit::TestCase
   end
 
   #
+  # returns all the test classes, sorted in dependency order.
+  #
+  def self.test_classes
+    classes = ObjectSpace.each_object(Class).select {|test_class|
+      test_class.ancestors.include?(self)
+    }
+    return TestDependencyGraph.new(classes).sorted
+  end
+
+  def self.tests
+    self.instance_methods.grep(/^test_/).sort
+  end
+
+  #
   # The default pass just does an `assert true`. In our case, we want to make the passes more explicit.
   #
   def pass
@@ -272,9 +286,16 @@ class LeapRunner < MiniTest::Unit
   #       LeapTest._run
   #
   def _run args = []
-    suites = LeapTest.send "test_suites"
+    if $pinned_test_class
+      suites = [$pinned_test_class]
+      if $pinned_test_method
+        options.merge!(:filter => $pinned_test_method.to_s)
+      end
+    else
+      suites = LeapTest.send "test_suites"
+      suites = TestDependencyGraph.new(suites).sorted
+    end
     output.sync = true
-    suites = TestDependencyGraph.new(suites).sorted
     results = _run_suites(suites, :test)
     @test_count      = results.inject(0) { |sum, (tc, _)| sum + tc }
     @assertion_count = results.inject(0) { |sum, (_, ac)| sum + ac }
@@ -318,45 +339,70 @@ class LeapRunner < MiniTest::Unit
   end
 
   #
-  # override default status slightly
+  # override default status summary
   #
   def status(io = self.output)
-    format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
-    output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+    if $output_format == :human
+      format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
+      output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+    end
   end
 
   #
   # returns a string for a PASS, SKIP, or FAIL error
   #
   def report_line(prefix, klass, meth, e=nil, message=nil)
+    msg_txt = nil
     if message
       message = message.sub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:password@")
-      indent = "\n  "
-      msg_txt = indent + message.split("\n").join(indent)
+      if $output_format == :human
+        indent = "\n  "
+        msg_txt = indent + message.split("\n").join(indent)
+      else
+        msg_txt = message.gsub("\n", ' ')
+      end
     end
-    if e && message
-      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
-    elsif message
-      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}:#{msg_txt}"
-    else
-      output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
+
+    if $output_format == :human
+      if e && msg_txt
+        output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)} [#{File.basename(location(e))}]:#{msg_txt}"
+      elsif msg_txt
+        output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}:#{msg_txt}"
+      else
+        output.puts "#{prefix}: #{readable(klass.name)} > #{readable(meth)}"
+      end
+                      # I don't understand at all why, but adding a very tiny sleep here will
+      sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
+    elsif $output_format == :checkmk
+      code = CHECKMK_CODES[prefix]
+      msg_txt ||= "Success" if prefix == "PASS"
+      if e && msg_txt
+        output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - [#{File.basename(location(e))}]:#{msg_txt}"
+      elsif msg_txt
+        output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - #{msg_txt}"
+      else
+        output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - no message"
+      end
     end
-                    # I don't understand at all why, but adding a very tiny sleep here will
-    sleep(0.0001)   # keep lines from being joined together by the logger. output.flush doesn't.
   end
 
   private
+
+  CHECKMK_CODES = {"PASS" => 0, "SKIP" => 1, "FAIL" => 2, "ERROR" => 3}
 
   #
   # Converts snake_case and CamelCase to something more pleasant for humans to read.
   #
   def readable(str)
-    str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1 \2').
-    gsub(/([a-z])([A-Z])/, '\1 \2').
+    str.
     gsub(/_/, ' ').
-    sub(/^test (\d* )?/i, '').
-    downcase.capitalize
+    sub(/^test (\d* )?/i, '')
   end
+
+  def machine_readable(str)
+    str.sub(/^test_(\d+_)?/i, '')
+  end
+
 end
 
 ##
@@ -380,7 +426,12 @@ class TestDependencyGraph
   end
 
   def tsort_each_child(test_class_name, &block)
-    @dependencies[test_class_name].each(&block)
+    if @dependencies[test_class_name]
+      @dependencies[test_class_name].each(&block)
+    else
+      puts "ERROR: bad dependency, no such class `#{test_class_name}`"
+      exit(1)
+    end
   end
 
   def sorted
@@ -391,33 +442,90 @@ class TestDependencyGraph
 end
 
 ##
-## RUN THE TESTS
+## COMMAND LINE ACTIONS
 ##
 
-# load node data from hiera file
-if File.exists?('/etc/leap/hiera.yaml')
-  $node = YAML.load_file('/etc/leap/hiera.yaml')
-else
-  $node = {"services" => [], "dummy" => true}
+def die(test, msg)
+  if $output_format == :human
+    puts "ERROR in test `#{test}`: #{msg}"
+  elsif $output_format == :checkmk
+    puts "3 #{test} - #{msg}"
+  end
+  exit(1)
 end
 
-# load all test classes
-Dir[File.expand_path('../../tests/white-box/*.rb', __FILE__)].each do |test_file|
-  begin
-    require test_file
-  rescue SkipTest
+def print_help
+  puts ["USAGE: run_tests [OPTIONS]",
+       "  --continue     Don't halt on an error, but continue to the next test.",
+       "  --checkmk      Print test results in checkmk format (must come before --test).",
+       "  --test TEST    Run only the test with name TEST.",
+       "  --list-tests   Prints the names of all available tests and exit."].join("\n")
+  exit(0)
+end
+
+def list_tests
+  LeapTest.test_classes.each do |test_class|
+    test_class.tests.each do |test|
+      puts test_class.name + "/" + test.to_s.sub(/^test_(\d+_)?/, '')
+    end
+  end
+  exit(0)
+end
+
+def pin_test_name(name)
+  test_class, test_name = name.split('/')
+  $pinned_test_class = LeapTest.test_classes.detect{|c| c.name == test_class}
+  unless $pinned_test_class
+    die name, "there is no test class `#{test_class}`"
+  end
+  if test_name
+    $pinned_test_method = $pinned_test_class.tests.detect{|m| m.to_s =~ /^test_(\d+_)?#{Regexp.escape(test_name)}$/}
+    unless $pinned_test_method
+      die name, "there is no test `#{test_name}` in class `#{test_class}`"
+    end
   end
 end
 
-# parse command line options
-$halt_on_failure = true
-loop do
-  case ARGV[0]
-    when '--continue' then ARGV.shift; $halt_on_failure = false
-    else break
-  end
+def run_tests
+  MiniTest::Unit.runner = LeapRunner.new
+  MiniTest::Unit.new.run
 end
 
-# run some tests already
-MiniTest::Unit.runner = LeapRunner.new
-MiniTest::Unit.new.run
+##
+## MAIN
+##
+
+def main
+  # load node data from hiera file
+  if File.exists?('/etc/leap/hiera.yaml')
+    $node = YAML.load_file('/etc/leap/hiera.yaml')
+  else
+    $node = {"services" => [], "dummy" => true}
+  end
+
+  # load all test classes
+  this_file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+  Dir[File.expand_path('../../tests/white-box/*.rb', this_file)].each do |test_file|
+    begin
+      require test_file
+    rescue SkipTest
+    end
+  end
+
+  # parse command line options
+  $halt_on_failure = true
+  $output_format = :human
+  loop do
+    case ARGV[0]
+      when '--continue' then ARGV.shift; $halt_on_failure = false;
+      when '--checkmk' then ARGV.shift; $output_format = :checkmk; $halt_on_failure = false
+      when '--help' then print_help
+      when '--test' then ARGV.shift; pin_test_name(ARGV.shift)
+      when '--list-tests' then list_tests
+      else break
+    end
+  end
+  run_tests
+end
+
+main()

@@ -26,5 +26,4 @@ class soledad {
       group   => 'soledad',
       require => User['soledad'];
   }
-
 }

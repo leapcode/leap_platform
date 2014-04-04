@@ -1,0 +1,6 @@
+{
+  "static": {
+    "formats": "=> (self.static.domains||{}).values.collect{|d| (d.locations||{}).values.collect{|l|l['format']}}.flatten.uniq"
+  },
+  "service_type": "public_service"
+}

@@ -4,7 +4,7 @@ class site_postfix::mx {
   $domain              = $domain_hash['full_suffix']
   $host_domain         = $domain_hash['full']
   $cert_name           = hiera('name')
-  $mynetworks          = join(hiera('mx_nodes'), ' ')
+  $mynetworks          = join(hiera('mynetworks'), ' ')
 
   $root_mail_recipient = hiera ('contacts')
   $postfix_smtp_listen = 'all'
@@ -31,6 +31,10 @@ class site_postfix::mx {
       value => 'vmail';
     'smtpd_tls_received_header':
       value => 'yes';
+    # Note: we are setting this here, instead of in site_postfix::mx::smtp_tls
+    # because the satellites need to have a different value
+    'smtp_tls_security_level':
+      value => 'may';
   }
 
   include site_postfix::mx::smtpd_checks

@@ -2,8 +2,8 @@ raise SkipTest unless $node["services"].include?("webapp")
 
 require 'socket'
 
-class TestWebapp < LeapTest
-  depends_on "TestNetwork"
+class Webapp < LeapTest
+  depends_on "Network"
 
   HAPROXY_CONFIG = '/etc/haproxy/haproxy.cfg'
 
@@ -20,7 +20,7 @@ class TestWebapp < LeapTest
   #       connect: couch1.bitmask.i
   #       connect_port: 15984
   #
-  def test_01_can_contact_couchdb
+  def test_01_Can_contact_couchdb?
     assert_property('stunnel.couch_client')
     $node['stunnel']['couch_client'].values.each do |stunnel_conf|
       assert port = stunnel_conf['accept_port'], 'Field `accept_port` must be present in `stunnel` property.'
@@ -45,7 +45,7 @@ class TestWebapp < LeapTest
   #       port: 4000
   #       weight: 10
   #
-  def test_02_haproxy_is_working
+  def test_02_Is_haproxy_working?
     port = file_match(HAPROXY_CONFIG, /^  bind localhost:(\d+)$/)
     url = "http://localhost:#{port}"
     assert_get(url) do |body|
@@ -54,7 +54,7 @@ class TestWebapp < LeapTest
     pass
   end
 
-  def test_03_daemons_running
+  def test_03_Are_daemons_running?
     assert_running '/usr/sbin/apache2'
     assert_running '/usr/bin/nickserver'
     pass

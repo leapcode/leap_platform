@@ -22,4 +22,11 @@ class site_haproxy {
     }
   }
 
+  # monitor haproxy
+  concat::fragment { 'stats':
+    target => '/etc/haproxy/haproxy.cfg',
+    order  => '90',
+    source => 'puppet:///modules/site_haproxy/haproxy-stats.cfg';
+  }
+  include site_check_mk::agent::haproxy
 }

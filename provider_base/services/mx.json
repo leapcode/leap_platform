@@ -10,7 +10,7 @@
     "password": "= secret :couch_leap_mx_password",
     "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
   },
-  "mx_nodes": "= nodes['services' => 'mx']['environment' => '!local'].field('ip_address')",
+  "mynetworks": "= nodes['environment' => '!local'].map{|name, n| [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]}.flatten.compact.uniq",
   "x509": {
     "use": true,
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",

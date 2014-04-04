@@ -48,6 +48,9 @@
                 "password": "= secret :couch_webapp_password",
                 "salt": "= hex_secret :couch_webapp_password_salt, 128"
             }
+        },
+    "webapp": {
+         "nagios_test_pw": "= secret :nagios_test_password"
         }
     }
 }

@@ -94,6 +94,7 @@ class site_couchdb {
   include site_couchdb::add_users
   include site_couchdb::designs
   include site_couchdb::logrotate
+  include site_couchdb::bigcouch::compaction
 
   include site_shorewall::couchdb
   include site_shorewall::couchdb::bigcouch
@@ -107,4 +108,12 @@ class site_couchdb {
   }
 
   if $couchdb_backup { include site_couchdb::backup }
+
+  include site_check_mk::agent::couchdb
+  include site_check_mk::agent::tapicero
+
+  file { '/var/log/bigcouch':
+    ensure => directory
+  }
+
 }

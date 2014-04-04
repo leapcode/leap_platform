@@ -12,9 +12,8 @@ class site_couchdb::designs {
   }
 
   exec { '/srv/leap/couchdb/scripts/load_design_documents.sh':
-    subscribe   => File['/srv/leap/couchdb/designs'],
-    refreshonly => true,
-    require     => Vcsrepo['/srv/leap/couchdb/scripts']
+    require     => Vcsrepo['/srv/leap/couchdb/scripts'],
+    refreshonly => false
   }
 
 }
