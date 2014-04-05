@@ -15,6 +15,7 @@
       document_root = location_directory(name, location)
     end
   end
+  document_root = document_root.gsub(%r{^/|/$}, '')
 -%>
 
 <VirtualHost *:80>
@@ -32,9 +33,10 @@
   #RewriteLogLevel 3
 
   SSLEngine on
-  SSLProtocol -all +SSLv3 +TLSv1
-  SSLCipherSuite HIGH:MEDIUM:!aNULL:!SSLv2:!MD5:@STRENGTH
+  SSLProtocol all -SSLv2
   SSLHonorCipherOrder on
+  SSLCompression off
+  SSLCipherSuite "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:AES128:AES256:RC4-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK"
 
   Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
   Header set X-Frame-Options "deny"
@@ -45,64 +47,30 @@
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 
-  DocumentRoot <%= document_root %>
+  DocumentRoot "/<%= document_root %>/"
+  AccessFileName .htaccess
 
 <%- @locations.each do |name, location| -%>
+  <%- path = location['path'].gsub(%r{^/|/$}, '') -%>
+  <%- directory = location_directory(name, location) -%>
   ##
   ## <%= name %>
   ##
-  <%- if location['path'] == '/' -%>
-  # Location /
-  <%- else -%>
-  Alias <%= location['path'] %> <%= location_directory(name, location) %>
-  <Location <%= location['path'] %>>
-  <%- end -%>
-    # remove trailing slashes
-    RewriteEngine On
-    RewriteRule ^(.+)/$ /$1 [R=301,L]
-
-    # e.g. /de/blah => /blah/index.de.html
-    RewriteCond %{DOCUMENT_ROOT}/$2/index.$1.html -f
-    RewriteRule ^/([a-z]{2})/(.*) /$2/index.$1.html [L]
-
-    # e.g. /de/foo/bar => /foo/bar.de.html
-    RewriteCond %{DOCUMENT_ROOT}/$2.$1.html -f
-    RewriteRule ^/([a-z]{2})/(.*) /$2.$1.html [L]
-
-    # e.g. /de => /index.de.html
-    RewriteCond %{DOCUMENT_ROOT}/index.$1.html -f
-    RewriteRule ^/([a-z]{2})$ /index.$1.html [L]
-
-    # e.g. /de/img.png => /img.png
-    RewriteCond %{DOCUMENT_ROOT}/$2 -f
-    RewriteRule ^/([a-z]{2})/(.*) /$2 [L]
-
-    # Simulate "DirectorySlash On"
-    # e.g. /foo/bar => /foo/bar/ (so that MultiViews will negotiate correct locale file)
-    RewriteCond %{DOCUMENT_ROOT}/$1 -d
-    RewriteRule ^/(.*[^/])$ /$1/ [PT]
-  <%- if location['path'] == '/' -%>
-  # end Location /
-  <%- else -%>
-  </Location>
-  <%- end -%>
-  <Directory <%= location_directory(name, location) %>>
-    ##
-    ## PERMISSIONS
-    ##
-    AllowOverride None
+  <%- if path == '' -%>
+  <Directory "/<%= document_root %>/">
+    AllowOverride FileInfo Indexes Options=All,MultiViews
     Order deny,allow
     Allow from all
-
-    ##
-    ## LOCALE SUPPORT (e.g. index.en.html)
-    ##
-    LanguagePriority en
-    ForceLanguagePriority Prefer Fallback
-    DirectoryIndex index
-    DirectorySlash Off
-    Options +MultiViews
   </Directory>
+  <%- else -%>
+  AliasMatch ^/[a-z]{2}/<%=path%>(/.+|/|)$ "/<%=directory%>/$1"
+  Alias /<%=path%> "/<%=directory%>/"
+  <Directory "/<%=directory%>/">
+    AllowOverride FileInfo Indexes Options=All,MultiViews
+    Order deny,allow
+    Allow from all
+  </Directory>
+  <%- end -%>
 
 <%- end -%>
 
