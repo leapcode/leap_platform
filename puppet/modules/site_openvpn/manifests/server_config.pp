@@ -115,7 +115,7 @@ define site_openvpn::server_config(
         server => $openvpn_configname;
     "keepalive ${openvpn_configname}":
         key    => 'keepalive',
-        value  => '5 20',
+        value  => $config['keepalive'],
         server => $openvpn_configname;
     "local ${openvpn_configname}":
         key    => 'local',

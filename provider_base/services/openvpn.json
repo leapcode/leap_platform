@@ -22,7 +22,8 @@
     "configuration": {
       "tls-cipher": "TLS-DHE-RSA-WITH-AES-128-CBC-SHA",
       "auth": "SHA1",
-      "cipher": "AES-128-CBC"
+      "cipher": "AES-128-CBC",
+      "keepalive": "10 30"
     }
   }
 }
