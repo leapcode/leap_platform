@@ -1,12 +1,13 @@
 {
-   "lists" : {
-      "generation" : "function(head, req) {\n    var row;\n    var rows=[];\n    // fetch all rows\n    while(row = getRow()) {\n        rows.push(row);\n    }\n    if (rows.length > 0)\n        send(JSON.stringify({\n            \"generation\": rows.length,\n            \"doc_id\": rows[rows.length-1]['id'],\n            \"transaction_id\": rows[rows.length-1]['value']\n        }));\n    else\n        send(JSON.stringify({\n            \"generation\": 0,\n            \"doc_id\": \"\",\n            \"transaction_id\": \"\",\n        }));\n}\n",
-      "whats_changed" : "function(head, req) {\n    var row;\n    var gen = 1;\n    var old_gen = 0;\n    if (req.query.old_gen)\n        old_gen = parseInt(req.query['old_gen']);\n    send('{\"transactions\":[\\n');\n    // fetch all rows\n    while(row = getRow()) {\n        if (gen > old_gen) {\n            if (gen > old_gen+1)\n                send(',\\n');\n            send(JSON.stringify({\n                \"generation\": gen,\n                \"doc_id\": row[\"id\"],\n                \"transaction_id\": row[\"value\"]\n            }));\n        }\n        gen++;\n    }\n    send('\\n]}');\n}\n",
-      "trans_id_for_gen" : "function(head, req) {\n    var row;\n    var rows=[];\n    var i = 1;\n    var gen = 1;\n    if (req.query.gen)\n        gen = parseInt(req.query['gen']);\n    // fetch all rows\n    while(row = getRow())\n        rows.push(row);\n    if (gen <= rows.length)\n        send(JSON.stringify({\n            \"generation\": gen,\n            \"doc_id\": rows[gen-1]['id'],\n            \"transaction_id\": rows[gen-1]['value'],\n        }));\n    else\n        send('{}');\n}\n"
-   },
-   "views" : {
-      "log" : {
-         "map" : "function(doc) {\n    if (doc.u1db_transactions)\n        doc.u1db_transactions.forEach(function(t) {\n            emit(t[0],  // use timestamp as key so the results are ordered\n                 t[1]); // value is the transaction_id\n        });\n}\n"
+   "_id": "_design/transactions", 
+   "lists": {
+      "generation": "function(head, req) {\n    var row;\n    var rows=[];\n    // fetch all rows\n    while(row = getRow()) {\n        rows.push(row);\n    }\n    if (rows.length > 0)\n        send(JSON.stringify({\n            \"generation\": rows.length,\n            \"doc_id\": rows[rows.length-1]['id'],\n            \"transaction_id\": rows[rows.length-1]['value']\n        }));\n    else\n        send(JSON.stringify({\n            \"generation\": 0,\n            \"doc_id\": \"\",\n            \"transaction_id\": \"\",\n        }));\n}\n", 
+      "trans_id_for_gen": "function(head, req) {\n    var row;\n    var rows=[];\n    var i = 1;\n    var gen = 1;\n    if (req.query.gen)\n        gen = parseInt(req.query['gen']);\n    // fetch all rows\n    while(row = getRow())\n        rows.push(row);\n    if (gen <= rows.length)\n        send(JSON.stringify({\n            \"generation\": gen,\n            \"doc_id\": rows[gen-1]['id'],\n            \"transaction_id\": rows[gen-1]['value'],\n        }));\n    else\n        send('{}');\n}\n", 
+      "whats_changed": "function(head, req) {\n    var row;\n    var gen = 1;\n    var old_gen = 0;\n    if (req.query.old_gen)\n        old_gen = parseInt(req.query['old_gen']);\n    send('{\"transactions\":[\\n');\n    // fetch all rows\n    while(row = getRow()) {\n        if (gen > old_gen) {\n            if (gen > old_gen+1)\n                send(',\\n');\n            send(JSON.stringify({\n                \"generation\": gen,\n                \"doc_id\": row[\"id\"],\n                \"transaction_id\": row[\"value\"]\n            }));\n        }\n        gen++;\n    }\n    send('\\n]}');\n}\n"
+   }, 
+   "views": {
+      "log": {
+         "map": "function(doc) {\n    if (doc.u1db_transactions)\n        doc.u1db_transactions.forEach(function(t) {\n            emit(t[0],  // use timestamp as key so the results are ordered\n                 t[1]); // value is the transaction_id\n        });\n}\n"
       }
    }
 }
