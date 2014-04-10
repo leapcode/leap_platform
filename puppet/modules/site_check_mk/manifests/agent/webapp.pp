@@ -5,12 +5,14 @@ class site_check_mk::agent::webapp {
     ensure => installed
   }
   file { '/usr/lib/check_mk_agent/local/nagios-webapp_login.py':
-    ensure => link,
-    target => '/srv/leap/webapp/test/nagios/webapp_login.py'
+    ensure  => link,
+    target  => '/srv/leap/webapp/test/nagios/webapp_login.py',
+    require => Package['check_mk-agent']
   }
   file { '/usr/lib/check_mk_agent/local/soledad_sync.py':
-    ensure => link,
-    target => '/srv/leap/webapp/test/nagios/soledad_sync.py'
+    ensure  => link,
+    target  => '/srv/leap/webapp/test/nagios/soledad_sync.py',
+    require => Package['check_mk-agent']
   }
 
 
