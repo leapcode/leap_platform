@@ -50,8 +50,8 @@ class soledad::server {
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => [
-      Class['soledad'],
+    require    => Class['soledad'],
+    subscribe  => [
       Package['soledad-server'],
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
