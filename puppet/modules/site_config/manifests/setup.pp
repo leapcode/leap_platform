@@ -1,4 +1,5 @@
 class site_config::setup {
+  tag 'leap_base'
 
   #
   # this is applied before each run of site.pp
