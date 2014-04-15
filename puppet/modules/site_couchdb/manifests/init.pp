@@ -59,6 +59,7 @@ class site_couchdb {
 
   Class['site_config::default']
     -> Class['couchdb::bigcouch::package::cloudant']
+    -> Service['shorewall']
     -> Service['couchdb']
     -> Class['site_couchdb::stunnel']
     -> File['/root/.netrc']
