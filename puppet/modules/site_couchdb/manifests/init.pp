@@ -64,6 +64,7 @@ class site_couchdb {
     -> Class['site_couchdb::stunnel']
     -> File['/root/.netrc']
     -> Class['site_couchdb::bigcouch::add_nodes']
+    -> Class['site_couchdb::bigcouch::settle_cluster']
     -> Couchdb::Create_db['users']
     -> Couchdb::Create_db['tokens']
     -> Couchdb::Add_user[$couchdb_webapp_user]
@@ -72,6 +73,8 @@ class site_couchdb {
   class { 'site_couchdb::stunnel': }
 
   class { 'site_couchdb::bigcouch::add_nodes': }
+
+  class { 'site_couchdb::bigcouch::settle_cluster': }
 
   # /etc/couchdb/couchdb.netrc is deployed by couchdb::query::setup
   # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
