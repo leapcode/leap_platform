@@ -365,8 +365,8 @@ class LeapRunner < MiniTest::Unit
   #
   def status(io = self.output)
     if $output_format == :human
-      format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
-      output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+      format = "%d tests: %d passes, %d skips, %d warnings, %d failures, %d errors"
+      output.puts format % [test_count, passes, skips, warnings, failures, errors]
     end
   end
 
@@ -501,10 +501,12 @@ end
 
 def print_help
   puts ["USAGE: run_tests [OPTIONS]",
-       "  --continue     Don't halt on an error, but continue to the next test.",
-       "  --checkmk      Print test results in checkmk format (must come before --test).",
-       "  --test TEST    Run only the test with name TEST.",
-       "  --list-tests   Prints the names of all available tests and exit."].join("\n")
+       "  --continue       Don't halt on an error, but continue to the next test.",
+       "  --checkmk        Print test results in checkmk format (must come before --test).",
+       "  --test TEST      Run only the test with name TEST.",
+       "  --list-tests     Prints the names of all available tests and exit.",
+       "  --retry COUNT    If the tests don't pass, retry COUNT additional times (default is zero)",
+       "  --wait SECONDS   Wait for SECONDS between retries (default is 5)"].join("\n")
   exit(0)
 end
 
@@ -531,9 +533,21 @@ def pin_test_name(name)
   end
 end
 
+#
+# run the tests, multiple times if `--repeat` and not all tests were successful.
+#
 def run_tests
-  MiniTest::Unit.runner = LeapRunner.new
-  exit_code = MiniTest::Unit.new.run
+  exit_code = nil
+  run_count = $repeat ? $repeat + 1 : 1
+  run_count.times do |i|
+    MiniTest::Unit.runner = LeapRunner.new
+    exit_code = MiniTest::Unit.new.run
+    if !$repeat || exit_code == :success
+      break
+    elsif i != run_count-1
+      sleep $wait
+    end
+  end
   bail exit_code
 end
 
@@ -561,6 +575,8 @@ def main
   # parse command line options
   $halt_on_failure = true
   $output_format = :human
+  $repeat = false
+  $wait = 5
   loop do
     case ARGV[0]
       when '--continue' then ARGV.shift; $halt_on_failure = false;
@@ -568,6 +584,8 @@ def main
       when '--help' then print_help
       when '--test' then ARGV.shift; pin_test_name(ARGV.shift)
       when '--list-tests' then list_tests
+      when '--repeat' then ARGV.shift; $repeat = ARGV.shift.to_i
+      when '--wait' then ARGV.shift; $wait = ARGV.shift.to_i
       else break
     end
   end
