@@ -17,6 +17,26 @@ require 'tsort'
 require 'net/http'
 
 ##
+## EXIT CODES
+##
+
+EXIT_CODES = {
+  :success => 0,
+  :warning => 1,
+  :failure => 2,
+  :error => 3
+}
+
+def bail(code, msg=nil)
+  puts msg if msg
+  if code.is_a? Symbol
+    exit(EXIT_CODES[code])
+  else
+    exit(code)
+  end
+end
+
+##
 ## EXCEPTIONS
 ##
 
@@ -90,7 +110,7 @@ class LeapTest < MiniTest::Unit::TestCase
 
   def warn(*msg)
     method_name = caller.first.split('`').last.gsub(/(block in |')/,'')
-    MiniTest::Unit.runner.report_line("WARN", self.class, method_name, nil, msg.join("\n"))
+    MiniTest::Unit.runner.warn(self.class, method_name, msg.join("\n"))
   end
 
   # Always runs test methods within a test class in alphanumeric order
@@ -272,10 +292,11 @@ end
 #
 class LeapRunner < MiniTest::Unit
 
-  attr_accessor :passes
+  attr_accessor :passes, :warnings
 
   def initialize
     @passes = 0
+    @warnings = 0
     super
   end
 
@@ -300,12 +321,13 @@ class LeapRunner < MiniTest::Unit
     @test_count      = results.inject(0) { |sum, (tc, _)| sum + tc }
     @assertion_count = results.inject(0) { |sum, (_, ac)| sum + ac }
     status
+    return exit_code()
   rescue Interrupt
-    abort 'Tests halted on interrupt.'
+    bail :error, 'Tests halted on interrupt.'
   rescue TestFailure
-    abort 'Tests halted on failure (because of --no-continue).'
+    bail :failure, 'Tests halted on failure (because of --no-continue).'
   rescue TestError
-    abort 'Tests halted on error (because of --no-continue).'
+    bail :error, 'Tests halted on error (because of --no-continue).'
   end
 
   #
@@ -320,7 +342,7 @@ class LeapRunner < MiniTest::Unit
         #end
       when LeapTest::Pass then
         @passes += 1
-        @report << report_line("PASS", klass, meth)
+        report_line("PASS", klass, meth)
       when MiniTest::Assertion then
         @failures += 1
         report_line("FAIL", klass, meth, e, e.message)
@@ -345,6 +367,21 @@ class LeapRunner < MiniTest::Unit
     if $output_format == :human
       format = "%d tests, %d assertions, %d passes, %d failures, %d errors, %d skips"
       output.puts format % [test_count, assertion_count, passes, failures, errors, skips]
+    end
+  end
+
+  #
+  # return an appropriate exit_code symbol
+  #
+  def exit_code
+    if @errors > 0
+      :error
+    elsif @failures > 0
+      :failure
+    elsif @warnings > 0
+      :warning
+    else
+      :success
     end
   end
 
@@ -384,6 +421,14 @@ class LeapRunner < MiniTest::Unit
         output.puts "#{code} #{klass.name}/#{machine_readable(meth)} - no message"
       end
     end
+  end
+
+  #
+  # a new function used by TestCase to report warnings.
+  #
+  def warn(klass, method_name, msg)
+    @warnings += 1
+    report_line("WARN", klass, method_name, nil, msg)
   end
 
   private
@@ -430,7 +475,7 @@ class TestDependencyGraph
       @dependencies[test_class_name].each(&block)
     else
       puts "ERROR: bad dependency, no such class `#{test_class_name}`"
-      exit(1)
+      bail :error
     end
   end
 
@@ -451,7 +496,7 @@ def die(test, msg)
   elsif $output_format == :checkmk
     puts "3 #{test} - #{msg}"
   end
-  exit(1)
+  bail :error
 end
 
 def print_help
@@ -488,7 +533,8 @@ end
 
 def run_tests
   MiniTest::Unit.runner = LeapRunner.new
-  MiniTest::Unit.new.run
+  exit_code = MiniTest::Unit.new.run
+  bail exit_code
 end
 
 ##
