@@ -68,12 +68,6 @@ class site_couchdb {
     -> Class['site_couchdb::create_dbs']
     -> Class['site_couchdb::add_users']
 
-  class { 'site_couchdb::stunnel': }
-
-  class { 'site_couchdb::bigcouch::add_nodes': }
-
-  class { 'site_couchdb::bigcouch::settle_cluster': }
-
   # /etc/couchdb/couchdb.netrc is deployed by couchdb::query::setup
   # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
   # and makes life easier for the admin (i.e. using curl/wget without
@@ -92,15 +86,6 @@ class site_couchdb {
     pw    => $couchdb_admin_pw,
   }
 
-  include site_couchdb::create_dbs
-  include site_couchdb::add_users
-  include site_couchdb::designs
-  include site_couchdb::logrotate
-  include site_couchdb::bigcouch::compaction
-
-  include site_shorewall::couchdb
-  include site_shorewall::couchdb::bigcouch
-
   vcsrepo { '/srv/leap/couchdb/scripts':
     ensure   => present,
     provider => git,
@@ -109,7 +94,19 @@ class site_couchdb {
     require  => File['/srv/leap/couchdb']
   }
 
+  include site_couchdb::stunnel
+  include site_couchdb::bigcouch::add_nodes
+  include site_couchdb::bigcouch::settle_cluster
+  include site_couchdb::create_dbs
+  include site_couchdb::add_users
+  include site_couchdb::designs
+  include site_couchdb::logrotate
+  include site_couchdb::bigcouch::compaction
+
   if $couchdb_backup { include site_couchdb::backup }
+
+  include site_shorewall::couchdb
+  include site_shorewall::couchdb::bigcouch
 
   include site_check_mk::agent::couchdb
   include site_check_mk::agent::tapicero
