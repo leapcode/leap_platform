@@ -60,15 +60,13 @@ class site_couchdb {
   Class['site_config::default']
     -> Class['couchdb::bigcouch::package::cloudant']
     -> Service['shorewall']
-    -> Service['couchdb']
     -> Class['site_couchdb::stunnel']
+    -> Service['couchdb']
     -> File['/root/.netrc']
     -> Class['site_couchdb::bigcouch::add_nodes']
     -> Class['site_couchdb::bigcouch::settle_cluster']
-    -> Couchdb::Create_db['users']
-    -> Couchdb::Create_db['tokens']
-    -> Couchdb::Add_user[$couchdb_webapp_user]
-    -> Couchdb::Add_user[$couchdb_soledad_user]
+    -> Class['site_couchdb::create_dbs']
+    -> Class['site_couchdb::add_users']
 
   class { 'site_couchdb::stunnel': }
 
