@@ -534,15 +534,15 @@ def pin_test_name(name)
 end
 
 #
-# run the tests, multiple times if `--repeat` and not all tests were successful.
+# run the tests, multiple times if `--retry` and not all tests were successful.
 #
 def run_tests
   exit_code = nil
-  run_count = $repeat ? $repeat + 1 : 1
+  run_count = $retry ? $retry + 1 : 1
   run_count.times do |i|
     MiniTest::Unit.runner = LeapRunner.new
     exit_code = MiniTest::Unit.new.run
-    if !$repeat || exit_code == :success
+    if !$retry || exit_code == :success
       break
     elsif i != run_count-1
       sleep $wait
@@ -575,7 +575,7 @@ def main
   # parse command line options
   $halt_on_failure = true
   $output_format = :human
-  $repeat = false
+  $retry = false
   $wait = 5
   loop do
     case ARGV[0]
@@ -584,7 +584,7 @@ def main
       when '--help' then print_help
       when '--test' then ARGV.shift; pin_test_name(ARGV.shift)
       when '--list-tests' then list_tests
-      when '--repeat' then ARGV.shift; $repeat = ARGV.shift.to_i
+      when '--retry' then ARGV.shift; $retry = ARGV.shift.to_i
       when '--wait' then ARGV.shift; $wait = ARGV.shift.to_i
       else break
     end
