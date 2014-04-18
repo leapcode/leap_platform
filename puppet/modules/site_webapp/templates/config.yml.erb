@@ -15,3 +15,5 @@ production:
   limited_cert_prefix: "<%= cert_options['limited_prefix'] %>"
   unlimited_cert_prefix: "<%= cert_options['unlimited_prefix'] %>"
   minimum_client_version: "<%= @webapp['client_version']['min'] %>"
+  default_service_level: "<%= @webapp['default_service_level'] %>"
+  service_levels: "<%= @webapp['service_levels'].inspect %>"
