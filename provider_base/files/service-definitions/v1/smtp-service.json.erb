@@ -15,7 +15,7 @@
     host = {}
     host["hostname"] = node.domain.full
     host["ip_address"] = node.ip_address
-    host["port"] = 25 # hard coded for now, later node.smtp.port
+    host["port"] = 465 # hard coded for now, later node.smtp.port
     if node['location']
       location_name = underscore(node.location.name)
       host["location"] = location_name

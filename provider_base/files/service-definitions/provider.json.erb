@@ -1,13 +1,13 @@
 <%=
   # grab some fields from provider.json
-  hsh = global.provider.pick(
-    :languages, :description, :name,
+  hsh = provider.pick(
+    :languages, :description, :name, :services,
     :enrollment_policy, :default_language, :service
   )
   hsh['domain'] = domain.full_suffix
 
   # advertise services that are 'user services' and for which there are actually nodes
-  hsh['services'] = global.services[:service_type => :user_service].field(:name).select do |service|
+  hsh['services'] ||= global.services[:service_type => :user_service].field(:name).select do |service|
     nodes_like_me[:services => service].any?
   end
 

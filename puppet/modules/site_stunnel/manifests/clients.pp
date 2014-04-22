@@ -21,6 +21,13 @@ define site_stunnel::clients (
     verify     => $verify,
     pid        => "/var/run/stunnel4/${pid}.pid",
     rndfile    => $rndfile,
-    debuglevel => $debuglevel
+    debuglevel => $debuglevel,
+    require    => [
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
+      Class['Site_config::X509::Ca'] ];
+
   }
+
+  include site_check_mk::agent::stunnel
 }

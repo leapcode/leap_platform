@@ -8,8 +8,8 @@
     "en": "REQUIRED"
   },
   "contacts": {
-    "default": "REQUIRED",
-    "english": "= contacts.default.split('@').join(' at the domain ')"
+    "default": ["REQUIRED"],
+    "english": "= contacts.default.map {|email| email.split('@').join(' at the domain ')}.join(', ')"
   },
   "languages": ["en"],
   "default_language": "en",
@@ -23,32 +23,36 @@
     ],
     "default_service_level": 1,
     "bandwidth_limit": 102400,
-    "allow_free": "= global.provider.service.levels.select {|l| l['rate'].nil?}.any?",
-    "allow_paid": "= global.provider.service.levels.select {|l| !l['rate'].nil?}.any?",
-    "allow_anonymous": "= global.provider.service.levels.select {|l| l['name'] == 'anonymous'}.any?",
-    "allow_registration": "= global.provider.service.levels.select {|l| l['name'] != 'anonymous'}.any?",
-    "allow_limited_bandwidth": "= global.provider.service.levels.select {|l| l['bandwidth'] == 'limited'}.any?",
-    "allow_unlimited_bandwidth": "= global.provider.service.levels.select {|l| l['bandwidth'].nil?}.any?"
+    "allow_free": "= provider.service.levels.select {|l| l['rate'].nil?}.any?",
+    "allow_paid": "= provider.service.levels.select {|l| !l['rate'].nil?}.any?",
+    "allow_anonymous": "= provider.service.levels.select {|l| l['name'] == 'anonymous'}.any?",
+    "allow_registration": "= provider.service.levels.select {|l| l['name'] != 'anonymous'}.any?",
+    "allow_limited_bandwidth": "= provider.service.levels.select {|l| l['bandwidth'] == 'limited'}.any?",
+    "allow_unlimited_bandwidth": "= provider.service.levels.select {|l| l['bandwidth'].nil?}.any?"
   },
   "ca": {
-    "name": "= global.provider.ca.organization + ' Root CA'",
-    "organization": "= global.provider.name[global.provider.default_language]",
-    "organizational_unit": "= 'https://' + global.provider.domain",
+    "name": "= provider.ca.organization + ' Root CA'",
+    "organization": "= provider.name[provider.default_language]",
+    "organizational_unit": "= 'https://' + provider.domain",
     "bit_size": 4096,
     "digest": "SHA256",
     "life_span": "10y",
     "server_certificates": {
-      "bit_size": 2024,
+      "bit_size": 2048,
       "digest": "SHA256",
       "life_span": "1y"
     },
     "client_certificates": {
-      "bit_size": 2024,
+      "bit_size": 2048,
       "digest": "SHA256",
       "life_span": "2m",
       "limited_prefix": "LIMITED",
       "unlimited_prefix": "UNLIMITED"
     }
   },
-  "hiera_sync_destination": "/etc/leap"
+  "hiera_sync_destination": "/etc/leap",
+  "client_version": {
+    "min": "0.5",
+    "max": null
+  }
 }

@@ -2,7 +2,6 @@ class site_haproxy {
 
     class { 'haproxy':
     enable           => true,
-    version          => '1.4.23-0.1~leap60+1',
     manage_service   => true,
     global_options   => {
       'log'     => '127.0.0.1 local0',
@@ -23,4 +22,11 @@ class site_haproxy {
     }
   }
 
+  # monitor haproxy
+  concat::fragment { 'stats':
+    target => '/etc/haproxy/haproxy.cfg',
+    order  => '90',
+    source => 'puppet:///modules/site_haproxy/haproxy-stats.cfg';
+  }
+  include site_check_mk::agent::haproxy
 }

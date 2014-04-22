@@ -1,0 +1,2 @@
+/^Received: from (.* \([-._[:alnum:]]+ \[[.[:digit:]]{7,15}\]\))([[:space:]]+).*(\(using [.[:alnum:]]+ with cipher [-A-Z0-9]+ \([0-9]+\/[0-9]+ bits\)\))[[:space:]]+\(Client CN "([[:alnum:]]+)", Issuer "[[:print:]]+" \(verified OK\)\)[[:space:]]+by ([.[:alnum:]]+) \(([^)]+)\) with (E?SMTPS?A?) id ([A-F[:digit:]]+).*/
+ REPLACE Received: from [127.0.0.1] (localhost [127.0.0.1])${2}${3}${2}(Authenticated sender: $4)${2}with $7 id $8

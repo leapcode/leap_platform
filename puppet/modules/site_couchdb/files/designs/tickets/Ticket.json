@@ -1,0 +1,50 @@
+{
+  "_id": "_design/Ticket",
+  "language": "javascript",
+  "views": {
+    "by_updated_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'Ticket') && (doc['updated_at'] != null)) {\n                    emit(doc['updated_at'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_created_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'Ticket') && (doc['created_at'] != null)) {\n                    emit(doc['created_at'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_created_by": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'Ticket') && (doc['created_by'] != null)) {\n                    emit(doc['created_by'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_is_open_and_created_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'Ticket') && (doc['is_open'] != null) && (doc['created_at'] != null)) {\n                    emit([doc['is_open'], doc['created_at']], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_is_open_and_updated_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'Ticket') && (doc['is_open'] != null) && (doc['updated_at'] != null)) {\n                    emit([doc['is_open'], doc['updated_at']], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_includes_post_by_and_is_open_and_created_at": {
+      "map": "function(doc) {\n  var arr = {}\n  if (doc['type'] == 'Ticket' && doc.comments) {\n    doc.comments.forEach(function(comment){\n      if (comment.posted_by && !arr[comment.posted_by]) {\n        //don't add duplicates\n        arr[comment.posted_by] = true;\n        emit([comment.posted_by, doc.is_open, doc.created_at], 1);\n      }\n    });\n  }\n}\n",
+      "reduce": "function(key, values, rereduce) { return sum(values); }"
+    },
+    "by_includes_post_by_and_is_open_and_updated_at": {
+      "map": "function(doc) {\n  var arr = {}\n  if (doc['type'] == 'Ticket' && doc.comments) {\n    doc.comments.forEach(function(comment){\n      if (comment.posted_by && !arr[comment.posted_by]) {\n        //don't add duplicates\n        arr[comment.posted_by] = true;\n        emit([comment.posted_by, doc.is_open, doc.updated_at], 1);\n      }\n    });\n  }\n}\n",
+      "reduce": "function(key, values, rereduce) { return sum(values); }"
+    },
+    "by_includes_post_by_and_updated_at": {
+      "map": "function(doc) {\n  var arr = {}\n  if (doc['type'] == 'Ticket' && doc.comments) {\n    doc.comments.forEach(function(comment){\n      if (comment.posted_by && !arr[comment.posted_by]) {\n        //don't add duplicates\n        arr[comment.posted_by] = true;\n        emit([comment.posted_by, doc.updated_at], 1);\n      }\n    });\n  }\n}\n",
+      "reduce": "function(key, values, rereduce) { return sum(values); }"
+    },
+    "by_includes_post_by": {
+      "map": "// TODO: This view is only used in tests--should we keep it?\nfunction(doc) {\n  var arr = {}\n  if (doc['type'] == 'Ticket' && doc.comments) {\n    doc.comments.forEach(function(comment){\n      if (comment.posted_by && !arr[comment.posted_by]) {\n        //don't add duplicates\n        arr[comment.posted_by] = true;\n        emit(comment.posted_by, 1);\n      }\n    });\n  }\n}\n",
+      "reduce": "function(key, values, rereduce) { return sum(values); }"
+    },
+    "by_includes_post_by_and_created_at": {
+      "map": "function(doc) {\n  var arr = {}\n  if (doc['type'] == 'Ticket' && doc.comments) {\n    doc.comments.forEach(function(comment){\n      if (comment.posted_by && !arr[comment.posted_by]) {\n        //don't add duplicates\n        arr[comment.posted_by] = true;\n        emit([comment.posted_by, doc.created_at], 1);\n      }\n    });\n  }\n}\n",
+      "reduce": "function(key, values, rereduce) { return sum(values); }"
+    },
+    "all": {
+      "map": "                function(doc) {\n                  if (doc['type'] == 'Ticket') {\n                    emit(doc._id, null);\n                  }\n                }\n"
+    }
+  },
+  "couchrest-hash": "9978e2cbeacbe8622c2a7f103bf8130f"
+}

@@ -1,4 +1,5 @@
 class site_config::caching_resolver {
+  tag 'leap_base'
 
   # Setup a conf.d directory to place additional unbound configuration files.
   # There must be at least one file in the directory, or unbound will not start,

@@ -3,19 +3,19 @@ define site_nagios::add_service (
 
   case $service {
     'webapp': {
-      $check_command       = 'check_https_cert'
-      $service_description = 'Website Certificate'
+      nagios_service {
+        "${name}_cert":
+          use                 => 'generic-service',
+          check_command       => 'check_https_cert',
+          service_description => 'Website Certificate',
+          host_name           => $hostname;
+        "${name}_website":
+          use                 => 'generic-service',
+          check_command       => 'check_https',
+          service_description => 'Website',
+          host_name           => $hostname
+      }
     }
-    default:  {
-      #notice ("No Nagios service check for service \"$service\"")
-    }
-  }
-
-  if ( $check_command != '' ) {
-    nagios_service { $name:
-      use                 => 'generic-service',
-      check_command       => $check_command,
-      service_description => $service_description,
-      host_name           => $hostname }
+    default:  {}
   }
 }

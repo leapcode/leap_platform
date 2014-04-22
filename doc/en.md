@@ -20,7 +20,7 @@ LEAP maintains a repository of platform recipes, which typically do not need to 
 
 As these recipes consist in abstract definitions, in order to configure settings for a particular service provider a system administrator has to create a provider instance (see below).
 
-LEAP's platform recipes are distributed as a git repository: `git://leap.se/leap_platform.git`
+LEAP's platform recipes are distributed as a git repository: `https://leap.se/git/leap_platform`
 
 The provider instance
 ---------------------
@@ -64,7 +64,7 @@ One other significant difference between LEAP and typical system automation is h
 
 These two approaches, masterless push and pre-compiled static configuration, allow the sysadmin to manage a set of LEAP servers using traditional software development techniques of branching and merging, to more easily create local testing environments using virtual servers, and to deploy without the added complexity and failure potential of a master server.
 
-The `leap` command line tool is distributed as a git repository: `git://leap.se/leap_cli`. It can be installed with `sudo gem install leap_cli`.
+The `leap` command line tool is distributed as a git repository: `https://leap.se/git/leap_cli`. It can be installed with `sudo gem install leap_cli`.
 
 Getting started
 ----------------------------------

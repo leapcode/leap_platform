@@ -1,4 +1,4 @@
-class site_couchdb::stunnel ($key, $cert, $ca) {
+class site_couchdb::stunnel {
 
   $stunnel              = hiera('stunnel')
 
@@ -18,22 +18,16 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   $ednp_server_connect  = $ednp_server['connect']
   $ednp_clients         = $stunnel['ednp_clients']
 
-  include x509::variables
-  $cert_name = 'leap_couchdb'
-  $ca_name   = 'leap_ca'
-  $ca_path   = "${x509::variables::local_CAs}/${ca_name}.crt"
-  $cert_path = "${x509::variables::certs}/${cert_name}.crt"
-  $key_path  = "${x509::variables::keys}/${cert_name}.key"
 
-  # basic setup: ensure cert, key, ca files are in place, and some generic
-  # stunnel things are done
-  class { 'site_stunnel::setup':
-    cert_name => $cert_name,
-    key       => $key,
-    cert      => $cert,
-    ca_name   => $ca_name,
-    ca        => $ca
-  }
+
+  include site_config::x509::cert
+  include site_config::x509::key
+  include site_config::x509::ca
+
+  include x509::variables
+  $ca_path   = "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt"
+  $cert_path = "${x509::variables::certs}/${site_config::params::cert_name}.crt"
+  $key_path  = "${x509::variables::keys}/${site_config::params::cert_name}.key"
 
   # setup a stunnel server for the webapp to connect to couchdb
   stunnel::service { 'couch_server':
@@ -46,7 +40,11 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     verify     => '2',
     pid        => '/var/run/stunnel4/couchserver.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '4',
+    require    => [
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
+      Class['Site_config::X509::Ca'] ];
   }
 
 
@@ -62,7 +60,11 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     verify     => '2',
     pid        => '/var/run/stunnel4/epmd_server.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '4',
+    require    => [
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   # setup stunnel clients for Erlang Port Mapper Daemon (epmd) to connect
@@ -88,7 +90,11 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
     verify     => '2',
     pid        => '/var/run/stunnel4/ednp_server.pid',
     rndfile    => '/var/lib/stunnel4/.rnd',
-    debuglevel => '4'
+    debuglevel => '4',
+    require    => [
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   # setup stunnel clients for Erlang Distributed Node Protocol (ednp) to connect
@@ -101,4 +107,6 @@ class site_couchdb::stunnel ($key, $cert, $ca) {
   }
 
   create_resources(site_stunnel::clients, $ednp_clients, $ednp_client_defaults)
+
+  include site_check_mk::agent::stunnel
 }

@@ -1,6 +1,12 @@
 {
-  "service_type": "public_service",
   "soledad": {
-    "port": 1111
-  }
+    "port": 2323,
+    "require_couchdb": "=> assert %(services.include? 'couchdb')",
+    "couchdb_soledad_user": {
+      "username": "= global.services[:couchdb].couch.users[:soledad].username",
+      "password": "= secret :couch_soledad_password",
+      "salt": "= hex_secret :couch_soledad_password_salt, 128"
+    }
+  },
+  "service_type": "public_service"
 }

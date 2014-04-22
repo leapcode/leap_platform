@@ -1,0 +1,5 @@
+# this file is managed by puppet
+START=yes
+CERT_PATH=<%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt
+PRIVKEY_PATH=<%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key
+HTTPS_PORT=<%=@soledad_port%>

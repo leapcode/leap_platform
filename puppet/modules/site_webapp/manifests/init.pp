@@ -11,11 +11,18 @@ class site_webapp {
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
 
-  include site_config::ruby
+  Class['site_config::default'] -> Class['site_webapp']
+
+  include site_config::ruby::dev
   include site_webapp::apache
   include site_webapp::couchdb
-  include site_webapp::client_ca
   include site_webapp::haproxy
+  include site_webapp::cron
+  include site_config::x509::cert
+  include site_config::x509::key
+  include site_config::x509::ca
+  include site_config::x509::client_ca::ca
+  include site_config::x509::client_ca::key
 
   group { 'leap-webapp':
     ensure    => present,
@@ -31,19 +38,12 @@ class site_webapp {
     require   => [ Group['leap-webapp'] ];
   }
 
-  file { '/srv/leap/webapp':
-    ensure  => directory,
-    owner   => 'leap-webapp',
-    group   => 'leap-webapp',
-    require => User['leap-webapp'];
-  }
-
   vcsrepo { '/srv/leap/webapp':
     ensure   => present,
     force    => true,
-    revision => 'origin/master',
+    revision => $webapp['git']['revision'],
     provider => git,
-    source   => 'git://code.leap.se/leap_web',
+    source   => $webapp['git']['source'],
     owner    => 'leap-webapp',
     group    => 'leap-webapp',
     require  => [ User['leap-webapp'], Group['leap-webapp'] ],
@@ -56,38 +56,58 @@ class site_webapp {
     unless  => '/usr/bin/bundle check',
     user    => 'leap-webapp',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/webapp'] ],
+    require => [
+      Class['bundler::install'],
+      Vcsrepo['/srv/leap/webapp'],
+      Class['site_config::ruby::dev'],
+      Service['shorewall'] ],
     notify  => Service['apache'];
   }
 
+  #
+  # NOTE: in order to support a webapp that is running on a subpath and not the
+  # root of the domain assets:precompile needs to be run with
+  # RAILS_RELATIVE_URL_ROOT=/application-root
+  #
+
   exec { 'compile_assets':
-    cwd     => '/srv/leap/webapp',
-    command => '/bin/bash -c "/usr/bin/bundle exec rake assets:precompile"',
-    user    => 'leap-webapp',
-    require => Exec['bundler_update'],
-    notify  => Service['apache'];
+    cwd       => '/srv/leap/webapp',
+    command   => '/bin/bash -c "RAILS_ENV=production /usr/bin/bundle exec rake assets:precompile"',
+    user      => 'leap-webapp',
+    logoutput => on_failure,
+    require   => Exec['bundler_update'],
+    notify    => Service['apache'];
   }
 
   file {
-    '/srv/leap/webapp/public/provider.json':
+    '/srv/leap/webapp/config/provider':
+      ensure  => directory,
+      require => Vcsrepo['/srv/leap/webapp'],
+      owner   => leap-webapp, group => leap-webapp, mode => '0755';
+
+    '/srv/leap/webapp/config/provider/provider.json':
       content => $provider,
       require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
 
+    # old provider.json location. this can be removed after everyone upgrades.
+    '/srv/leap/webapp/public/provider.json':
+      ensure => absent;
+
     '/srv/leap/webapp/public/ca.crt':
       ensure  => link,
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => '/usr/local/share/ca-certificates/leap_api.crt';
+      target  => "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt";
 
     "/srv/leap/webapp/public/${api_version}":
-      ensure => directory,
+      ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner  => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => leap-webapp, group => leap-webapp, mode => '0755';
 
     "/srv/leap/webapp/public/${api_version}/config/":
-      ensure => directory,
+      ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner  => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => leap-webapp, group => leap-webapp, mode => '0755';
 
     "/srv/leap/webapp/public/${api_version}/config/eip-service.json":
       content => $eip_service,
@@ -106,25 +126,24 @@ class site_webapp {
   }
 
   try::file {
-    '/srv/leap/webapp/public/favicon.ico':
-      ensure  => 'link',
+    '/srv/leap/webapp/config/customization':
+      ensure  => directory,
+      recurse => true,
+      purge   => true,
+      force   => true,
+      owner   => leap-webapp,
+      group   => leap-webapp,
+      mode    => 'u=rwX,go=rX',
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['favicon'];
+      notify  => Exec['compile_assets'],
+      source  => $webapp['customization_dir'];
+  }
 
-    '/srv/leap/webapp/app/assets/stylesheets/tail.scss':
-      ensure  => 'link',
+  git::changes {
+    'public/favicon.ico':
+      cwd     => '/srv/leap/webapp',
       require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['tail_scss'];
-
-    '/srv/leap/webapp/app/assets/stylesheets/head.scss':
-      ensure  => 'link',
-      require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['head_scss'];
-
-    '/srv/leap/webapp/public/img':
-      ensure  => 'link',
-      require => Vcsrepo['/srv/leap/webapp'],
-      target  => $webapp['img_dir'];
+      user    => 'leap-webapp';
   }
 
   file {
@@ -138,5 +157,5 @@ class site_webapp {
   }
 
   include site_shorewall::webapp
-
+  include site_check_mk::agent::webapp
 }

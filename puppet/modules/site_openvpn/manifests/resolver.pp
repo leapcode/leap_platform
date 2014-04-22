@@ -60,25 +60,25 @@ class site_openvpn::resolver {
       path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_unlimited_tcp_resolver',
       notify  => Service['unbound'],
-      require => Package['unbound'];
+      require => [ Package['openvpn'], Package['unbound'] ];
     'add_unlimited_udp_resolver':
       ensure  => $ensure_unlimited,
       path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_unlimited_udp_resolver',
       notify  => Service['unbound'],
-      require => Package['unbound'];
+      require => [ Package['openvpn'], Package['unbound'] ];
     'add_limited_tcp_resolver':
       ensure  => $ensure_limited,
       path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_limited_tcp_resolver',
       notify  => Service['unbound'],
-      require => Package['unbound'];
-    'add_limited_udp_resolver':
+      require => [ Package['openvpn'], Package['unbound'] ];
+      'add_limited_udp_resolver':
       ensure  => $ensure_limited,
       path    => '/etc/unbound/unbound.conf',
       line    => 'server: include: /etc/unbound/conf.d/vpn_limited_udp_resolver',
       notify  => Service['unbound'],
-      require => Package['unbound']
+      require => [ Package['openvpn'], Package['unbound'] ];
   }
 
 }

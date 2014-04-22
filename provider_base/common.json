@@ -3,9 +3,10 @@
   "environment": null,
   "services": [],
   "tags": [],
+  "contacts": "= provider.contacts.default",
   "domain": {
-     "full_suffix": "= global.provider.domain",
-     "internal_suffix": "= global.provider.domain_internal",
+     "full_suffix": "= provider.domain",
+     "internal_suffix": "= provider.domain_internal",
      "full": "= node.name + '.' + domain.full_suffix",
      "internal": "= node.name + '.' + domain.internal_suffix",
      "name": "= node.name + '.' + (dns.public ? domain.full_suffix : domain.internal_suffix)"
@@ -15,7 +16,6 @@
   },
   "ssh": {
     "authorized_keys": "= authorized_keys",
-    "known_hosts": "=> known_hosts_file",
     "port": 22,
     "mosh": {
       "ports": "60000:61000",
@@ -24,7 +24,7 @@
   },
   "hosts": "=> hosts_file",
   "x509": {
-    "use": false,
+    "use": true,
     "cert": "= x509.use ? file(:node_x509_cert, :missing => 'x509 certificate for node $node. Run `leap cert update`') : nil",
     "key": "= x509.use ? file(:node_x509_key, :missing => 'x509 key for node $node. Run `leap cert update`') : nil",
     "ca_cert": "= try_file :ca_cert"
@@ -35,5 +35,8 @@
   },
   "name": "common",
   "location": null,
-  "enabled": true
+  "enabled": true,
+  "mail": {
+    "smarthost": "= nodes_like_me[:services => :mx].exclude(self).field('domain.full')"
+  }
 }

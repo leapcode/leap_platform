@@ -2,5 +2,9 @@
 # all manually added keys will be overridden
 
 <% keys.sort.each do |user, hash| -%>
+<% if user == 'monitor' -%>
+command="/usr/bin/check_mk_agent",no-port-forwarding,no-x11-forwarding,no-agent-forwarding,no-pty,no-user-rc, <%=hash['type']-%> <%=hash['key']%> <%=user%> 
+<% else -%>
 <%=hash['type']-%> <%=hash['key']%> <%=user%> 
+<% end -%>
 <% end -%> 

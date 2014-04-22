@@ -1,0 +1,22 @@
+{
+  "_id": "_design/User",
+  "language": "javascript",
+  "views": {
+    "by_login": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'User') && (doc['login'] != null)) {\n                    emit(doc['login'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "all": {
+      "map": "                function(doc) {\n                  if (doc['type'] == 'User') {\n                    emit(doc._id, null);\n                  }\n                }\n"
+    },
+    "by_created_at_and_one_month_warning_not_sent": {
+      "map": "function (doc) {\n  if ((doc['type'] == 'User') && (doc['created_at'] != null) && (doc['one_month_warning_sent'] == null)) {\n    emit(doc['created_at'], 1);\n  }    \n}\n",
+      "reduce": "function(key, values, rereduce) { return sum(values); }"
+    },
+    "by_created_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'User') && (doc['created_at'] != null)) {\n                    emit(doc['created_at'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    }
+  },
+  "couchrest-hash": "61840ab3ec0f94ef8bbd6dd208db3b70"
+}

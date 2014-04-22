@@ -1,26 +1,34 @@
 class site_nagios::server inherits nagios::base {
 
   # First, purge old nagios config (see #1467)
-  class { 'site_nagios::server::purge':
-    stage => setup
-  }
+  class { 'site_nagios::server::purge': }
 
-  $nagios_hiera=hiera('nagios')
+  $nagios_hiera   = hiera('nagios')
   $nagiosadmin_pw = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
-  $hosts = $nagios_hiera['hosts']
+  $nagios_hosts   = $nagios_hiera['hosts']
 
   include nagios::defaults
   include nagios::base
-  #Class ['nagios'] -> Class ['nagios::defaults']
-  class {'nagios::apache':
+  class {'nagios':
+    # don't manage apache class from nagios, cause we already include
+    # it in site_apache::common
+    httpd              => 'absent',
     allow_external_cmd => true,
     stored_config      => false,
-    #before             => Class ['nagios::defaults']
   }
+
+  file { '/etc/apache2/conf.d/nagios3.conf':
+    ensure => link,
+    target => '/usr/share/doc/nagios3-common/examples/apache2.conf',
+    notify => Service['apache']
+  }
+
+  include site_apache::common
+  include site_apache::module::headers
 
   File ['nagios_htpasswd'] {
     source  => undef,
-    content => "nagiosadmin:$nagiosadmin_pw",
+    content => "nagiosadmin:${nagiosadmin_pw}",
     mode    => '0640',
   }
 
@@ -33,6 +41,18 @@ class site_nagios::server inherits nagios::base {
     group  => 'nagios',
   }
 
-  site_nagios::add_host {$hosts:}
+  create_resources ( site_nagios::add_host_services, $nagios_hosts )
+
+  include site_nagios::server::apache
+  include site_check_mk::server
   include site_shorewall::monitor
+
+  augeas {
+    'logrotate_nagios':
+      context => '/files/etc/logrotate.d/nagios/rule',
+      changes => [ 'set file /var/log/nagios3/nagios.log', 'set rotate 7',
+        'set schedule daily', 'set compress compress',
+        'set missingok missingok', 'set ifempty notifempty',
+        'set copytruncate copytruncate' ]
+  }
 }

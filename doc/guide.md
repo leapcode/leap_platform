@@ -15,16 +15,11 @@ When adding a new node to your provider, you should ask yourself four questions:
 
 Brief overview of the services:
 
-![services diagram](service-diagram.png)
-
 * **webapp**: The web application. Runs both webapp control panel for users and admins as well as the REST API that the client uses. Needs to communicate heavily with `couchdb` nodes. You need at least one, good to have two for redundancy. The webapp does not get a lot of traffic, so you will not need many.
 * **couchdb**: The database for users and user data. You can get away with just one, but for proper redundancy you should have at least three. Communicates heavily with `webapp` and `mx` nodes.
 * **soledad**: Handles the data syncing with clients. Typically combined with `couchdb` service, since it communicates heavily with couchdb. (not currently in stable release)
 * **mx**: Incoming and outgoing MX servers. Communicates with the public internet, clients, and `couchdb` nodes. (not currently in stable release)
 * **openvpn**: OpenVPN gateway for clients. You need at least one, but want as many as needed to support the bandwidth your users are doing. The `openvpn` nodes are autonomous and don't need to communicate with any other nodes. Often combined with `tor` service.
-
-Not pictured:
-
 * **monitor**: Internal service to monitor all the other nodes. Currently, you can have zero or one `monitor` nodes.
 * **tor**: Sets up a tor exit node, unconnected to any other service.
 * **dns**: Not yet implemented.
@@ -157,30 +152,32 @@ Configuration options
 
 The `ca` option in provider.json provides settings used when generating CAs and certificates. The defaults are as follows:
 
-    "ca": {
-      "name": "= global.provider.ca.organization + ' Root CA'",
-      "organization": "= global.provider.name",
-      "organizational_unit": "= 'https://' + global.provider.name",
-      "bit_size": 4096,
-      "digest": "SHA256",
-      "life_span": "10y",
-      "server_certificates": {
-        "bit_size": 2024,
+    {
+      "ca": {
+        "name": "= global.provider.ca.organization + ' Root CA'",
+        "organization": "= global.provider.name[global.provider.default_language]",
+        "organizational_unit": "= 'https://' + global.provider.domain",
+        "bit_size": 4096,
         "digest": "SHA256",
-        "life_span": "1y"
-      },
-      "client_certificates": {
-        "bit_size": 2024,
-        "digest": "SHA256",
-        "life_span": "2m",
-        "limited_prefix": "LIMITED",
-        "unlimited_prefix": "UNLIMITED"
+        "life_span": "10y",
+        "server_certificates": {
+          "bit_size": 2048,
+          "digest": "SHA256",
+          "life_span": "1y"
+        },
+        "client_certificates": {
+          "bit_size": 2048,
+          "digest": "SHA256",
+          "life_span": "2m",
+          "limited_prefix": "LIMITED",
+          "unlimited_prefix": "UNLIMITED"
+        }
       }
     }
 
-To see what values are used for your provider, run `leap inspect provider.json`. You can modify the defaults as you wish by adding the values to provider.json.
+You should not need to override these defaults in your own provider.json, but you can if you want to. To see what values are used for your provider, run `leap inspect provider.json`.
 
-NOTE: A certificate `bit_size` greater than 2024 will probably not be recognized by most commercial CAs.
+NOTE: A certificate `bit_size` greater than 2048 will probably not be recognized by most commercial CAs.
 
 Certificate Authorities
 -----------------------------------------
@@ -244,6 +241,18 @@ The related commercial cert files are:
 The private key file is extremely sensitive and care should be taken with its provenance.
 
 If your commercial CA has a chained CA cert, you should be OK if you just put the **last** cert in the chain into the `commercial_ca.crt` file. This only works if the other CAs in the chain have certs in the debian package `ca-certificates`, which is the case for almost all CAs.
+
+If you want to add additional fields to the CSR, like country, city, or locality, you can configure these values in provider.json like so:
+
+      "ca": {
+        "server_certificates": {
+          "country": "US",
+          "state": "Washington",
+          "locality": "Seattle"
+        }
+      }
+
+If they are not present, the CSR will be created without them.
 
 Facts
 ==============================

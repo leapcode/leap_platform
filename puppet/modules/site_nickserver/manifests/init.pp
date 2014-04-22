@@ -1,37 +1,47 @@
 #
-# TODO: currently, this is dependent on some things that are set up in site_webapp
+# TODO: currently, this is dependent on some things that are set up in
+# site_webapp
 #
 # (1) HAProxy -> couchdb
 # (2) Apache
 #
-# It would be good in the future to make nickserver installable independently of site_webapp.
+# It would be good in the future to make nickserver installable independently of
+# site_webapp.
 #
 
 class site_nickserver {
   tag 'leap_service'
-  include site_config::ruby
+  Class['site_config::default'] -> Class['site_nickserver']
+
+  include site_config::ruby::dev
 
   #
   # VARIABLES
   #
 
   $nickserver        = hiera('nickserver')
-  $nickserver_port   = $nickserver['port']  # the port that public connects to (should be 6425)
-  $nickserver_local_port = '64250'          # the port that nickserver is actually running on
   $nickserver_domain = $nickserver['domain']
+  $couchdb_user      = $nickserver['couchdb_nickserver_user']['username']
+  $couchdb_password  = $nickserver['couchdb_nickserver_user']['password']
 
-  $couchdb_user      = $nickserver['couchdb_user']['username']
-  $couchdb_password  = $nickserver['couchdb_user']['password']
-  $couchdb_host      = 'localhost'    # couchdb is available on localhost via haproxy, which is bound to 4096.
-  $couchdb_port      = '4096'         # See site_webapp/templates/haproxy_couchdb.cfg.erg
+  # the port that public connects to (should be 6425)
+  $nickserver_port   = $nickserver['port']
+  # the port that nickserver is actually running on
+  $nickserver_local_port = '64250'
+
+  # couchdb is available on localhost via haproxy, which is bound to 4096.
+  $couchdb_host      = 'localhost'
+  # See site_webapp/templates/haproxy_couchdb.cfg.erg
+  $couchdb_port      = '4096'
 
   # temporarily for now:
   $domain          = hiera('domain')
   $address_domain  = $domain['full_suffix']
-  $x509            = hiera('x509')
-  $x509_key        = $x509['key']
-  $x509_cert       = $x509['cert']
-  $x509_ca         = $x509['ca_cert']
+
+
+  include site_config::x509::cert
+  include site_config::x509::key
+  include site_config::x509::ca
 
   #
   # USER AND GROUP
@@ -41,6 +51,7 @@ class site_nickserver {
     ensure    => present,
     allowdupe => false;
   }
+
   user { 'nickserver':
     ensure    => present,
     allowdupe => false,
@@ -50,31 +61,33 @@ class site_nickserver {
   }
 
   #
-  # NICKSERVER CODE
-  # NOTE: in order to support TLS, libssl-dev must be installed before EventMachine gem
-  # is built/installed.
+  # NICKSERVER CODE NOTE: in order to support TLS, libssl-dev must be installed
+  # before EventMachine gem is built/installed.
   #
 
-  package {
-    'libssl-dev': ensure => installed;
-  }
+  package { 'libssl-dev': ensure => installed }
+
   vcsrepo { '/srv/leap/nickserver':
     ensure   => present,
     revision => 'origin/master',
     provider => git,
-    source   => 'git://code.leap.se/nickserver',
+    source   => 'https://leap.se/git/nickserver',
     owner    => 'nickserver',
     group    => 'nickserver',
     require  => [ User['nickserver'], Group['nickserver'] ],
     notify   => Exec['nickserver_bundler_update'];
   }
+
   exec { 'nickserver_bundler_update':
     cwd     => '/srv/leap/nickserver',
     command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install --path vendor/bundle"',
     unless  => '/usr/bin/bundle check',
     user    => 'nickserver',
     timeout => 600,
-    require => [ Class['bundler::install'], Vcsrepo['/srv/leap/nickserver'], Package['libssl-dev'] ],
+    require => [
+      Class['bundler::install'], Vcsrepo['/srv/leap/nickserver'],
+      Package['libssl-dev'], Class['site_config::ruby::dev'] ],
+
     notify  => Service['nickserver'];
   }
 
@@ -82,7 +95,7 @@ class site_nickserver {
   # NICKSERVER CONFIG
   #
 
-  file { '/etc/leap/nickserver.yml':
+  file { '/etc/nickserver.yml':
     content => template('site_nickserver/nickserver.yml.erb'),
     owner   => nickserver,
     group   => nickserver,
@@ -99,8 +112,11 @@ class site_nickserver {
       ensure  => link,
       target  => '/srv/leap/nickserver/bin/nickserver',
       require => Vcsrepo['/srv/leap/nickserver'];
+
     '/etc/init.d/nickserver':
-      owner   => root, group => 0, mode => '0755',
+      owner   => root,
+      group   => 0,
+      mode    => '0755',
       source  => '/srv/leap/nickserver/dist/debian-init-script',
       require => Vcsrepo['/srv/leap/nickserver'];
   }
@@ -110,7 +126,11 @@ class site_nickserver {
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => File['/etc/init.d/nickserver'];
+    require    => [
+      File['/etc/init.d/nickserver'],
+      Class['Site_config::X509::Key'],
+      Class['Site_config::X509::Cert'],
+      Class['Site_config::X509::Ca'] ];
   }
 
   #
@@ -119,7 +139,7 @@ class site_nickserver {
   #
 
   file { '/etc/shorewall/macro.nickserver':
-    content => "PARAM   -       -       tcp    $nickserver_port",
+    content => "PARAM   -       -       tcp    ${nickserver_port}",
     notify  => Service['shorewall'],
     require => Package['shorewall'];
   }
@@ -142,21 +162,8 @@ class site_nickserver {
   }
 
   apache::vhost::file {
-    'nickserver': content => template('site_nickserver/nickserver-proxy.conf.erb')
+    'nickserver':
+      content => template('site_nickserver/nickserver-proxy.conf.erb')
   }
 
-  x509::key { 'nickserver':
-    content => $x509_key,
-    notify  => Service[apache];
-  }
-
-  x509::cert { 'nickserver':
-    content => $x509_cert,
-    notify  => Service[apache];
-  }
-
-  x509::ca { 'nickserver':
-    content => $x509_ca,
-    notify  => Service[apache];
-  }
 }

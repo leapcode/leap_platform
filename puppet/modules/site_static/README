@@ -1,0 +1,3 @@
+Deploy one or more static websites to a node.
+
+For now, it only supports `amber` based static sites. Should support plain html and jekyll in the future.

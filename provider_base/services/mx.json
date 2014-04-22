@@ -1,0 +1,24 @@
+{
+  "stunnel": {
+    "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
+  },
+  "haproxy": {
+    "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.couch_client)"
+  },
+  "couchdb_leap_mx_user": {
+    "username": "= global.services[:couchdb].couch.users[:leap_mx].username",
+    "password": "= secret :couch_leap_mx_password",
+    "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
+  },
+  "mynetworks": "= nodes['environment' => '!local'].map{|name, n| [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]}.flatten.compact.uniq",
+  "x509": {
+    "use": true,
+    "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
+    "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
+    "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`'",
+    "commercial_cert": "= file [:commercial_cert, domain.full_suffix]",
+    "commercial_key": "= file [:commercial_key, domain.full_suffix]",
+    "commercial_ca_cert": "= try_file :commercial_ca_cert"
+  },
+  "service_type": "user_service"
+}

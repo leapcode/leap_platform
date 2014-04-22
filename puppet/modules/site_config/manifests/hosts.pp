@@ -1,8 +1,9 @@
 class site_config::hosts() {
-  $hosts         = hiera('hosts','')
+  $hosts         = hiera('hosts', false)
   $hostname      = hiera('name')
   $domain_hash   = hiera('domain')
   $domain_public = $domain_hash['full_suffix']
+  $api           = hiera('api', '')
 
   file { '/etc/hostname':
     ensure  => present,

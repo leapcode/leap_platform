@@ -1,15 +1,16 @@
+# encoding: utf-8
 #
 # These are variables defined by this leap_platform and used by leap_cli.
 #
 
 Leap::Platform.define do
-  self.version = "1.1.2"
-  self.compatible_cli = "1.1.2".."1.99"
+  self.version = "0.4.0"
+  self.compatible_cli = "1.5.0".."1.99"
 
   #
   # the facter facts that should be gathered
   #
-  self.facts = ["ec2_local_ipv4"]
+  self.facts = ["ec2_local_ipv4", "ec2_public_ipv4"]
 
   #
   # the named paths for this platform
@@ -26,6 +27,7 @@ Leap::Platform.define do
     # input config files
     :common_config    => 'common.json',
     :provider_config  => 'provider.json',
+    :provider_env_config => 'provider.#{arg}.json',
     :secrets_config   => 'secrets.json',
     :node_config      => 'nodes/#{arg}.json',
     :service_config   => 'services/#{arg}.json',
@@ -43,6 +45,8 @@ Leap::Platform.define do
     :user_pgp         => 'users/#{arg}/#{arg}_pgp.pub',
     :known_hosts      => 'files/ssh/known_hosts',
     :authorized_keys  => 'files/ssh/authorized_keys',
+    :monitor_pub_key  => 'files/ssh/monitor_ssh.pub',
+    :monitor_priv_key => 'files/ssh/monitor_ssh',
     :ca_key           => 'files/ca/ca.key',
     :ca_cert          => 'files/ca/ca.crt',
     :client_ca_key    => 'files/ca/client_ca.key',
@@ -73,5 +77,9 @@ Leap::Platform.define do
   self.node_files = [
     :node_config, :hiera, :node_x509_cert, :node_x509_key, :node_ssh_pub_key
   ]
+
+  self.monitor_username = 'monitor'
+
+  self.reserved_usernames = ['monitor']
 end
 

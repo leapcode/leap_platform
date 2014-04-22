@@ -1,0 +1,15 @@
+[mail1]
+path=/var/mail/vmail/Maildir
+recursive=True
+
+[couchdb]
+user=<%= @couchdb_user %>
+password=<%= @couchdb_password %>
+server=<%= @couchdb_host %>
+port=<%= @couchdb_port %>
+
+[alias map]
+port=4242
+
+[check recipient]
+port=2244
