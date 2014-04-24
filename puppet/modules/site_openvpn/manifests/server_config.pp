@@ -65,6 +65,7 @@ define site_openvpn::server_config(
       mode    => 644,
       warn    => true,
       require => File['/etc/openvpn'],
+      before  => Service['openvpn'],
       notify  => Exec['restart_openvpn'];
   }
 
