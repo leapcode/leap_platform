@@ -56,6 +56,13 @@ class tapicero {
       group   => 'tapicero',
       require => User['tapicero'];
 
+    # for pid file
+    '/var/run/tapicero':
+      ensure  => directory,
+      owner   => 'tapicero',
+      group   => 'tapicero',
+      require => User['tapicero']
+
     ##
     ## TAPICERO CONFIG
     ##
@@ -117,7 +124,7 @@ class tapicero {
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => File['/etc/init.d/tapicero'];
+    require    => [ File['/etc/init.d/tapicero'], File['/var/run/tapicero'] ];
   }
 
 }
