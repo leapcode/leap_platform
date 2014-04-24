@@ -7,6 +7,7 @@ class site_tor {
   $tor_type       = $tor['type']
   $nickname       = $tor['nickname']
   $contact_emails = join($tor['contacts'],', ')
+  $family         = $tor['family']
 
   $address        = hiera('ip_address')
 
@@ -16,7 +17,7 @@ class site_tor {
     address          => $address,
     contact_info     => obfuscate_email($contact_emails),
     bandwidth_rate   => $bandwidth_rate,
-    my_family        => '$2A431444756B0E7228A7918C85A8DACFF7E3B050',
+    my_family        => $family
   }
 
   if ( $tor_type == 'exit'){
