@@ -8,7 +8,7 @@ class site_check_mk::agent::mx {
   # local nagios plugin checks via mrpe
   file_line {
     'Leap_MX_Procs':
-      line => 'Leap_MX_Procs  /usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a leap_mx',
+      line => 'Leap_MX_Procs  /usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a \'/usr/bin/python /usr/bin/twistd --pidfile=/var/run/leap_mx.pid --rundir=/var/lib/leap_mx/ --python=/usr/share/app/leap_mx.tac --logfile=/var/log/leap_mx.log\'',
       path => '/etc/check_mk/mrpe.cfg';
   }
 
