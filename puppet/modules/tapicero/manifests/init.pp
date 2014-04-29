@@ -61,7 +61,7 @@ class tapicero {
       ensure  => directory,
       owner   => 'tapicero',
       group   => 'tapicero',
-      require => User['tapicero']
+      require => User['tapicero'];
 
     ##
     ## TAPICERO CONFIG
