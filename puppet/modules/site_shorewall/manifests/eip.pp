@@ -68,6 +68,22 @@ class site_shorewall::eip {
       destination => '$FW',
       action      => 'leap_eip(ACCEPT)',
       order       => 200;
+
+    'block_eip_dns_udp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      protocol        => 'udp',
+      destinationport => 'domain',
+      order           => 300;
+
+    'block_eip_dns_tcp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      protocol        => 'tcp',
+      destinationport => 'domain',
+      order           => 301;
   }
 
   # create dnat rule for each port
