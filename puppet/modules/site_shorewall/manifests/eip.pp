@@ -73,7 +73,7 @@ class site_shorewall::eip {
       action          => 'REJECT',
       source          => 'eip',
       destination     => 'net',
-      protocol        => 'udp',
+      proto           => 'udp',
       destinationport => 'domain',
       order           => 300;
 
@@ -81,7 +81,7 @@ class site_shorewall::eip {
       action          => 'REJECT',
       source          => 'eip',
       destination     => 'net',
-      protocol        => 'tcp',
+      proto           => 'tcp',
       destinationport => 'domain',
       order           => 301;
   }
