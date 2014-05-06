@@ -3,5 +3,6 @@
 :INPUT DROP [24:1980]
 :FORWARD DROP [0:0]
 :OUTPUT DROP [14:8030]
+-A OUTPUT -j REJECT --reject-with icmp6-port-unreachable
 COMMIT
 # Completed on Tue Aug 20 12:19:43 2013
