@@ -111,6 +111,9 @@ define site_openvpn::server_config(
       key    => 'dev',
       value  => 'tun',
       server => $openvpn_configname;
+    "tun-ipv6 ${openvpn_configname}":
+      key    => 'tun-ipv6',
+      server => $openvpn_configname;
     "duplicate-cn ${openvpn_configname}":
       key    => 'duplicate-cn',
       server => $openvpn_configname;
@@ -145,6 +148,10 @@ define site_openvpn::server_config(
       key    => 'push',
       value  => '"redirect-gateway def1"',
       server => $openvpn_configname;
+    "push-ipv6 ${openvpn_configname}":
+      key    => 'push',
+      value  => '"route-ipv6 2000::/3"',
+      server => $openvpn_configname;
     "script-security ${openvpn_configname}":
       key    => 'script-security',
       value  => '2',
@@ -152,6 +159,10 @@ define site_openvpn::server_config(
     "server ${openvpn_configname}":
       key    => 'server',
       value  => $server,
+      server => $openvpn_configname;
+    "server-ipv6 ${openvpn_configname}":
+      key    => 'server-ipv6',
+      value  => '2001:db8:123::/64',
       server => $openvpn_configname;
     "status ${openvpn_configname}":
       key    => 'status',
