@@ -174,7 +174,7 @@ class site_openvpn {
 
   package {
     'openvpn':
-      ensure  => installed,
+      ensure  => latest,
       require => Class['site_apt::preferences::openvpn'];
   }
 
