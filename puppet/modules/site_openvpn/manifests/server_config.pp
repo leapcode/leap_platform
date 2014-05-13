@@ -78,6 +78,15 @@ define site_openvpn::server_config(
     }
   }
 
+  # according to openvpn man page: tcp-nodelay is a "generally a good latency optimization".
+  if $proto == 'tcp' {
+    openvpn::option {
+      "tcp-nodelay ${openvpn_configname}":
+        key     => 'tcp-nodelay',
+        server  => $openvpn_configname;
+    }
+  }
+
   openvpn::option {
     "ca ${openvpn_configname}":
       key     => 'ca',
@@ -154,7 +163,7 @@ define site_openvpn::server_config(
       server => $openvpn_configname;
     "script-security ${openvpn_configname}":
       key    => 'script-security',
-      value  => '2',
+      value  => '1',
       server => $openvpn_configname;
     "server ${openvpn_configname}":
       key    => 'server',
@@ -176,11 +185,6 @@ define site_openvpn::server_config(
       key    => 'topology',
       value  => 'subnet',
       server => $openvpn_configname;
-    # no need for server-up.sh right now
-    #"up $openvpn_configname":
-    #    key    => 'up',
-    #    value  => '/etc/openvpn/server-up.sh',
-    #    server => $openvpn_configname;
     "verb ${openvpn_configname}":
       key    => 'verb',
       value  => '3',
