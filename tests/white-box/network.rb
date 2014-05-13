@@ -57,4 +57,9 @@ class Network < LeapTest
     end
   end
 
+  def test_03_Is_shorewall_running?
+    assert_run('/sbin/shorewall status')
+    pass
+  end
+
 end
