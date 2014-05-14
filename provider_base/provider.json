@@ -15,12 +15,12 @@
   "default_language": "en",
   "enrollment_policy": "open",
   "service": {
-    "levels": [
+    "levels": {
       // bandwidth limit is in Bytes, storage limit is in MB.
-      {"id": 1, "name": "free", "storage":50},
-      {"id": 2, "name": "basic", "storage":1000, "rate": ["US$10", "€10"]},
-      {"id": 3, "name": "pro", "storage":10000, "rate": ["US$20", "€20"]}
-    ],
+      "1": {"name": "free", "storage":50},
+      "2": {"name": "basic", "storage":1000, "rate": ["tba"]},
+      "3": {"name": "pro", "storage":10000, "rate": ["tba"]}
+    },
     "default_service_level": 1,
     "bandwidth_limit": 102400,
     "allow_free": "= provider.service.levels.select {|l| l['rate'].nil?}.any?",

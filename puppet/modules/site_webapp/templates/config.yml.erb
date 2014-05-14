@@ -1,4 +1,3 @@
-<%- require 'json' -%>
 <%- cert_options = @webapp['client_certificates'] -%>
 production:
   admins: <%= @webapp['admins'].inspect %>
@@ -17,4 +16,4 @@ production:
   unlimited_cert_prefix: "<%= cert_options['unlimited_prefix'] %>"
   minimum_client_version: "<%= @webapp['client_version']['min'] %>"
   default_service_level: "<%= @webapp['default_service_level'] %>"
-  service_levels: <%= @webapp['service_levels'].to_json %>
+  service_levels: "<%= @webapp['service_levels'].inspect %>"
