@@ -6,7 +6,7 @@ class site_static {
 
   if (member($formats, 'amber')) {
     include site_config::ruby::dev
-    rubygems::gem{'amber': }
+    rubygems::gem{'amber-0.3.0': }
   }
 
   create_resources(site_static::domain, $domains)
