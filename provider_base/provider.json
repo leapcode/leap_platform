@@ -15,11 +15,17 @@
   "default_language": "en",
   "enrollment_policy": "open",
   "service": {
+     // bandwidth limit is in Bytes, storage limit is in MB.
+     // for example:
+     // "levels": {
+     //    "1": {"name": "free", "description":"Limited service, but without cost to you.", "storage":50},
+     //    "2": {"name": "basic", "description":"The standard package.", "storage":1000, "rate": {"USD":5}},
+     //    "3": {"name": "pro", "description":"Extra storage for power users." , "storage":10000, "rate": {"USD":10}}
+     //  }
     "levels": {
-      // bandwidth limit is in Bytes, storage limit is in MB.
-      "1": {"name": "free", "storage":50},
-      "2": {"name": "basic", "storage":1000, "rate": ["tba"]},
-      "3": {"name": "pro", "storage":10000, "rate": ["tba"]}
+      "1": {
+        "name": "free", "description": "Please donate."
+      }
     },
     "default_service_level": 1,
     "bandwidth_limit": 102400,
