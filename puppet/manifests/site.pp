@@ -10,6 +10,7 @@ notice("Services for ${fqdn}: ${services_str}")
 
 if member($services, 'openvpn') {
   include site_openvpn
+  include site_obfsproxy
 }
 
 if member($services, 'couchdb') {
@@ -40,6 +41,10 @@ if member($services, 'mx') {
 
 if member($services, 'static') {
   include site_static
+}
+
+if $services =~ /\bobfsproxy\b/ {
+  include site_obfsproxy
 }
 
 include site_config::packages::uninstall
