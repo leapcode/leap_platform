@@ -27,6 +27,9 @@ class site_config::default {
   if $::ec2_instance_id {
     include site_config::dhclient
   }
+  if $::virtual == 'virtualbox' {
+    include site_config::dhclient
+  }
 
   # configure /etc/resolv.conf
   include site_config::resolvconf
