@@ -1,0 +1,11 @@
+TRANSPORT=<%= @transport %>
+PORT=<%= @port %>
+DEST_IP=<%= @dest_ip %>
+DEST_PORT=<%= @dest_port %>
+<% if @transport == "scramblesuit" %>
+PARAM=--password=<%= @param %>
+<% else %>
+PARAM=<%= @param %>
+<% end %>
+LOG=info
+

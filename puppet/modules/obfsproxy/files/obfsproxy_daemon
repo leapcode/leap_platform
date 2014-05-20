@@ -1,0 +1,99 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          obfsproxy daemon
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: obfsproxy daemon
+# Description:       obfsproxy daemon
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+DAEMON=/usr/bin/obfsproxy
+NAME=obfsproxy
+DESC="obfsproxy daemon"
+USER=obfsproxy
+PIDFILE=/var/run/obfsproxy.pid
+CONF=/etc/obfsproxy.conf
+
+# If the daemon is not there, then exit.
+test -x $DAEMON || exit 0
+
+if [ -f $CONF ] ; then
+  . $CONF
+else
+  echo "Obfsproxy configuration file is missing, aborting..."
+  exit
+fi
+
+DAEMONARGS=" --log-min-severity=$LOG $TRANSPORT $PARAM \
+             --dest=$DEST_IP:$DEST_PORT server 0.0.0.0:$PORT"
+
+start_obfsproxy() {
+  start-stop-daemon --start --quiet --oknodo -m --pidfile $PIDFILE \
+		-b -c $USER --startas $DAEMON --$DAEMONARGS
+}
+
+stop_obfsproxy() {
+  start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+}
+
+status_obfsproxy() {
+  status_of_proc -p $PIDFILE $DAEMON $NAME && status="0" || status="$?"
+}
+
+case $1 in
+ start)
+  if [ -e $PIDFILE ]; then
+   status_obfsproxy
+   if [ $status = "0" ]; then
+    exit
+   fi
+  fi
+  log_begin_msg "Starting $DESC"
+  start_obfsproxy
+  log_end_msg $?
+  ;;
+ stop)
+  if [ -e $PIDFILE ]; then
+   status_obfsproxy
+   if [ $status = "0" ]; then
+     log_begin_msg "Stopping $DESC"
+     stop_obfsproxy
+     rm -f $PIDFILE
+     log_end_msg $?
+   fi
+  else
+     log_daemon_msg "$NAME is not running"
+     log_end_msg $?
+  fi
+  ;;
+ restart)
+  $0 stop && sleep 2 && $0 start
+  ;;
+ status)
+#  if [ -e $PIDFILE ]; then
+#   #status_of_proc -p $PIDFILE $DAEMON "$NAME " && exit 0 || exit $?
+#   status_obfsproxy
+#  else
+#   log_daemon_msg "$NAME is not running"
+#   log_end_msg 0
+#  fi
+  status_obfsproxy
+  ;;
+ reload)
+  if [ -e $PIDFILE ]; then
+   start-stop-daemon --stop --signal USR1 --quiet --pidfile $PIDFILE --name $NAME
+   log_success_msg "$DESC reloaded successfully"
+  else
+   log_failure_msg "$PIDFILE does not exists"
+  fi
+  ;;
+ *)
+  echo "Usage: $0 {start|stop|restart|reload|status}"
+  exit 2
+  ;;
+esac
