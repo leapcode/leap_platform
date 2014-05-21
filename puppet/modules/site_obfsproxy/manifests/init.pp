@@ -22,6 +22,8 @@ class site_obfsproxy {
     dest_port => $dest_port,
   }
 
+  include site_shorewall::obfsproxy
+
 }
 
 
