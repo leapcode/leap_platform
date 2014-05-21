@@ -16,8 +16,9 @@ DAEMON=/usr/bin/obfsproxy
 NAME=obfsproxy
 DESC="obfsproxy daemon"
 USER=obfsproxy
+DATDIR=/etc/obfsproxy
 PIDFILE=/var/run/obfsproxy.pid
-CONF=/etc/obfsproxy.conf
+CONF=$DATDIR/obfsproxy.conf
 
 # If the daemon is not there, then exit.
 test -x $DAEMON || exit 0
@@ -29,8 +30,8 @@ else
   exit
 fi
 
-DAEMONARGS=" --log-min-severity=$LOG $TRANSPORT $PARAM \
-             --dest=$DEST_IP:$DEST_PORT server 0.0.0.0:$PORT"
+DAEMONARGS=" --log-min-severity=$LOG --data-dir=$DATDIR $TRANSPORT \
+        $PARAM --dest=$DEST_IP:$DEST_PORT server 0.0.0.0:$PORT"
 
 start_obfsproxy() {
   start-stop-daemon --start --quiet --oknodo -m --pidfile $PIDFILE \
