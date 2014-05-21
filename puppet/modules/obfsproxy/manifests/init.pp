@@ -6,13 +6,16 @@ class obfsproxy (
   $dest_port
 ){
 
-  user { obfsproxy:
+  $user = 'obfsproxy'
+  $conf = '/etc/obfsproxy/obfsproxy.conf'
+
+  user { $user:
     ensure => present,
     system => true,
-    gid    => obfsproxy,
+    gid    => $user,
   }
 
-  group { obfsproxy:
+  group { $user:
     ensure => present,
     system => true,
   }
@@ -31,19 +34,26 @@ class obfsproxy (
     source    => 'puppet:///modules/obfsproxy/obfsproxy_daemon',
     owner     => 'root',
     group     => 'root',
-    mode      => '0755',
-    require   => File['/etc/obfsproxy.conf'],
-    subscribe => File['/etc/obfsproxy.conf'],
-    #content  => template('obfsproxy/etc_init_d.erb'),
+    mode      => '0750',
+    require   => File[$conf],
+    subscribe => File[$conf],
   }
 
-  file { '/etc/obfsproxy.conf':
-    path    => '/etc/obfsproxy.conf',
+  file { $conf :
+    path    => $conf,
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => '0750',
+    mode    => '0600',
     content => template('obfsproxy/etc_conf.erb'),
+    require => File['/etc/obfsproxy'],
+  }
+
+  file { '/etc/obfsproxy':
+    ensure => directory,
+    owner  => $user,
+    group  => $user,
+    mode   => '0700',
   }
 
   package { "obfsproxy":
