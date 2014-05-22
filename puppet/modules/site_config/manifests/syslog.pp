@@ -1,11 +1,6 @@
 class site_config::syslog {
 
-  apt::preferences_snippet { 'rsyslog_anon_depends':
-    package  => 'libestr0 librelp0 rsyslog*',
-    priority => '999',
-    pin      => 'release a=wheezy-backports',
-    before   => Class['rsyslog::install']
-  }
+  include site_apt::preferences::rsyslog
 
   class { 'rsyslog::client':
     log_remote => false,
