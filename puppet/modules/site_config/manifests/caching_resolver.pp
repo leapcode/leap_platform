@@ -10,6 +10,8 @@ class site_config::caching_resolver {
   # the newer unbound, then we will add 'include: /etc/unbound.d/*' to the
   # configuration file
 
+  include site_apt::preferences::unbound
+
   file {
     '/etc/unbound/conf.d':
       ensure => directory,
