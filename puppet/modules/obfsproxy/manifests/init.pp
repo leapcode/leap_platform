@@ -20,14 +20,6 @@ class obfsproxy (
     system => true,
   }
 
-#  file { '/etc/default/obfsproxy':
-#    path    => '/etc/default/obfsproxy',
-#    owner   => 'root',
-#    group   => 'root',
-#    mode    => '0750',
-#    content => template('obfsproxy/etc_default_conf.erb'),
-#  }
-
   file { '/etc/init.d/obfsproxy':
     path      => '/etc/init.d/obfsproxy',
     ensure    => present,
