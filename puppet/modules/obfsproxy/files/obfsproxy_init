@@ -76,13 +76,6 @@ case $1 in
   $0 stop && sleep 2 && $0 start
   ;;
  status)
-#  if [ -e $PIDFILE ]; then
-#   #status_of_proc -p $PIDFILE $DAEMON "$NAME " && exit 0 || exit $?
-#   status_obfsproxy
-#  else
-#   log_daemon_msg "$NAME is not running"
-#   log_end_msg 0
-#  fi
   status_obfsproxy
   ;;
  reload)
