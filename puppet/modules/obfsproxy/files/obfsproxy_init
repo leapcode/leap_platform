@@ -27,7 +27,7 @@ if [ -f $CONF ] ; then
   . $CONF
 else
   echo "Obfsproxy configuration file is missing, aborting..."
-  exit
+  exit 2
 fi
 
 DAEMONARGS=" --log-min-severity=$LOG --data-dir=$DATDIR $TRANSPORT \
