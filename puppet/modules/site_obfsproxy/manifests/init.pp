@@ -4,12 +4,12 @@ class site_obfsproxy {
 
   $transport = 'scramblesuit'
 
-  $obfsproxy = hiera('obfsproxy')
+  $obfsproxy    = hiera('obfsproxy')
   $scramblesuit = $obfsproxy['scramblesuit']
-  $scram_pass = $scramblesuit['password']
-  $scram_port = $scramblesuit['port']
-  $dest_ip   = $obfsproxy['gateway_address']
-  $dest_port = '443'
+  $scram_pass   = $scramblesuit['password']
+  $scram_port   = $scramblesuit['port']
+  $dest_ip      = $obfsproxy['gateway_address']
+  $dest_port    = '443'
 
   include site_apt::preferences::twisted
   include site_apt::preferences::obfsproxy
