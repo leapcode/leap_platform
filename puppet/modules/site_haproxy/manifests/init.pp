@@ -1,4 +1,6 @@
 class site_haproxy {
+    $haproxy     = hiera('haproxy')
+    $local_ports = $haproxy['local_ports']
 
     class { 'haproxy':
     enable           => true,
@@ -28,5 +30,13 @@ class site_haproxy {
     order  => '90',
     source => 'puppet:///modules/site_haproxy/haproxy-stats.cfg';
   }
+
+  # Template uses $global_options, $defaults_options and $haproxy
+  concat::fragment { 'leap_haproxy_webapp_couchdb':
+    target  => '/etc/haproxy/haproxy.cfg',
+    order   => '20',
+    content => template('site_webapp/haproxy_couchdb.cfg.erb'),
+  }
+  
   include site_check_mk::agent::haproxy
 }
