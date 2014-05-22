@@ -2,8 +2,7 @@
   "obfsproxy": {
     "scramblesuit": {
       "password": "= base32_secret :scramblesuit_password",
-      //"port"    : "= rand(11..5555)"
-      "port" : "= obfs_port :scramblesuit_port, 18000..32000"
+      "port" : "= rand_range :scramblesuit_port, 18000..32000"
     },
     "gateway_address": "= nodes[:services => 'openvpn'].field('openvpn.gateway_address')[0]"
   }
