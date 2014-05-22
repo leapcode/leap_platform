@@ -48,17 +48,17 @@ class obfsproxy (
     mode   => '0700',
   }
 
-  package { "obfsproxy":
+  package { 'obfsproxy':
     ensure => present,
   }
 
-  service { "obfsproxy":
+  service { 'obfsproxy':
     ensure  => running,
     status  => '/usr/sbin/service obfsproxy status
                 | grep "is running"',
     require => [
-      Package["obfsproxy"],
-      File["/etc/init.d/obfsproxy"] ]
+      Package['obfsproxy'],
+      File['/etc/init.d/obfsproxy'] ]
   }
 
 
