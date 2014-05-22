@@ -10,16 +10,16 @@ class site_config::caching_resolver {
   # the newer unbound, then we will add 'include: /etc/unbound.d/*' to the
   # configuration file
 
+  include site_apt::preferences::unbound
+
   file {
+    # cleanup from how we used to do it
     '/etc/unbound/conf.d':
-      ensure => directory,
-      owner  => root, group => root, mode => '0755',
-      require => Package['unbound'];
+      force   => true,
+      ensure  => absent;
 
     '/etc/unbound/conf.d/placeholder':
-      ensure  => present,
-      content => '',
-      owner   => root, group => root, mode => '0644';
+      ensure  => absent;
   }
 
   class { 'unbound':
@@ -38,5 +38,11 @@ class site_config::caching_resolver {
         access-control => [ '127.0.0.0/8 allow', '::1 allow' ]
       }
     }
+  }
+
+  concat::fragment { 'unbound glob include':
+    target  => $unbound::params::config,
+    content => "include: /etc/unbound/unbound.conf.d/*.conf\n\n",
+    order   => 10
   }
 }

@@ -288,6 +288,16 @@ def assert_running(process)
 end
 
 #
+# runs the specified command, failing on a non-zero exit status.
+#
+def assert_run(command)
+  output = `#{command}`
+  if $?.exitstatus != 0
+    fail "Error running `#{command}`:\n#{output}"
+  end
+end
+
+#
 # Custom test runner in order to modify the output.
 #
 class LeapRunner < MiniTest::Unit

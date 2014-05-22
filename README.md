@@ -30,18 +30,68 @@ To capture the log, you can copy from the console, or run `leap --log FILE` or e
 
 Visit https://leap.se/en/docs/get-involved/communication for details on how to contact the developers.
 
-More Information
-================
+Known issues
+============
+
+The following issues are known to be there in 0.5.1:
+
+CouchDB Sync
+------------
+You can't deploy new couchdb nodes after one or more have been deployed. Make *sure* that you configure and deploy all your couchdb nodes when first creating your provider. The problem is that we dont not have a clean way of adding couch nodes after initial creation of the databases, so any nodes added after result in improperly synchronized data. See Bug [#5601](https://leap.se/code/issues/5601) for more information.
+
+Service separation
+------------------
+
+. You can't deploy all services to one single node. You need at least to seperate the mx and the webapp node. The reason is because they both use haproxy to query the couch db, and haproxy still doesn't have a way to split up its config files in a .d directory (see: https://leap.se/code/issues/3839)
+
+User setup and ssh
+------------------
+
+. if you aren't using a single ssh key, but have different ones, you will need to define the following at the top of your ~/.ssh/config: 
+  HostName <ip address>
+  IdentityFile <path to identity file>
+
+  (see: https://leap.se/code/issues/2946 and https://leap.se/code/issues/3002)
+
+. If the ssh host key changes, you need to run node init again (see: https://leap.se/en/docs/platform/guide#Working.with.SSH)
+
+. At the moment, only ECDSA ssh host keys are supported. If you get the following error: `= FAILED ssh-keyscan: no hostkey alg (must be missing an ecdsa public host key)` then you should confirm that you have the following line defined in your server's **/etc/ssh/sshd_config**: `HostKey /etc/ssh/ssh_host_ecdsa_key`. If that file doesn't exist, run `ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ""` in order to create it. If you made a change to your sshd_config, then you need to run `/etc/init.d/ssh restart` (see: https://leap.se/code/issues/2373)
+
+. To remove an admin's access to your servers, please remove the directory for that user under the `users/` subdirectory in your provider directory and then remove that user's ssh keys from files/ssh/authorized_keys. When finished you *must* run a `leap deploy` to update that information on the servers. 
+
+. At the moment, it is only possible to add an admin who will have access to all LEAP servers (see: https://leap.se/code/issues/2280)
+
+. leap add-user --self allows only one key - if you run that command twice with different keys, you will just replace the key with the second key. To add a second key, add it manually to files/ssh/authorized_keys (see: https://leap.se/code/issues/866)
+
+
+Deploying
+---------
+
+. If you have any errors during a run, please try to deploy again as this often solves non-deterministic issues that were not uncovered in our testing. Please re-deploy with `leap -v2 deploy` to get more verbose logs and capture the complete output to provide to us for debugging.
+
+. If when deploying your debian mirror fails for some reason, network anomoly or the mirror itself is out of date, then platform deployment will not succeed properly. Check the mirror is up and try to deploy again when it is resolved (see: https://leap.se/code/issues/1091)
+
+. Deployment gives 'error: in `%`: too few arguments (ArgumentError)' - this is because you attempted to do a deploy before initializing a node, please initialize the node first and then do a deploy afterwards (see: https://leap.se/code/issues/2550)
+
+. This release has no ability to custom configure apt sources or proxies (see: https://leap.se/code/issues/1971)
+
+. When running a deploy at a verbosity level of 2 and above, you will notice puppet deprecation warnings, these are known and we are working on fixing them
+
+Special Environments
+--------------------
+
+. When deploying to OpenStack release "nova" or newer, you will need to do an initial deploy, then when it has finished run `leap facts update` and then deploy again (see: https://leap.se/code/issues/3020)
+
 
 Changelog
----------
+=========
 
 For a changelog of the current branch:
 
     git log
 
 Authors and Credits
-------------------
+===================
 
 See contributors:
 
@@ -49,6 +99,6 @@ See contributors:
 
 
 Copyright/License
------------------
+=================
 
 Read LICENSE

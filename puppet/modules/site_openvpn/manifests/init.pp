@@ -168,9 +168,14 @@ class site_openvpn {
 
   include site_shorewall::eip
 
+  # In wheezy, we need the openvpn backport to get the 2.3 version of
+  # openvpn which has proper ipv6 support
+  include site_apt::preferences::openvpn
+
   package {
     'openvpn':
-      ensure => installed;
+      ensure  => latest,
+      require => Class['site_apt::preferences::openvpn'];
   }
 
   service {

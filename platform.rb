@@ -4,7 +4,7 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.4.0"
+  self.version = "0.5.2"
   self.compatible_cli = "1.5.0".."1.99"
 
   #
@@ -27,11 +27,15 @@ Leap::Platform.define do
     # input config files
     :common_config    => 'common.json',
     :provider_config  => 'provider.json',
-    :provider_env_config => 'provider.#{arg}.json',
     :secrets_config   => 'secrets.json',
     :node_config      => 'nodes/#{arg}.json',
     :service_config   => 'services/#{arg}.json',
     :tag_config       => 'tags/#{arg}.json',
+
+    # input config files, environmentally scoped
+    :provider_env_config  => 'provider.#{arg}.json',
+    :service_env_config   => 'services/#{arg[0]}.#{arg[1]}.json',
+    :tag_env_config       => 'tags/#{arg[0]}.#{arg[1]}.json',
 
     # input templates
     :provider_json_template        => 'files/service-definitions/provider.json.erb',
