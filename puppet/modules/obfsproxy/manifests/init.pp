@@ -48,6 +48,22 @@ class obfsproxy (
     mode   => '0700',
   }
 
+  file { '/var/log/obfsproxy':
+    ensure => directory,
+    owner  => $user,
+    group  => $user,
+    mode   => '0750',
+  }
+
+  file { '/etc/logrotate.d/obfsproxy':
+    ensure  => present,
+    source  => 'puppet:///modules/obfsproxy/obfsproxy_logrotate',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => File['/var/log/obfsproxy'],
+  }
+
   package { 'obfsproxy':
     ensure => present,
   }
