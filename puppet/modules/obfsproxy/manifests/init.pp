@@ -3,7 +3,8 @@ class obfsproxy (
   $port,
   $param,
   $dest_ip,
-  $dest_port
+  $dest_port,
+  $log_level = 'info'
 ){
 
   $user = 'obfsproxy'
