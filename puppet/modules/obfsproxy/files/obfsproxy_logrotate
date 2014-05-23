@@ -1,0 +1,14 @@
+/var/log/obfsproxy/log {
+  weekly
+  missingok
+  rotate 10
+  compress
+  delaycompress
+  notifempty
+  create 600 obfsproxy obfsproxy
+  postrotate
+    if [ -f /var/run/obfsproxy.pid ]; then
+      /etc/init.d/obfsproxy restart > /dev/null
+    fi
+  endscript
+}
