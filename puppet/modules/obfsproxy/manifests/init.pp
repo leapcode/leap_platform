@@ -39,7 +39,6 @@ class obfsproxy (
     group   => 'root',
     mode    => '0600',
     content => template('obfsproxy/etc_conf.erb'),
-    require => File['/etc/obfsproxy'],
   }
 
   file { '/etc/obfsproxy':
@@ -70,8 +69,9 @@ class obfsproxy (
   }
 
   service { 'obfsproxy':
-    ensure  => running,
-    require => [
+    ensure    => running,
+    subscribe => File[$conf],
+    require   => [
       Package['obfsproxy'],
       File['/etc/init.d/obfsproxy'] ]
   }
