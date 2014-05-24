@@ -71,8 +71,6 @@ class obfsproxy (
 
   service { 'obfsproxy':
     ensure  => running,
-    status  => '/usr/sbin/service obfsproxy status
-                | grep "is running"',
     require => [
       Package['obfsproxy'],
       File['/etc/init.d/obfsproxy'] ]

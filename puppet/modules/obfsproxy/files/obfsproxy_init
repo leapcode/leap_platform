@@ -44,14 +44,14 @@ stop_obfsproxy() {
 }
 
 status_obfsproxy() {
-  status_of_proc -p $PIDFILE $DAEMON $NAME && status="0" || status="$?"
+  status_of_proc -p $PIDFILE $DAEMON $NAME
 }
 
 case $1 in
  start)
   if [ -e $PIDFILE ]; then
    status_obfsproxy
-   if [ $status = "0" ]; then
+   if [ $? = "0" ]; then
     exit
    fi
   fi
@@ -62,15 +62,14 @@ case $1 in
  stop)
   if [ -e $PIDFILE ]; then
    status_obfsproxy
-   if [ $status = "0" ]; then
+   if [ $? = "0" ]; then
      log_begin_msg "Stopping $DESC"
      stop_obfsproxy
      rm -f $PIDFILE
      log_end_msg $?
    fi
   else
-     log_daemon_msg "$NAME is not running"
-     log_end_msg $?
+     status_obfsproxy
   fi
   ;;
  restart)
