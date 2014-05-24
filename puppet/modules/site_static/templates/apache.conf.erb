@@ -16,11 +16,16 @@
     end
   end
   document_root = document_root.gsub(%r{^/|/$}, '')
+  bootstrap_domain = scope.lookupvar('site_static::bootstrap_domain')
+  bootstrap_client = scope.lookupvar('site_static::bootstrap_client')
 -%>
 
 <VirtualHost *:80>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
+<%- @aliases && @aliases.each do |domain_alias| -%>
+  ServerAlias <%= domain_alias %>
+<%- end -%>
   RewriteEngine On
   RewriteRule ^.*$ https://<%= @domain -%>%{REQUEST_URI} [R=permanent,L]
 </VirtualHost>
@@ -28,6 +33,9 @@
 <VirtualHost *:443>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
+<%- @aliases && @aliases.each do |domain_alias| -%>
+  ServerAlias <%= domain_alias %>
+<%- end -%>
 
   #RewriteLog "/var/log/apache2/rewrite.log"
   #RewriteLogLevel 3
@@ -62,6 +70,12 @@
     Order deny,allow
     Allow from all
   </Directory>
+    <%- if ([@aliases]+[@domain]).flatten.include?(bootstrap_domain) -%>
+  Alias /provider.json /srv/leap/provider.json
+  <Location /provider.json>
+    Header set X-Minimum-Client-Version <%= bootstrap_client['min'] %>
+  </Location>
+    <%- end -%>
   <%- else -%>
   AliasMatch ^/[a-z]{2}/<%=path%>(/.+|/|)$ "/<%=directory%>/$1"
   Alias /<%=path%> "/<%=directory%>/"

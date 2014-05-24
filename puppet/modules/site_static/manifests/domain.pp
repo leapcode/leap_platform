@@ -3,7 +3,8 @@ define site_static::domain (
   $ca_cert,
   $key,
   $cert,
-  $tls_only) {
+  $tls_only,
+  $aliases) {
 
   $domain = $name
   $base_dir = '/srv/static'
