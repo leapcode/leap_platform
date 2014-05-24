@@ -30,11 +30,11 @@ class site_haproxy {
     source => 'puppet:///modules/site_haproxy/haproxy-stats.cfg';
   }
 
-  # Template uses $global_options, $defaults_options and $haproxy
+  # Template uses $haproxy
   concat::fragment { 'leap_haproxy_webapp_couchdb':
     target  => '/etc/haproxy/haproxy.cfg',
     order   => '20',
-    content => template('site_webapp/haproxy_couchdb.cfg.erb'),
+    content => template('site_haproxy/haproxy_couchdb.cfg.erb'),
   }
   
   include site_check_mk::agent::haproxy
