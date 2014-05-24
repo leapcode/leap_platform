@@ -19,7 +19,7 @@ USER=obfsproxy
 DATDIR=/etc/obfsproxy
 PIDFILE=/var/run/obfsproxy.pid
 CONF=$DATDIR/obfsproxy.conf
-LOGFILE=/var/log/obfsproxy/log
+LOGFILE=/var/log/obfsproxy.log
 
 # If the daemon is not there, then exit.
 test -x $DAEMON || exit 0
