@@ -29,7 +29,6 @@ class obfsproxy (
     group     => 'root',
     mode      => '0750',
     require   => File[$conf],
-    subscribe => File[$conf],
   }
 
   file { $conf :
