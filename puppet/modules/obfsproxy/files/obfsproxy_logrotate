@@ -1,7 +1,7 @@
 /var/log/obfsproxy/log {
-  weekly
+  daily
   missingok
-  rotate 10
+  rotate 3
   compress
   delaycompress
   notifempty
