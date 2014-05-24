@@ -48,11 +48,11 @@ class obfsproxy (
     mode   => '0700',
   }
 
-  file { '/var/log/obfsproxy':
-    ensure => directory,
-    owner  => $user,
-    group  => $user,
-    mode   => '0750',
+  file { '/var/log/obfsproxy.log':
+    ensure  => present,
+    owner   => $user,
+    group   => $user,
+    mode    => '0640',
   }
 
   file { '/etc/logrotate.d/obfsproxy':
@@ -61,7 +61,7 @@ class obfsproxy (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => File['/var/log/obfsproxy'],
+    require => File['/var/log/obfsproxy.log'],
   }
 
   package { 'obfsproxy':
