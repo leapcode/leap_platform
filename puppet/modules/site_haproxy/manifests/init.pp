@@ -1,6 +1,5 @@
 class site_haproxy {
     $haproxy     = hiera('haproxy')
-    $local_ports = $haproxy['local_ports']
 
     class { 'haproxy':
     enable           => true,
