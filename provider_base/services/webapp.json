@@ -45,7 +45,8 @@
   },
   "definition_files": {
     "provider": "= file :provider_json_template",
-    "eip_service": "= file [:eip_service_json_template, 'v'+webapp.api_version.to_s]",
+    "eip_service": "= file [:eip_service_json_template, 'v'+webapp.api_version.to_s, '']",
+    "eip_service_2": "= try_file [:eip_service_json_template, 'v'+webapp.api_version.to_s, '-2']",
     "soledad_service": "= file [:soledad_service_json_template, 'v'+webapp.api_version.to_s]",
     "smtp_service": "= file [:smtp_service_json_template, 'v'+webapp.api_version.to_s]"
   },

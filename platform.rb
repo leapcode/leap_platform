@@ -39,7 +39,7 @@ Leap::Platform.define do
 
     # input templates
     :provider_json_template        => 'files/service-definitions/provider.json.erb',
-    :eip_service_json_template     => 'files/service-definitions/#{arg}/eip-service.json.erb',
+    :eip_service_json_template     => 'files/service-definitions/#{arg[0]}/eip-service#{arg[1]}.json.erb',
     :soledad_service_json_template => 'files/service-definitions/#{arg}/soledad-service.json.erb',
     :smtp_service_json_template    => 'files/service-definitions/#{arg}/smtp-service.json.erb',
 
