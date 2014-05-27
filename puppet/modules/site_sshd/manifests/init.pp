@@ -22,6 +22,7 @@ class site_sshd {
       group   => root,
       mode    => '0644',
       content => template('site_sshd/ssh_known_hosts.erb');
+
     '/etc/ssh/ssh_config':
       owner => root,
       group => root,

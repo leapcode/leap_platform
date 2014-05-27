@@ -18,7 +18,7 @@ class site_config::default {
   include site_config::sysctl
 
   # configure ssh and include ssh-keys
-  include site_config::sshd
+  include site_sshd
 
   # include classes for special environments
   # i.e. openstack/aws nodes, vagrant nodes
