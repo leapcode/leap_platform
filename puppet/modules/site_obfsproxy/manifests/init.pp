@@ -11,15 +11,24 @@ class site_obfsproxy {
   $dest_ip      = $obfsproxy['gateway_address']
   $dest_port    = '443'
 
+   if $::services =~ /\bopenvpn\b/ {
+     $openvpn      = hiera('openvpn')
+     $bind_address = $openvpn['gateway_address']
+   }
+   elsif $::services =~ /\bobfsproxy\b/ {
+     $bind_address = hiera('ip_address')
+   }
+
   include site_apt::preferences::twisted
   include site_apt::preferences::obfsproxy
 
   class { 'obfsproxy':
-    transport => $transport,
-    port      => $scram_port,
-    param     => $scram_pass,
-    dest_ip   => $dest_ip,
-    dest_port => $dest_port,
+    transport    => $transport,
+    bind_address => $bind_address,
+    port         => $scram_port,
+    param        => $scram_pass,
+    dest_ip      => $dest_ip,
+    dest_port    => $dest_port,
   }
 
   include site_shorewall::obfsproxy
