@@ -24,7 +24,11 @@
 
   def add_obfsproxy(node)
     obfsproxy = {}
-    obfsproxy["ip_address"] = node.ip_address
+    if node.services.include?("openvpn")
+      obfsproxy["ip_address"] = node.openvpn.gateway_address
+    elsif node.services.include?("obfsproxy")
+      obfsproxy["ip_address"] = node.ip_address
+    end
     if node['obfsproxy']['scramblesuit']
       obfsproxy["transport"]  = "scramblesuit"
       obfsproxy["scramblesuit"] = node.obfsproxy.scramblesuit.pick(:port, :password)
@@ -52,6 +56,7 @@
       log :error, "OpenVPN nodes in the environment `#{node.environment}` have conflicting `openvpn.configuration` values. This will result in bad errors."
     end
     configuration = node.openvpn.configuration
+    obfsproxies << add_obfsproxy(node)
   end
   nodes_like_me[:services => 'obfsproxy'].each_node do |node|
     obfsproxies << add_obfsproxy(node)
