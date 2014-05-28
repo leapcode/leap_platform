@@ -1,5 +1,6 @@
 class obfsproxy (
   $transport,
+  $bind_address,
   $port,
   $param,
   $dest_ip,

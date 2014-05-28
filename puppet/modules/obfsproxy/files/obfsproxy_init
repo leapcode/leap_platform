@@ -32,7 +32,7 @@ else
 fi
 
 DAEMONARGS=" --log-min-severity=$LOG --log-file=$LOGFILE --data-dir=$DATDIR \
-            $TRANSPORT $PARAM --dest=$DEST_IP:$DEST_PORT server 0.0.0.0:$PORT"
+            $TRANSPORT $PARAM --dest=$DEST_IP:$DEST_PORT server $BINDADDR:$PORT"
 
 start_obfsproxy() {
   start-stop-daemon --start --quiet --oknodo -m --pidfile $PIDFILE \
