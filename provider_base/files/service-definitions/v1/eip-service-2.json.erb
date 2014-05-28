@@ -40,17 +40,17 @@
   hsh["serial"] = 1
   hsh["version"] = 1
   locations = {}
-  gateways = []
+  gateways = {}
   obfsproxies = []
   configuration = nil
   nodes_like_me[:services => 'openvpn'].each_node do |node|
     if node.openvpn.allow_limited && node.openvpn.allow_unlimited
-      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
-      gateways << add_gateway(node, locations, :ip => node.openvpn.second_gateway_address, :limited => true)
+      gateways[node.name + '_unlimited'] =  add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+      gateways[node.name + '_limited'] = add_gateway(node, locations, :ip => node.openvpn.second_gateway_address, :limited => true)
     elsif node.openvpn.allow_unlimited
-      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+      gateways[node.name + '_unlimited'] = add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
     elsif node.openvpn.allow_limited
-      gateways << add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => true)
+      gateways[node.name + '_limited'] = add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => true)
     end
     if configuration && node.openvpn.configuration != configuration
       log :error, "OpenVPN nodes in the environment `#{node.environment}` have conflicting `openvpn.configuration` values. This will result in bad errors."
@@ -61,7 +61,7 @@
   nodes_like_me[:services => 'obfsproxy'].each_node do |node|
     obfsproxies << add_obfsproxy(node)
   end
-  hsh["gateways"] = gateways.compact
+  hsh["gateways"] = gateways
   hsh["locations"] = locations
   hsh["openvpn_configuration"] = configuration
   hsh["obfsproxies"] = obfsproxies.compact
