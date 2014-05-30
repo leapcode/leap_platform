@@ -1,6 +1,6 @@
 {
   "static": {
-    "formats": "=> (self.static.domains||{}).values.collect{|d| (d.locations||{}).values.collect{|l|l['format']}}.flatten.uniq",
+    "formats": "=> try{static.domains.values.collect{|d| try{d.locations.values.collect{|l|l.format}} }.flatten.compact.uniq} || []",
     // include a copy of provider.json in case any of the configured domains happens to match provider.domain
     "bootstrap_files": {
       "domain": "= provider.domain",

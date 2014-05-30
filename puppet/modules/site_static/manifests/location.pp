@@ -2,6 +2,14 @@ define site_static::location($path, $format, $source) {
 
   $file_path = "/srv/static/${name}"
 
+  if $format == undef {
+    fail("static_site location `${path}` is missing `format` field.")
+  }
+
+  if ! member(['amber','rack'], $format) {
+    fail("Could not understand static_site location format `${format}`.")
+  }
+
   if ($format == 'amber') {
     exec {"amber_build_${name}":
       cwd     => $file_path,
