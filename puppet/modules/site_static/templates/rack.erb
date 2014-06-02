@@ -1,5 +1,5 @@
   #PassengerLogLevel 1
-  #RackEnv production
+  #PassengerAppEnv production
   #PassengerFriendlyErrorPages on
 <%- if @location_path == '' -%>
   <Directory "<%=@directory%>">
@@ -10,7 +10,6 @@
 <%- else -%>
   Alias /<%=@location_path%> "<%=@directory%>"
   <Location /<%=@location_path%>>
-    RackBaseURI /<%=@location_path%>
     PassengerBaseURI /<%=@location_path%>
     PassengerAppRoot "<%=File.dirname(@directory)%>"
   </Location>
