@@ -4,7 +4,7 @@
     // include a copy of provider.json in case any of the configured domains happens to match provider.domain
     "bootstrap_files": {
       "domain": "= provider.domain",
-      "enabled": "= (self.static.domains||{})[provider.domain] ? true : false",
+      "enabled": "= !! try{static.domains[provider.domain]}",
       "provider_json": "=> static.bootstrap_files.enabled ? try{nodes_like_me[:services => 'webapp'].values.first.definition_files['provider']} : nil",
       "client_version": "= static.bootstrap_files.enabled ? provider.client_version : nil"
     }
