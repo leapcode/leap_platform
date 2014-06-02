@@ -82,10 +82,12 @@
 <%-   location_path = location['path'].gsub(%r{^/|/$}, '') -%>
 <%-   directory = location_directory(name, location) -%>
 <%-   local_vars = {'location_path'=>location_path, 'directory'=>directory, 'location'=>location, 'name'=>name} -%>
+<%-   template_path = File.join(File.dirname(__FILE__), location['format']) + '.erb' -%>
+<%-   break unless File.exists?(template_path) -%>
   ##
   ## <%= name %> (<%= location['format'] %>)
   ##
-<%=   scope.function_templatewlv([File.join(File.dirname(__FILE__), location['format']) + '.erb', local_vars]) %>
+<%=   scope.function_templatewlv([template_path, local_vars]) %>
 <%- end -%>
 
 </VirtualHost>

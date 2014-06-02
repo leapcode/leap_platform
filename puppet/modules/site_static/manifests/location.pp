@@ -1,13 +1,15 @@
 define site_static::location($path, $format, $source) {
 
   $file_path = "/srv/static/${name}"
+  $allowed_formats = ['amber','rack']
 
   if $format == undef {
     fail("static_site location `${path}` is missing `format` field.")
   }
 
-  if ! member(['amber','rack'], $format) {
-    fail("Could not understand static_site location format `${format}`.")
+  if ! member($allowed_formats, $format) {
+    $formats_str = join($allowed_formats, ', ')
+    fail("Unsupported static_site location format `${format}`. Supported formats include ${formats_str}.")
   }
 
   if ($format == 'amber') {
