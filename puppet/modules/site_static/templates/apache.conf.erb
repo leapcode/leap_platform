@@ -75,7 +75,7 @@
 <%- end -%>
 
 <%- if @apache_config -%>
-<%=   @apache_config %>
+<%=   @apache_config.gsub(':percent:','%') %>
 <%- end -%>
 
 <%- @locations && @locations.each do |name, location| -%>
