@@ -42,10 +42,11 @@ class obfsproxy (
   }
 
   file { '/etc/obfsproxy':
-    ensure => directory,
-    owner  => $user,
-    group  => $user,
-    mode   => '0700',
+    ensure  => directory,
+    owner   => $user,
+    group   => $user,
+    mode    => '0700',
+    require => User[$user],
   }
 
   file { '/var/log/obfsproxy.log':
@@ -53,6 +54,7 @@ class obfsproxy (
     owner   => $user,
     group   => $user,
     mode    => '0640',
+    require => User[$user],
   }
 
   file { '/etc/logrotate.d/obfsproxy':
@@ -73,7 +75,9 @@ class obfsproxy (
     subscribe => File[$conf],
     require   => [
       Package['obfsproxy'],
-      File['/etc/init.d/obfsproxy'] ]
+      File['/etc/init.d/obfsproxy'],
+      User[$user],
+      Group[$user]]
   }
 
 
