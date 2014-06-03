@@ -1,9 +1,6 @@
 # set a default exec path
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
-# parse services for host
-$services=join(hiera_array('services', ['']), ' ')
-notice("Services for ${fqdn}: ${services}")
 
 include site_config::setup
 include site_config::default
