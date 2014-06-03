@@ -2,11 +2,10 @@ TRANSPORT=<%= @transport %>
 PORT=<%= @port %>
 DEST_IP=<%= @dest_ip %>
 DEST_PORT=<%= @dest_port %>
-<% if @transport == "scramblesuit" %>
+<% if @transport == "scramblesuit" -%>
 PARAM=--password=<%= @param %>
-<% else %>
+<% else -%>
 PARAM=<%= @param %>
-<% end %>
+<% end -%>
 LOG=<%= @log_level %>
 BINDADDR=<%= @bind_address %>
-
