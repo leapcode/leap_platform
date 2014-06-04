@@ -16,7 +16,7 @@ class site_config::setup {
 
   # parse services for host
   $services=join(hiera_array('services', ['']), ' ')
-  notice("Services for ${fqdn}: ${services}")
+
   # configure /etc/hosts
   class { 'site_config::hosts':
     stage => setup,

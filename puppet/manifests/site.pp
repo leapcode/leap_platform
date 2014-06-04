@@ -1,42 +1,44 @@
 # set a default exec path
 Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
-
 include site_config::setup
 include site_config::default
 
-# configure eip
-if $services =~ /\bopenvpn\b/ {
+$services = hiera('services', [])
+$services_str = join($services, ', ')
+notice("Services for ${fqdn}: ${services_str}")
+
+if member($services, 'openvpn') {
   include site_openvpn
 }
 
-if $services =~ /\bcouchdb\b/ {
+if member($services, 'couchdb') {
   include site_couchdb
   include tapicero
 }
 
-if $services =~ /\bwebapp\b/ {
+if member($services, 'webapp') {
   include site_webapp
   include site_nickserver
 }
 
-if $services =~ /\bsoledad\b/ {
+if member($services, 'soledad') {
   include soledad::server
 }
 
-if $services =~ /\bmonitor\b/ {
+if member($services, 'monitor') {
   include site_nagios
 }
 
-if $services =~ /\btor\b/ {
+if member($services, 'tor') {
   include site_tor
 }
 
-if $services =~ /\bmx\b/ {
+if member($services, 'mx') {
   include site_mx
 }
 
-if $services =~ /\bstatic\b/ {
+if member($services, 'static') {
   include site_static
 }
 
