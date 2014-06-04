@@ -4,7 +4,6 @@ class site_config::setup {
   #
   # this is applied before each run of site.pp
   #
-  #$services = ''
 
   Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
@@ -12,10 +11,6 @@ class site_config::setup {
 
   include concat::setup
   include stdlib
-
-
-  # parse services for host
-  $services=join(hiera_array('services', ['']), ' ')
 
   # configure /etc/hosts
   class { 'site_config::hosts':

@@ -1,9 +1,19 @@
 class site_config::hosts() {
   $hosts         = hiera('hosts', false)
+
+  # calculate all the hostname aliases that might be used
   $hostname      = hiera('name')
-  $domain_hash   = hiera('domain')
-  $domain_public = $domain_hash['full_suffix']
-  $api           = hiera('api', '')
+  $domain_hash   = hiera('domain', {})
+  $dns           = hiera('dns', {})
+  if $dns['aliases'] == undef {
+    $dns_aliases = []
+  } else {
+    $dns_aliases = $dns['aliases']
+  }
+  $my_hostnames = unique(sort(concat(
+    [$hostname, $domain_hash['full'], $domain_hash['internal']],
+    $dns_aliases
+  )))
 
   file { '/etc/hostname':
     ensure  => present,
