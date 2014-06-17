@@ -26,7 +26,10 @@
     "nagios_test_user": {
       "username": "nagios_test",
       "password": "= secret :nagios_test_password"
-    }
+    },
+    "engines": [
+      "support"
+    ]
   },
   "stunnel": {
     "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
