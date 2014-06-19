@@ -1,0 +1,20 @@
+//
+// Only applied to master couchdb nodes when there are multiple masters
+//
+{
+  "stunnel": {
+    "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
+    "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.epmd_port)",
+    "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)",
+    "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.ednp_port)"
+  },
+  "couch": {
+    "mode": "multimaster",
+    "bigcouch": {
+      "epmd_port": 4369,
+      "ednp_port": 9002,
+      "cookie": "= secret :bigcouch_cookie",
+      "neighbors": "= nodes_like_me['services' => 'couchdb']['couch.master' => true].exclude(self).field('domain.full')"
+    }
+  }
+}
