@@ -14,7 +14,7 @@
       "epmd_port": 4369,
       "ednp_port": 9002,
       "cookie": "= secret :bigcouch_cookie",
-      "neighbors": "= nodes_like_me['services' => 'couchdb']['couchdb.master' => true].exclude(self).field('domain.full')"
+      "neighbors": "= nodes_like_me['services' => 'couchdb']['couch.master' => true].exclude(self).field('domain.full')"
     }
   }
 }
