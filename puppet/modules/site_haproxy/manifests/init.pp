@@ -1,4 +1,5 @@
 class site_haproxy {
+    $haproxy     = hiera('haproxy')
 
     class { 'haproxy':
     enable           => true,
@@ -28,5 +29,13 @@ class site_haproxy {
     order  => '90',
     source => 'puppet:///modules/site_haproxy/haproxy-stats.cfg';
   }
+
+  # Template uses $haproxy
+  concat::fragment { 'leap_haproxy_webapp_couchdb':
+    target  => '/etc/haproxy/haproxy.cfg',
+    order   => '20',
+    content => template('site_haproxy/haproxy_couchdb.cfg.erb'),
+  }
+  
   include site_check_mk::agent::haproxy
 }

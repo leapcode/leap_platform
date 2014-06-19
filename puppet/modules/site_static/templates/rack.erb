@@ -1,0 +1,21 @@
+  #PassengerLogLevel 1
+  #PassengerAppEnv production
+  #PassengerFriendlyErrorPages on
+<%- if @location_path == '' -%>
+  <Directory "<%=@directory%>">
+    Order deny,allow
+    Allow from all
+    Options -MultiViews
+  </Directory>
+<%- else -%>
+  Alias /<%=@location_path%> "<%=@directory%>"
+  <Location /<%=@location_path%>>
+    PassengerBaseURI /<%=@location_path%>
+    PassengerAppRoot "<%=File.dirname(@directory)%>"
+  </Location>
+  <Directory "<%=@directory%>">
+    Order deny,allow
+    Allow from all
+    Options -MultiViews
+  </Directory>
+<%- end -%>

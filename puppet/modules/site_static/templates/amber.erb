@@ -1,0 +1,15 @@
+<%- if @location_path == '' -%>
+  <Directory "<%= @directory %>/">
+    AllowOverride FileInfo Indexes Options=All,MultiViews
+    Order deny,allow
+    Allow from all
+  </Directory>
+<%- else -%>
+  AliasMatch ^/[a-z]{2}/<%=@location_path%>(/.+|/|)$ "<%=@directory%>/$1"
+  Alias /<%=@location_path%> "<%=@directory%>/"
+  <Directory "<%=@directory%>/">
+    AllowOverride FileInfo Indexes Options=All,MultiViews
+    Order deny,allow
+    Allow from all
+  </Directory>
+<%- end -%>

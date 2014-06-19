@@ -1,5 +1,5 @@
 class site_sshd {
-  $ssh = hiera_hash('ssh')
+  $ssh   = hiera_hash('ssh')
   $hosts = hiera('hosts', '')
 
   ##
@@ -22,10 +22,11 @@ class site_sshd {
       group   => root,
       mode    => '0644',
       content => template('site_sshd/ssh_known_hosts.erb');
+
     '/etc/ssh/ssh_config':
-      owner => root,
-      group => root,
-      mode => '0644',
+      owner   => root,
+      group   => root,
+      mode    => '0644',
       content => template('site_sshd/ssh_config.erb');
   }
 
@@ -45,5 +46,17 @@ class site_sshd {
     class { 'site_sshd::mosh':
       ensure => absent
     }
+  }
+
+  ##
+  ## SSHD SERVER CONFIGURATION
+  ##
+  class { '::sshd':
+    manage_nagios => 'no',
+    ports         => $ssh['port'],
+    use_pam       => 'yes',
+    hardened_ssl  => 'yes',
+    print_motd    => 'no',
+    manage_client => false
   }
 }

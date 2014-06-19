@@ -2,32 +2,45 @@
   ##
   ## An apache config for static websites.
   ##
+
   def location_directory(name, location)
-    if location['format'] == 'amber'
+    if ['amber', 'rack'].include?(location['format'])
       File.join(@base_dir, name, 'public')
     else
       File.join(@base_dir, name)
     end
   end
-  document_root = '/var/www'
-  @locations.each do |name, location|
-    if location['path'] == '/'
-      document_root = location_directory(name, location)
+
+  @document_root = begin
+    root = '/var/www'
+    @locations && @locations.each do |name, location|
+      root = location_directory(name, location) if location['path'] == '/'
     end
+    root.gsub(%r{^/|/$}, '')
   end
-  document_root = document_root.gsub(%r{^/|/$}, '')
+
+  bootstrap_domain = scope.lookupvar('site_static::bootstrap_domain')
+  bootstrap_client = scope.lookupvar('site_static::bootstrap_client')
 -%>
 
 <VirtualHost *:80>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
+<%- @aliases && @aliases.each do |domain_alias| -%>
+  ServerAlias <%= domain_alias %>
+<%- end -%>
+<%- if @tls_only -%>
   RewriteEngine On
   RewriteRule ^.*$ https://<%= @domain -%>%{REQUEST_URI} [R=permanent,L]
+<%- end -%>
 </VirtualHost>
 
 <VirtualHost *:443>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
+<%- @aliases && @aliases.each do |domain_alias| -%>
+  ServerAlias <%= domain_alias %>
+<%- end -%>
 
   #RewriteLog "/var/log/apache2/rewrite.log"
   #RewriteLogLevel 3
@@ -38,8 +51,12 @@
   SSLCompression off
   SSLCipherSuite "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:ECDHE-RSA-RC4-SHA:ECDHE-ECDSA-RC4-SHA:AES128:AES256:RC4-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK"
 
+<%- if @tls_only -%>
   Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+<%- end -%>
   Header set X-Frame-Options "deny"
+  Header always unset X-Powered-By
+  Header always unset X-Runtime
 
   SSLCertificateKeyFile    /etc/x509/keys/<%= @domain %>.key
   SSLCertificateFile       /etc/x509/certs/<%= @domain %>.crt
@@ -47,31 +64,30 @@
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 
-  DocumentRoot "/<%= document_root %>/"
+  DocumentRoot "/<%= @document_root %>/"
   AccessFileName .htaccess
 
-<%- @locations.each do |name, location| -%>
-  <%- path = location['path'].gsub(%r{^/|/$}, '') -%>
-  <%- directory = location_directory(name, location) -%>
-  ##
-  ## <%= name %>
-  ##
-  <%- if path == '' -%>
-  <Directory "/<%= document_root %>/">
-    AllowOverride FileInfo Indexes Options=All,MultiViews
-    Order deny,allow
-    Allow from all
-  </Directory>
-  <%- else -%>
-  AliasMatch ^/[a-z]{2}/<%=path%>(/.+|/|)$ "/<%=directory%>/$1"
-  Alias /<%=path%> "/<%=directory%>/"
-  <Directory "/<%=directory%>/">
-    AllowOverride FileInfo Indexes Options=All,MultiViews
-    Order deny,allow
-    Allow from all
-  </Directory>
-  <%- end -%>
+<%- if ([@aliases]+[@domain]).flatten.include?(bootstrap_domain) -%>
+  Alias /provider.json /srv/leap/provider.json
+  <Location /provider.json>
+    Header set X-Minimum-Client-Version <%= bootstrap_client['min'] %>
+  </Location>
+<%- end -%>
 
+<%- if @apache_config -%>
+<%=   @apache_config.gsub(':percent:','%') %>
+<%- end -%>
+
+<%- @locations && @locations.each do |name, location| -%>
+<%-   location_path = location['path'].gsub(%r{^/|/$}, '') -%>
+<%-   directory = location_directory(name, location) -%>
+<%-   local_vars = {'location_path'=>location_path, 'directory'=>directory, 'location'=>location, 'name'=>name} -%>
+<%-   template_path = File.join(File.dirname(__FILE__), location['format']) + '.erb' -%>
+<%-   break unless File.exists?(template_path) -%>
+  ##
+  ## <%= name %> (<%= location['format'] %>)
+  ##
+<%=   scope.function_templatewlv([template_path, local_vars]) %>
 <%- end -%>
 
 </VirtualHost>

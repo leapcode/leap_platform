@@ -10,7 +10,7 @@ class site_mx {
 
 
   include site_postfix::mx
-  include site_mx::haproxy
+  include site_haproxy
   include site_shorewall::mx
   include site_shorewall::service::smtp
   include site_mx::couchdb

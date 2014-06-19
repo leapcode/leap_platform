@@ -4,7 +4,6 @@ class site_config::setup {
   #
   # this is applied before each run of site.pp
   #
-  #$services = ''
 
   Exec { path => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin' }
 
