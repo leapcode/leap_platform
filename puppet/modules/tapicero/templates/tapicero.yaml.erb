@@ -24,6 +24,7 @@ log_level: info
 options:
   # prefix for per user databases:
   db_prefix: "user-"
+  mirror: <%= @couchdb_mirror %>
 
   # security settings to be used for the per user databases
   security:
@@ -39,4 +40,5 @@ options:
         - <%= @couchdb_soledad_user %>
         - <%= @couchdb_leap_mx_user %>
       roles: []
+
 

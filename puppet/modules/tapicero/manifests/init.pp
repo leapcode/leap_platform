@@ -12,6 +12,7 @@ class tapicero {
   $couchdb_soledad_user    = $couchdb_users['soledad']['username']
   $couchdb_leap_mx_user    = $couchdb_users['leap_mx']['username']
 
+  $couchdb_mirror          = $couchdb['mode'] == 'mirror'
 
   Class['site_config::default'] -> Class['tapicero']
 
