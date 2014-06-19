@@ -35,7 +35,7 @@ class site_couchdb {
   $couchdb_webapp_salt     = $couchdb_webapp['salt']
 
   $couchdb_backup          = $couchdb_config['backup']
-  $couchdb_bigcouch        = $couchdb_config['mode'] == "multimaster"
+  $couchdb_mode            = $couchdb_config['mode']
 
   class { 'couchdb':
     bigcouch            => $couchdb_bigcouch,
@@ -94,7 +94,9 @@ class site_couchdb {
   include site_couchdb::designs
   include site_couchdb::logrotate
 
-  if $couchdb_bigcouch { include site_couchdb::bigcouch }
+  if $couchdb_mode == "multimaster" { include site_couchdb::bigcouch }
+  if $couchdb_mode == "mirror"      { include site_couchdb::mirror }
+
   if $couchdb_backup   { include site_couchdb::backup }
 
   include site_shorewall::couchdb
