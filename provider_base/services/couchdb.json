@@ -40,6 +40,11 @@
                 "username": "webapp",
                 "password": "= secret :couch_webapp_password",
                 "salt": "= hex_secret :couch_webapp_password_salt, 128"
+            },
+            "replication": {
+                "username": "replication",
+                "password": "= secret :couch_replication_password",
+                "salt": "= hex_secret :couch_replication_password_salt, 128"
             }
         },
         "webapp": {
