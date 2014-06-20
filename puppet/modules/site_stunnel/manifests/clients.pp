@@ -1,7 +1,4 @@
 #
-# usage:
-#   create_resource(site_stunnel::clients, hiera('stunnel')['clients'])
-#
 # example hiera yaml:
 #
 #   stunnel:

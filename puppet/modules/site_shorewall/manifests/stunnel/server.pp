@@ -12,7 +12,7 @@ define site_shorewall::stunnel::server($port) {
     require => Package['shorewall']
   }
   shorewall::rule {
-    'net2fw-couchdb':
+    "net2fw-stunnel-server-${name}":
       source      => 'net',
       destination => '$FW',
       action      => "stunnel_server_${name}(ACCEPT)",

@@ -7,10 +7,6 @@ class site_webapp::couchdb {
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
 
-  $stunnel                 = hiera('stunnel')
-  $couch_client            = $stunnel['couch_client']
-  $couch_client_connect    = $couch_client['connect']
-
   include x509::variables
 
   file {
@@ -37,14 +33,4 @@ class site_webapp::couchdb {
   }
 
   include site_stunnel
-
-  $couchdb_stunnel_client_defaults = {
-    'connect_port' => $couch_client_connect,
-    'client'       => true,
-    'cafile'       => "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt",
-    'key'          => "${x509::variables::keys}/${site_config::params::cert_name}.key",
-    'cert'         => "${x509::variables::certs}/${site_config::params::cert_name}.crt",
-  }
-
-  create_resources(site_stunnel::clients, $couch_client, $couchdb_stunnel_client_defaults)
 }
