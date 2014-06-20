@@ -1,33 +1,26 @@
-define site_stunnel::clients (
-  $accept_port,
-  $connect_port,
-  $connect,
-  $cafile,
-  $key,
-  $cert,
-  $client     = true,
-  $verify     = '2',
-  $pid        = $name,
-  $rndfile    = '/var/lib/stunnel4/.rnd',
-  $debuglevel = '4' ) {
+#
+# usage:
+#   create_resource(site_stunnel::clients, hiera('stunnel')['clients'])
+#
+# example hiera yaml:
+#
+#   stunnel:
+#     clients:
+#       ednp_clients:
+#         thrips_9002:
+#           accept_port: 4001
+#           connect: thrips.demo.bitmask.i
+#           connect_port: 19002
+#       epmd_clients:
+#         thrips_4369:
+#           accept_port: 4000
+#           connect: thrips.demo.bitmask.i
+#           connect_port: 14369
+#
+# In the above example, this resource definition is called twice, with $name
+# 'ednp_clients' and 'epmd_clients'
+#
 
-  stunnel::service { $name:
-    accept     => "127.0.0.1:${accept_port}",
-    connect    => "${connect}:${connect_port}",
-    client     => $client,
-    cafile     => $cafile,
-    key        => $key,
-    cert       => $cert,
-    verify     => $verify,
-    pid        => "/var/run/stunnel4/${pid}.pid",
-    rndfile    => $rndfile,
-    debuglevel => $debuglevel,
-    subscribe  => [
-      Class['Site_config::X509::Key'],
-      Class['Site_config::X509::Cert'],
-      Class['Site_config::X509::Ca'] ];
-
-  }
-
-  include site_check_mk::agent::stunnel
+define site_stunnel::clients {
+  create_resources(site_stunnel::client, $site_stunnel::clients[$name])
 }

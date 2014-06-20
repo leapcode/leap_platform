@@ -3,10 +3,14 @@
 //
 {
   "stunnel": {
-    "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
-    "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.epmd_port)",
-    "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)",
-    "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.ednp_port)"
+    "servers": {
+      "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
+      "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)"
+    },
+    "clients": {
+      "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.epmd_port)",
+      "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.ednp_port)"
+    }
   },
   "couch": {
     "mode": "multimaster",
