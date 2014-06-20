@@ -3,7 +3,7 @@
 #
 
 unless nodes_like_me['services' => 'couchdb']['couch.master' => true].any?
-  raise 'node `%s`, environment `%s`: there must be at least one node with couch.master set to `true` for this environment.' % [@node.name, @node.environment]
+  #raise 'node `%s`, environment `%s`: there must be at least one node with couch.master set to `true` for this environment.' % [@node.name, @node.environment]
 end
 
 if couch.master
