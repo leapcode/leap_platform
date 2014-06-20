@@ -1,5 +1,8 @@
 class site_couchdb::create_dbs {
 
+  Class['site_couchdb::setup']
+    -> Class['site_couchdb::create_dbs']
+
   # Couchdb databases
 
   ### customer database

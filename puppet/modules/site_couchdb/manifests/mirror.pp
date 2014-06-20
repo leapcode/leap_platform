@@ -1,8 +1,21 @@
 class site_couchdb::mirror {
 
+  class { 'couchdb':
+    admin_pw            => $site_couchdb::couchdb_admin_pw,
+    admin_salt          => $site_couchdb::couchdb_admin_salt,
+    chttpd_bind_address => '127.0.0.1'
+  }
+
   # Couchdb databases
 
-  $from = $site_couchdb::couchdb_config['replication']['masters'][0]
+  $masters = $site_couchdb::couchdb_config['replication']['masters']
+  $master_node_names = keys($site_couchdb::couchdb_config['replication']['masters'])
+  $master_node = $masters[$master_node_names[0]]
+  $from_host = $master_node['domain_internal']
+  $from_port = $master_node['couch_port']
+  $from = "${from_host}:${from_port}"
+
+  notice("mirror from: ${from}")
 
   ### customer database
   couchdb::mirror_db { 'customers':

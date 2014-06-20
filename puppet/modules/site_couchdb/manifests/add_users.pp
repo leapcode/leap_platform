@@ -1,5 +1,8 @@
 class site_couchdb::add_users {
 
+  Class['site_couchdb::create_dbs']
+    -> Class['site_couchdb::add_users']
+
   # Couchdb users
 
   ## leap_mx couchdb user
