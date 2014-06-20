@@ -14,9 +14,11 @@ class site_couchdb::mirror {
   $masters = $site_couchdb::couchdb_config['replication']['masters']
   $master_node_names = keys($site_couchdb::couchdb_config['replication']['masters'])
   $master_node = $masters[$master_node_names[0]]
+  $user = $site_couchdb::couchdb_replication_user
+  $password = $site_couchdb::couchdb_replication_pw
   $from_host = $master_node['domain_internal']
   $from_port = $master_node['couch_port']
-  $from = "${from_host}:${from_port}"
+  $from = "http://${user}:${password}@${from_host}:${from_port}"
 
   notice("mirror from: ${from}")
 

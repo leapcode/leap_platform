@@ -54,4 +54,13 @@ class site_couchdb::add_users {
     require => Couchdb::Query::Setup['localhost']
   }
 
+  ## replication couchdb user
+  ## read/write: all databases for replication
+  couchdb::add_user { $site_couchdb::couchdb_replication_user:
+    roles   => '["repliction"]',
+    pw      => $site_couchdb::couchdb_replication_pw,
+    salt    => $site_couchdb::couchdb_replication_salt,
+    require => Couchdb::Query::Setup['localhost']
+  }
+
 }
