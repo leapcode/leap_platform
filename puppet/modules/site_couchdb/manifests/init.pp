@@ -34,6 +34,11 @@ class site_couchdb {
   $couchdb_webapp_pw       = $couchdb_webapp['password']
   $couchdb_webapp_salt     = $couchdb_webapp['salt']
 
+  $couchdb_replication     = $couchdb_users['replication']
+  $couchdb_replication_user= $couchdb_replication['username']
+  $couchdb_replication_pw  = $couchdb_replication['password']
+  $couchdb_replication_salt= $couchdb_replication['salt']
+
   $couchdb_backup          = $couchdb_config['backup']
   $couchdb_mode            = $couchdb_config['mode']
 
