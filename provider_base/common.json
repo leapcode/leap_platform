@@ -42,5 +42,9 @@
   "enabled": true,
   "mail": {
     "smarthost": "= nodes_like_me[:services => :mx].exclude(self).field('domain.full')"
+  },
+  "stunnel": {
+    "clients": {},
+    "servers": {}
   }
 }
