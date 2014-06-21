@@ -1,0 +1,32 @@
+frontend couch
+  bind localhost:<%= @listen_port %>
+  mode     http
+  option   httplog
+  option   dontlognull
+  option   http-server-close    # use client keep-alive, but close server connection.
+  use_backend couch_write if METH_POST
+  default_backend couch_read
+
+backend couch_write
+  mode http
+  balance  roundrobin
+  option   httpchk GET /        # health check using simple get to root
+  option   allbackups           # balance among all backups, not just one.
+  default-server inter 3000 fastinter 1000 downinter 1000 rise 2 fall 1
+<%- @servers.sort.each do |name,server| -%>
+<%-   next unless server['writable'] -%>
+    # <%=name%>
+    server couchdb_<%=server['port']%> <%=server['host']%>:<%=server['port']%> <%='backup' if server['backup']%> weight <%=server['weight']%> check
+<%- end -%>
+
+backend couch_read
+  mode http
+  balance  roundrobin
+  option   httpchk GET /        # health check using simple get to root
+  option   allbackups           # balance among all backups, not just one.
+  default-server inter 3000 fastinter 1000 downinter 1000 rise 2 fall 1
+<%- @servers.sort.each do |name,server| -%>
+    # <%=name%>
+    server couchdb_<%=server['port']%> <%=server['host']%>:<%=server['port']%> <%='backup' if server['backup']%> weight <%=server['weight']%> check
+<%- end -%>
+

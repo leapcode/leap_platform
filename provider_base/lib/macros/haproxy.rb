@@ -40,17 +40,18 @@ module LeapCli
       # create the first pass of the servers hash
       servers = node_list.values.inject(Config::ObjectList.new) do |hsh, node|
         weight = default_weight
-        if self['location'] && node['location']
-          if self.location['name'] == node.location['name']
-            weight = local_weight
-          end
-        end
+        try {
+          weight = local_weight if self.location.name == node.location.name
+        }
         hsh[node.name] = Config::Object[
           'backup', false,
           'host', 'localhost',
           'port', accept_ports[node.name] || 0,
           'weight', weight
         ]
+        if node.services.include?('couchdb')
+          hsh[node.name]['writable'] = node.couch.mode != 'mirror'
+        end
         hsh
       end
 
