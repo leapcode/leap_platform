@@ -29,10 +29,15 @@
     }
   },
   "stunnel": {
-    "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
+    "clients": {
+      "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
+    }
   },
   "haproxy": {
-    "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.couch_client, global.services[:couchdb].couch.port)"
+    "couch": {
+      "listen_port": 4096,
+      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port)"
+    }
   },
   "definition_files": {
     "provider": "= file :provider_json_template",

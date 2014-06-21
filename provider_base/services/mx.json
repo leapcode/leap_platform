@@ -1,9 +1,14 @@
 {
   "stunnel": {
-    "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
+    "clients": {
+      "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
+    }
   },
   "haproxy": {
-    "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.couch_client)"
+    "couch": {
+      "listen_port": 4096,
+      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client)"
+    }
   },
   "couchdb_leap_mx_user": {
     "username": "= global.services[:couchdb].couch.users[:leap_mx].username",
