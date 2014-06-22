@@ -127,11 +127,18 @@ class LeapTest < MiniTest::Unit::TestCase
     if params
       uri.query = URI.encode_www_form(params)
     end
-    response = Net::HTTP.get_response(uri)
-    if response.is_a?(Net::HTTPSuccess)
-      yield response.body, response, nil
-    else
-      yield nil, response, nil
+    http = Net::HTTP.new uri.host, uri.port
+    if uri.scheme == 'https'
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http.use_ssl = true
+    end
+    http.start do |agent|
+      response = agent.get(uri.request_uri)
+      if response.is_a?(Net::HTTPSuccess)
+        yield response.body, response, nil
+      else
+        yield nil, response, nil
+      end
     end
   rescue => exc
     yield nil, nil, exc
