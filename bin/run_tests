@@ -122,7 +122,7 @@ class LeapTest < MiniTest::Unit::TestCase
   #
   # attempts a http GET on the url, yields |body, response, error|
   #
-  def get(url, params=nil)
+  def get(url, params=nil, options=nil)
     uri = URI(url)
     if params
       uri.query = URI.encode_www_form(params)
@@ -133,7 +133,11 @@ class LeapTest < MiniTest::Unit::TestCase
       http.use_ssl = true
     end
     http.start do |agent|
-      response = agent.get(uri.request_uri)
+      request = Net::HTTP::Get.new uri.request_uri
+      if options && options[:username]
+        request.basic_auth options[:username], options[:password]
+      end
+      response = agent.request(request)
       if response.is_a?(Net::HTTPSuccess)
         yield response.body, response, nil
       else
@@ -146,7 +150,7 @@ class LeapTest < MiniTest::Unit::TestCase
 
   def assert_get(url, params=nil, options=nil)
     options ||= {}
-    get(url, params) do |body, response, error|
+    get(url, params, options) do |body, response, error|
       if body
         yield body if block_given?
       elsif response
@@ -155,6 +159,19 @@ class LeapTest < MiniTest::Unit::TestCase
         fail ["Expected a response from #{url}, but got \"#{error}\" instead.", options[:error_msg]].compact.join("\n")
       end
     end
+  end
+
+  #
+  # only a warning for now, should be a failure in the future
+  #
+  def assert_auth_fail(url, params, auth_options)
+    get(url, params, auth_options) do |body, response, error|
+      unless response.code == 401
+        warn "Expected a '401 Unauthorized' response, but got #{response.code} instead (GET #{url} with username '#{auth_options[:username]}')."
+        return false
+      end
+    end
+    true
   end
 
   #
