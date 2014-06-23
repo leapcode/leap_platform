@@ -10,11 +10,18 @@ class site_couchdb::setup {
     ensure => absent
   }
 
-  # /etc/couchdb/couchdb.netrc is deployed by couchdb::query::setup
+  $user = $site_couchdb::couchdb_admin_user
+
+  # /etc/couchdb/couchdb-admin.netrc is deployed by couchdb::query::setup
+  # we symlink to couchdb.netrc for puppet commands.
   # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
   # and makes life easier for the admin (i.e. using curl/wget without
   # passing credentials)
   file {
+    '/etc/couchdb/couchdb.netrc':
+      ensure  => link,
+      target  => "/etc/couchdb/couchdb-${user}.netrc";
+
     '/root/.netrc':
       ensure  => link,
       target  => '/etc/couchdb/couchdb.netrc';
@@ -24,7 +31,7 @@ class site_couchdb::setup {
   }
 
   couchdb::query::setup { 'localhost':
-    user  => $site_couchdb::couchdb_admin_user,
+    user  => $user,
     pw    => $site_couchdb::couchdb_admin_pw,
   }
 
