@@ -9,8 +9,6 @@ class site_couchdb::mirror {
     chttpd_bind_address => '127.0.0.1'
   }
 
-  # Couchdb databases
-
   $masters = $site_couchdb::couchdb_config['replication']['masters']
   $master_node_names = keys($site_couchdb::couchdb_config['replication']['masters'])
   $master_node = $masters[$master_node_names[0]]
