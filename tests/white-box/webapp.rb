@@ -60,4 +60,13 @@ class Webapp < LeapTest
     pass
   end
 
+  #
+  # this is technically a black-box test. so, move this when we have support
+  # for black box tests.
+  #
+  def test_04_Can_access_webapp?
+    assert_get('https://' + $node['webapp']['domain'] + '/')
+    pass
+  end
+
 end

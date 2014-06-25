@@ -33,16 +33,11 @@ Visit https://leap.se/en/docs/get-involved/communication for details on how to c
 Known issues
 ============
 
-The following issues are known to be there in 0.5.1:
+The following issues are known to be there in 0.5.2:
 
 CouchDB Sync
 ------------
 You can't deploy new couchdb nodes after one or more have been deployed. Make *sure* that you configure and deploy all your couchdb nodes when first creating your provider. The problem is that we dont not have a clean way of adding couch nodes after initial creation of the databases, so any nodes added after result in improperly synchronized data. See Bug [#5601](https://leap.se/code/issues/5601) for more information.
-
-Service separation
-------------------
-
-. You can't deploy all services to one single node. You need at least to seperate the mx and the webapp node. The reason is because they both use haproxy to query the couch db, and haproxy still doesn't have a way to split up its config files in a .d directory (see: https://leap.se/code/issues/3839)
 
 User setup and ssh
 ------------------

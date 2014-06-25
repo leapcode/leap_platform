@@ -26,7 +26,10 @@
     "nagios_test_user": {
       "username": "nagios_test",
       "password": "= secret :nagios_test_password"
-    }
+    },
+    "engines": [
+      "support"
+    ]
   },
   "stunnel": {
     "clients": {
@@ -64,11 +67,9 @@
   },
   "x509": {
     "use": true,
+    "use_commercial": true,
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
-    "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
-    "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`'",
-    "commercial_cert": "= file [:commercial_cert, webapp.domain]",
-    "commercial_key": "= file [:commercial_key, webapp.domain]",
-    "commercial_ca_cert": "= try_file :commercial_ca_cert"
+    "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`.'",
+    "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`.'"
   }
 }
