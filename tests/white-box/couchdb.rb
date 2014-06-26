@@ -10,8 +10,10 @@ class CouchDB < LeapTest
 
   def test_00_Are_daemons_running?
     assert_running 'tapicero'
-    assert_running 'bin/beam'
-    assert_running 'bin/epmd'
+    if multimaster?
+      assert_running 'bin/beam'
+      assert_running 'bin/epmd'
+    end
     pass
   end
 
@@ -29,6 +31,7 @@ class CouchDB < LeapTest
   # compare the configured nodes to the nodes that are actually listed in bigcouch
   #
   def test_02_Is_cluster_membership_ok?
+    skip "not a multimaster node" unless multimater?
     url = couchdb_backend_url("/nodes/_all_docs")
     neighbors = assert_property('couch.bigcouch.neighbors')
     neighbors << assert_property('domain.full')
@@ -48,6 +51,7 @@ class CouchDB < LeapTest
   # this seems backward to me, so it might be the other way around.
   #
   def test_03_Are_configured_nodes_online?
+    skip "not a multimaster node" unless multimater?
     url = couchdb_url("/_membership", :user => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
@@ -66,11 +70,11 @@ class CouchDB < LeapTest
   end
 
   def test_04_Do_ACL_users_exist?
-    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp']
+    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp', 'replication']
     url = couchdb_backend_url("/_users/_all_docs")
     assert_get(url) do |body|
       response = JSON.parse(body)
-      assert_equal 6, response['total_rows']
+      assert_equal acl_users.count, response['total_rows']
       actual_users = response['rows'].map{|row| row['id'].sub(/^org.couchdb.user:/, '') }
       assert_equal acl_users.sort, actual_users.sort
     end
@@ -126,7 +130,16 @@ class CouchDB < LeapTest
   end
 
   def couchdb_backend_url(path="")
-    couchdb_url(path, :port => "5986") # TODO: admin port is hardcoded for now but should be configurable.
+    # TODO: admin port is hardcoded for now but should be configurable.
+    couchdb_url(path, multimaster? && "5986")
+  end
+
+  def multimaster?
+    mode == "multimaster"
+  end
+
+  def mode
+    assert_property('couch.mode')
   end
 
 end
