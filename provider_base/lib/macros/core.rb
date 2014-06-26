@@ -64,6 +64,7 @@ module LeapCli
     def try(&block)
       yield
     rescue NoMethodError
+    rescue ArgumentError
       nil
     end
 
