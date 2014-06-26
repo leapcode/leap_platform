@@ -33,7 +33,7 @@ class CouchDB < LeapTest
     neighbors = assert_property('couch.bigcouch.neighbors')
     neighbors << assert_property('domain.full')
     neighbors.sort!
-    assert_get(url, nil, http_basic_auth) do |body|
+    assert_get(url) do |body|
       response = JSON.parse(body)
       nodes_in_db = response['rows'].collect{|row| row['id'].sub(/^bigcouch@/, '')}.sort
       assert_equal neighbors, nodes_in_db, "The couchdb replication node list is wrong (/nodes/_all_docs)"
@@ -48,8 +48,8 @@ class CouchDB < LeapTest
   # this seems backward to me, so it might be the other way around.
   #
   def test_03_Are_configured_nodes_online?
-    url = couchdb_url("/_membership")
-    assert_get(url, nil, http_basic_auth) do |body|
+    url = couchdb_url("/_membership", :user => 'admin')
+    assert_get(url) do |body|
       response = JSON.parse(body)
       nodes_configured_but_not_available = response['cluster_nodes'] - response['all_nodes']
       nodes_available_but_not_configured = response['all_nodes'] - response['cluster_nodes']
@@ -68,7 +68,7 @@ class CouchDB < LeapTest
   def test_04_Do_ACL_users_exist?
     acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp']
     url = couchdb_backend_url("/_users/_all_docs")
-    assert_get(url, nil, http_basic_auth) do |body|
+    assert_get(url) do |body|
       response = JSON.parse(body)
       assert_equal 6, response['total_rows']
       actual_users = response['rows'].map{|row| row['id'].sub(/^org.couchdb.user:/, '') }
@@ -93,36 +93,40 @@ class CouchDB < LeapTest
   #
   def test_06_Is_ACL_enforced?
     ok = assert_auth_fail(
-      couchdb_url('/users/_all_docs'),
-      {:limit => 1},
-      http_basic_auth('leap_mx')
+      couchdb_url('/users/_all_docs', :user => 'leap_mx'),
+      {:limit => 1}
     )
     ok = assert_auth_fail(
-      couchdb_url('/users/_all_docs'),
-      {:limit => 1},
-      {}
+      couchdb_url('/users/_all_docs', :user => 'leap_mx'),
+      {:limit => 1}
     ) && ok
     pass if ok
   end
 
+  def test_07_What?
+    pass
+  end
+
   private
 
-  def couchdb_url(path="", port=nil)
+  def couchdb_url(path="", options=nil)
+    options||={}
     @port ||= begin
       assert_property 'couch.port'
       $node['couch']['port']
     end
-    "http://localhost:#{port || @port}#{path}"
+    url = 'http://'
+    if options[:user]
+      assert_property 'couch.users.' + options[:user]
+      password = $node['couch']['users'][options[:user]]['password']
+      url += "%s:%s@" % [options[:user], password]
+    end
+    url += "localhost:#{options[:port] || @port}#{path}"
+    url
   end
 
   def couchdb_backend_url(path="")
-    couchdb_url(path, "5986") # TODO: admin port is hardcoded for now but should be configurable.
-  end
-
-  def http_basic_auth(username='admin')
-    assert_property 'couch.users.' + username
-    password = $node['couch']['users'][username]['password']
-    {:username => username, :password => password}
+    couchdb_url(path, :port => "5986") # TODO: admin port is hardcoded for now but should be configurable.
   end
 
 end
