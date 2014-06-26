@@ -31,7 +31,7 @@ class CouchDB < LeapTest
   # compare the configured nodes to the nodes that are actually listed in bigcouch
   #
   def test_02_Is_cluster_membership_ok?
-    skip "not a multimaster node" unless multimater?
+    return unless multimaster?
     url = couchdb_backend_url("/nodes/_all_docs")
     neighbors = assert_property('couch.bigcouch.neighbors')
     neighbors << assert_property('domain.full')
@@ -51,7 +51,7 @@ class CouchDB < LeapTest
   # this seems backward to me, so it might be the other way around.
   #
   def test_03_Are_configured_nodes_online?
-    skip "not a multimaster node" unless multimater?
+    return unless multimaster?
     url = couchdb_url("/_membership", :user => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
