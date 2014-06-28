@@ -44,7 +44,7 @@ class leap_mx {
   #
 
   package { 'leap-mx':
-    ensure  => installed,
+    ensure  => latest,
     require => Class['site_apt::preferences::twisted']
   }
 
