@@ -40,12 +40,16 @@ class leap_mx {
   }
 
   #
-  # LEAP-MX CODE
+  # LEAP-MX CODE AND DEPENDENCIES
   #
 
-  package { 'leap-mx':
-    ensure  => latest,
-    require => Class['site_apt::preferences::twisted']
+  package {
+    'leap-mx':
+      ensure  => latest,
+      require => Class['site_apt::preferences::twisted'];
+
+    [ 'leap-keymanager' ]:
+      ensure => latest;
   }
 
   #
