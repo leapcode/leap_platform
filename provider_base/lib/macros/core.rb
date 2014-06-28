@@ -39,8 +39,12 @@ module LeapCli
       if instance_eval(assertion)
         true
       else
-        raise AssertionFailed.new(assertion)
+        raise AssertionFailed.new(assertion), assertion, caller
       end
+    end
+
+    def error(msg)
+      raise ConfigError.new(@node, msg), msg, caller
     end
 
     #
