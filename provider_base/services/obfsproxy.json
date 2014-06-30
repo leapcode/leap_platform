@@ -4,6 +4,6 @@
       "password": "= base32_secret('scramblesuit_password_'+name)",
       "port" : "= rand_range('scramblesuit_port_'+name, 18000..32000)"
     },
-    "gateway_address": "= try{openvpn.gateway_address} || try{nodes_like_me[:services => 'openvpn']['location.name' => location.name].field('openvpn.gateway_address').shuffle.first} || try{nodes_like_me[:services => 'openvpn'].field('openvpn.gateway_address').shuffle.first}"
+    "gateway_address": "= try{pick_node(:obfs_gateway,nodes_near_me['services' => 'openvpn']).pick_fields('openvpn.gateway_address')} || try{pick_node(:obfs_gateway,nodes_like_me['services' => 'openvpn']).pick_fields('openvpn.gateway_address')}"
   }
 }
