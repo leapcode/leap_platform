@@ -43,7 +43,7 @@ if member($services, 'static') {
   include site_static
 }
 
-if $services =~ /\bobfsproxy\b/ {
+if member($services, 'obfsproxy') {
   include site_obfsproxy
 }
 
