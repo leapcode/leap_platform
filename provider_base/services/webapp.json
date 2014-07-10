@@ -13,6 +13,7 @@
     "allow_limited_certs": "= provider.service.allow_limited_bandwidth",
     "allow_unlimited_certs": "= provider.service.allow_unlimited_bandwidth",
     "allow_anonymous_certs": "= provider.service.allow_anonymous",
+    "allow_registration": "= provider.service.allow_registration",
     "default_service_level": "= provider.service.default_service_level",
     "service_levels": "= provider.service.levels",
     "secret_token": "= secret :webapp_secret_token",
