@@ -71,7 +71,7 @@ class CouchDB < LeapTest
 
   def test_04_Do_ACL_users_exist?
     acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp', 'replication']
-    url = couchdb_backend_url("/_users/_all_docs")
+    url = couchdb_backend_url("/_users/_all_docs", :user => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
       assert_equal acl_users.count, response['total_rows']
@@ -84,7 +84,8 @@ class CouchDB < LeapTest
   def test_05_Do_required_databases_exist?
     dbs_that_should_exist = ["customers","identities","keycache","sessions","shared","tickets","tokens","users"]
     dbs_that_should_exist.each do |db_name|
-      assert_get(couchdb_url("/"+db_name)) do |body|
+      url = couchdb_url("/"+db_name, :user => 'admin')
+      assert_get(url) do |body|
         assert response = JSON.parse(body)
         assert_equal db_name, response['db_name']
       end
@@ -129,9 +130,10 @@ class CouchDB < LeapTest
     url
   end
 
-  def couchdb_backend_url(path="")
+  def couchdb_backend_url(path="", options={})
     # TODO: admin port is hardcoded for now but should be configurable.
-    couchdb_url(path, multimaster? && "5986")
+    options = {port: multimaster? && "5986"}.merge options
+    couchdb_url(path, options)
   end
 
   def multimaster?
