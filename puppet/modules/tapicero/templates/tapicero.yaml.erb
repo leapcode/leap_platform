@@ -1,3 +1,5 @@
+<%- require 'json' -%>
+
 #
 # Default configuration options for Tapicero
 #
@@ -25,7 +27,9 @@ options:
   # prefix for per user databases:
   db_prefix: "user-"
   mode: <%= @couchdb_mode %>
-  replication: <%= @couchdb_replication %>
+<%- if @couchdb_replication %>
+  replication: <%= @couchdb_replication.to_json %>
+<%- end -%>
 
   # security settings to be used for the per user databases
   security:
