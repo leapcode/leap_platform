@@ -4,8 +4,8 @@ frontend couch
   option   httplog
   option   dontlognull
   option   http-server-close    # use client keep-alive, but close server connection.
-  use_backend couch_write if METH_POST
-  default_backend couch_read
+  use_backend couch_read if METH_GET
+  default_backend couch_write
 
 backend couch_write
   mode http
