@@ -39,7 +39,7 @@
   "haproxy": {
     "couch": {
       "listen_port": 4096,
-      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port)"
+      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port, 5984)"
     }
   },
   "definition_files": {

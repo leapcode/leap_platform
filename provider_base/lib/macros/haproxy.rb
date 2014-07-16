@@ -39,6 +39,10 @@ module LeapCli
 
       # create the first pass of the servers hash
       servers = node_list.values.inject(Config::ObjectList.new) do |hsh, node|
+        # make sure we have a port to talk to
+        unless accept_ports[node.name]
+          error "haproxy needs a local port to talk to when connecting to #{node.name}"
+        end
         weight = default_weight
         try {
           weight = local_weight if self.location.name == node.location.name
@@ -46,7 +50,7 @@ module LeapCli
         hsh[node.name] = Config::Object[
           'backup', false,
           'host', 'localhost',
-          'port', accept_ports[node.name] || 0,
+          'port', accept_ports[node.name],
           'weight', weight
         ]
         if node.services.include?('couchdb')
