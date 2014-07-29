@@ -7,7 +7,7 @@
   "haproxy": {
     "couch": {
       "listen_port": 4096,
-      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, 5984)"
+      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port)"
     }
   },
   "couchdb_leap_mx_user": {
