@@ -18,7 +18,7 @@ production:
   minimum_client_version: "<%= @webapp['client_version']['min'] %>"
   default_service_level: "<%= @webapp['default_service_level'] %>"
   service_levels: <%= @webapp['service_levels'].to_json %>
-  allow_registration: <%= @provider['allow_registration'].inspect %>
+  allow_registration: <%= @webapp['allow_registration'].inspect %>
 <%- if @webapp['engines'] && @webapp['engines'].any? -%>
   engines:
 <%-   @webapp['engines'].each do |engine| -%>
