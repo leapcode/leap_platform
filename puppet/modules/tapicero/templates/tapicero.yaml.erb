@@ -40,10 +40,11 @@ options:
         # explicit about this
         - <%= @couchdb_admin_user %>
       roles: []
-    readers:
+    members:
       names:
         - <%= @couchdb_soledad_user %>
         - <%= @couchdb_leap_mx_user %>
-      roles: []
+      roles:
+        - replication
 
 
