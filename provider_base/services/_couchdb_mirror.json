@@ -1,0 +1,21 @@
+//
+// Applied to all non-master couchdb nodes
+//
+{
+  "stunnel": {
+    "clients": {
+      "couch_client": "= stunnel_client(nodes[couch.replication.masters.keys], couch.port)"
+    }
+  },
+  "couch": {
+    "mode": "mirror",
+    "replication": {
+      // for now, pick the first close one, or the first one.
+      // in the future, maybe use haproxy to balance among all the masters
+      "masters": "= try{pick_node(:couch_master,nodes_near_me['services' => 'couchdb']['couch.master' => true]).pick_fields('domain.internal', 'couch.port')} || try{pick_node(:couch_master,nodes_like_me['services' => 'couchdb']['couch.master' => true]).pick_fields('domain.internal', 'couch.port')}",
+      "username": "replication",
+      "password": "= secret :couch_replication_password",
+      "role": "replication"
+    }
+  }
+}

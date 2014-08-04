@@ -1,3 +1,8 @@
+#
+# If you need something to happen after stunnel is started,
+# you can depend on Service['stunnel'] or Class['site_stunnel']
+#
+
 class site_stunnel {
 
   # include the generic stunnel module
@@ -13,5 +18,15 @@ class site_stunnel {
         ensure => absent;
     }
   }
+
+  $stunnel = hiera('stunnel')
+
+  # add server stunnels
+  create_resources(site_stunnel::servers, $stunnel['servers'])
+
+  # add client stunnels
+  $clients = $stunnel['clients']
+  $client_sections = keys($clients)
+  site_stunnel::clients { $client_sections: }
 }
 

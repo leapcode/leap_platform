@@ -1,8 +1,7 @@
 # This file is managed by puppet, any changes will be overwritten!
 
 127.0.0.1    localhost
-127.0.1.1    <%= @hostname %>.<%= @domain_public %> <%= @hostname %> <% if (defined? @services) and (@services.include? 'webapp') -%><%= @domain_public %> <%= @api['domain'] %><% end -%>
-
+127.0.1.1    <%= @my_hostnames.join(' ') %>
 
 <%- if @hosts then -%>
 <%   @hosts.keys.sort.each do |name| -%>

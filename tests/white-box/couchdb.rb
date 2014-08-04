@@ -10,8 +10,10 @@ class CouchDB < LeapTest
 
   def test_00_Are_daemons_running?
     assert_running 'tapicero'
-    assert_running 'bin/beam'
-    assert_running 'bin/epmd'
+    if multimaster?
+      assert_running 'bin/beam'
+      assert_running 'bin/epmd'
+    end
     pass
   end
 
@@ -29,6 +31,7 @@ class CouchDB < LeapTest
   # compare the configured nodes to the nodes that are actually listed in bigcouch
   #
   def test_02_Is_cluster_membership_ok?
+    return unless multimaster?
     url = couchdb_backend_url("/nodes/_all_docs")
     neighbors = assert_property('couch.bigcouch.neighbors')
     neighbors << assert_property('domain.full')
@@ -48,7 +51,8 @@ class CouchDB < LeapTest
   # this seems backward to me, so it might be the other way around.
   #
   def test_03_Are_configured_nodes_online?
-    url = couchdb_url("/_membership")
+    return unless multimaster?
+    url = couchdb_url("/_membership", :user => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
       nodes_configured_but_not_available = response['cluster_nodes'] - response['all_nodes']
@@ -66,11 +70,11 @@ class CouchDB < LeapTest
   end
 
   def test_04_Do_ACL_users_exist?
-    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp']
-    url = couchdb_backend_url("/_users/_all_docs")
+    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp', 'replication']
+    url = couchdb_backend_url("/_users/_all_docs", :user => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
-      assert_equal 6, response['total_rows']
+      assert_equal acl_users.count, response['total_rows']
       actual_users = response['rows'].map{|row| row['id'].sub(/^org.couchdb.user:/, '') }
       assert_equal acl_users.sort, actual_users.sort
     end
@@ -80,7 +84,8 @@ class CouchDB < LeapTest
   def test_05_Do_required_databases_exist?
     dbs_that_should_exist = ["customers","identities","keycache","sessions","shared","tickets","tokens","users"]
     dbs_that_should_exist.each do |db_name|
-      assert_get(couchdb_url("/"+db_name)) do |body|
+      url = couchdb_url("/"+db_name, :user => 'admin')
+      assert_get(url) do |body|
         assert response = JSON.parse(body)
         assert_equal db_name, response['db_name']
       end
@@ -88,22 +93,55 @@ class CouchDB < LeapTest
     pass
   end
 
+  #
+  # for now, this just prints warnings, since we are failing these tests.
+  #
+  def test_06_Is_ACL_enforced?
+    ok = assert_auth_fail(
+      couchdb_url('/users/_all_docs', :user => 'leap_mx'),
+      {:limit => 1}
+    )
+    ok = assert_auth_fail(
+      couchdb_url('/users/_all_docs', :user => 'leap_mx'),
+      {:limit => 1}
+    ) && ok
+    pass if ok
+  end
+
+  def test_07_What?
+    pass
+  end
+
   private
 
-  def couchdb_url(path="", port=nil)
+  def couchdb_url(path="", options=nil)
+    options||={}
     @port ||= begin
       assert_property 'couch.port'
       $node['couch']['port']
     end
-    @password ||= begin
-      assert_property 'couch.users.admin.password'
-      $node['couch']['users']['admin']['password']
+    url = 'http://'
+    if options[:user]
+      assert_property 'couch.users.' + options[:user]
+      password = $node['couch']['users'][options[:user]]['password']
+      url += "%s:%s@" % [options[:user], password]
     end
-    "http://admin:#{@password}@localhost:#{port || @port}#{path}"
+    url += "localhost:#{options[:port] || @port}#{path}"
+    url
   end
 
-  def couchdb_backend_url(path="")
-    couchdb_url(path, "5986") # TODO: admin port is hardcoded for now but should be configurable.
+  def couchdb_backend_url(path="", options={})
+    # TODO: admin port is hardcoded for now but should be configurable.
+    options = {port: multimaster? && "5986"}.merge options
+    couchdb_url(path, options)
+  end
+
+  def multimaster?
+    mode == "multimaster"
+  end
+
+  def mode
+    assert_property('couch.mode')
   end
 
 end

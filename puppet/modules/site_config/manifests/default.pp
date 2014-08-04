@@ -1,6 +1,7 @@
 class site_config::default {
   tag 'leap_base'
 
+  $services    = hiera('services', [])
   $domain_hash = hiera('domain')
   include site_config::params
 
@@ -54,7 +55,7 @@ class site_config::default {
   # set up core leap files and directories
   include site_config::files
 
-  if $::services !~ /\bmx\b/ {
+  if ! member($services, 'mx') {
     include site_postfix::satellite
   }
 

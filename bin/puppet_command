@@ -7,12 +7,15 @@
 # (exit codes, lockfile, multiple manifests, etc)
 #
 
+require 'pty'
+require 'yaml'
+
 PUPPET_BIN        = '/usr/bin/puppet'
 PUPPET_DIRECTORY  = '/srv/leap'
 PUPPET_PARAMETERS = '--color=false --detailed-exitcodes --libdir=puppet/lib --confdir=puppet'
 SITE_MANIFEST     = 'puppet/manifests/site.pp'
-SETUP_MANIFEST    = 'puppet/manifests/setup.pp'
 DEFAULT_TAGS      = 'leap_base,leap_service'
+HIERA_FILE        = '/etc/leap/hiera.yaml'
 
 def main
   process_command_line_arguments
@@ -54,21 +57,37 @@ def apply
 end
 
 def set_hostname
-  exit_code = puppet_apply(:manifest => SETUP_MANIFEST, :tags => '') do |line|
-    # todo: replace setup.pp with https://github.com/lutter/ruby-augeas
-    # or try this: http://www.puppetcookbook.com/posts/override-a-facter-fact.html
-    if (line !~ /Finished catalog run/ || @verbosity > 2) &&
-       (line !~ /dnsdomainname: Name or service not known/) &&
-       (line !~ /warning: Could not retrieve fact fqdn/)
-      puts line
+  unless File.exists?(HIERA_FILE)
+    puts("ERROR: Cannot set hostname without #{HIERA_FILE}")
+    exit(1)
+  end
+  hostname = YAML.load_file(HIERA_FILE)['name']
+  if hostname.nil? || hostname.empty?
+    puts('ERROR: NAME argument required')
+    exit(1)
+  end
+  current_hostname_file = File.read('/etc/hostname') rescue nil
+  current_hostname = `/bin/hostname`.strip
+
+  # set /etc/hostname
+  if current_hostname_file != hostname
+    File.open('/etc/hostname', 'w', 0611, :encoding => 'ascii') do |f|
+      f.write hostname
+    end
+    if File.read('/etc/hostname') == hostname
+      puts "Set /etc/hostname to #{hostname}"
+    else
+      puts "ERROR: failed to update /etc/hostname"
     end
   end
-  if exit_code == 2
-    puts "Hostname updated."
-  elsif exit_code == 4 || exit_code == 6
-    puts "ERROR: could not update hostname."
-  elsif exit_code == 0 && @verbosity > 1
-    puts "No change to hostname."
+
+  # call /bin/hostname
+  if current_hostname != hostname
+    if run("/bin/hostname #{hostname}") == 0
+      puts "Set hostname to #{hostname}"
+    else
+      puts "ERROR: failed to call `/bin/hostname #{hostname}`"
+    end
   end
 end
 
@@ -157,24 +176,18 @@ end
 ## this only works under ruby 1.9
 ##
 
-require "pty"
-
 def run(cmd)
   puts cmd if @verbosity >= 3
   PTY.spawn("#{cmd}") do |output, input, pid|
     begin
       while line = output.gets do
         yield line
-        #$stdout.puts line
-        #$stdout.flush
       end
     rescue Errno::EIO
     end
     Process.wait(pid) # only works in ruby 1.9, required to capture the exit status.
   end
-  status = $?.exitstatus
-  #yield status if block_given?
-  return status
+  return $?.exitstatus
 rescue PTY::ChildExited
 end
 

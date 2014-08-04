@@ -8,12 +8,12 @@ class site_mx {
   include site_config::x509::client_ca::ca
   include site_config::x509::client_ca::key
 
+  include site_stunnel
 
   include site_postfix::mx
   include site_haproxy
   include site_shorewall::mx
   include site_shorewall::service::smtp
-  include site_mx::couchdb
   include leap_mx
   include site_check_mk::agent::mx
 }
