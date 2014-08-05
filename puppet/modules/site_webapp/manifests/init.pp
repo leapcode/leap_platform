@@ -16,6 +16,7 @@ class site_webapp {
   include site_config::ruby::dev
   include site_webapp::apache
   include site_webapp::couchdb
+  include site_webapp::logging
   include site_haproxy
   include site_webapp::cron
   include site_config::x509::cert
