@@ -33,7 +33,7 @@ Visit https://leap.se/en/docs/get-involved/communication for details on how to c
 Known issues
 ============
 
-The following issues are known to be there in 0.5.2:
+The following issues are known to exist in 0.5.2 and later:
 
 CouchDB Sync
 ------------
