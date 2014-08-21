@@ -52,7 +52,7 @@ class site_sshd {
   ## SSHD SERVER CONFIGURATION
   ##
   class { '::sshd':
-    manage_nagios => 'no',
+    manage_nagios => false,
     ports         => $ssh['port'],
     use_pam       => 'yes',
     hardened_ssl  => 'yes',
