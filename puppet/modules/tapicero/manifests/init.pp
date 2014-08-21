@@ -122,7 +122,7 @@ class tapicero {
   service { 'tapicero':
     ensure     => running,
     enable     => true,
-    hasstatus  => true,
+    hasstatus  => false,
     hasrestart => true,
     require    => [ File['/etc/init.d/tapicero'], File['/var/run/tapicero'] ];
   }
