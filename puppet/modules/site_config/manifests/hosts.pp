@@ -11,7 +11,7 @@ class site_config::hosts() {
     $dns_aliases = $dns['aliases']
   }
   $my_hostnames = unique(concat(
-    $dns_aliases, [$hostname, $domain_hash['full'], $domain_hash['internal']]
+    [$domain_hash['full'], $hostname, $domain_hash['internal']], $dns_aliases
   ))
 
   file { '/etc/hostname':
