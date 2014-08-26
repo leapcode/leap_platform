@@ -124,7 +124,9 @@ class tapicero {
     enable     => true,
     hasstatus  => false,
     hasrestart => true,
-    require    => [ File['/etc/init.d/tapicero'], File['/var/run/tapicero'] ];
+    require    => [ File['/etc/init.d/tapicero'],
+                    File['/var/run/tapicero'],
+                    Couchdb::Add_user[$::site_couchdb::couchdb_tapicero_user] ];
   }
 
 }
