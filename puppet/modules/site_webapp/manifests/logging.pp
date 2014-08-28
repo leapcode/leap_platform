@@ -2,7 +2,7 @@ class site_webapp::logging {
 
   rsyslog::snippet { '01-webapp':
     content => 'if $programname == "webapp" then /var/log/leap/webapp.log
-stop'
+&~'
   }
 
   augeas {
