@@ -41,6 +41,7 @@ end
 ##
 
 # this class is raised if a test file wants to be skipped entirely.
+# (to skip an individual test, MiniTest::Skip is used instead)
 class SkipTest < Exception
 end
 
@@ -61,6 +62,8 @@ end
 #
 class LeapTest < MiniTest::Unit::TestCase
   class Pass < MiniTest::Assertion
+  end
+  class Ignore < MiniTest::Assertion
   end
 
   def initialize(name)
@@ -98,6 +101,13 @@ class LeapTest < MiniTest::Unit::TestCase
   #
   def pass
     raise LeapTest::Pass
+  end
+
+  #
+  # Called when the test should be silently ignored.
+  #
+  def ignore
+    raise LeapTest::Ignore
   end
 
   #
@@ -332,6 +342,7 @@ class LeapRunner < MiniTest::Unit
   def initialize
     @passes = 0
     @warnings = 0
+    @ignores = 0
     super
   end
 
@@ -372,9 +383,12 @@ class LeapRunner < MiniTest::Unit
     case e
       when MiniTest::Skip then
         @skips += 1
-        #if @verbose
-          report_line("SKIP", klass, meth, e, e.message)
-        #end
+        report_line("SKIP", klass, meth, e, e.message)
+      when LeapTest::Ignore then
+        @ignores += 1
+        if @verbose
+          report_line("IGNORE", klass, meth, e, e.message)
+        end
       when LeapTest::Pass then
         @passes += 1
         report_line("PASS", klass, meth)
@@ -414,7 +428,8 @@ class LeapRunner < MiniTest::Unit
     elsif @failures > 0
       :failure
     elsif @warnings > 0
-      :warning
+      # :warning << warnings don't warrant a non-zero exit code.
+      :success
     else
       :success
     end
