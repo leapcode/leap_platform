@@ -54,6 +54,7 @@ class Network < LeapTest
   end
 
   def test_03_Is_shorewall_running?
+    ignore unless File.exists?('/sbin/shorewall')
     assert_run('/sbin/shorewall status')
     pass
   end
