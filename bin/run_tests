@@ -414,7 +414,8 @@ class LeapRunner < MiniTest::Unit
     elsif @failures > 0
       :failure
     elsif @warnings > 0
-      :warning
+      # :warning << warnings don't warrant a non-zero exit code.
+      :success
     else
       :success
     end
