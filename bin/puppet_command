@@ -57,13 +57,9 @@ def apply
 end
 
 def set_hostname
-  unless File.exists?(HIERA_FILE)
-    puts("ERROR: Cannot set hostname without #{HIERA_FILE}")
-    exit(1)
-  end
-  hostname = YAML.load_file(HIERA_FILE)['name']
+  hostname = hiera_file['name']
   if hostname.nil? || hostname.empty?
-    puts('ERROR: NAME argument required')
+    puts('ERROR: "name" missing from hiera file')
     exit(1)
   end
   current_hostname_file = File.read('/etc/hostname') rescue nil
@@ -75,7 +71,7 @@ def set_hostname
       f.write hostname
     end
     if File.read('/etc/hostname') == hostname
-      puts "Set /etc/hostname to #{hostname}"
+      puts "Changed /etc/hostname to #{hostname}"
     else
       puts "ERROR: failed to update /etc/hostname"
     end
@@ -84,9 +80,9 @@ def set_hostname
   # call /bin/hostname
   if current_hostname != hostname
     if run("/bin/hostname #{hostname}") == 0
-      puts "Set hostname to #{hostname}"
+      puts "Changed hostname to #{hostname}"
     else
-      puts "ERROR: failed to call `/bin/hostname #{hostname}`"
+      puts "ERROR: call to `/bin/hostname #{hostname}` returned an error."
     end
   end
 end
@@ -97,9 +93,25 @@ end
 def puppet_apply(options={}, &block)
   options = {:verbosity => @verbosity, :tags => @tags}.merge(options)
   manifest = options[:manifest] || SITE_MANIFEST
+  fqdn = hiera_file['domain']['name']
   Dir.chdir(PUPPET_DIRECTORY) do
-    return run("#{PUPPET_BIN} apply #{custom_parameters(options)} #{PUPPET_PARAMETERS} #{manifest}", &block)
+    return run("FACTER_fqdn='#{fqdn}' #{PUPPET_BIN} apply #{custom_parameters(options)} #{PUPPET_PARAMETERS} #{manifest}", &block)
   end
+end
+
+#
+# Return a ruby object representing the contents of the hiera yaml file.
+#
+def hiera_file
+  unless File.exists?(HIERA_FILE)
+    puts("ERROR: hiera file '#{HIERA_FILE}' does not exist.")
+    exit(1)
+  end
+  $hiera_contents ||= YAML.load_file(HIERA_FILE)
+  return $hiera_contents
+rescue Exception => exc
+  puts("ERROR: problem reading hiera file '#{HIERA_FILE}' (#{exc})")
+  exit(1)
 end
 
 def custom_parameters(options)
