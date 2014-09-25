@@ -11,13 +11,13 @@ class site_obfsproxy {
   $dest_ip      = $obfsproxy['gateway_address']
   $dest_port    = '443'
 
-   if $::services =~ /\bopenvpn\b/ {
-     $openvpn      = hiera('openvpn')
-     $bind_address = $openvpn['gateway_address']
-   }
-   elsif $::services =~ /\bobfsproxy\b/ {
-     $bind_address = hiera('ip_address')
-   }
+  if member($::services, 'openvpn') {
+    $openvpn      = hiera('openvpn')
+    $bind_address = $openvpn['gateway_address']
+  }
+  elsif member($::services, 'obfsproxy') {
+    $bind_address = hiera('ip_address')
+  }
 
   include site_apt::preferences::twisted
   include site_apt::preferences::obfsproxy
