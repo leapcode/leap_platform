@@ -25,10 +25,7 @@ class site_config::default {
   # i.e. openstack/aws nodes, vagrant nodes
 
   # fix dhclient from changing resolver information
-  if $::ec2_instance_id {
-    include site_config::dhclient
-  }
-  if $::virtual == 'virtualbox' {
+   if $::dhcp_enabled == 'true' {
     include site_config::dhclient
   }
 
