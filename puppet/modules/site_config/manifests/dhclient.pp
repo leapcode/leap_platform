@@ -17,7 +17,9 @@ class site_config::dhclient {
 
   exec { 'reload_dhclient':
     refreshonly => true,
-    command     => '/usr/local/sbin/reload_dhclient';
+    command     => '/usr/local/sbin/reload_dhclient',
+    before      => Class['site_config::resolvconf'],
+    require     => File['/usr/local/sbin/reload_dhclient'],
   }
 
   file { '/etc/dhcp/dhclient-enter-hooks.d/disable_resolvconf':
