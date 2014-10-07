@@ -3,9 +3,10 @@ class site_nagios::server inherits nagios::base {
   # First, purge old nagios config (see #1467)
   class { 'site_nagios::server::purge': }
 
-  $nagios_hiera   = hiera('nagios')
-  $nagiosadmin_pw = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
-  $nagios_hosts   = $nagios_hiera['hosts']
+  $nagios_hiera     = hiera('nagios')
+  $nagiosadmin_pw   = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
+  $nagios_hosts     = $nagios_hiera['hosts']
+  $domains_internal = $nagios_hiera['domains_internal']
 
   include nagios::defaults
   include nagios::base
@@ -55,4 +56,6 @@ class site_nagios::server inherits nagios::base {
         'set missingok missingok', 'set ifempty notifempty',
         'set copytruncate copytruncate' ]
   }
+
+  ::site_nagios::server::hostgroup { $domains_internal: }
 }

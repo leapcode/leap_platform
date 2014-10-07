@@ -5,11 +5,12 @@ class site_check_mk::server {
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
   $seckey   = $ssh_hash['monitor']['private_key']
 
-  $nagios_hiera   = hiera_hash('nagios')
-  $nagios_hosts   = $nagios_hiera['hosts']
+  $nagios_hiera     = hiera_hash('nagios')
+  $nagios_hosts     = $nagios_hiera['hosts']
 
-  $hosts          = hiera_hash('hosts')
-  $all_hosts      = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
+  $hosts            = hiera_hash('hosts')
+  $all_hosts        = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
+  $domains_internal = $nagios_hiera['domains_internal']
 
   package { 'check-mk-server':
     ensure => installed,
@@ -33,6 +34,10 @@ class site_check_mk::server {
   file {
     '/etc/check_mk/conf.d/use_ssh.mk':
       content => template('site_check_mk/use_ssh.mk'),
+      notify  => Exec['check_mk-refresh'],
+      require => Package['check-mk-server'];
+    '/etc/check_mk/conf.d/hostgroups.mk':
+      content => template('site_check_mk/hostgroups.mk'),
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
     '/etc/check_mk/all_hosts_static':
