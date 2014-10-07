@@ -8,8 +8,14 @@ class site_nagios::server inherits nagios::base {
   $nagios_hosts     = $nagios_hiera['hosts']
   $domains_internal = $nagios_hiera['domains_internal']
 
-  include nagios::defaults
   include nagios::base
+  include nagios::defaults::commands
+  include nagios::defaults::contactgroups
+  include nagios::defaults::contacts
+  include nagios::defaults::templates
+  include nagios::defaults::timeperiods
+  include nagios::defaults::plugins
+
   class {'nagios':
     # don't manage apache class from nagios, cause we already include
     # it in site_apache::common
