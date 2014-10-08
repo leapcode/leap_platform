@@ -3,12 +3,19 @@ class site_nagios::server inherits nagios::base {
   # First, purge old nagios config (see #1467)
   class { 'site_nagios::server::purge': }
 
-  $nagios_hiera   = hiera('nagios')
-  $nagiosadmin_pw = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
-  $nagios_hosts   = $nagios_hiera['hosts']
+  $nagios_hiera     = hiera('nagios')
+  $nagiosadmin_pw   = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
+  $nagios_hosts     = $nagios_hiera['hosts']
+  $domains_internal = $nagios_hiera['domains_internal']
 
-  include nagios::defaults
   include nagios::base
+  include nagios::defaults::commands
+  include nagios::defaults::contactgroups
+  include nagios::defaults::contacts
+  include nagios::defaults::templates
+  include nagios::defaults::timeperiods
+  include nagios::defaults::plugins
+
   class {'nagios':
     # don't manage apache class from nagios, cause we already include
     # it in site_apache::common
@@ -55,4 +62,6 @@ class site_nagios::server inherits nagios::base {
         'set missingok missingok', 'set ifempty notifempty',
         'set copytruncate copytruncate' ]
   }
+
+  ::site_nagios::server::hostgroup { $domains_internal: }
 }
