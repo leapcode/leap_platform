@@ -44,7 +44,7 @@
     "digest": "SHA256",
     "life_span": "10y",
     "server_certificates": {
-      "bit_size": 2048,
+      "bit_size": 4096,
       "digest": "SHA256",
       "life_span": "1y"
     },
