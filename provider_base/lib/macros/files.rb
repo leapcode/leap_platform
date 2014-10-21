@@ -71,7 +71,7 @@ module LeapCli
         end
         relative_path = Path.relative_path(actual_path)
         @node.file_paths << relative_path
-        @node.manager.provider.hiera_sync_destination + '/' + relative_path
+        File.join(Leap::Platform.files_dir, relative_path)
       end
     end
 

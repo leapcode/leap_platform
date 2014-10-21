@@ -46,5 +46,9 @@
   "stunnel": {
     "clients": {},
     "servers": {}
+  },
+  "platform": {
+    "version": "= Leap::Platform.version.to_s",
+    "major_version": "= Leap::Platform.major_version"
   }
 }
