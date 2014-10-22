@@ -1,6 +1,9 @@
 class site_apt::leap_repo {
+  $platform = hiera_hash('platform')
+  $major_version = $platform['major_version']
+
   apt::sources_list { 'leap.list':
-    content => 'deb http://deb.leap.se/debian stable main',
+    content => "deb http://deb.leap.se/${major_version} wheezy main\n",
     before  => Exec[refresh_apt]
   }
 
