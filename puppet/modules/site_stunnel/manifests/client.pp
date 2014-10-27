@@ -35,6 +35,7 @@ define site_stunnel::client (
     pid        => "/var/run/stunnel4/${pid}.pid",
     rndfile    => $rndfile,
     debuglevel => $debuglevel,
+    sslversion => 'TLSv1',
     subscribe  => [
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
