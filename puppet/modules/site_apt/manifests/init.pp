@@ -1,4 +1,4 @@
-class site_apt  {
+class site_apt {
 
   class { 'apt':
     custom_key_dir     => 'puppet:///modules/site_apt/keys'
@@ -11,7 +11,7 @@ class site_apt  {
     content => 'Acquire::PDiffs "false";';
   }
 
-  include ::apt::unattended_upgrades
+  include ::site_apt::unattended_upgrades
 
   apt::sources_list { 'secondary.list.disabled':
     content => template('site_apt/secondary.list');
