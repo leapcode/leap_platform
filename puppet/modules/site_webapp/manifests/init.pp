@@ -10,6 +10,8 @@ class site_webapp {
   $webapp           = hiera('webapp')
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
+  $tor              = hiera('tor')
+  $hidden_service   = $tor['hidden_service']
 
   Class['site_config::default'] -> Class['site_webapp']
 
@@ -155,6 +157,10 @@ class site_webapp {
       mode    => '0600',
       require => Vcsrepo['/srv/leap/webapp'],
       notify  => Service['apache'];
+  }
+
+  if $hidden_service['active'] {
+    include site_webapp::hidden_service
   }
 
   include site_shorewall::webapp
