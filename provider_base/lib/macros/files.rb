@@ -48,13 +48,22 @@ module LeapCli
     # * if the path does not exist locally, but exists in provider_base, then the default file from
     #   provider_base is copied locally. this is required for rsync to work correctly.
     #
-    def file_path(path)
+    def file_path(path, options={})
       if path.is_a? Symbol
         path = [path, @node.name]
+      elsif path.is_a? String
+        # ensure it prefixed with files/
+        unless path =~ /^files\//
+          path = "files/" + path
+        end
       end
       actual_path = Path.find_file(path)
       if actual_path.nil?
-        Util::log 2, :skipping, "file_path(\"#{path}\") because there is no such file."
+        if options[:missing]
+          raise FileMissing.new(Path.named_path(path), options)
+        else
+          Util::log 2, :skipping, "file_path(\"#{path}\") because there is no such file."
+        end
         nil
       else
         if actual_path =~ /^#{Regexp.escape(Path.provider_base)}/
@@ -70,6 +79,7 @@ module LeapCli
           actual_path += '/' # ensure directories end with /, important for building rsync command
         end
         relative_path = Path.relative_path(actual_path)
+        relative_path.sub!(/^files\//, '') # remove "files/" prefix
         @node.file_paths << relative_path
         File.join(Leap::Platform.files_dir, relative_path)
       end

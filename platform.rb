@@ -5,7 +5,7 @@
 
 Leap::Platform.define do
   self.version = "0.6"
-  self.compatible_cli = "1.6.0".."1.99"
+  self.compatible_cli = "1.6.1".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -77,10 +77,12 @@ Leap::Platform.define do
     :vagrantfile      => 'test/Vagrantfile',
 
     # node output files
-    :hiera            => 'hiera/#{arg}.yaml',
-    :node_ssh_pub_key => 'files/nodes/#{arg}/#{arg}_ssh.pub',
-    :node_x509_key    => 'files/nodes/#{arg}/#{arg}.key',
-    :node_x509_cert   => 'files/nodes/#{arg}/#{arg}.crt',
+    :hiera             => 'hiera/#{arg}.yaml',
+    :node_ssh_pub_key  => 'files/nodes/#{arg}/#{arg}_ssh.pub',
+    :node_x509_key     => 'files/nodes/#{arg}/#{arg}.key',
+    :node_x509_cert    => 'files/nodes/#{arg}/#{arg}.crt',
+    :node_tor_priv_key => 'files/nodes/#{arg}/tor.key',
+    :node_tor_pub_key  => 'files/nodes/#{arg}/tor.pub',
 
     # testing files
     :test_client_key     => 'test/cert/client.key',
