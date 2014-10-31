@@ -1,12 +1,12 @@
 class site_couchdb::bigcouch {
 
-  $config         = $couchdb_config['bigcouch']
+  $config         = $::site_couchdb::couchdb_config['bigcouch']
   $cookie         = $config['cookie']
   $ednp_port      = $config['ednp_port']
 
   class { 'couchdb':
-    admin_pw            => $couchdb_admin_pw,
-    admin_salt          => $couchdb_admin_salt,
+    admin_pw            => $::site_couchdb::couchdb_admin_pw,
+    admin_salt          => $::site_couchdb::couchdb_admin_salt,
     bigcouch            => true,
     bigcouch_cookie     => $cookie,
     ednp_port           => $ednp_port,
