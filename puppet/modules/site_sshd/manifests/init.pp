@@ -53,7 +53,7 @@ class site_sshd {
   ##
   class { '::sshd':
     manage_nagios => false,
-    ports         => $ssh['port'],
+    ports         => [ $ssh['port'] ],
     use_pam       => 'yes',
     hardened_ssl  => 'yes',
     print_motd    => 'no',
