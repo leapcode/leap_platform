@@ -15,8 +15,10 @@ module LeapCli
       path = file_path(path_name)
       if path.nil?
         generate_tor_key(key_type)
+        file_path(path_name)
+      else
+        path
       end
-      return path
     end
 
     #
@@ -27,8 +29,10 @@ module LeapCli
       path = file_path(path_name)
       if path.nil?
         generate_tor_key(key_type)
+        file_path(path_name)
+      else
+        path
       end
-      return path
     end
 
     #
