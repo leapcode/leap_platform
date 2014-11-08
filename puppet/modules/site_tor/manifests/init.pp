@@ -13,11 +13,11 @@ class site_tor {
 
   class { 'tor::daemon': }
   tor::daemon::relay { $nickname:
-    port             => 9001,
-    address          => $address,
-    contact_info     => obfuscate_email($contact_emails),
-    bandwidth_rate   => $bandwidth_rate,
-    my_family        => $family
+    port           => 9001,
+    address        => $address,
+    contact_info   => obfuscate_email($contact_emails),
+    bandwidth_rate => $bandwidth_rate,
+    my_family      => $family
   }
 
   if ( $tor_type == 'exit'){
