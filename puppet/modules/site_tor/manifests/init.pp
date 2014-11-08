@@ -21,7 +21,10 @@ class site_tor {
   }
 
   if ( $tor_type == 'exit'){
-    tor::daemon::directory { $::hostname: port => 80 }
+    # Only enable the daemon directory if the node isn't also a webapp node
+    if ! member($::services, 'webapp') {
+      tor::daemon::directory { $::hostname: port => 80 }
+    }
   }
   else {
     include site_tor::disable_exit
