@@ -42,6 +42,10 @@
     end
     configuration = node.openvpn.configuration
   end
+  configuration = configuration.dup
+  if configuration['fragment'] && configuration['fragment'] == 1500
+    configuration.delete('fragment')
+  end
   hsh["gateways"] = gateways.compact
   hsh["locations"] = locations
   hsh["openvpn_configuration"] = configuration

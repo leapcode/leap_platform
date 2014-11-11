@@ -85,6 +85,18 @@ define site_openvpn::server_config(
         key     => 'tcp-nodelay',
         server  => $openvpn_configname;
     }
+  } elsif $proto == 'udp' {
+    if $config['fragment'] != 1500 {
+      openvpn::option {
+        "fragment ${openvpn_configname}":
+          key    => 'fragment',
+          value  => $config['fragment'],
+          server => $openvpn_configname;
+        "mssfix ${openvpn_configname}":
+          key    => 'mssfix',
+          server => $openvpn_configname;
+      }
+    }
   }
 
   openvpn::option {
