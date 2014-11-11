@@ -14,7 +14,6 @@
 require 'minitest/unit'
 require 'yaml'
 require 'tsort'
-require 'net/http'
 
 ##
 ## EXIT CODES
@@ -114,7 +113,10 @@ class LeapTest < MiniTest::Unit::TestCase
   # the default fail() is part of the kernel and it just throws a runtime exception. for tests,
   # we want the same behavior as assert(false)
   #
-  def fail(msg=nil)
+  def fail(msg=nil, exception=nil)
+    if DEBUG && exception && exception.respond_to?(:backtrace)
+      msg += MiniTest::filter_backtrace(exception.backtrace).join "\n"
+    end
     assert(false, msg)
   end
 
@@ -129,207 +131,6 @@ class LeapTest < MiniTest::Unit::TestCase
     :alpha
   end
 
-  #
-  # attempts a http GET on the url, yields |body, response, error|
-  #
-  def get(url, params=nil)
-    uri = URI(url)
-    if params
-      uri.query = URI.encode_www_form(params)
-    end
-    http = Net::HTTP.new uri.host, uri.port
-    if uri.scheme == 'https'
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      http.use_ssl = true
-    end
-    http.start do |agent|
-      request = Net::HTTP::Get.new uri.request_uri
-      if uri.user
-        request.basic_auth uri.user, uri.password
-      end
-      response = agent.request(request)
-      if response.is_a?(Net::HTTPSuccess)
-        yield response.body, response, nil
-      else
-        yield nil, response, nil
-      end
-    end
-  rescue => exc
-    yield nil, nil, exc
-  end
-
-  def assert_get(url, params=nil, options=nil)
-    options ||= {}
-    get(url, params) do |body, response, error|
-      if body
-        yield body if block_given?
-      elsif response
-        fail ["Expected a 200 status code from #{url}, but got #{response.code} instead.", options[:error_msg]].compact.join("\n")
-      else
-        fail ["Expected a response from #{url}, but got \"#{error}\" instead.", options[:error_msg]].compact.join("\n")
-      end
-    end
-  end
-
-  #
-  # only a warning for now, should be a failure in the future
-  #
-  def assert_auth_fail(url, params)
-    uri = URI(url)
-    get(url, params) do |body, response, error|
-      unless response.code.to_s == "401"
-        warn "Expected a '401 Unauthorized' response, but got #{response.code} instead (GET #{uri.request_uri} with username '#{uri.user}')."
-        return false
-      end
-    end
-    true
-  end
-
-  #
-  # test if a socket can be connected to
-  #
-
-  #
-  # tcp connection helper with timeout
-  #
-  def try_tcp_connect(host, port, timeout = 5)
-    addr     = Socket.getaddrinfo(host, nil)
-    sockaddr = Socket.pack_sockaddr_in(port, addr[0][3])
-
-    Socket.new(Socket.const_get(addr[0][0]), Socket::SOCK_STREAM, 0).tap do |socket|
-      socket.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
-      begin
-        socket.connect_nonblock(sockaddr)
-      rescue IO::WaitReadable
-        if IO.select([socket], nil, nil, timeout) == nil
-          raise "Connection timeout"
-        else
-          socket.connect_nonblock(sockaddr)
-        end
-      rescue IO::WaitWritable
-        if IO.select(nil, [socket], nil, timeout) == nil
-          raise "Connection timeout"
-        else
-          socket.connect_nonblock(sockaddr)
-        end
-      end
-      return socket
-    end
-  end
-
-  def try_tcp_write(socket, timeout = 5)
-    begin
-      socket.write_nonblock("\0")
-    rescue IO::WaitReadable
-      if IO.select([socket], nil, nil, timeout) == nil
-        raise "Write timeout"
-      else
-        retry
-      end
-    rescue IO::WaitWritable
-      if IO.select(nil, [socket], nil, timeout) == nil
-        raise "Write timeout"
-      else
-        retry
-      end
-    end
-  end
-
-  def try_tcp_read(socket, timeout = 5)
-    begin
-      socket.read_nonblock(1)
-    rescue IO::WaitReadable
-      if IO.select([socket], nil, nil, timeout) == nil
-        raise "Read timeout"
-      else
-        retry
-      end
-    rescue IO::WaitWritable
-      if IO.select(nil, [socket], nil, timeout) == nil
-        raise "Read timeout"
-      else
-        retry
-      end
-    end
-  end
-
-  def assert_tcp_socket(host, port, msg=nil)
-    begin
-      socket = try_tcp_connect(host, port, 1)
-      #try_tcp_write(socket,1)
-      #try_tcp_read(socket,1)
-    rescue StandardError => exc
-      fail ["Failed to open socket #{host}:#{port}", exc].join("\n")
-    ensure
-      socket.close if socket
-    end
-  end
-
-  #
-  # Matches the regexp in the file, and returns the first matched string (or fails if no match).
-  #
-  def file_match(filename, regexp)
-    if match = File.read(filename).match(regexp)
-      match.captures.first
-    else
-      fail "Regexp #{regexp.inspect} not found in file #{filename.inspect}."
-    end
-  end
-
-  #
-  # Matches the regexp in the file, and returns array of matched strings (or fails if no match).
-  #
-  def file_matches(filename, regexp)
-    if match = File.read(filename).match(regexp)
-      match.captures
-    else
-      fail "Regexp #{regexp.inspect} not found in file #{filename.inspect}."
-    end
-  end
-
-  #
-  # checks to make sure the given property path exists in $node (e.g. hiera.yaml)
-  # and returns the value
-  #
-  def assert_property(property)
-    latest = $node
-    property.split('.').each do |segment|
-      latest = latest[segment]
-      fail "Required node property `#{property}` is missing." if latest.nil?
-    end
-    return latest
-  end
-
-  #
-  # works like pgrep command line
-  # return an array of hashes like so [{:pid => "1234", :process => "ls"}]
-  #
-  def pgrep(match)
-    output = `pgrep --full --list-name '#{match}'`
-    output.each_line.map{|line|
-      pid = line.split(' ')[0]
-      process = line.gsub(/(#{pid} |\n)/, '')
-      if process =~ /pgrep --full --list-name/
-        nil
-      else
-        {:pid => pid, :process => process}
-      end
-    }.compact
-  end
-end
-
-def assert_running(process)
-  assert pgrep(process).any?, "No running process for #{process}"
-end
-
-#
-# runs the specified command, failing on a non-zero exit status.
-#
-def assert_run(command)
-  output = `#{command}`
-  if $?.exitstatus != 0
-    fail "Error running `#{command}`:\n#{output}"
-  end
 end
 
 #
@@ -441,7 +242,7 @@ class LeapRunner < MiniTest::Unit
   def report_line(prefix, klass, meth, e=nil, message=nil)
     msg_txt = nil
     if message
-      message = message.sub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:password@")
+      message = message.sub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:REDACTED@")
       if $output_format == :human
         indent = "\n  "
         msg_txt = indent + message.split("\n").join(indent)
@@ -556,7 +357,8 @@ def print_help
        "  --test TEST      Run only the test with name TEST.",
        "  --list-tests     Prints the names of all available tests and exit.",
        "  --retry COUNT    If the tests don't pass, retry COUNT additional times (default is zero)",
-       "  --wait SECONDS   Wait for SECONDS between retries (default is 5)"].join("\n")
+       "  --wait SECONDS   Wait for SECONDS between retries (default is 5)",
+       "  --debug          Print out full stack trace on errors"].join("\n")
   exit(0)
 end
 
@@ -615,6 +417,9 @@ def main
 
   # load all test classes
   this_file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+  Dir[File.expand_path('../../tests/helpers/*.rb', this_file)].each do |helper|
+    require helper
+  end
   Dir[File.expand_path('../../tests/white-box/*.rb', this_file)].each do |test_file|
     begin
       require test_file
@@ -636,10 +441,19 @@ def main
       when '--list-tests' then list_tests
       when '--retry' then ARGV.shift; $retry = ARGV.shift.to_i
       when '--wait' then ARGV.shift; $wait = ARGV.shift.to_i
+      when '--debug' then ARGV.shift
+      when '-d' then ARGV.shift
       else break
     end
   end
   run_tests
+end
+
+if ARGV.include?('--debug') || ARGV.include?('-d')
+  DEBUG=true
+  require 'debugger'
+else
+  DEBUG=false
 end
 
 main()

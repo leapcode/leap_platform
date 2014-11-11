@@ -52,7 +52,7 @@ class CouchDB < LeapTest
   #
   def test_03_Are_configured_nodes_online?
     return unless multimaster?
-    url = couchdb_url("/_membership", :user => 'admin')
+    url = couchdb_url("/_membership", :username => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
       nodes_configured_but_not_available = response['cluster_nodes'] - response['all_nodes']
@@ -71,7 +71,7 @@ class CouchDB < LeapTest
 
   def test_04_Do_ACL_users_exist?
     acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp', 'replication']
-    url = couchdb_backend_url("/_users/_all_docs", :user => 'admin')
+    url = couchdb_backend_url("/_users/_all_docs", :username => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
       assert_equal acl_users.count, response['total_rows']
@@ -84,7 +84,7 @@ class CouchDB < LeapTest
   def test_05_Do_required_databases_exist?
     dbs_that_should_exist = ["customers","identities","keycache","sessions","shared","tickets","tokens","users"]
     dbs_that_should_exist.each do |db_name|
-      url = couchdb_url("/"+db_name, :user => 'admin')
+      url = couchdb_url("/"+db_name, :username => 'admin')
       assert_get(url) do |body|
         assert response = JSON.parse(body)
         assert_equal db_name, response['db_name']
@@ -102,43 +102,31 @@ class CouchDB < LeapTest
 
   #def test_06_Is_ACL_enforced?
   #  ok = assert_auth_fail(
-  #    couchdb_url('/users/_all_docs', :user => 'leap_mx'),
+  #    couchdb_url('/users/_all_docs', :username => 'leap_mx'),
   #    {:limit => 1}
   #  )
   #  ok = assert_auth_fail(
-  #    couchdb_url('/users/_all_docs', :user => 'leap_mx'),
+  #    couchdb_url('/users/_all_docs', :username => 'leap_mx'),
   #    {:limit => 1}
   #  ) && ok
   #  pass if ok
   #end
 
-  def test_07_What?
+  def test_07_Can_records_be_created?
+    token = Token.new
+    url = couchdb_url("/tokens", :username => 'admin')
+    assert_post(url, token, :format => :json) do |body|
+      assert response = JSON.parse(body), "POST response should be JSON"
+      assert response["ok"], "POST response should be OK"
+      assert_delete(File.join(url, response["id"]), :rev => response["rev"]) do |body|
+        assert response = JSON.parse(body), "DELETE response should be JSON"
+        assert response["ok"], "DELETE response should be OK"
+      end
+    end
     pass
   end
 
   private
-
-  def couchdb_url(path="", options=nil)
-    options||={}
-    @port ||= begin
-      assert_property 'couch.port'
-      $node['couch']['port']
-    end
-    url = 'http://'
-    if options[:user]
-      assert_property 'couch.users.' + options[:user]
-      password = $node['couch']['users'][options[:user]]['password']
-      url += "%s:%s@" % [options[:user], password]
-    end
-    url += "localhost:#{options[:port] || @port}#{path}"
-    url
-  end
-
-  def couchdb_backend_url(path="", options={})
-    # TODO: admin port is hardcoded for now but should be configurable.
-    options = {port: multimaster? && "5986"}.merge options
-    couchdb_url(path, options)
-  end
 
   def multimaster?
     mode == "multimaster"
@@ -146,6 +134,22 @@ class CouchDB < LeapTest
 
   def mode
     assert_property('couch.mode')
+  end
+
+  # TODO: admin port is hardcoded for now but should be configurable.
+  def couchdb_backend_url(path="", options={})
+    options = {port: multimaster? && "5986"}.merge options
+    couchdb_url(path, options)
+  end
+
+  require 'securerandom'
+  require 'digest/sha2'
+  class Token < Hash
+    def initialize
+      self['token'] = SecureRandom.urlsafe_base64(32).gsub(/^_*/, '')
+      self['_id'] = Digest::SHA512.hexdigest(self['token'])
+      self['last_seen_at'] = Time.now
+    end
   end
 
 end
