@@ -24,7 +24,8 @@
       "auth": "SHA1",
       "cipher": "AES-128-CBC",
       "keepalive": "10 30",
-      "tun-ipv6": true
+      "tun-ipv6": true,
+      "fragment": 1500
     }
   },
   "obfsproxy": {
