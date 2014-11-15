@@ -11,6 +11,14 @@ class site_tor {
 
   $address        = hiera('ip_address')
 
+  $openvpn        = hiera('openvpn', undef)
+  if $openvpn {
+    $openvpn_ports = $openvpn['ports']
+  }
+  else {
+    $openvpn_ports = []
+  }
+  
   class { 'tor::daemon': }
   tor::daemon::relay { $nickname:
     port           => 9001,
@@ -22,7 +30,8 @@ class site_tor {
 
   if ( $tor_type == 'exit'){
     # Only enable the daemon directory if the node isn't also a webapp node
-    if ! member($::services, 'webapp') {
+    # or running openvpn on port 80
+    if ! member($::services, 'webapp') and ! member($openvpn_ports, '80') {
       tor::daemon::directory { $::hostname: port => 80 }
     }
   }
