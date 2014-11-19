@@ -1,4 +1,4 @@
-raise SkipTest unless $node["services"].include?("mx")
+raise SkipTest unless service?(:mx)
 
 require 'json'
 
