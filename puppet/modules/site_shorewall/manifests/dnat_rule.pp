@@ -10,6 +10,7 @@ define site_shorewall::dnat_rule {
             destination     => "\$FW:${site_openvpn::unlimited_gateway_address}:1194",
             proto           => 'tcp',
             destinationport => $port,
+            originaldest    => $site_openvpn::unlimited_gateway_address,
             order           => 100;
       }
       shorewall::rule {
@@ -19,6 +20,7 @@ define site_shorewall::dnat_rule {
             destination     => "\$FW:${site_openvpn::unlimited_gateway_address}:1194",
             proto           => 'udp',
             destinationport => $port,
+            originaldest    => $site_openvpn::unlimited_gateway_address,
             order           => 100;
       }
     }
@@ -30,6 +32,7 @@ define site_shorewall::dnat_rule {
             destination     => "\$FW:${site_openvpn::limited_gateway_address}:1194",
             proto           => 'tcp',
             destinationport => $port,
+            originaldest    => $site_openvpn::unlimited_gateway_address,
             order           => 100;
       }
       shorewall::rule {
@@ -39,6 +42,7 @@ define site_shorewall::dnat_rule {
             destination     => "\$FW:${site_openvpn::limited_gateway_address}:1194",
             proto           => 'udp',
             destinationport => $port,
+            originaldest    => $site_openvpn::unlimited_gateway_address,
             order           => 100;
       }
     }
