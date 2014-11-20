@@ -40,6 +40,10 @@ class site_check_mk::server {
       content => template('site_check_mk/hostgroups.mk'),
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
+    '/etc/check_mk/conf.d/host_contactgroups.mk':
+      source => 'puppet:///modules/site_check_mk/host_contactgroups.mk',
+      notify  => Exec['check_mk-refresh'],
+      require => Package['check-mk-server'];
     '/etc/check_mk/all_hosts_static':
       content => $all_hosts,
       notify  => Exec['check_mk-refresh'],
@@ -63,7 +67,6 @@ class site_check_mk::server {
       mode    => '4755',
       require => Package['nagios-plugins-basic'];
   }
-
 
   include check_mk::agent::local_checks
 }
