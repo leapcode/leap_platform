@@ -31,4 +31,14 @@ class site_couchdb::bigcouch {
   file { '/var/log/bigcouch':
     ensure => directory
   }
+
+  file { '/etc/sv/bigcouch/run':
+    ensure  => present,
+    source  => 'puppet:///modules/site_couchdb/runit_config',
+    owner   => root,
+    group   => root,
+    mode    => '0755',
+    require => Package['couchdb'],
+    notify  => Service['couchdb']
+  }
 }
