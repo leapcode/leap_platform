@@ -4,7 +4,7 @@ define site_shorewall::dnat_rule {
   if $port != 1194 {
     if $site_openvpn::openvpn_allow_unlimited {
       shorewall::rule {
-          "dnat_tcp_port_$port":
+          "dnat_tcp_port_${port}":
             action          => 'DNAT',
             source          => 'net',
             destination     => "\$FW:${site_openvpn::unlimited_gateway_address}:1194",
@@ -13,7 +13,7 @@ define site_shorewall::dnat_rule {
             order           => 100;
       }
       shorewall::rule {
-          "dnat_udp_port_$port":
+          "dnat_udp_port_${port}":
             action          => 'DNAT',
             source          => 'net',
             destination     => "\$FW:${site_openvpn::unlimited_gateway_address}:1194",
@@ -24,7 +24,7 @@ define site_shorewall::dnat_rule {
     }
     if $site_openvpn::openvpn_allow_limited {
       shorewall::rule {
-          "dnat_free_tcp_port_$port":
+          "dnat_free_tcp_port_${port}":
             action          => 'DNAT',
             source          => 'net',
             destination     => "\$FW:${site_openvpn::limited_gateway_address}:1194",
@@ -33,7 +33,7 @@ define site_shorewall::dnat_rule {
             order           => 100;
       }
       shorewall::rule {
-          "dnat_free_udp_port_$port":
+          "dnat_free_udp_port_${port}":
             action          => 'DNAT',
             source          => 'net',
             destination     => "\$FW:${site_openvpn::limited_gateway_address}:1194",
