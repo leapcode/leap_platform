@@ -1,6 +1,6 @@
-raise SkipTest unless $node["services"].include?("openvpn")
+raise SkipTest unless service?(:openvpn)
 
-class Openvpn < LeapTest
+class OpenVPN < LeapTest
   depends_on "Network"
 
   def setup

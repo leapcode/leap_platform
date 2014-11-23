@@ -36,6 +36,14 @@ def bail(code, msg=nil)
 end
 
 ##
+## UTILITY
+##
+
+def service?(service)
+  $node["services"].include?(service.to_s)
+end
+
+##
 ## EXCEPTIONS
 ##
 

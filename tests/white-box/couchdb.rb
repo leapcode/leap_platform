@@ -1,4 +1,4 @@
-raise SkipTest unless $node["services"].include?("couchdb")
+raise SkipTest unless service?(:couchdb)
 
 require 'json'
 

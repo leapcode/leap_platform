@@ -1,4 +1,4 @@
-raise SkipTest unless $node["services"].include?("webapp")
+raise SkipTest unless service?(:webapp)
 
 require 'json'
 
