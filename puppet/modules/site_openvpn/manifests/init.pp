@@ -152,7 +152,7 @@ class site_openvpn {
                     File['/etc/openvpn'],
                     Class['Site_config::X509::Key'],
                     Class['Site_config::X509::Cert'],
-                    Class['Site_config::X509::Ca'] ],
+                    Class['Site_config::X509::Ca_bundle'] ],
     require     => [
                     Package['openvpn'],
                     File['/etc/openvpn'],
