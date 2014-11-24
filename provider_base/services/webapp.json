@@ -22,7 +22,7 @@
     "secure": false,
     "git": {
       "source": "https://leap.se/git/leap_web",
-      "revision": "origin/master"
+      "revision": "origin/version/0.6"
     },
     "client_version": "= provider.client_version",
     "nagios_test_user": {
