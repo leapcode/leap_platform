@@ -42,7 +42,12 @@ module LeapCli
       hosts = {}
       my_location = @node['location'] ? @node['location']['name'] : nil
       nodes.each_node do |node|
-        hosts[node.name] = {'ip_address' => node.ip_address, 'domain_internal' => node.domain.internal, 'domain_full' => node.domain.full}
+        hosts[node.name] = {
+          'ip_address' => node.ip_address,
+          'domain_internal' => node.domain.internal,
+          'domain_full' => node.domain.full,
+          'port' => node.ssh.port
+        }
         node_location = node['location'] ? node['location']['name'] : nil
         if my_location == node_location
           if facts = @node.manager.facts[node.name]
