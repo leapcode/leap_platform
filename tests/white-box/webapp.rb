@@ -41,62 +41,50 @@ class Webapp < LeapTest
     pass
   end
 
-  def test_05_Can_create_user?
-    @@user = nil
-    user = SRP::User.new
+  def test_05_Can_create_and_authenticate_and_delete_user_via_API?
+    @user = SRP::User.new
+    @session_token = nil
+    @user_id = nil
+
+    # create user
     url = api_url("/1/users.json")
-    assert_post(url, user.to_params) do |body|
+    assert_post(url, @user.to_params) do |body|
       assert response = JSON.parse(body), 'response should be JSON'
       assert response['ok'], 'creating a user should be successful'
     end
-    @@user = user
-    pass
-  end
 
-  def test_06_Can_authenticate?
-    @@user_id = nil
-    @@session_token = nil
-    if @@user.nil?
-      skip "Depends on user creation"
-    else
-      url = api_url("/1/sessions.json")
-      session = SRP::Session.new(@@user)
-      params = {'login' => @@user.username, 'A' => session.aa}
-      assert_post(url, params) do |response, body|
-        cookie = response['Set-Cookie'].split(';').first
+    # authenticate
+    url = api_url("/1/sessions.json")
+    session = SRP::Session.new(@user)
+    params = {'login' => @user.username, 'A' => session.aa}
+    assert_post(url, params) do |response, body|
+      cookie = response['Set-Cookie'].split(';').first
+      assert(response = JSON.parse(body), 'response should be JSON')
+      assert(bb = response["B"])
+      session.bb = bb
+      url = api_url("/1/sessions/login.json")
+      params = {'client_auth' => session.m, 'A' => session.aa}
+      options = {:headers => {'Cookie' => cookie}}
+      assert_put(url, params, options) do |body|
         assert(response = JSON.parse(body), 'response should be JSON')
-        assert(bb = response["B"])
-        session.bb = bb
-        url = api_url("/1/sessions/login.json")
-        params = {'client_auth' => session.m, 'A' => session.aa}
-        options = {:headers => {'Cookie' => cookie}}
-        assert_put(url, params, options) do |body|
-          assert(response = JSON.parse(body), 'response should be JSON')
-          assert(response['M2'], 'response should include M2')
-          assert(@@session_token = response['token'], 'response should include token')
-          assert(@@user_id = response['id'], 'response should include user id')
-        end
+        assert(response['M2'], 'response should include M2')
+        assert(@session_token = response['token'], 'response should include token')
+        assert(@user_id = response['id'], 'response should include user id')
       end
-      pass
     end
-  end
 
-  def test_07_Can_delete_user?
-    if @@user_id.nil? || @@session_token.nil?
-      skip "Depends on authentication"
-    else
-      url = api_url("/1/users/#{@@user_id}.json")
-      options = {:headers => {
-        "Authorization" => "Token token=\"#{@@session_token}\""
-      }}
-      delete(url, {}, options) do |body, response, error|
-        if response.code.to_i != 200
-          skip "It appears the web api is too old to support deleting users"
-        else
-          assert(response = JSON.parse(body), 'response should be JSON')
-          assert(response["success"], 'delete should be a success')
-          pass
-        end
+    # delete
+    url = api_url("/1/users/#{@user_id}.json")
+    options = {:headers => {
+      "Authorization" => "Token token=\"#{@session_token}\""
+    }}
+    delete(url, {}, options) do |body, response, error|
+      if response.code.to_i != 200
+        skip "It appears the web api is too old to support deleting users"
+      else
+        assert(response = JSON.parse(body), 'response should be JSON')
+        assert(response["success"], 'delete should be a success')
+        pass
       end
     end
   end
