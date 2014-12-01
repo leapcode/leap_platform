@@ -17,8 +17,12 @@ class LeapTest
     }.compact
   end
 
-  def assert_running(process)
-    assert pgrep(process).any?, "No running process for #{process}"
+  def assert_running(process, options={})
+    processes = pgrep(process)
+    assert processes.any?, "No running process for #{process}"
+    if options[:single]
+      assert processes.length == 1, "More than one process for #{process}"
+    end
   end
 
   #

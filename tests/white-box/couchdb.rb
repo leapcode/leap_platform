@@ -9,7 +9,7 @@ class CouchDB < LeapTest
   end
 
   def test_00_Are_daemons_running?
-    assert_running 'tapicero'
+    assert_running '^tapicero', :single => true
     if multimaster?
       assert_running 'bin/beam'
       assert_running 'bin/epmd'
