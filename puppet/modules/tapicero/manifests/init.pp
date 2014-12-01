@@ -95,7 +95,7 @@ class tapicero {
   vcsrepo { '/srv/leap/tapicero':
     ensure   => present,
     force    => true,
-    revision => 'origin/master',
+    revision => 'origin/version/0.6',
     provider => git,
     source   => 'https://leap.se/git/tapicero',
     owner    => 'tapicero',
