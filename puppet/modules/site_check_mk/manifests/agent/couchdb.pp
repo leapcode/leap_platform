@@ -29,7 +29,7 @@ class site_check_mk::agent::couchdb {
   }
   file_line {
     'Bigcouch_open_files':
-      line => 'Bigcouch_open_files /srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 750,750 -c 1000,1000',
+      line => 'Bigcouch_open_files /srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 28672,28672 -c 30720,30720',
       path => '/etc/check_mk/mrpe.cfg';
   }
 
