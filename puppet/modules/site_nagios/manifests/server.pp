@@ -16,7 +16,7 @@ class site_nagios::server inherits nagios::base {
   include nagios::defaults::timeperiods
   include nagios::defaults::plugins
 
-  class {'nagios':
+  class { 'nagios':
     # don't manage apache class from nagios, cause we already include
     # it in site_apache::common
     httpd              => 'absent',

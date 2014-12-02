@@ -9,7 +9,7 @@ define site_nagios::add_service (
       nagios_service {
         "${name}_ssh":
           use                 => 'generic-service',
-          check_command       => "check_ssh_port!$ssh_port",
+          check_command       => "check_ssh_port!${ssh_port}",
           service_description => 'SSH',
           host_name           => $hostname;
         "${name}_cert":
