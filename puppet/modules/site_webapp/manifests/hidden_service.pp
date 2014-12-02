@@ -21,7 +21,7 @@ class site_webapp::hidden_service {
 
     '/var/lib/tor/webapp/private_key':
       ensure  => present,
-      source  => '/srv/leap/files/nodes/web/tor.key',
+      source  => "/srv/leap/files/nodes/${::hostname}/tor.key",
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600';
