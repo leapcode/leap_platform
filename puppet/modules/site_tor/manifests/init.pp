@@ -18,8 +18,8 @@ class site_tor {
   else {
     $openvpn_ports = []
   }
-  
-  class { 'tor::daemon': }
+
+  include tor::daemon
   tor::daemon::relay { $nickname:
     port           => 9001,
     address        => $address,
