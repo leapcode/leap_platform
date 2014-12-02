@@ -11,6 +11,7 @@ class site_check_mk::server {
   $hosts            = hiera_hash('hosts')
   $all_hosts        = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
   $domains_internal = $nagios_hiera['domains_internal']
+  $environments     = $nagios_hiera['environments']
 
   package { 'check-mk-server':
     ensure => installed,
@@ -41,7 +42,7 @@ class site_check_mk::server {
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
     '/etc/check_mk/conf.d/host_contactgroups.mk':
-      source  => 'puppet:///modules/site_check_mk/host_contactgroups.mk',
+      content => template('site_check_mk/host_contactgroups.mk'),
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
     '/etc/check_mk/conf.d/ignored_services.mk':
