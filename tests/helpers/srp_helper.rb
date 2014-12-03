@@ -135,16 +135,14 @@ d15dc7d7b46154d6b6ce8ef4ad69b15d4982559b297bcf1885c529f566660e5
   class User
     include SRP::Util
 
-    attr_accessor :username
-    attr_accessor :password
-    attr_accessor :salt
-    attr_accessor :verifier
+    attr_accessor :username, :password, :salt, :verifier, :id, :session_token, :ok
 
     def initialize
       @username = "test_user_" + SecureRandom.urlsafe_base64(10).downcase.gsub(/[_-]/, '')
       @password = "password_" + SecureRandom.urlsafe_base64(10)
       @salt     = bigrand(4).hex
       @verifier = modpow(GENERATOR, private_key)
+      @ok       = false
     end
 
     def private_key

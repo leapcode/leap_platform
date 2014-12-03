@@ -42,50 +42,23 @@ class Webapp < LeapTest
   end
 
   def test_05_Can_create_and_authenticate_and_delete_user_via_API?
-    @user = SRP::User.new
-    @session_token = nil
-    @user_id = nil
+    assert_tmp_user
+    pass
+  end
 
-    # create user
-    url = api_url("/1/users.json")
-    assert_post(url, @user.to_params) do |body|
-      assert response = JSON.parse(body), 'response should be JSON'
-      assert response['ok'], 'creating a user should be successful'
-    end
-
-    # authenticate
-    url = api_url("/1/sessions.json")
-    session = SRP::Session.new(@user)
-    params = {'login' => @user.username, 'A' => session.aa}
-    assert_post(url, params) do |response, body|
-      cookie = response['Set-Cookie'].split(';').first
-      assert(response = JSON.parse(body), 'response should be JSON')
-      assert(bb = response["B"])
-      session.bb = bb
-      url = api_url("/1/sessions/login.json")
-      params = {'client_auth' => session.m, 'A' => session.aa}
-      options = {:headers => {'Cookie' => cookie}}
-      assert_put(url, params, options) do |body|
-        assert(response = JSON.parse(body), 'response should be JSON')
-        assert(response['M2'], 'response should include M2')
-        assert(@session_token = response['token'], 'response should include token')
-        assert(@user_id = response['id'], 'response should include user id')
-      end
-    end
-
-    # delete
-    url = api_url("/1/users/#{@user_id}.json")
-    options = {:headers => {
-      "Authorization" => "Token token=\"#{@session_token}\""
-    }}
-    delete(url, {}, options) do |body, response, error|
-      if response.code.to_i != 200
-        skip "It appears the web api is too old to support deleting users"
-      else
-        assert(response = JSON.parse(body), 'response should be JSON')
-        assert(response["success"], 'delete should be a success')
+  def test_06_Can_sync_Soledad?
+    soledad_config = property('definition_files.soledad_service')
+    if soledad_config && !soledad_config.empty?
+      soledad_server = pick_soledad_server(soledad_config)
+      assert_tmp_user do |user|
+        assert user_db_exists?(user), "Could not find user db for test user #{user.username}"
+        command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
+        soledad_url = "https://#{soledad_server}/user-#{user.id}"
+        assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
         pass
       end
+    else
+      skip 'No soledad service configuration'
     end
   end
 
@@ -98,11 +71,33 @@ class Webapp < LeapTest
     }
   end
 
-  def api_url(path)
-    "https://%{domain}:%{port}#{path}" % {
-      :domain   => property('api.domain'),
-      :port     => property('api.port')
-    }
+  #
+  # pick a random soledad server.
+  # I am not sure why, but using IP address directly does not work.
+  #
+  def pick_soledad_server(soledad_config_json_str)
+    soledad_config = JSON.parse(soledad_config_json_str)
+    host_name = soledad_config['hosts'].keys.shuffle.first
+    hostname = soledad_config['hosts'][host_name]['hostname']
+    port = soledad_config['hosts'][host_name]['port']
+    return "#{hostname}:#{port}"
+  end
+
+  #
+  # returns true if the per-user db created by tapicero exists.
+  # we try three times, and give up after that.
+  #
+  def user_db_exists?(user)
+    3.times do
+      sleep 0.1
+      get(couchdb_url("/user-#{user.id}/_design/docs")) do |body, response, error|
+        if response.code.to_i == 200
+          return true
+        end
+      end
+      sleep 0.2
+    end
+    return false
   end
 
   #
