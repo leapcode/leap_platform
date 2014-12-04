@@ -35,10 +35,7 @@ define site_stunnel::servers (
     pid        => "/var/run/stunnel4/${pid}.pid",
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => $debuglevel,
-    require    => [
-      Class['Site_config::X509::Key'],
-      Class['Site_config::X509::Cert'],
-      Class['Site_config::X509::Ca'] ];
+    sslversion => 'TLSv1';
   }
 
   # allow incoming connections on $accept_port

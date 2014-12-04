@@ -19,6 +19,7 @@ production:
   default_service_level: "<%= @webapp['default_service_level'] %>"
   service_levels: <%= @webapp['service_levels'].to_json %>
   allow_registration: <%= @webapp['allow_registration'].inspect %>
+  handle_blacklist: <%= @webapp['forbidden_usernames'].inspect %>
 <%- if @webapp['engines'] && @webapp['engines'].any? -%>
   engines:
 <%-   @webapp['engines'].each do |engine| -%>

@@ -1,6 +1,7 @@
 {
   "webapp": {
     "admins": [],
+    "forbidden_usernames": ["admin", "administrator", "arin-admin", "certmaster", "contact", "info", "maildrop", "postmaster", "ssladmin", "www-data"],
     "domain": "= domain.full_suffix",
     "modules": ["user", "billing", "help"],
     "couchdb_webapp_user": {
@@ -21,7 +22,7 @@
     "secure": false,
     "git": {
       "source": "https://leap.se/git/leap_web",
-      "revision": "origin/master"
+      "revision": "origin/version/0.6"
     },
     "client_version": "= provider.client_version",
     "nagios_test_user": {

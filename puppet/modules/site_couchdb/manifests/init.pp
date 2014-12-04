@@ -42,13 +42,13 @@ class site_couchdb {
   $couchdb_backup           = $couchdb_config['backup']
   $couchdb_mode             = $couchdb_config['mode']
 
-  if $couchdb_mode == "multimaster" { include site_couchdb::bigcouch }
-  if $couchdb_mode == "master"      { include site_couchdb::master }
-  if $couchdb_mode == "mirror"      { include site_couchdb::mirror }
+  if $couchdb_mode == 'multimaster' { include site_couchdb::bigcouch }
+  if $couchdb_mode == 'master'      { include site_couchdb::master }
+  if $couchdb_mode == 'mirror'      { include site_couchdb::mirror }
 
   Class['site_config::default']
     -> Service['shorewall']
-    -> Service['stunnel']
+    -> Exec['refresh_stunnel']
     -> Class['couchdb']
     -> Class['site_couchdb::setup']
 

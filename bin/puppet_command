@@ -14,6 +14,8 @@ PUPPET_BIN        = '/usr/bin/puppet'
 PUPPET_DIRECTORY  = '/srv/leap'
 PUPPET_PARAMETERS = '--color=false --detailed-exitcodes --libdir=puppet/lib --confdir=puppet'
 SITE_MANIFEST     = 'puppet/manifests/site.pp'
+SITE_MODULES      = 'puppet/modules'
+CUSTOM_MODULES    = ':files/puppet/modules'
 DEFAULT_TAGS      = 'leap_base,leap_service'
 HIERA_FILE        = '/etc/leap/hiera.yaml'
 
@@ -93,10 +95,11 @@ end
 def puppet_apply(options={}, &block)
   options = {:verbosity => @verbosity, :tags => @tags}.merge(options)
   manifest = options[:manifest] || SITE_MANIFEST
+  modulepath = options[:module_path] || SITE_MODULES + CUSTOM_MODULES
   fqdn = hiera_file['domain']['name']
   domain = hiera_file['domain']['full_suffix']
   Dir.chdir(PUPPET_DIRECTORY) do
-    return run("FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} #{PUPPET_PARAMETERS} #{manifest}", &block)
+    return run("FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} --modulepath='#{modulepath}' #{PUPPET_PARAMETERS} #{manifest}", &block)
   end
 end
 

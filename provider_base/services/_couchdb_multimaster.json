@@ -8,8 +8,8 @@
       "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)"
     },
     "clients": {
-      "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.epmd_port)",
-      "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], couch.bigcouch.ednp_port)"
+      "epmd_clients": "= stunnel_client(nodes_like_me['services' => 'couchdb']['couch.mode' => 'multimaster'], couch.bigcouch.epmd_port)",
+      "ednp_clients": "= stunnel_client(nodes_like_me['services' => 'couchdb']['couch.mode' => 'multimaster'], couch.bigcouch.ednp_port)"
     }
   },
   "couch": {
@@ -18,7 +18,7 @@
       "epmd_port": 4369,
       "ednp_port": 9002,
       "cookie": "= secret :bigcouch_cookie",
-      "neighbors": "= nodes_like_me['services' => 'couchdb']['couch.master' => true].exclude(self).field('domain.full')"
+      "neighbors": "= nodes_like_me['services' => 'couchdb']['couch.mode' => 'multimaster'].exclude(self).field('domain.full')"
     }
   }
 }

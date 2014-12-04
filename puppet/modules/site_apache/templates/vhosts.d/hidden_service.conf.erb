@@ -1,0 +1,33 @@
+<VirtualHost 127.0.0.1:80>
+  ServerName <%= tor_domain %>
+
+  <IfModule mod_headers.c>
+    Header always unset X-Powered-By
+    Header always unset X-Runtime
+  </IfModule>
+
+<% if (defined? @services) and (@services.include? 'webapp') -%>
+  DocumentRoot /srv/leap/webapp/public
+
+  RewriteEngine On
+  # Check for maintenance file and redirect all requests
+  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteCond %{REQUEST_URI} !/images/maintenance.jpg
+  RewriteRule ^.*$ %{DOCUMENT_ROOT}/system/maintenance.html [L]
+
+  # http://www.modrails.com/documentation/Users%20guide%20Apache.html#_passengerallowencodedslashes_lt_on_off_gt
+  AllowEncodedSlashes on
+  PassengerAllowEncodedSlashes on
+  PassengerFriendlyErrorPages off
+  SetEnv TMPDIR /var/tmp
+
+  # Allow rails assets to be cached for a very long time (since the URLs change whenever the content changes)
+  <Location /assets/>
+    Header unset ETag
+    FileETag None
+    ExpiresActive On
+    ExpiresDefault "access plus 1 year"
+  </Location>
+<% end -%>
+</VirtualHost>

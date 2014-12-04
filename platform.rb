@@ -4,8 +4,8 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.5.4.1"
-  self.compatible_cli = "1.5.8".."1.99"
+  self.version = "0.6"
+  self.compatible_cli = "1.6.1".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -13,7 +13,16 @@ Leap::Platform.define do
   self.facts = ["ec2_local_ipv4", "ec2_public_ipv4"]
 
   #
+  # absolute paths on the destination server
+  #
+  self.hiera_path = '/etc/leap/hiera.yaml'
+  self.leap_dir   = '/srv/leap'
+  self.files_dir  = '/srv/leap/files'
+  self.init_path  = '/srv/leap/initialized'
+
+  #
   # the named paths for this platform
+  # (relative to the provider directory)
   #
   self.paths = {
     # directories
@@ -43,6 +52,11 @@ Leap::Platform.define do
     :soledad_service_json_template => 'files/service-definitions/#{arg}/soledad-service.json.erb',
     :smtp_service_json_template    => 'files/service-definitions/#{arg}/smtp-service.json.erb',
 
+    # custom puppet
+    :custom_puppet_dir => 'files/puppet',
+    :custom_puppet_modules_dir => 'files/puppet/modules',
+    :custom_puppet_manifests_dir => 'files/puppet/manifests',
+
     # output files
     :facts            => 'facts.json',
     :user_ssh         => 'users/#{arg}/#{arg}_ssh.pub',
@@ -63,10 +77,12 @@ Leap::Platform.define do
     :vagrantfile      => 'test/Vagrantfile',
 
     # node output files
-    :hiera            => 'hiera/#{arg}.yaml',
-    :node_ssh_pub_key => 'files/nodes/#{arg}/#{arg}_ssh.pub',
-    :node_x509_key    => 'files/nodes/#{arg}/#{arg}.key',
-    :node_x509_cert   => 'files/nodes/#{arg}/#{arg}.crt',
+    :hiera             => 'hiera/#{arg}.yaml',
+    :node_ssh_pub_key  => 'files/nodes/#{arg}/#{arg}_ssh.pub',
+    :node_x509_key     => 'files/nodes/#{arg}/#{arg}.key',
+    :node_x509_cert    => 'files/nodes/#{arg}/#{arg}.crt',
+    :node_tor_priv_key => 'files/nodes/#{arg}/tor.key',
+    :node_tor_pub_key  => 'files/nodes/#{arg}/tor.pub',
 
     # testing files
     :test_client_key     => 'test/cert/client.key',
@@ -85,5 +101,7 @@ Leap::Platform.define do
   self.monitor_username = 'monitor'
 
   self.reserved_usernames = ['monitor']
+
+  self.default_puppet_tags = ['leap_base','leap_service']
 end
 

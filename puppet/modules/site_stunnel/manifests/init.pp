@@ -28,5 +28,7 @@ class site_stunnel {
   $clients = $stunnel['clients']
   $client_sections = keys($clients)
   site_stunnel::clients { $client_sections: }
+
+  include site_stunnel::override_service
 }
 
