@@ -19,6 +19,7 @@
 
 import os
 import sys
+import traceback
 import tempfile
 import shutil
 import u1db
@@ -73,4 +74,5 @@ if __name__ == '__main__':
             exit(1)
     except Exception as exc:
         print(exc.message or str(exc))
+        traceback.print_exc(file=sys.stdout)
         exit(2)
