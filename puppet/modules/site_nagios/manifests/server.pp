@@ -6,12 +6,11 @@ class site_nagios::server inherits nagios::base {
   $nagios_hiera     = hiera('nagios')
   $nagiosadmin_pw   = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
   $nagios_hosts     = $nagios_hiera['hosts']
-  $domains_internal = $nagios_hiera['domains_internal']
+  $nagios_contacts  = hiera('contacts')
+  $environment      = $nagios_hiera['environments']
 
   include nagios::base
   include nagios::defaults::commands
-  include nagios::defaults::contactgroups
-  include nagios::defaults::contacts
   include nagios::defaults::templates
   include nagios::defaults::timeperiods
   include nagios::defaults::plugins
@@ -63,5 +62,7 @@ class site_nagios::server inherits nagios::base {
         'set copytruncate copytruncate' ]
   }
 
-  ::site_nagios::server::hostgroup { $domains_internal: }
+  create_resources ( site_nagios::server::hostgroup, $environment )
+  create_resources ( site_nagios::server::contactgroup, $environment )
+  create_resources ( site_nagios::server::add_contacts, $environment )
 }

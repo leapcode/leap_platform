@@ -4,7 +4,9 @@ define site_nagios::add_host_services (
   $ip_address,
   $services,
   $ssh_port,
-  $openvpn_gateway_address='' ) {
+  $environment,
+  $openvpn_gateway_address='',
+  ) {
 
     $nagios_hostname = $domain_internal
 
@@ -16,6 +18,7 @@ define site_nagios::add_host_services (
       'hostname'    => $nagios_hostname,
       'ip_address'  => $ip_address,
       'openvpn_gw'  => $openvpn_gateway_address,
+      'environment' => $environment
     }
     $dynamic_parameters = {
       'service' => '%s'
