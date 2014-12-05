@@ -51,7 +51,7 @@ class Webapp < LeapTest
     if soledad_config && !soledad_config.empty?
       soledad_server = pick_soledad_server(soledad_config)
       assert_tmp_user do |user|
-        assert user_db_exists?(user), "Could not find user db for test user #{user.username}"
+        assert_user_db_exists(user)
         command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
         soledad_url = "https://#{soledad_server}/user-#{user.id}"
         assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
@@ -87,17 +87,19 @@ class Webapp < LeapTest
   # returns true if the per-user db created by tapicero exists.
   # we try three times, and give up after that.
   #
-  def user_db_exists?(user)
+  def assert_user_db_exists(user)
+    last_body, last_response, last_error = nil
     3.times do
       sleep 0.1
       get(couchdb_url("/user-#{user.id}/_design/docs")) do |body, response, error|
+        last_body, last_response, last_error = body, response, error
         if response.code.to_i == 200
-          return true
+          return
         end
       end
       sleep 0.2
     end
-    return false
+    assert false, "Could not find user db for test user #{user.username}\nuuid=#{user.id}\nHTTP #{last_response.code} #{last_error} #{last_body}"
   end
 
   #

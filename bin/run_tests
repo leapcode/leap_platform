@@ -49,15 +49,15 @@ end
 
 # this class is raised if a test file wants to be skipped entirely.
 # (to skip an individual test, MiniTest::Skip is used instead)
-class SkipTest < Exception
+class SkipTest < StandardError
 end
 
 # raised if --no-continue and there is an error
-class TestError < Exception
+class TestError < StandardError
 end
 
 # raised if --no-continue and there is a failure
-class TestFailure < Exception
+class TestFailure < StandardError
 end
 
 ##

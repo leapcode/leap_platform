@@ -6,6 +6,7 @@
 require 'digest'
 require 'openssl'
 require 'securerandom'
+require 'base64'
 
 module SRP
 
@@ -135,7 +136,7 @@ d15dc7d7b46154d6b6ce8ef4ad69b15d4982559b297bcf1885c529f566660e5
   class User
     include SRP::Util
 
-    attr_accessor :username, :password, :salt, :verifier, :id, :session_token, :ok
+    attr_accessor :username, :password, :salt, :verifier, :id, :session_token, :ok, :deleted
 
     def initialize
       @username = "test_user_" + SecureRandom.urlsafe_base64(10).downcase.gsub(/[_-]/, '')
@@ -143,6 +144,7 @@ d15dc7d7b46154d6b6ce8ef4ad69b15d4982559b297bcf1885c529f566660e5
       @salt     = bigrand(4).hex
       @verifier = modpow(GENERATOR, private_key)
       @ok       = false
+      @deleted  = false
     end
 
     def private_key

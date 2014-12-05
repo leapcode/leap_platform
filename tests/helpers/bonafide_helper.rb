@@ -8,10 +8,13 @@ class LeapTest
     user = assert_create_user
     assert_authenticate_user(user)
     yield user if block_given?
-  rescue
-    # ^^ ensure here would eat any failed assertions
     assert_delete_user(user)
-    raise
+  rescue StandardError, MiniTest::Assertion => exc
+    begin
+      assert_delete_user(user)
+    rescue
+    end
+    raise exc
   end
 
   def api_url(path)
@@ -67,19 +70,16 @@ class LeapTest
   # attempts to destroy a user account via the API.
   #
   def assert_delete_user(user)
-    if user && user.ok && user.id && user.session_token
+    if user && user.ok && user.id && user.session_token && !user.deleted
       url = api_url("/1/users/#{user.id}.json")
       options = {:headers => {
         "Authorization" => "Token token=\"#{user.session_token}\""
       }}
+      user.deleted = true
       delete(url, {}, options) do |body, response, error|
-        if response.code.to_i != 200
-          skip "It appears the web api is too old to support deleting users"
-        else
-          assert(response = JSON.parse(body), 'response should be JSON')
-          assert(response["success"], 'delete should be a success')
-          pass
-        end
+        assert response.code.to_i == 200, "Unable to delete user: HTTP response from API should have code 200, was #{response.code} #{error} #{body}"
+        assert(response = JSON.parse(body), 'Delete response should be JSON')
+        assert(response["success"], 'Deleting user should be a success')
       end
     end
   end
