@@ -1,6 +1,6 @@
 {
   "domain": "REQUIRED",
-  "domain_internal": "= domain.sub(/\\..*$/,'.i')",
+  "domain_internal": "= domain.sub(/\\.[^\\.]*$/, '.i')",
   "name": {
     "en": "REQUIRED"
   },
