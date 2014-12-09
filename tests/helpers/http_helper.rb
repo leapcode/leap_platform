@@ -93,9 +93,9 @@ class LeapTest
           yield(response, body) if block.arity == 2
         end
       elsif response
-        fail ["Expected a 200 status code from #{url}, but got #{response.code} instead.", error_msg, body].compact.join("\n")
+        fail ["Expected a 200 status code from #{method} #{url}, but got #{response.code} instead.", error_msg, body].compact.join("\n")
       else
-        fail ["Expected a response from #{url}, but got \"#{error}\" instead.", error_msg, body].compact.join("\n"), error
+        fail ["Expected a response from #{method} #{url}, but got \"#{error}\" instead.", error_msg, body].compact.join("\n"), error
       end
     end
   end
