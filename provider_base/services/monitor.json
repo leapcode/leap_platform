@@ -2,7 +2,7 @@
   "nagios": {
     "nagiosadmin_pw": "= secret :nagios_admin_password",
     "domains_internal": "= global.tags.field('domain.internal_suffix').compact.uniq",
-    "environments": "= Hash[ global.environment_names.select{|e|e!='local'}.map{|e| [e||'default',{'contact_emails'=>global.env(e).provider.contacts.default}]} ]",
+    "environments": "= Hash[ nagios.hosts.values.map{|h|h['environment']}.uniq.map{|e| [e||'default',{'contact_emails'=>global.env(e).provider.contacts.default}]} ]",
     "hosts": "= (self.environment == 'local' ? nodes_like_me : nodes[:environment => '!local']).pick_fields('environment', 'domain.internal', 'domain.full_suffix', 'ip_address', 'services', 'openvpn.gateway_address', 'ssh.port')"
   },
   "hosts": "= self.environment == 'local' ? hosts_file(nodes_like_me) : hosts_file(nodes[:environment => '!local'])",
