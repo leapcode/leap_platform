@@ -165,6 +165,13 @@ class site_webapp {
     }
   }
 
+
+  # needed for the soledad-sync check which is run on the
+  # webapp node (#6520)
+  package { 'python-u1db':
+    ensure => latest,
+  }
+
   include site_shorewall::webapp
   include site_check_mk::agent::webapp
 }
