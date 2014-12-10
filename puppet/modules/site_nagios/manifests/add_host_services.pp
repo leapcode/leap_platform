@@ -1,6 +1,7 @@
 define site_nagios::add_host_services (
   $domain_full_suffix,
   $domain_internal,
+  $domain_internal_suffix,
   $ip_address,
   $services,
   $ssh_port,
