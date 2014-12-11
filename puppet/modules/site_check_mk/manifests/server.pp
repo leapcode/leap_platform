@@ -53,6 +53,10 @@ class site_check_mk::server {
       source  => 'puppet:///modules/site_check_mk/extra_service_conf.mk',
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
+    '/etc/check_mk/conf.d/extra_host_conf.mk':
+      source  => 'puppet:///modules/site_check_mk/extra_host_conf.mk',
+      notify  => Exec['check_mk-refresh'],
+      require => Package['check-mk-server'];
 
     '/etc/check_mk/all_hosts_static':
       content => $all_hosts,
