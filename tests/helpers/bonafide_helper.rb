@@ -34,7 +34,7 @@ class LeapTest
     url = api_url("/1/users.json")
     assert_post(url, user.to_params) do |body|
       assert response = JSON.parse(body), 'response should be JSON'
-      assert response['ok'], 'creating a user should be successful'
+      assert response['ok'], "Creating a user should be successful, got #{response.inspect} instead."
     end
     user.ok = true
     return user

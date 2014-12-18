@@ -50,12 +50,14 @@ class Webapp < LeapTest
     soledad_config = property('definition_files.soledad_service')
     if soledad_config && !soledad_config.empty?
       soledad_server = pick_soledad_server(soledad_config)
-      assert_tmp_user do |user|
-        assert_user_db_exists(user)
-        command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
-        soledad_url = "https://#{soledad_server}/user-#{user.id}"
-        assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
-        pass
+      if soledad_server
+        assert_tmp_user do |user|
+          assert_user_db_exists(user)
+          command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
+          soledad_url = "https://#{soledad_server}/user-#{user.id}"
+          assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
+          pass
+        end
       end
     else
       skip 'No soledad service configuration'
@@ -78,9 +80,13 @@ class Webapp < LeapTest
   def pick_soledad_server(soledad_config_json_str)
     soledad_config = JSON.parse(soledad_config_json_str)
     host_name = soledad_config['hosts'].keys.shuffle.first
-    hostname = soledad_config['hosts'][host_name]['hostname']
-    port = soledad_config['hosts'][host_name]['port']
-    return "#{hostname}:#{port}"
+    if host_name
+      hostname = soledad_config['hosts'][host_name]['hostname']
+      port = soledad_config['hosts'][host_name]['port']
+      return "#{hostname}:#{port}"
+    else
+      return nil
+    end
   end
 
   #
