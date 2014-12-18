@@ -52,6 +52,7 @@ class site_nagios::server inherits nagios::base {
   include site_nagios::server::apache
   include site_check_mk::server
   include site_shorewall::monitor
+  include site_nagios::server::icli
 
   augeas {
     'logrotate_nagios':
