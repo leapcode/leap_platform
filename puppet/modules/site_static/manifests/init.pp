@@ -1,5 +1,10 @@
 class site_static {
   tag 'leap_service'
+
+  include site_config::x509::cert
+  include site_config::x509::key
+  include site_config::x509::ca_bundle
+
   $static        = hiera('static')
   $domains       = $static['domains']
   $formats       = $static['formats']
@@ -33,7 +38,7 @@ class site_static {
     include site_apt::preferences::passenger
     class { 'passenger':
       use_munin => false,
-      require => Class['site_apt::preferences::passenger']
+      require   => Class['site_apt::preferences::passenger']
     }
   }
 
