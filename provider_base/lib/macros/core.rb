@@ -22,6 +22,9 @@ module LeapCli
       keys.sort.each do |keyfile|
         ssh_type, ssh_key = File.read(keyfile, :encoding => 'UTF-8').strip.split(" ")
         name = File.basename(File.dirname(keyfile))
+        until hash[name].nil?
+          i ||= 1; name = "#{name}#{i+=1}"
+        end
         hash[name] = {
           "type" => ssh_type,
           "key" => ssh_key
