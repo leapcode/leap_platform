@@ -36,14 +36,15 @@ module LeapCli
     end
 
     #
-    # on the command line an onion address can be created
-    # from an rsa public key using this:
+    # Generates a onion_address from a public RSA key file.
     #
-    #   base64 -d < ./pubkey | sha1sum | awk '{print $1}' |
-    #     perl -e '$l=<>; chomp $l; print pack("H*", $l)' |
-    #     python -c 'import base64, sys; t=sys.stdin.read(); print base64.b32encode(t[:10]).lower()'
+    # path_name is the named path of the Tor public key.
     #
-    # path_name is the named path of the tor public key.
+    # Basically, an onion address is nothing more than a base32 encoding
+    # of the first 10 bytes of a sha1 digest of the public key.
+    #
+    # Additionally, Tor ignores the 22 byte header of the public key
+    # before taking the sha1 digest.
     #
     def onion_address(path_name)
       require 'base32'
@@ -53,9 +54,9 @@ module LeapCli
       if path && File.exists?(path)
         public_key_str = File.readlines(path).grep(/^[^-]/).join
         public_key     = Base64.decode64(public_key_str)
-        sha1sum_string = Digest::SHA1.new.hexdigest(public_key)
-        sha1sum_binary = [sha1sum_string].pack('H*')
-        Base32.encode(sha1sum_binary.slice(0,10)).downcase
+        public_key     = public_key.slice(22..-1) # Tor ignores the 22 byte SPKI header
+        sha1sum        = Digest::SHA1.new.digest(public_key)
+        Base32.encode(sha1sum.slice(0,10)).downcase
       else
         LeapCli.log :warning, 'Tor public key file "%s" does not exist' % tor_public_key_path
       end
