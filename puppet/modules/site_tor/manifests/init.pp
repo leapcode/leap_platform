@@ -11,23 +11,31 @@ class site_tor {
 
   $address        = hiera('ip_address')
 
-  class { 'tor::daemon': }
+  $openvpn        = hiera('openvpn', undef)
+  if $openvpn {
+    $openvpn_ports = $openvpn['ports']
+  }
+  else {
+    $openvpn_ports = []
+  }
+
+  include tor::daemon
   tor::daemon::relay { $nickname:
-    port             => 9001,
-    address          => $address,
-    contact_info     => obfuscate_email($contact_emails),
-    bandwidth_rate   => $bandwidth_rate,
-    my_family        => $family
+    port           => 9001,
+    address        => $address,
+    contact_info   => obfuscate_email($contact_emails),
+    bandwidth_rate => $bandwidth_rate,
+    my_family      => $family
   }
 
   if ( $tor_type == 'exit'){
-    tor::daemon::directory { $::hostname: port => 80 }
+    # Only enable the daemon directory if the node isn't also a webapp node
+    # or running openvpn on port 80
+    if ! member($::services, 'webapp') and ! member($openvpn_ports, '80') {
+      tor::daemon::directory { $::hostname: port => 80 }
+    }
   }
   else {
-    tor::daemon::directory { $::hostname:
-      port            => 80,
-      port_front_page => '';
-    }
     include site_tor::disable_exit
   }
 

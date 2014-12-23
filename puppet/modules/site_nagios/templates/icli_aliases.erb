@@ -1,0 +1,7 @@
+alias ncli='icli -c /var/cache/nagios3/objects.cache -f /var/cache/nagios3/status.dat  -F /var/lib/nagios3/rw/nagios.cmd'
+alias ncli_problems='ncli -z '!o,!A''
+
+<% @environments.keys.sort.each do |env_name| %>
+alias ncli_<%= env_name %>='ncli -z '!o,!A' -g <%= env_name %>'
+alias ncli_<%= env_name %>_recheck='ncli -s Check_MK -g <%= env_name %> -r'
+<% end -%>

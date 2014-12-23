@@ -12,6 +12,8 @@ class tapicero {
   $couchdb_soledad_user    = $couchdb_users['soledad']['username']
   $couchdb_leap_mx_user    = $couchdb_users['leap_mx']['username']
 
+  $couchdb_mode            = $couchdb['mode']
+  $couchdb_replication     = $couchdb['replication']
 
   Class['site_config::default'] -> Class['tapicero']
 
@@ -93,7 +95,7 @@ class tapicero {
   vcsrepo { '/srv/leap/tapicero':
     ensure   => present,
     force    => true,
-    revision => 'origin/master',
+    revision => 'origin/version/0.6',
     provider => git,
     source   => 'https://leap.se/git/tapicero',
     owner    => 'tapicero',

@@ -1,3 +1,5 @@
+<%- require 'json' -%>
+
 #
 # Default configuration options for Tapicero
 #
@@ -24,6 +26,10 @@ log_level: info
 options:
   # prefix for per user databases:
   db_prefix: "user-"
+  mode: <%= @couchdb_mode %>
+<%- if @couchdb_replication %>
+  replication: <%= @couchdb_replication.to_json %>
+<%- end -%>
 
   # security settings to be used for the per user databases
   security:
@@ -34,9 +40,11 @@ options:
         # explicit about this
         - <%= @couchdb_admin_user %>
       roles: []
-    readers:
+    members:
       names:
         - <%= @couchdb_soledad_user %>
         - <%= @couchdb_leap_mx_user %>
-      roles: []
+      roles:
+        - replication
+
 

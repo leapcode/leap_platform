@@ -1,0 +1,11 @@
+<%- @haproxy.each do |frontend, options| -%>
+<%-   if options['servers'] -%>
+
+##
+## <%= frontend %>
+##
+
+<%=     scope.function_templatewlv(["site_haproxy/#{frontend}.erb", options]) %>
+<%-   end -%>
+<%- end -%>
+

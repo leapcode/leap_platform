@@ -21,3 +21,20 @@ Host *
     StrictHostKeyChecking no
 <% end -%>
 
+#
+# Tell SSH what host key algorithm we should use. I don't understand why this
+# is needed, since the man page says that "if hostkeys are known for the
+# destination host then [HostKeyAlgorithms default] is modified to prefer
+# their algorithms."
+#
+
+<% @hosts.sort.each do |name, host| -%>
+Host <%= name %> <%= host['domain_full'] %> <%= host['domain_internal'] %> <%= host['ip_address'] %>
+<% if host['host_pub_key'] -%>
+HostKeyAlgorithms <%= host['host_pub_key'].split(" ").first %>
+<% end -%>
+<% if host['port'] -%>
+Port <%= host['port'] %>
+<% end -%>
+
+<% end -%>

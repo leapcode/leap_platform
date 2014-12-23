@@ -1,12 +1,12 @@
 class site_postfix::mx {
 
-  $domain_hash         = hiera ('domain')
+  $domain_hash         = hiera('domain')
   $domain              = $domain_hash['full_suffix']
   $host_domain         = $domain_hash['full']
   $cert_name           = hiera('name')
   $mynetworks          = join(hiera('mynetworks'), ' ')
 
-  $root_mail_recipient = hiera ('contacts')
+  $root_mail_recipient = hiera('contacts')
   $postfix_smtp_listen = 'all'
 
   include site_config::x509::cert

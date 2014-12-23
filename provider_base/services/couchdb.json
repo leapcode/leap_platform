@@ -3,20 +3,13 @@
         "use": true
     },
     "stunnel": {
-        "couch_server": "= stunnel_server(couch.port)",
-        "epmd_server": "= stunnel_server(couch.bigcouch.epmd_port)",
-        "epmd_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.epmd_port)",
-        "ednp_server": "= stunnel_server(couch.bigcouch.ednp_port)",
-        "ednp_clients": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.bigcouch.ednp_port)"
+        "servers": {
+          "couch_server": "= stunnel_server(couch.port)"
+        }
     },
     "couch": {
+        "master": false,
         "port": 5984,
-        "bigcouch": {
-            "epmd_port": 4369,
-            "ednp_port": 9002,
-            "cookie": "= secret :bigcouch_cookie",
-            "neighbors": "= nodes_like_me[:services => :couchdb].exclude(self).field('domain.full')"
-        },
         "users": {
             "admin": {
                 "username": "admin",
@@ -47,10 +40,15 @@
                 "username": "webapp",
                 "password": "= secret :couch_webapp_password",
                 "salt": "= hex_secret :couch_webapp_password_salt, 128"
+            },
+            "replication": {
+                "username": "replication",
+                "password": "= secret :couch_replication_password",
+                "salt": "= hex_secret :couch_replication_password_salt, 128"
             }
         },
-    "webapp": {
-         "nagios_test_pw": "= secret :nagios_test_password"
+        "webapp": {
+            "nagios_test_pw": "= secret :nagios_test_password"
         }
     }
 }

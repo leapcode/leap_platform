@@ -1,6 +1,6 @@
 {
   "domain": "REQUIRED",
-  "domain_internal": "= domain.sub(/\\..*$/,'.i')",
+  "domain_internal": "= domain.sub(/\\.[^\\.]*$/, '.i')",
   "name": {
     "en": "REQUIRED"
   },
@@ -44,7 +44,7 @@
     "digest": "SHA256",
     "life_span": "10y",
     "server_certificates": {
-      "bit_size": 2048,
+      "bit_size": 4096,
       "digest": "SHA256",
       "life_span": "1y"
     },
@@ -56,7 +56,6 @@
       "unlimited_prefix": "UNLIMITED"
     }
   },
-  "hiera_sync_destination": "/etc/leap",
   "client_version": {
     "min": "0.5",
     "max": null

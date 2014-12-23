@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# depends on nagios-plugins-common for /usr/lib/nagios/plugins/utils.sh
+# this package is installed using leap_platform by the Site_check_mk::Agent::Mrpe
+# class
+
+set -e
+
+usage()
+{
+cat << EOF
+usage: $0 -w <sec> -c <sec> -r <regexp> -f <filename>
+
+OPTIONS:
+  -h         Show this message
+  -r <regex> regex to grep for
+  -f <file>  logfile to search in
+  -w <sec>   warning  state after X seconds
+  -c <sec>   critical state after x seconds
+
+example: $0 -f /var/log/syslog -r 'tapicero' -w 300 -c 600
+EOF
+}
+
+
+. /usr/lib/nagios/plugins/utils.sh
+
+
+warn=0
+crit=0
+log=''
+regex=''
+
+set -- $(getopt hr:f:w:c: "$@")
+while [ $# -gt 0 ]
+do
+    case "$1" in
+    (-h) usage; exit 0 ;;
+    (-f) log="$2"; shift;;
+    (-r) regex="$2"; shift;;
+    (-w) warn="$2"; shift;;
+    (-c) crit="$2"; shift;;
+    (--) shift; break;;
+    (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
+    (*)  break;;
+    esac
+    shift
+done
+
+[ $warn -eq 0 -o $crit -eq 0 -o -z "$regex" -o -z "$log" ] && ( usage; exit $STATE_UNKNOWN)
+[ -f "$log" ] || (echo "$log doesn't exist"; exit $STATE_UNKNOWN)
+
+lastmsg=$(tac $log | grep -i $regex | head -1 | cut -d' ' -f 1-3)
+
+if [ -z "$lastmsg" ]
+then
+  summary="\"$regex\" in $log was not found"
+  state=$STATE_CRITICAL
+  state_text='CRITICAL'
+  diff_sec=0
+else
+  lastmsg_sec=$(date '+%s' -d "$lastmsg")
+  now_sec=$(date '+%s')
+
+  diff_sec=$(($now_sec - $lastmsg_sec))
+
+  if [ $diff_sec -lt $warn ]; then
+    state=$STATE_OK
+    state_text='OK'
+  elif [ $diff_sec -lt $crit ]; then
+    state=$STATE_WARNING
+    state_text='WARNING'
+  else
+    state=$STATE_CRITICAL
+    state_text='CRITICAL'
+  fi
+
+  summary="Last occurrence of \"$regex\" in $log was $diff_sec sec ago"
+fi
+
+# check_mk_agent output
+# echo "$state Tapicero_Heatbeat sec=$diff_sec;$warn;$crit;0; $state_text - $summary"
+
+echo "${state_text}: $summary | seconds=${diff_sec};$warn;$crit;0;"
+exit $state

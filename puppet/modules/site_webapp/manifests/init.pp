@@ -10,6 +10,7 @@ class site_webapp {
   $webapp           = hiera('webapp')
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
+  $tor              = hiera('tor', false)
 
   Class['site_config::default'] -> Class['site_webapp']
 
@@ -53,8 +54,8 @@ class site_webapp {
 
   exec { 'bundler_update':
     cwd     => '/srv/leap/webapp',
-    command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install --path vendor/bundle --without test development"',
-    unless  => '/usr/bin/bundle check',
+    command => '/bin/bash -c "/usr/bin/bundle check --path vendor/bundle || /usr/bin/bundle install --path vendor/bundle --without test development"',
+    unless  => '/usr/bin/bundle check --path vendor/bundle',
     user    => 'leap-webapp',
     timeout => 600,
     require => [
@@ -155,6 +156,20 @@ class site_webapp {
       mode    => '0600',
       require => Vcsrepo['/srv/leap/webapp'],
       notify  => Service['apache'];
+  }
+
+  if $tor {
+    $hidden_service = $tor['hidden_service']
+    if $hidden_service['active'] {
+      include site_webapp::hidden_service
+    }
+  }
+
+
+  # needed for the soledad-sync check which is run on the
+  # webapp node (#6520)
+  package { 'python-u1db':
+    ensure => latest,
   }
 
   include site_shorewall::webapp

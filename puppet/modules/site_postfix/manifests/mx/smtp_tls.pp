@@ -1,5 +1,6 @@
 class site_postfix::mx::smtp_tls {
 
+  include site_config::x509::ca
   include x509::variables
   $ca_path   = "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt"
   $cert_path = "${x509::variables::certs}/${site_config::params::cert_name}.crt"

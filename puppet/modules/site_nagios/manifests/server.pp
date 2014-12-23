@@ -3,13 +3,19 @@ class site_nagios::server inherits nagios::base {
   # First, purge old nagios config (see #1467)
   class { 'site_nagios::server::purge': }
 
-  $nagios_hiera   = hiera('nagios')
-  $nagiosadmin_pw = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
-  $nagios_hosts   = $nagios_hiera['hosts']
+  $nagios_hiera     = hiera('nagios')
+  $nagiosadmin_pw   = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
+  $nagios_hosts     = $nagios_hiera['hosts']
+  $nagios_contacts  = hiera('contacts')
+  $environment      = $nagios_hiera['environments']
 
-  include nagios::defaults
   include nagios::base
-  class {'nagios':
+  include nagios::defaults::commands
+  include nagios::defaults::templates
+  include nagios::defaults::timeperiods
+  include nagios::defaults::plugins
+
+  class { 'nagios':
     # don't manage apache class from nagios, cause we already include
     # it in site_apache::common
     httpd              => 'absent',
@@ -46,6 +52,7 @@ class site_nagios::server inherits nagios::base {
   include site_nagios::server::apache
   include site_check_mk::server
   include site_shorewall::monitor
+  include site_nagios::server::icli
 
   augeas {
     'logrotate_nagios':
@@ -55,4 +62,8 @@ class site_nagios::server inherits nagios::base {
         'set missingok missingok', 'set ifempty notifempty',
         'set copytruncate copytruncate' ]
   }
+
+  create_resources ( site_nagios::server::hostgroup, $environment )
+  create_resources ( site_nagios::server::contactgroup, $environment )
+  create_resources ( site_nagios::server::add_contacts, $environment )
 }

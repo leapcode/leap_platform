@@ -42,8 +42,14 @@
     end
     configuration = node.openvpn.configuration
   end
-  hsh["gateways"] = gateways.compact
-  hsh["locations"] = locations
-  hsh["openvpn_configuration"] = configuration
+  if gateways.any?
+    configuration = configuration.dup
+    if configuration['fragment'] && configuration['fragment'] == 1500
+      configuration.delete('fragment')
+    end
+    hsh["gateways"] = gateways.compact
+    hsh["locations"] = locations
+    hsh["openvpn_configuration"] = configuration
+  end
   JSON.sorted_generate hsh
 %>

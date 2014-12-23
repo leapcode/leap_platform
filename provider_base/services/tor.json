@@ -3,6 +3,13 @@
     "bandwidth_rate": 6550,
     "contacts": "= [provider.contacts['tor'] || provider.contacts.default].flatten",
     "nickname": "= (self.name + secret(:tor_family)).sub('_','')[0..18]",
-    "family": "= nodes[:services => 'tor'][:environment => '!local'].field('tor.nickname').join(',')"
+    "family": "= nodes[:services => 'tor'][:environment => '!local'].field('tor.nickname').join(',')",
+    "hidden_service": {
+      "active": null,
+      "key_type": "RSA",
+      "public_key": "= tor_public_key_path(:node_tor_pub_key, tor.hidden_service.key_type) if tor.hidden_service.active",
+      "private_key": "= tor_private_key_path(:node_tor_priv_key, tor.hidden_service.key_type) if tor.hidden_service.active",
+      "address": "= onion_address(:node_tor_pub_key) if tor.hidden_service.active"
+    }
   }
 }

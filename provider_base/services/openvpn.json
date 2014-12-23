@@ -24,7 +24,15 @@
       "auth": "SHA1",
       "cipher": "AES-128-CBC",
       "keepalive": "10 30",
-      "tun-ipv6": true
+      "tun-ipv6": true,
+      "fragment": 1500
     }
+  },
+  "obfsproxy": {
+    "scramblesuit": {
+      "password": "= base32_secret('scramblesuit_password_'+name)",
+      "port" : "= rand_range('scramblesuit_port_'+name, 18000..32000)"
+    },
+    "gateway_address": "= openvpn.gateway_address"
   }
 }

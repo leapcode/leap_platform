@@ -3,12 +3,14 @@
   ServerAlias www.<%= domain %>
   RewriteEngine On
   RewriteRule ^.*$ https://<%= domain -%>%{REQUEST_URI} [R=permanent,L]
+  CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 </VirtualHost>
 
 <VirtualHost *:443>
   ServerName <%= domain_name %>
   ServerAlias <%= domain %>
   ServerAlias www.<%= domain %>
+  CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 
   SSLEngine on
   SSLProtocol all -SSLv2 -SSLv3
