@@ -1,0 +1,24 @@
+# WARNING: Use offlineimap *only* for testing/debugging, 
+# because it will save the mails *decrypted* locally to 
+# your disk !
+
+[general]
+accounts = testuser@example.org
+
+[Account testuser@example.org]
+localrepository = testuser@example.org_local
+remoterepository = testuser@example.org_remote
+
+[Repository testuser@example.org_local]
+type = Maildir
+localfolders = /tmp/offlineimap.testuser@example.org
+
+[Repository testuser@example.org_remote]
+type = IMAP
+remotehost = localhost
+remoteuser = testuser@example.org
+remoteport = 1984
+ssl = no
+remotepass = every_pw_works_here 
+
+
