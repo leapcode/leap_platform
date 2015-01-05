@@ -6,7 +6,7 @@ The LEAP Platform is set of complementary packages and server recipes to automat
 Getting started
 =============================
 
-It is highly recommended that you start by reading the overview of the [LEAP Platform](https://leap.se/docs/platform) and then begin with the [Quick Start guide](https://leap.se/docs/platform/quick-start) to walk through a test environment setup to get familiar with how things work before deploying to live servers.
+It is highly recommended that you start by reading the overview of the [LEAP Platform](https://leap.se/docs/platform) and then begin with the [Quick Start tutorial](https://leap.se/en/docs/platform/tutorials/quick-start) to walk through a test environment setup to get familiar with how things work before deploying to live servers.
 
 An offline copy of this documentation is contained in the `doc` subdirectory. For more current updates to the documentation, visit the website.
 
