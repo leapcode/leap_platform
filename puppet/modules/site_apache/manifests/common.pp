@@ -23,4 +23,5 @@ class site_apache::common {
       content => template('site_apache/vhosts.d/common.conf.erb')
   }
 
+  apache::config::include{ 'ssl_common.inc': }
 }
