@@ -7,7 +7,9 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-  ServerName <%= domain_name %>
+
+  ServerName <%= webapp_domain %>
+  ServerAlias <%= domain_name %>
   ServerAlias <%= domain %>
   ServerAlias www.<%= domain %>
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
