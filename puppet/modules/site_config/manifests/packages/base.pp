@@ -7,7 +7,7 @@ class site_config::packages::base {
   }
 
   # base set of packages that we want to remove everywhere
-  package { [ 'acpi', 'acpid', 'acpi-support-base',  'eject', 'ftp', 'fontconfig-config',
+  package { [ 'acpi', 'acpid', 'acpi-support-base',  'eject', 'ftp',
               'laptop-detect', 'lpr', 'nfs-common', 'nfs-kernel-server',
               'portmap', 'pppconfig', 'pppoe', 'pump', 'qstat', 'rpcbind',
               'samba-common', 'samba-common-bin', 'smbclient', 'tcl8.5',
