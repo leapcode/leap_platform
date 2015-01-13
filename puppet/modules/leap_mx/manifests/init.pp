@@ -9,7 +9,8 @@ class leap_mx {
 
   include soledad::common
   include site_apt::preferences::twisted
-
+  include leap_mx::syslog
+  
   #
   # USER AND GROUP
   #
