@@ -13,7 +13,8 @@ class site_nagios::server inherits nagios::base {
   include nagios::defaults::commands
   include nagios::defaults::templates
   include nagios::defaults::timeperiods
-  include nagios::defaults::plugins
+  include nagios::pnp4nagios
+  include nagios::pnp4nagios::popup
 
   class { 'nagios':
     # don't manage apache class from nagios, cause we already include
