@@ -52,10 +52,12 @@ Leap::Platform.define do
     :soledad_service_json_template => 'files/service-definitions/#{arg}/soledad-service.json.erb',
     :smtp_service_json_template    => 'files/service-definitions/#{arg}/smtp-service.json.erb',
 
-    # custom puppet
+    # custom files
     :custom_puppet_dir => 'files/puppet',
     :custom_puppet_modules_dir => 'files/puppet/modules',
     :custom_puppet_manifests_dir => 'files/puppet/manifests',
+    :custom_tests => 'files/tests',
+    :custom_bin => 'files/bin',
 
     # output files
     :facts            => 'facts.json',
