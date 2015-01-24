@@ -38,6 +38,9 @@ class site_config::default {
   # install/configure syslog
   include site_config::syslog
 
+  # provide a basic level of quality entropy
+  include haveged
+
   # install/remove base packages
   include site_config::packages::base
 
