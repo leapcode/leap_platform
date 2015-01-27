@@ -47,7 +47,7 @@ class site_config::default {
   # include basic shorewall config
   include site_shorewall::defaults
 
-  Class['git'] -> Vcsrepo<||>
+  Package['git'] -> Vcsrepo<||>
 
   # include basic shell config
   include site_config::shell
