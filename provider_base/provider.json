@@ -61,6 +61,10 @@
     "max": null
   },
   "apt": {
-   "url": "http://http.debian.net/debian/"
+    "url": {
+      "basic": "http://http.debian.net/debian/",
+      "security": "http://security.debian.org/",
+      "backports": "http://http.debian.net/debian/"
+    }
   }
 }

@@ -52,6 +52,10 @@
     "major_version": "= Leap::Platform.major_version"
   },
   "apt": {
-   "url": "= provider.apt.url"
+    "url": {
+      "basic": "= provider.apt.url.basic",
+      "security": "= provider.apt.url.security",
+      "backports": "= provider.apt.url.backports"
+    }
   }
 }
