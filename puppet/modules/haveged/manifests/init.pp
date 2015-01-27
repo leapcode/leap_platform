@@ -9,8 +9,7 @@ class haveged {
     hasrestart => true,
     hasstatus  => true,
     enable     => true,
-    require    => Package['haveged'],
-    subscribe  => File['/etc/default/haveged'];
+    require    => Package['haveged'];
   }
 
   include site_check_mk::agent::haveged
