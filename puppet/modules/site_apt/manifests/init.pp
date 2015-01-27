@@ -1,7 +1,12 @@
 class site_apt {
 
+  $apt_config = hiera('apt')
+  $apt_url    = $apt_config['url']
+
   class { 'apt':
-    custom_key_dir     => 'puppet:///modules/site_apt/keys'
+    custom_key_dir => 'puppet:///modules/site_apt/keys',
+    debian_url     => $apt_url,
+    backports_url  => $apt_url
   }
 
   # enable http://deb.leap.se debian package repository
