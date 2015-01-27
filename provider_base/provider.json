@@ -59,5 +59,8 @@
   "client_version": {
     "min": "0.5",
     "max": null
+  },
+  "apt": {
+   "url": "http://http.debian.net/debian/"
   }
 }
