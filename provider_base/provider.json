@@ -59,5 +59,12 @@
   "client_version": {
     "min": "0.5",
     "max": null
+  },
+  "apt": {
+    "url": {
+      "basic": "http://http.debian.net/debian/",
+      "security": "http://security.debian.org/",
+      "backports": "http://http.debian.net/debian/"
+    }
   }
 }
