@@ -17,7 +17,7 @@ production:
   unlimited_cert_prefix: "<%= cert_options['unlimited_prefix'] %>"
   minimum_client_version: "<%= @webapp['client_version']['min'] %>"
   default_service_level: "<%= @webapp['default_service_level'] %>"
-  service_levels: <%= @webapp['service_levels'].to_json %>
+  service_levels: <%= scope.function_sorted_json([@webapp['service_levels']]) %>
   allow_registration: <%= @webapp['allow_registration'].inspect %>
   handle_blacklist: <%= @webapp['forbidden_usernames'].inspect %>
 <%- if @webapp['engines'] && @webapp['engines'].any? -%>
