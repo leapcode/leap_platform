@@ -101,14 +101,14 @@ class Webapp < LeapTest
   def assert_user_db_exists(user)
     last_body, last_response, last_error = nil
     3.times do
-      sleep 0.1
+      sleep 0.2
       get(couchdb_url("/user-#{user.id}/_design/docs")) do |body, response, error|
         last_body, last_response, last_error = body, response, error
         if response.code.to_i == 200
           return
         end
       end
-      sleep 0.2
+      sleep 0.5
     end
     assert false, "Could not find user db for test user #{user.username}\nuuid=#{user.id}\nHTTP #{last_response.code} #{last_error} #{last_body}"
   end
