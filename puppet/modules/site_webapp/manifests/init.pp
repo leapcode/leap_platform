@@ -11,6 +11,7 @@ class site_webapp {
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
   $tor              = hiera('tor', false)
+  $sources          = hiera('sources')
 
   Class['site_config::default'] -> Class['site_webapp']
 
@@ -43,9 +44,9 @@ class site_webapp {
   vcsrepo { '/srv/leap/webapp':
     ensure   => present,
     force    => true,
-    revision => $webapp['git']['revision'],
-    provider => git,
-    source   => $webapp['git']['source'],
+    revision => $sources['webapp']['revision'],
+    provider => $sources['webapp']['type'],
+    source   => $sources['webapp']['source'],
     owner    => 'leap-webapp',
     group    => 'leap-webapp',
     require  => [ User['leap-webapp'], Group['leap-webapp'] ],

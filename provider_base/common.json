@@ -51,11 +51,36 @@
     "version": "= Leap::Platform.version.to_s",
     "major_version": "= Leap::Platform.major_version"
   },
-  "apt": {
-    "url": {
-      "basic": "= provider.apt.url.basic",
-      "security": "= provider.apt.url.security",
-      "backports": "= provider.apt.url.backports"
+  "sources": {
+    "apt": {
+      "basic": "http://http.debian.net/debian/",
+      "security": "http://security.debian.org/",
+      "backports": "http://http.debian.net/debian/"
+    },
+    "leap-mx": {
+      "type": "apt",
+      "package": "leap-mx",
+      "revision": "latest"
+    },
+    "nickserver": {
+      "type": "git",
+      "source": "https://leap.se/git/nickserver",
+      "revision": "origin/master"
+    },
+    "soledad": {
+      "type": "apt",
+      "package": "soledad-server",
+      "revision": "latest"
+    },
+    "tapicero": {
+      "type": "git",
+      "source": "https://leap.se/git/tapicero",
+      "revision": "origin/version/0.6"
+    },
+    "webapp": {
+      "type": "git",
+      "source": "https://leap.se/git/leap_web",
+      "revision": "origin/version/0.6"
     }
   }
 }

@@ -34,10 +34,11 @@ class site_nickserver {
   # See site_webapp/templates/haproxy_couchdb.cfg.erg
   $couchdb_port      = '4096'
 
+  $sources           = hiera('sources')
+
   # temporarily for now:
   $domain          = hiera('domain')
   $address_domain  = $domain['full_suffix']
-
 
   include site_config::x509::cert
   include site_config::x509::key
@@ -69,9 +70,9 @@ class site_nickserver {
 
   vcsrepo { '/srv/leap/nickserver':
     ensure   => present,
-    revision => 'origin/master',
-    provider => git,
-    source   => 'https://leap.se/git/nickserver',
+    revision => $sources['nickserver']['revision'],
+    provider => $sources['nickserver']['type'],
+    source   => $sources['nickserver']['source'],
     owner    => 'nickserver',
     group    => 'nickserver',
     require  => [ User['nickserver'], Group['nickserver'] ],

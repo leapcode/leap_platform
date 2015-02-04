@@ -15,6 +15,8 @@ class tapicero {
   $couchdb_mode            = $couchdb['mode']
   $couchdb_replication     = $couchdb['replication']
 
+  $sources                 = hiera('sources')
+
   Class['site_config::default'] -> Class['tapicero']
 
   include site_config::ruby::dev
@@ -95,9 +97,9 @@ class tapicero {
   vcsrepo { '/srv/leap/tapicero':
     ensure   => present,
     force    => true,
-    revision => 'origin/version/0.6',
-    provider => git,
-    source   => 'https://leap.se/git/tapicero',
+    revision => $sources['tapicero']['revision'],
+    provider => $sources['tapicero']['type'],
+    source   => $sources['tapicero']['source'],
     owner    => 'tapicero',
     group    => 'tapicero',
     require  => [ User['tapicero'], Group['tapicero'] ],

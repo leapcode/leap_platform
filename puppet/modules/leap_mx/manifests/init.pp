@@ -7,10 +7,12 @@ class leap_mx {
   $couchdb_host     = 'localhost'
   $couchdb_port     = '4096'
 
+  $sources          = hiera('sources')
+
   include soledad::common
   include site_apt::preferences::twisted
   include leap_mx::syslog
-  
+
   #
   # USER AND GROUP
   #
@@ -45,11 +47,12 @@ class leap_mx {
   #
 
   package {
-    'leap-mx':
-      ensure  => latest,
-      require => Class['site_apt::preferences::twisted'];
-
-    [ 'leap-keymanager' ]:
+    $sources['leap-mx']['package']:
+      ensure  => $sources['leap-mx']['revision'],
+      require => [
+        Class['site_apt::preferences::twisted'],
+        Class['site_apt::leap_repo'] ];
+    'leap-keymanager':
       ensure => latest;
   }
 

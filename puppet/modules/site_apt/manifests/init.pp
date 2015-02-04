@@ -1,10 +1,10 @@
 class site_apt {
 
-  $apt_config        = hiera('apt')
-  $apt_url           = $apt_config['url']
-  $apt_url_basic     = $apt_url['basic']
-  $apt_url_security  = $apt_url['security']
-  $apt_url_backports = $apt_url['backports']
+  $sources           = hiera('sources')
+  $apt_config        = $sources['apt']
+  $apt_url_basic     = $apt_config['basic']
+  $apt_url_security  = $apt_config['security']
+  $apt_url_backports = $apt_config['backports']
 
   class { 'apt':
     custom_key_dir => 'puppet:///modules/site_apt/keys',

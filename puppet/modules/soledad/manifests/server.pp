@@ -12,6 +12,8 @@ class soledad::server {
 
   $soledad_port = $soledad['port']
 
+  $sources      = hiera('sources')
+
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca
@@ -29,8 +31,8 @@ class soledad::server {
     require => Class['soledad'];
   }
 
-  package { 'soledad-server':
-    ensure  => latest,
+  package { $sources['soledad']['package']:
+    ensure  => $sources['soledad']['revision'],
     require => [
       Class['site_apt::preferences::twisted'],
       Class['site_apt::leap_repo'] ];
