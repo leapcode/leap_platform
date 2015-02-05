@@ -75,7 +75,7 @@
     "tapicero": {
       "type": "git",
       "source": "https://leap.se/git/tapicero",
-      "revision": "origin/version/0.6"
+      "revision": "origin/version/0.6.1"
     },
     "webapp": {
       "type": "git",

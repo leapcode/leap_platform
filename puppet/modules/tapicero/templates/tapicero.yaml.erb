@@ -13,6 +13,7 @@ connection:
   password: <%= @couchdb_admin_password %>
   prefix : ""
   suffix : ""
+  netrc: "/etc/couchdb/couchdb.netrc"
 
 # file to store the last processed user record in so we can resume after
 # a restart:
