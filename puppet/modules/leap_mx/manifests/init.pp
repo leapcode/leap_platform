@@ -52,6 +52,7 @@ class leap_mx {
       require => [
         Class['site_apt::preferences::twisted'],
         Class['site_apt::leap_repo'] ];
+
     'leap-keymanager':
       ensure => latest;
   }
