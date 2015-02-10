@@ -35,7 +35,7 @@ class site_config::default {
   # configure caching, local resolver
   include site_config::caching_resolver
 
-  # install/configure syslog
+  # install/configure syslog and core log rotations
   include site_config::syslog
 
   # provide a basic level of quality entropy
