@@ -1,0 +1,10 @@
+<%
+  mirrors = ([@apt_url_basic].flatten + [@apt_url_backports].flatten + [@apt_url_mirrors].flatten).uniq.join(',')
+  leap_mirrors = [@apt_url_leap].flatten.join(',')
+%>
+_MAXNUM=5
+DOWNLOADBEFORE=true
+MIRRORS=(
+  '<%=mirrors%>'
+  '<%=leap_mirrors%>'
+)

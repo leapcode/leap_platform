@@ -53,9 +53,19 @@
   },
   "sources": {
     "apt": {
-      "basic": "http://http.debian.net/debian/",
+      "basic": [
+        "http://ftp.de.debian.org/debian/",
+        "http://ftp.us.debian.org/debian/"
+      ],
+      "backports": [
+        "http://ftp.de.debian.org/debian/",
+        "http://ftp.us.debian.org/debian/"
+      ],
       "security": "http://security.debian.org/",
-      "backports": "http://http.debian.net/debian/"
+      "mirrors": [
+        "http://ftp.br.debian.org/debian/",
+        "http://ftp.kr.debian.org/debian/"
+      ]
     },
     "leap-mx": {
       "type": "apt",

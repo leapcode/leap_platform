@@ -3,7 +3,7 @@ class site_apt::leap_repo {
   $major_version = $platform['major_version']
 
   apt::sources_list { 'leap.list':
-    content => "deb http://deb.leap.se/${major_version} wheezy main\n",
+    content => template('site_apt/leap.list.erb'),
     before  => Exec[refresh_apt]
   }
 

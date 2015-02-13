@@ -1,0 +1,16 @@
+#
+# This file is managed by puppet.
+# To change sources, modify a node's "sources.apt" properties.
+#
+
+<% for basic in [@apt_url_basic].flatten -%>
+deb <%= basic %> wheezy main
+<% end -%>
+
+<% for backports in [@apt_url_backports].flatten -%>
+deb <%= backports %> wheezy-backports main
+<% end -%>
+
+<% for security in [@apt_url_security].flatten -%>
+deb <%= security %> wheezy/updates main
+<% end -%>
