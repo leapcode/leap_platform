@@ -11,10 +11,23 @@ file { '/etc/gemrc':
   content => "---\n:sources:\n  - https://rubygems.org/"
 }
 
-package { 'leap_cli':
-  ensure   => latest,
-  provider => 'gem',
-  require  => [ Package['ruby1.9.1-dev'], File['/etc/gemrc'] ]
+vcsrepo { '/srv/leap/leap_cli':
+  ensure   => present,
+  force    => true,
+  revision => 'develop',
+  provider => 'git',
+  source   => 'https://leap.se/git/leap_cli.git',
+  owner    => 'root',
+  group    => 'root',
+  notify   => Exec['install_leap_cli'],
+  require  => Package['git']
+}
+
+exec { 'install_leap_cli':
+  command     => '/usr/bin/rake build && /usr/bin/rake install',
+  cwd         => '/srv/leap/leap_cli',
+  refreshonly => true,
+  require     => [ Package['ruby1.9.1-dev'], File['/etc/gemrc'], Package['rake'] ]
 }
 
 file { [ '/srv/leap', '/srv/leap/configuration', '/var/log/leap' ]:
