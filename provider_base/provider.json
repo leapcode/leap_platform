@@ -57,7 +57,7 @@
     }
   },
   "client_version": {
-    "min": "0.5",
+    "min": "0.7",
     "max": null
   }
 }
