@@ -25,7 +25,7 @@
       "cipher": "AES-128-CBC",
       "keepalive": "10 30",
       "tun-ipv6": true,
-      "fragment": 1500
+      "fragment": 1400
     }
   },
   "obfsproxy": {
