@@ -11,8 +11,14 @@ class site_check_mk::agent::mrpe {
     ensure  => present,
     require => Package['check-mk-agent']
   } ->
-  file_line { 'Apt':
-    line => 'APT    /usr/lib/nagios/plugins/check_apt',
-    path => '/etc/check_mk/mrpe.cfg',
+
+  augeas {
+    'Apt':
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+        'rm /files/etc/check_mk/mrpe.cfg/APT',
+        'set APT \'/usr/lib/nagios/plugins/check_apt\'' ];
   }
+
 }

@@ -9,14 +9,16 @@ class site_check_mk::agent::tapicero {
   }
 
   # local nagios plugin checks via mrpe
-  file_line {
+  augeas {
     'Tapicero_Procs':
-      line => 'Tapicero_Procs  /usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a tapicero',
-      path => '/etc/check_mk/mrpe.cfg';
-
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+        'rm /files/etc/check_mk/mrpe.cfg/Tapicero_Procs',
+        'set Tapicero_Procs "/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a tapicero"' ];
     'Tapicero_Heartbeat':
-      line => 'Tapicero_Heartbeat  /usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/syslog -r "tapicero" -w 300 -c 600',
-      path => '/etc/check_mk/mrpe.cfg';
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/syslog -r "tapicero" -w 300 -c 600\'';
   }
-
 }

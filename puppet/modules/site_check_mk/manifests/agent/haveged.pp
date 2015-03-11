@@ -1,9 +1,13 @@
 class site_check_mk::agent::haveged {
 
 # check haveged process
-  file_line {
+  augeas {
     'haveged_proc':
-      line => 'haveged_proc  /usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /usr/sbin/haveged',
-      path => '/etc/check_mk/mrpe.cfg';
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+        'rm /files/etc/check_mk/mrpe.cfg/haveged_proc',
+        'set haveged_proc \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /usr/sbin/haveged\'' ];
   }
+
 }
