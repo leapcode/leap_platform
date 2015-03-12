@@ -8,7 +8,8 @@ class site_check_mk::agent::haproxy {
     lens    => 'Spacevars.lns',
     changes => [
       'rm /files/etc/check_mk/mrpe.cfg/Haproxy',
-      'set Haproxy \'/usr/lib/nagios/plugins/check_haproxy -u "http://localhost:8000/haproxy;csv"\'' ];
+      'set Haproxy \'/usr/lib/nagios/plugins/check_haproxy -u "http://localhost:8000/haproxy;csv"\'' ],
+    require => File['/etc/check_mk/mrpe.cfg'];
   }
 
 }

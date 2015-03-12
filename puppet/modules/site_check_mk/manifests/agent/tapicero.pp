@@ -15,10 +15,12 @@ class site_check_mk::agent::tapicero {
       lens    => 'Spacevars.lns',
       changes => [
         'rm /files/etc/check_mk/mrpe.cfg/Tapicero_Procs',
-        'set Tapicero_Procs "/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a tapicero"' ];
+        'set Tapicero_Procs "/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a tapicero"' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
     'Tapicero_Heartbeat':
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
-      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/syslog -r "tapicero" -w 300 -c 600\'';
+      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/syslog -r "tapicero" -w 300 -c 600\'',
+      require => File['/etc/check_mk/mrpe.cfg'];
   }
 }

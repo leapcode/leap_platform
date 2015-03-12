@@ -18,13 +18,15 @@ class site_check_mk::agent::couchdb {
       lens    => 'Spacevars.lns',
       changes => [
         'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_epmd_procs',
-        'set Bigcouch_epmd_procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/epmd\'' ];
+        'set Bigcouch_epmd_procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/epmd\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
     'Bigcouch_beam_procs':
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
       changes => [
         'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_beam_procs',
-        'set Bigcouch_beam_procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/beam\'' ];
+        'set Bigcouch_beam_procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/beam\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
   }
 
   # check open files for bigcouch proc
@@ -39,7 +41,8 @@ class site_check_mk::agent::couchdb {
       lens    => 'Spacevars.lns',
       changes => [
         'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_open_files',
-        'set Bigcouch_open_files \'/srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 28672,28672 -c 30720,30720\'' ];
+        'set Bigcouch_open_files \'/srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 28672,28672 -c 30720,30720\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
   }
 
 }

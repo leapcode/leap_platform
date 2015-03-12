@@ -7,7 +7,9 @@ class site_check_mk::agent::haveged {
       lens    => 'Spacevars.lns',
       changes => [
         'rm /files/etc/check_mk/mrpe.cfg/haveged_proc',
-        'set haveged_proc \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /usr/sbin/haveged\'' ];
+        'set haveged_proc \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /usr/sbin/haveged\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
+
   }
 
 }
