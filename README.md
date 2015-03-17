@@ -82,9 +82,7 @@ Contributing
 ============
 
 In order to validate the syntax and style guide compliance
-before you commit,
-clone https://github.com/pixelated-team/puppet-git-hooks.git
-and link `pre-commit` to `.git/hooks/pre-commit`.
+before you commit, see https://github.com/pixelated-project/puppet-git-hooks#installation
 
 
 Changelog
