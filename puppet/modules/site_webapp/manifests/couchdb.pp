@@ -6,12 +6,21 @@ class site_webapp::couchdb {
   $couchdb_port            = '4096'
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
+  $couchdb_admin_user      = $webapp['couchdb_admin_user']['username']
+  $couchdb_admin_password  = $webapp['couchdb_admin_user']['password']
 
   include x509::variables
 
   file {
     '/srv/leap/webapp/config/couchdb.yml':
       content => template('site_webapp/couchdb.yml.erb'),
+      owner   => leap-webapp,
+      group   => leap-webapp,
+      mode    => '0600',
+      require => Vcsrepo['/srv/leap/webapp'];
+
+    '/srv/leap/webapp/config/couchdb.admin.yml':
+      content => template('site_webapp/couchdb.admin.yml.erb'),
       owner   => leap-webapp,
       group   => leap-webapp,
       mode    => '0600',
