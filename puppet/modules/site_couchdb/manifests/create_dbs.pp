@@ -64,6 +64,13 @@ class site_couchdb::create_dbs {
     require => Couchdb::Query::Setup['localhost']
   }
 
+  ## tmp_users database
+  ## r/w: webapp
+  couchdb::create_db { 'tmp_users':
+    members => "{ \"names\": [], \"roles\": [\"replication\", \"users\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
   ## messages db
   ## store messages to the clients such as payment reminders
   ## r/w: webapp

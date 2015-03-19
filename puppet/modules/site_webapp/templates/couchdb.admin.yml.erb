@@ -1,0 +1,9 @@
+production:
+  prefix: ""
+  protocol: 'http'
+  host: <%= @couchdb_host %>
+  port: <%= @couchdb_port %>
+  auto_update_design_doc: false
+  username: <%= @couchdb_admin_user %>
+  password: <%= @couchdb_admin_password %>
+
