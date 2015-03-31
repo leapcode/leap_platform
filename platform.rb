@@ -4,7 +4,7 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.6.1"
+  self.version = "0.7"
   self.compatible_cli = "1.6.3".."1.99"
 
   #
