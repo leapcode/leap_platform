@@ -42,7 +42,7 @@ You can't deploy new couchdb nodes after one or more have been deployed. Make *s
 User setup and ssh
 ------------------
 
-. if you aren't using a single ssh key, but have different ones, you will need to define the following at the top of your ~/.ssh/config: 
+. if you aren't using a single ssh key, but have different ones, you will need to define the following at the top of your ~/.ssh/config:
   HostName <ip address>
   IdentityFile <path to identity file>
 
@@ -52,7 +52,7 @@ User setup and ssh
 
 . At the moment, only ECDSA ssh host keys are supported. If you get the following error: `= FAILED ssh-keyscan: no hostkey alg (must be missing an ecdsa public host key)` then you should confirm that you have the following line defined in your server's **/etc/ssh/sshd_config**: `HostKey /etc/ssh/ssh_host_ecdsa_key`. If that file doesn't exist, run `ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ""` in order to create it. If you made a change to your sshd_config, then you need to run `/etc/init.d/ssh restart` (see: https://leap.se/code/issues/2373)
 
-. To remove an admin's access to your servers, please remove the directory for that user under the `users/` subdirectory in your provider directory and then remove that user's ssh keys from files/ssh/authorized_keys. When finished you *must* run a `leap deploy` to update that information on the servers. 
+. To remove an admin's access to your servers, please remove the directory for that user under the `users/` subdirectory in your provider directory and then remove that user's ssh keys from files/ssh/authorized_keys. When finished you *must* run a `leap deploy` to update that information on the servers.
 
 . At the moment, it is only possible to add an admin who will have access to all LEAP servers (see: https://leap.se/code/issues/2280)
 
@@ -85,12 +85,10 @@ In order to validate the syntax and style guide compliance
 before you commit, see https://github.com/pixelated-project/puppet-git-hooks#installation
 
 
-Changelog
+Changes
 =========
 
-For a changelog of the current branch:
-
-    git log
+Read CHANGES.md or run `git log`.
 
 Authors and Credits
 ===================
