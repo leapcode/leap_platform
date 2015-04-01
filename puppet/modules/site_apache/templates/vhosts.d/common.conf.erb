@@ -1,5 +1,7 @@
 <VirtualHost *:80>
-  ServerName <%= domain %>
+  ServerName <%= webapp_domain %>
+  ServerAlias <%= domain_name %>
+  ServerAlias <%= domain %>
   ServerAlias www.<%= domain %>
   RewriteEngine On
   RewriteRule ^.*$ https://<%= domain -%>%{REQUEST_URI} [R=permanent,L]
@@ -7,7 +9,6 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-
   ServerName <%= webapp_domain %>
   ServerAlias <%= domain_name %>
   ServerAlias <%= domain %>
