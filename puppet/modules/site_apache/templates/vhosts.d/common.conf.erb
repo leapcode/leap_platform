@@ -57,7 +57,7 @@
 
 
 <% if (defined? @services) and (@services.include? 'monitor') -%>
- <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets)>
+ <DirectoryMatch (/usr/share/nagios3/htdocs|/usr/lib/cgi-bin/nagios3|/etc/nagios3/stylesheets|/usr/share/pnp4nagios)>
  <% if (defined? @services) and (@services.include? 'webapp') -%>
     PassengerEnabled off
  <% end -%>
