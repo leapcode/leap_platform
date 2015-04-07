@@ -24,6 +24,7 @@ HIERA_FILE        = '/etc/leap/hiera.yaml'
 LOG_DIR           = '/var/log/leap'
 DEPLOY_LOG        = '/var/log/leap/deploy.log'
 SUMMARY_LOG       = '/var/log/leap/deploy-summary.log'
+SUMMARY_LOG_1     = '/var/log/leap/deploy-summary.log.1'
 APPLY_START_STR   = "STARTING APPLY"
 APPLY_FINISH_STR  = "APPLY COMPLETE"
 
@@ -161,18 +162,23 @@ end
 #
 PLATFORM_RE = /\{.*platform: ([0-9\.]+)[ ,\}].*[\}$]/
 def platform_version_check!
-  if @info["platform"]
-    new_version = @info["platform"].split(' ').first
-    if File.exists?(SUMMARY_LOG) && new_version
-      most_recent_line = `tail '#{SUMMARY_LOG}'`.split("\n").grep(PLATFORM_RE).last
-      if most_recent_line
-        prior_version = most_recent_line.match(PLATFORM_RE)[1]
-        if Gem::Version.new(prior_version) > Gem::Version.new(new_version)
-          log("ERROR: You are attempting to deploy platform v#{new_version} but this node uses v#{prior_version}.")
-          log("       Run with --downgrade if you really want to deploy an older platform version.")
-          exit(0)
-        end
-      end
+  return unless @info["platform"]
+  new_version = @info["platform"].split(' ').first
+  return unless new_version
+  if File.exists?(SUMMARY_LOG) && File.size(SUMMARY_LOG) != 0
+    file = SUMMARY_LOG
+  elsif File.exists?(SUMMARY_LOG_1) && File.size(SUMMARY_LOG_1) != 0
+    file = SUMMARY_LOG_1
+  else
+    return
+  end
+  most_recent_line = `tail '#{file}'`.split("\n").grep(PLATFORM_RE).last
+  if most_recent_line
+    prior_version = most_recent_line.match(PLATFORM_RE)[1]
+    if Gem::Version.new(prior_version) > Gem::Version.new(new_version)
+      log("ERROR: You are attempting to deploy platform v#{new_version} but this node uses v#{prior_version}.")
+      log("       Run with --downgrade if you really want to deploy an older platform version.")
+      exit(0)
     end
   end
 end
