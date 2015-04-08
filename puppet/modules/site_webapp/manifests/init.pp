@@ -50,7 +50,7 @@ class site_webapp {
     owner    => 'leap-webapp',
     group    => 'leap-webapp',
     require  => [ User['leap-webapp'], Group['leap-webapp'] ],
-    notify   => [ Exec['bundler_update'], Exec['rotate_dbs'] ]
+    notify   => Exec['bundler_update']
   }
 
   exec { 'bundler_update':
@@ -65,19 +65,6 @@ class site_webapp {
       Class['site_config::ruby::dev'],
       Service['shorewall'] ],
     notify  => Service['apache'];
-  }
-
-  # this only needs to be called before the first time the web app is run.
-  # after that, the cron job will take care of running db:rotate regularly.
-  exec { 'rotate_dbs':
-    cwd     => '/srv/leap/webapp',
-    command => '/bin/bash -c "RAILS_ENV=production /usr/bin/bundle exec rake db:rotate"',
-    user    => 'leap-webapp',
-    timeout => 600,
-    refreshonly => true,
-    require => [
-      Vcsrepo['/srv/leap/webapp'],
-      Class['site_config::ruby::dev']];
   }
 
   #

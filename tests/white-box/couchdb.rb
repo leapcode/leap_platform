@@ -82,7 +82,10 @@ class CouchDB < LeapTest
   end
 
   def test_05_Do_required_databases_exist?
-    dbs_that_should_exist = ["customers","identities","keycache","sessions","shared","tickets","tokens","users"]
+    dbs_that_should_exist = ["customers","identities","keycache","shared","tickets","users", "tmp_users"]
+    rotation_suffix = Time.now.utc.to_i / 2592000 # monthly
+    dbs_that_should_exist << "tokens_#{rotation_suffix}"
+    dbs_that_should_exist << "sessions_#{rotation_suffix}"
     dbs_that_should_exist.each do |db_name|
       url = couchdb_url("/"+db_name, :username => 'admin')
       assert_get(url) do |body|
@@ -113,9 +116,9 @@ class CouchDB < LeapTest
   #end
 
   def test_07_Can_records_be_created?
-    token = Token.new
-    url = couchdb_url("/tokens", :username => 'admin')
-    assert_post(url, token, :format => :json) do |body|
+    record = DummyRecord.new
+    url = couchdb_url("/tmp_users", :username => 'admin')
+    assert_post(url, record, :format => :json) do |body|
       assert response = JSON.parse(body), "POST response should be JSON"
       assert response["ok"], "POST response should be OK"
       assert_delete(File.join(url, response["id"]), :rev => response["rev"]) do |body|
@@ -144,11 +147,10 @@ class CouchDB < LeapTest
 
   require 'securerandom'
   require 'digest/sha2'
-  class Token < Hash
+  class DummyRecord < Hash
     def initialize
-      self['token'] = SecureRandom.urlsafe_base64(32).gsub(/^_*/, '')
-      self['_id'] = Digest::SHA512.hexdigest(self['token'])
-      self['last_seen_at'] = Time.now
+      self['data'] = SecureRandom.urlsafe_base64(32).gsub(/^_*/, '')
+      self['_id'] = Digest::SHA512.hexdigest(self['data'])
     end
   end
 
