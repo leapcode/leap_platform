@@ -50,7 +50,7 @@ done
 [ $warn -eq 0 -o $crit -eq 0 -o -z "$regex" -o -z "$log" ] && ( usage; exit $STATE_UNKNOWN)
 [ -f "$log" ] || (echo "$log doesn't exist"; exit $STATE_UNKNOWN)
 
-lastmsg=$(tac $log | grep -i $regex | head -1 | cut -d' ' -f 1-3)
+lastmsg=$(tac $log | grep -i $regex | head -1 |  sed 's/  / /g' | cut -d' ' -f 1-3)
 
 if [ -z "$lastmsg" ]
 then
