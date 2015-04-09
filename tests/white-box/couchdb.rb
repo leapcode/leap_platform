@@ -83,7 +83,6 @@ class CouchDB < LeapTest
 
   def test_05_Do_required_databases_exist?
     dbs_that_should_exist = ["customers","identities","keycache","shared","tickets","users", "tmp_users"]
-    rotation_suffix = Time.now.utc.to_i / 2592000 # monthly
     dbs_that_should_exist << "tokens_#{rotation_suffix}"
     dbs_that_should_exist << "sessions_#{rotation_suffix}"
     dbs_that_should_exist.each do |db_name|
@@ -117,7 +116,7 @@ class CouchDB < LeapTest
 
   def test_07_Can_records_be_created?
     record = DummyRecord.new
-    url = couchdb_url("/tmp_users", :username => 'admin')
+    url = couchdb_url("/tokens_#{rotation_suffix}", :username => 'admin')
     assert_post(url, record, :format => :json) do |body|
       assert response = JSON.parse(body), "POST response should be JSON"
       assert response["ok"], "POST response should be OK"
@@ -143,6 +142,10 @@ class CouchDB < LeapTest
   def couchdb_backend_url(path="", options={})
     options = {port: multimaster? && "5986"}.merge options
     couchdb_url(path, options)
+  end
+
+  def rotation_suffix
+    rotation_suffix = Time.now.utc.to_i / 2592000 # monthly
   end
 
   require 'securerandom'
