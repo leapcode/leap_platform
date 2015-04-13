@@ -19,6 +19,7 @@ class site_obfsproxy {
     $bind_address = hiera('ip_address')
   }
 
+  include site_config::default
   include site_apt::preferences::twisted
   include site_apt::preferences::obfsproxy
 

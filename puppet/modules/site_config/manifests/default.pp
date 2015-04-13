@@ -2,17 +2,15 @@
 class site_config::default {
   tag 'leap_base'
 
-  # the logoutput exec parameter defaults to "on_error" in puppet 3,
-  # but to "false" in puppet 2.7, so we need to set this globally here
-  Exec<||> { logoutput => on_failure }
-
   $services    = hiera('services', [])
   $domain_hash = hiera('domain')
   include site_config::params
+  include site_config::setup
 
   # make sure apt is updated before any packages are installed
   include apt::update
   Package { require => Exec['apt_updated'] }
+  include site_config::packages::uninstall
 
   include site_config::slow
 

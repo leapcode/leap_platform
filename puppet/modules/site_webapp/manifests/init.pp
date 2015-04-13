@@ -21,11 +21,13 @@ class site_webapp {
   include site_webapp::couchdb
   include site_haproxy
   include site_webapp::cron
+  include site_config::default
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca
   include site_config::x509::client_ca::ca
   include site_config::x509::client_ca::key
+  include site_nickserver
 
   # remove leftovers from previous installations on webapp nodes
   include site_config::remove::webapp

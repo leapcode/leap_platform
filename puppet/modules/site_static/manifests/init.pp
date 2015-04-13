@@ -1,6 +1,7 @@
 class site_static {
   tag 'leap_service'
 
+  include site_config::default
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca_bundle

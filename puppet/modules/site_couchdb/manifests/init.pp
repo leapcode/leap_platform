@@ -50,6 +50,7 @@ class site_couchdb {
     -> Class['couchdb']
     -> Class['site_couchdb::setup']
 
+  include ::site_config::default
   include site_stunnel
 
   include site_couchdb::setup

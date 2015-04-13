@@ -19,6 +19,7 @@ class site_tor {
     $openvpn_ports = []
   }
 
+  include site_config::default
   include tor::daemon
   tor::daemon::relay { $nickname:
     port           => 9001,

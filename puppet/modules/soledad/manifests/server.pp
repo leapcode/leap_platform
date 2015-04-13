@@ -1,7 +1,10 @@
 # setup soledad-server
 class soledad::server {
   tag 'leap_service'
+
+  include site_config::default
   include soledad::common
+  include site_apt::preferences::twisted
 
   $soledad              = hiera('soledad')
   $couchdb_user         = $soledad['couchdb_soledad_user']['username']

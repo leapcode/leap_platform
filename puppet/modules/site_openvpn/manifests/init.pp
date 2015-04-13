@@ -24,8 +24,10 @@ class site_openvpn {
   include site_config::x509::key
   include site_config::x509::ca_bundle
 
-
+  include site_config::default
   Class['site_config::default'] -> Class['site_openvpn']
+
+  include ::site_obfsproxy
 
   $openvpn          = hiera('openvpn')
   $openvpn_ports    = $openvpn['ports']
