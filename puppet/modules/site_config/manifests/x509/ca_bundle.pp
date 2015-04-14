@@ -5,6 +5,7 @@ class site_config::x509::ca_bundle {
   # we will want to be able to smoothly phase out one CA and phase in another.
   # I tried "--capath" for this, but it did not work.
 
+  include ::site_config::params
 
   $x509      = hiera('x509')
   $ca        = $x509['ca_cert']

@@ -5,6 +5,8 @@ class site_config::x509::client_ca::ca {
   ## client certificates by the webapp.
   ##
 
+  include ::site_config::params
+
   $x509 = hiera('x509')
   $cert = $x509['client_ca_cert']
 
