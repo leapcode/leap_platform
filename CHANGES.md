@@ -14,8 +14,9 @@ and recreated.
 
 Compatibility:
 
-* requires leap_cli version 1.7
-* requires bitmask client version >= 0.7
+* Requires leap_cli version 1.7
+* Requires bitmask client version >= 0.7
+* Previous releases supported cookies when using the provider API. Now, only tokens are supported.
 
 Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.7.0
 
@@ -45,8 +46,8 @@ Platform 0.6
 
 Compatibility:
 
-* requires leap_cli version 1.6
-* requires bitmask client version >= 0.5
+* Requires leap_cli version 1.6
+* Requires bitmask client version >= 0.5
 
 Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.6.0
 
