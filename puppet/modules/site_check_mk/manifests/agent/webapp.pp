@@ -7,11 +7,9 @@ class site_check_mk::agent::webapp {
     ensure  => absent
   }
 
-  # check syslog
-  concat::fragment { 'syslog_webapp':
-    source  => 'puppet:///modules/site_check_mk/agent/logwatch/syslog/webapp.cfg',
-    target  => '/etc/check_mk/logwatch.d/syslog.cfg',
-    order   => '02';
+  # watch logs
+  file { '/etc/check_mk/logwatch.d/webapp.cfg':
+    source => 'puppet:///modules/site_check_mk/agent/logwatch/webapp.cfg',
   }
 
 }
