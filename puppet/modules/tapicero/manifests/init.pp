@@ -44,9 +44,9 @@ class tapicero {
 
   file {
 
-    ##
-    ## TAPICERO DIRECTORIES
-    ##
+    #
+    # TAPICERO DIRECTORIES
+    #
 
     '/srv/leap/tapicero':
       ensure  => directory,
@@ -67,9 +67,9 @@ class tapicero {
       group   => 'tapicero',
       require => User['tapicero'];
 
-    ##
-    ## TAPICERO CONFIG
-    ##
+    #
+    # TAPICERO CONFIG
+    #
 
     '/etc/leap/tapicero.yaml':
       content => template('tapicero/tapicero.yaml.erb'),
@@ -78,9 +78,9 @@ class tapicero {
       mode    => '0600',
       notify  => Service['tapicero'];
 
-    ##
-    ## TAPICERO INIT
-    ##
+    #
+    # TAPICERO INIT
+    #
 
     '/etc/init.d/tapicero':
       source  => 'puppet:///modules/tapicero/tapicero.init',
@@ -133,4 +133,17 @@ class tapicero {
                     Couchdb::Add_user[$::site_couchdb::couchdb_tapicero_user] ];
   }
 
+  rsyslog::snippet { '99-tapicero':
+    content => 'if $programname startswith \'tapicero\' then /var/log/leap/tapicero.log
+&~'
+  }
+
+  augeas {
+    'logrotate_tapicero':
+      context => '/files/etc/logrotate.d/tapicero/rule',
+      changes => [ 'set file /var/log/leap/tapicero*.log', 'set rotate 7',
+                   'set schedule daily', 'set compress compress',
+                   'set missingok missingok', 'set ifempty notifempty',
+                   'set copytruncate copytruncate' ]
+  }
 }
