@@ -29,6 +29,7 @@ class site_stunnel {
   $client_sections = keys($clients)
   site_stunnel::clients { $client_sections: }
 
+  leap::logfile { "stunnel": process => "stunnel4" }
   include site_stunnel::override_service
 }
 

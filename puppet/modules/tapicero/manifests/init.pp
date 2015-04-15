@@ -133,17 +133,5 @@ class tapicero {
                     Couchdb::Add_user[$::site_couchdb::couchdb_tapicero_user] ];
   }
 
-  rsyslog::snippet { '99-tapicero':
-    content => 'if $programname startswith \'tapicero\' then /var/log/leap/tapicero.log
-&~'
-  }
-
-  augeas {
-    'logrotate_tapicero':
-      context => '/files/etc/logrotate.d/tapicero/rule',
-      changes => [ 'set file /var/log/leap/tapicero*.log', 'set rotate 7',
-                   'set schedule daily', 'set compress compress',
-                   'set missingok missingok', 'set ifempty notifempty',
-                   'set copytruncate copytruncate' ]
-  }
+  leap::logfile { 'tapicero': }
 }

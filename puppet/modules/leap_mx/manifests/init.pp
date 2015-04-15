@@ -11,7 +11,8 @@ class leap_mx {
 
   include soledad::common
   include site_apt::preferences::twisted
-  include leap_mx::syslog
+
+  leap::logfile { 'mx': process => 'leap-mx'}
 
   #
   # USER AND GROUP

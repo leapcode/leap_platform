@@ -18,7 +18,6 @@ class site_webapp {
   include site_config::ruby::dev
   include site_webapp::apache
   include site_webapp::couchdb
-  include site_webapp::logging
   include site_haproxy
   include site_webapp::cron
   include site_config::x509::cert
@@ -172,6 +171,8 @@ class site_webapp {
   package { 'python-u1db':
     ensure => latest,
   }
+
+  leap::logfile { 'webapp': }
 
   include site_shorewall::webapp
   include site_check_mk::agent::webapp

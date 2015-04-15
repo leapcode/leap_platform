@@ -12,7 +12,7 @@ class site_check_mk::agent::mx {
       lens    => 'Spacevars.lns',
       changes => [
         'rm /files/etc/check_mk/mrpe.cfg/Leap_MX_Procs',
-        'set Leap_MX_Procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a "/usr/bin/python /usr/bin/twistd --pidfile=/var/run/leap_mx.pid --rundir=/var/lib/leap_mx/ --python=/usr/share/app/leap_mx.tac --logfile=/var/log/leap_mx.log"\'' ],
+        'set Leap_MX_Procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a "/usr/bin/python /usr/bin/twistd --pidfile=/var/run/leap_mx.pid --rundir=/var/lib/leap_mx/ --python=/usr/share/app/leap_mx.tac --logfile=/var/log/leap/mx.log"\'' ],
       require => File['/etc/check_mk/mrpe.cfg'];
   }
 
