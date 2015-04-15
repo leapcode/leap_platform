@@ -14,11 +14,14 @@ class site_webapp::cron {
       hour        => 1,
       minute      => 1;
 
+    # there is no longer a need to remove expired sessions, since the database
+    # will get destroyed.
     'remove_expired_sessions':
       command     => 'cd /srv/leap/webapp && bundle exec rake cleanup:sessions',
       environment => 'RAILS_ENV=production',
       hour        => 2,
-      minute      => 30;
+      minute      => 30,
+      ensure      => absent;
 
     'remove_expired_tokens':
       command     => 'cd /srv/leap/webapp && bundle exec rake cleanup:tokens',
