@@ -8,7 +8,7 @@ rotate the `sessions` and `tokens` databases monthly. The new database names
 are `tokens_XXX` and `sessions_XXX` where XXX is counter since the epoch that
 increments every month (not a calendar month, but a month's worth of seconds).
 
-Additionally, nagios monitor and `leap test run` now will create and destroy
+Additionally, nagios checks and `leap test run` now will create and destroy
 test users in the `tmp_users` database, which will get periodically deleted
 and recreated.
 
@@ -17,8 +17,13 @@ Compatibility:
 * Requires leap_cli version 1.7
 * Requires bitmask client version >= 0.7
 * Previous releases supported cookies when using the provider API. Now, only tokens are supported.
+* Includes:
+  * leap_mx 0.6.1
+  * tapicero ?
+  * soledad ?
 
 Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.7.0
+Issues fixes: https://leap.se/code/versions/168
 
 Upgrading:
 
@@ -36,10 +41,12 @@ New features:
   `/var/log/leap`, including the user, leap_cli version, and platform version.
 * you must now run `leap deploy --downgrade` if you want to deploy an older
   version over a newer platform version.
+* a summary of deploys is logged on each node at `/var/log/leap/deploy-summary.log`
 * the install source each custom daemons (e.g. tapicero, etc) is now
   configured on `common.json`.
 * you can configure apt sources in common.json
-* many bug fixes
+* Improved Nagios graphs integration (with pnp4nagios)
+* many bug bugfixes
 
 Platform 0.6
 -------------------------------------
