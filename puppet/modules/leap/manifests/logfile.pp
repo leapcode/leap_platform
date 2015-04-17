@@ -2,8 +2,8 @@
 # make syslog log to a particular file for a particular process.
 #
 
-define leap::logfile($process=$title) {
-  $logfile = "/var/log/leap/${title}.log"
+define leap::logfile($process=$name) {
+  $logfile = "/var/log/leap/${name}.log"
 
   rsyslog::snippet { "50-${name}":
     content => "if \$programname startswith '${process}' then ${logfile}

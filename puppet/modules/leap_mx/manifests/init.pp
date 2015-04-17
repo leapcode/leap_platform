@@ -78,7 +78,7 @@ class leap_mx {
 
   augeas {
     "logrotate_mx":
-      context => "/files/etc/logrotate.d/mx/rule",
+      context => "/files/etc/logrotate.d/leap-mx/rule",
       changes => [
         "set file /var/log/leap/mx.log",
         'set rotate 5',

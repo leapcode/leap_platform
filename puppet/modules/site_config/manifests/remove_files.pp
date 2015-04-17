@@ -20,7 +20,7 @@ class site_config::remove_files {
     '/etc/rsyslog.d/99-leap-mx.conf':;
     '/etc/rsyslog.d/01-webapp.conf':;
     '/etc/rsyslog.d/50-stunnel.conf':;
-    '/etc/logrotate.d/leap-mx':;
+    '/etc/logrotate.d/mx':;
     '/etc/logrotate.d/stunnel':;
     '/var/log/stunnel4/stunnel.log':;
     'leap_mx':
