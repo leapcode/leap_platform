@@ -14,7 +14,9 @@ define site_stunnel::client (
   $verify     = '2',
   $pid        = $name,
   $rndfile    = '/var/lib/stunnel4/.rnd',
-  $debuglevel = '4' ) {
+  $debuglevel = 'warning' ) {
+
+  $logfile = "/var/log/stunnel4/${name}.log"
 
   include site_config::x509::cert
   include site_config::x509::key
@@ -35,7 +37,20 @@ define site_stunnel::client (
     pid        => "/var/run/stunnel4/${pid}.pid",
     rndfile    => $rndfile,
     debuglevel => $debuglevel,
-    sslversion => 'TLSv1';
+    sslversion => 'TLSv1',
+    syslog     => 'no',
+    output     => $logfile;
+  }
+
+  # define the log files so that we can purge the
+  # files from /var/log/stunnel4 that are not defined.
+  file {
+    $logfile:;
+    "${logfile}.1.gz":;
+    "${logfile}.2.gz":;
+    "${logfile}.3.gz":;
+    "${logfile}.4.gz":;
+    "${logfile}.5.gz":;
   }
 
   site_shorewall::stunnel::client { $name:

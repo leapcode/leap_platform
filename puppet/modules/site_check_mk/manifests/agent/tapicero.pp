@@ -2,10 +2,9 @@ class site_check_mk::agent::tapicero {
 
   include ::site_nagios::plugins
 
-  concat::fragment { 'syslog_tapicero':
-    source  => 'puppet:///modules/site_check_mk/agent/logwatch/syslog/tapicero.cfg',
-    target  => '/etc/check_mk/logwatch.d/syslog.cfg',
-    order   => '02';
+  # watch logs
+  file { '/etc/check_mk/logwatch.d/tapicero.cfg':
+    source => 'puppet:///modules/site_check_mk/agent/logwatch/tapicero.cfg',
   }
 
   # local nagios plugin checks via mrpe
@@ -20,7 +19,7 @@ class site_check_mk::agent::tapicero {
     'Tapicero_Heartbeat':
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
-      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/syslog -r "tapicero" -w 300 -c 600\'',
+      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/leap/tapicero.log -r "tapicero" -w 300 -c 600\'',
       require => File['/etc/check_mk/mrpe.cfg'];
   }
 }

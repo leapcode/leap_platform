@@ -58,6 +58,7 @@ class site_config::default {
 
   # set up core leap files and directories
   include site_config::files
+  include site_config::remove_files
 
   if ! member($services, 'mx') {
     include site_postfix::satellite

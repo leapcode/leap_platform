@@ -29,6 +29,20 @@ class site_stunnel {
   $client_sections = keys($clients)
   site_stunnel::clients { $client_sections: }
 
+  # remove any old stunnel logs that are not
+  # defined by this puppet run
+  file {'/var/log/stunnel4': purge => true;}
+
+  # the default is to keep 356 log files for each stunnel.
+  # here we set a more reasonable number.
+  augeas {
+    "logrotate_stunnel":
+      context => "/files/etc/logrotate.d/stunnel4/rule",
+      changes => [
+        'set rotate 5',
+      ]
+  }
+
   include site_stunnel::override_service
 }
 
