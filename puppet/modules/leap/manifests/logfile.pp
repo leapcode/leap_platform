@@ -15,7 +15,7 @@ define leap::logfile($process=$title) {
       context => "/files/etc/logrotate.d/${name}/rule",
       changes => [
         "set file ${logfile}",
-        'set rotate 7',
+        'set rotate 5',
         'set schedule daily',
         'set compress compress',
         'set missingok missingok',
