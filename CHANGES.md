@@ -16,11 +16,13 @@ Compatibility:
 
 * Requires leap_cli version 1.7
 * Requires bitmask client version >= 0.7
-* Previous releases supported cookies when using the provider API. Now, only tokens are supported.
+* Previous releases supported cookies when using the provider API. Now, only
+  tokens are supported.
 * Includes:
   * leap_mx 0.6.1
-  * tapicero ?
-  * soledad ?
+  * tapicero 0.7
+  * webapp 0.7
+  * soledad 0.7
 
 Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.7.0
 Issues fixes: https://leap.se/code/versions/168
