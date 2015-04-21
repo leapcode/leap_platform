@@ -1,7 +1,7 @@
 {
   "webapp": {
     "admins": [],
-    "forbidden_usernames": ["admin", "administrator", "arin-admin", "certmaster", "contact", "info", "maildrop", "postmaster", "ssladmin", "www-data"],
+    "forbidden_usernames": ["admin", "administrator", "arin-admin", "certmaster", "contact", "info", "maildrop", "postmaster", "ssladmin", "www-data", "vmail"],
     "domain": "= domain.full_suffix",
     "modules": ["user", "billing", "help"],
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
