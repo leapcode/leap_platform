@@ -77,6 +77,11 @@ Special Environments
 
 . When deploying to OpenStack release "nova" or newer, you will need to do an initial deploy, then when it has finished run `leap facts update` and then deploy again (see: https://leap.se/code/issues/3020)
 
+leap-mx
+-------
+
+. see https://github.com/leapcode/leap_mx#070 for issues regarding leap_mx
+
 
 Contributing
 ============
