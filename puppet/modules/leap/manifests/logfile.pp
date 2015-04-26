@@ -6,8 +6,7 @@ define leap::logfile($process=$name) {
   $logfile = "/var/log/leap/${name}.log"
 
   rsyslog::snippet { "50-${name}":
-    content => "if \$programname startswith '${process}' then ${logfile}
-&~"
+    content => template('leap/rsyslog.erb')
   }
 
   augeas {

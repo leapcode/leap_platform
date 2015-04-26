@@ -1,0 +1,5 @@
+if $programname startswith '<%= @process %>' then {
+  action(type="omfile" file="<%= @logfile %>" template="RSYSLOG_TraditionalFileFormat")
+  stop
+}
+
