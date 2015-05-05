@@ -1,0 +1,4 @@
+
+<% for leap in [@apt_url_leap].flatten %>
+deb <%=leap%><%=@major_version%> wheezy main
+<% end %>
