@@ -29,8 +29,8 @@
     "cert": "= x509.use ? file(:node_x509_cert, :missing => 'x509 certificate for node $node. Run `leap cert update`') : nil",
     "key": "= x509.use ? file(:node_x509_key, :missing => 'x509 key for node $node. Run `leap cert update`') : nil",
     "ca_cert": "= try_file :ca_cert",
-    "commercial_cert": "= x509.use_commercial ? file([:commercial_cert, try{webapp.domain}||domain.full_suffix], :missing => 'commercial x509 certificate for node $node. Add file $file, or run `leap cert csr` to generate a temporary self-signed cert and CSR you can use to purchase a real cert.') : nil",
-    "commercial_key": "= x509.use_commercial ? file([:commercial_key, try{webapp.domain}||domain.full_suffix], :missing => 'commercial x509 certificate for node $node. Add file $file, or run `leap cert csr` to generate a temporary self-signed cert and CSR you can use to purchase a real cert.') : nil",
+    "commercial_cert": "= x509.use_commercial ? file([:commercial_cert, try{webapp.domain}||domain.full_suffix], :missing => 'commercial x509 certificate for node $node. Add file $file, or run `leap cert csr --domain %s` to generate a temporary self-signed cert and CSR you can use to purchase a real cert.' % (try{webapp.domain}||domain.full_suffix)) : nil",
+    "commercial_key": "= x509.use_commercial ? file([:commercial_key, try{webapp.domain}||domain.full_suffix], :missing => 'commercial x509 certificate for node $node. Add file $file, or run `leap cert csr --domain %s` to generate a temporary self-signed cert and CSR you can use to purchase a real cert.' % (try{webapp.domain}||domain.full_suffix)) : nil",
     "commercial_ca_cert": "= x509.use_commercial ? try_file(:commercial_ca_cert) : nil"
   },
   "service_type": "internal_service",
