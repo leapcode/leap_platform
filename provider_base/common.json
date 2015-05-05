@@ -53,9 +53,9 @@
   },
   "sources": {
     "apt": {
-      "basic": "http://http.debian.net/debian/",
+      "basic": "http://httpredir.debian.org/debian/",
       "security": "http://security.debian.org/",
-      "backports": "http://http.debian.net/debian/"
+      "backports": "http://httpredir.debian.org/debian/"
     },
     "leap-mx": {
       "type": "apt",
