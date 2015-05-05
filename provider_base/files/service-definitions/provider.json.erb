@@ -7,7 +7,7 @@
   hsh['domain'] = domain.full_suffix
 
   # advertise services that are 'user services' and for which there are actually nodes
-  hsh['services'] ||= global.env(environment).services[:service_type => :user_service].field(:name).select do |service|
+  hsh['services'] ||= global.services[:service_type => :user_service].field(:name).select do |service|
     nodes_like_me[:services => service].any?
   end
 
