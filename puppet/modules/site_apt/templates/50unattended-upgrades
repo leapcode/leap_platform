@@ -1,7 +1,7 @@
 // this file is managed by puppet !
 
 Unattended-Upgrade::Allowed-Origins {
-        "${distro_id}:stable";
+        "${distro_id}:oldstable";
         "${distro_id}:${distro_codename}-security";
         "${distro_id}:${distro_codename}-updates";
         "${distro_id} Backports:${distro_codename}-backports";
