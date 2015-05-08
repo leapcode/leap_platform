@@ -99,18 +99,33 @@ class Webapp < LeapTest
   # we try three times, and give up after that.
   #
   def assert_user_db_exists(user)
+    db_name = "user-#{user.id}"
+    repeatedly_try("/#{db_name}") do |body, response, error|
+      assert false, "Could not find user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
+    end
+    repeatedly_try("/#{db_name}/_design/docs") do |body, response, error|
+      assert false, "Could not find design docs for user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
+    end
+  end
+
+  #
+  # tries the URL repeatedly, giving up and yield the last response if
+  # no try returned a 200 http status code.
+  #
+  def repeatedly_try(url, &block)
     last_body, last_response, last_error = nil
     3.times do
       sleep 0.2
-      get(couchdb_url("/user-#{user.id}/_design/docs")) do |body, response, error|
+      get(couchdb_url(url)) do |body, response, error|
         last_body, last_response, last_error = body, response, error
         if response.code.to_i == 200
           return
         end
       end
-      sleep 0.5
+      sleep 1
     end
-    assert false, "Could not find user db for test user #{user.username}\nuuid=#{user.id}\nHTTP #{last_response.code} #{last_error} #{last_body}"
+    yield last_body, last_response, last_error
+    return
   end
 
   #
