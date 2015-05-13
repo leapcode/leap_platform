@@ -1,3 +1,4 @@
+# setup basic debian package manager configuration
 class site_apt {
 
   $sources           = hiera('sources')
@@ -30,6 +31,8 @@ class site_apt {
     release  => "${::lsbdistcodename}-backports",
     priority => 999
   }
+
+  include site_apt::preferences::augeas
 
   # All packages should be installed _after_ refresh_apt is called,
   # which does an apt-get update.

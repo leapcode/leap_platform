@@ -33,4 +33,11 @@ class site_config::remove_files {
       rmdirs => true;
   }
 
+  # leax-mx logged to /var/log/leap_mx.log in the past
+  augeas { 'rm_old_leap_mx_log_destination':
+    incl    => '/etc/check_mk/logwatch.state',
+    lens    => 'Simplelines.lns',
+    changes => [  "rm /files/etc/check_mk/logwatch.state/*[.=~regexp('.*leap_mx.log.*')]" ],
+  }
+
 }
