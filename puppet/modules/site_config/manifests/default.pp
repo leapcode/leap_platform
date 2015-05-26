@@ -1,4 +1,3 @@
-# This class is the basic configuration for all nodes
 class site_config::default {
   tag 'leap_base'
 
@@ -13,10 +12,6 @@ class site_config::default {
   # make sure apt is updated before any packages are installed
   include apt::update
   Package { require => Exec['apt_updated'] }
-
-  class {'augeas':
-    version => 'latest'
-  }
 
   include site_config::slow
 
