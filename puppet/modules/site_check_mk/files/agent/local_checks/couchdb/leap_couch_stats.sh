@@ -11,7 +11,7 @@ start_time=$(date +%s.%N)
 CURL='curl -s --netrc-file /etc/couchdb/couchdb.netrc'
 URL='http://127.0.0.1:5984'
 TMPFILE=$(mktemp)
-DBLIST_EXCLUDE='user-'
+DBLIST_EXCLUDE='(user-|sessions_|tokens_)'
 PREFIX='Couchdb_'
 
 
@@ -45,7 +45,7 @@ get_global_stats_perf () {
   $CURL -X GET $URL/_all_dbs | json_pp | egrep -v '(\[|\])' > $TMPFILE
 
   db_count=$( wc -l < $TMPFILE)
-  excluded_db_count=$( grep -c "$DBLIST_EXCLUDE" $TMPFILE )
+  excluded_db_count=$( egrep -c "$DBLIST_EXCLUDE" $TMPFILE )
 
   echo "db_count=$db_count|excluded_db_count=$excluded_db_count"
   return ${localexit}
@@ -56,7 +56,14 @@ db_stats () {
   local db db_stats doc_count del_doc_count localexit
   localexit=0
 
-  db=$1
+  db="$1"
+  name="$2"
+
+  if [ -z "$name" ]
+  then
+    name="$db"
+  fi
+
   perf="$perf|${db}_docs=$( $CURL -s -X GET ${URL}/$db | json_pp |grep 'doc_count' | sed 's/[^0-9]//g' )"
   db_stats=$( $CURL -s -X GET ${URL}/$db | json_pp )
 
@@ -74,8 +81,8 @@ db_stats () {
   bytes=$( echo "$db_stats" | grep disk_size | sed 's/[^0-9]//g' )
   disk_size=$( echo "scale = 2; $bytes / 1024 / 1024" | bc -l )
 
-  echo -n "${localexit} ${PREFIX}${db}_database ${db}_docs=$doc_count|${db}_deleted_docs=$del_doc_count|${db}_deleted_docs_percentage=${del_doc_perc}%"
-  printf "|${db}_disksize_mb=%02.2fmb ${STATE[localexit]}: database $db\n" "$disk_size"
+  echo -n "${localexit} ${PREFIX}${name}_database ${name}_docs=$doc_count|${name}_deleted_docs=$del_doc_count|${name}_deleted_docs_percentage=${del_doc_perc}%"
+  printf "|${name}_disksize_mb=%02.2fmb ${STATE[localexit]}: database $name\n" "$disk_size"
 
   return ${localexit}
 }
@@ -89,12 +96,18 @@ load_nagios_utils
 $CURL -X GET $URL/_all_dbs | json_pp | egrep -v '(\[|\])' > $TMPFILE
 
 # get list of dbs to check
-dbs=$( grep -v "${DBLIST_EXCLUDE}" $TMPFILE | tr -d '\n"' | sed 's/,/ /g' )
+dbs=$( egrep -v "${DBLIST_EXCLUDE}" $TMPFILE | tr -d '\n"' | sed 's/,/ /g' )
 
 for db in $dbs
 do
   db_stats "$db"
 done
+
+# special handling for rotated dbs
+suffix=$(($(date +'%s') / (60*60*24*30) + 1))
+db_stats "sessions_${suffix}" "sessions"
+db_stats "tokens_${suffix}" "tokens"
+
 
 # show global couchdb stats
 global_stats_perf=$(get_global_stats_perf)
