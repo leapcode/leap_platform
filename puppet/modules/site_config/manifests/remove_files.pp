@@ -33,4 +33,14 @@ class site_config::remove_files {
       rmdirs => true;
   }
 
+  # leax-mx logged to /var/log/leap_mx.log in the past
+  # we need to use a dumb exec here because file_line doesn't
+  # allow removing lines that match a regex in the current version
+  # of stdlib, see https://tickets.puppetlabs.com/browse/MODULES-1903
+  exec { 'rm_old_leap_mx_log_destination':
+      command => "/bin/sed -i '/leap_mx.log/d' /etc/check_mk/logwatch.state",
+      onlyif  => "/bin/grep -qe 'leap_mx.log' /etc/check_mk/logwatch.state"
+  }
+
+
 }
