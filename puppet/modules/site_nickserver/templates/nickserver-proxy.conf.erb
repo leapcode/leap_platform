@@ -8,17 +8,13 @@ Listen 0.0.0.0:<%= @nickserver_port -%>
   ServerName <%= @nickserver_domain %>
   ServerAlias <%= @address_domain %>
 
-  SSLEngine on
-  SSLProtocol all -SSLv2 -SSLv3
-  SSLHonorCipherOrder on
-  SSLCompression off
-  SSLCipherSuite "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK"
-
   SSLCACertificatePath /etc/ssl/certs
   SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::ca_name') %>.crt
   SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key
   SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt
 
+  Include include.d/ssl_common.inc
+  
   ProxyPass / http://localhost:<%= @nickserver_local_port %>/
   ProxyPreserveHost On  # preserve Host header in HTTP request
 </VirtualHost>
