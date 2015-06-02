@@ -22,11 +22,19 @@ class site_config::dhclient {
     require     => File['/usr/local/sbin/reload_dhclient'],
   }
 
+  file { '/etc/dhcp/dhclient-enter-hooks.d':
+    ensure  => directory,
+    mode    => '0755',
+    owner   => 'root',
+    group   => 'root',
+  }
+
   file { '/etc/dhcp/dhclient-enter-hooks.d/disable_resolvconf':
     content => 'make_resolv_conf() { : ; } ; set_hostname() { : ; }',
     mode    => '0644',
     owner   => 'root',
     group   => 'root',
+    require => File['/etc/dhcp/dhclient-enter-hooks.d'],
     notify  => Exec['reload_dhclient'];
   }
 }
