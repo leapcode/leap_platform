@@ -2,7 +2,6 @@
 class site_couchdb::create_dbs {
 
   Class['site_couchdb::setup']
-    -> Class['site_couchdb::bigcouch::settle_cluster']
     -> Class['site_couchdb::create_dbs']
 
   ### customer database
