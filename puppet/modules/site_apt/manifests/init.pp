@@ -1,3 +1,4 @@
+# setup apt on all nodes
 class site_apt {
 
   $sources           = hiera('sources')
@@ -31,12 +32,19 @@ class site_apt {
     priority => 999
   }
 
+  apt::preferences_snippet { 'leap':
+    priority => 999,
+    package  => '*',
+    pin      => 'origin "deb.leap.se"'
+  }
+
   # All packages should be installed _after_ refresh_apt is called,
   # which does an apt-get update.
   # There is one exception:
   # The creation of sources.list depends on the lsb package
 
   File['/etc/apt/preferences'] ->
+    Apt::Preferences_snippet <| |> ->
     Exec['refresh_apt'] ->
-      Package <| ( title != 'lsb' ) |>
+    Package <| ( title != 'lsb' ) |>
 }
