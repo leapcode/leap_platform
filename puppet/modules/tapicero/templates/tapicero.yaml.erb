@@ -13,13 +13,15 @@ connection:
   password: <%= @couchdb_admin_password %>
   prefix : ""
   suffix : ""
+  netrc: "/etc/couchdb/couchdb.netrc"
 
 # file to store the last processed user record in so we can resume after
 # a restart:
-seq_file: "/var/lib/leap/tapicero/tapicero.seq"
+seq_dir: "/var/lib/leap/tapicero/"
 
 # Configure log_file like this if you want to log to a file instead of syslog:
-# log_file: "/var/leap/log/tapicero.log"
+#log_file: "/var/log/leap/tapicero.log"
+#log_level: debug
 log_level: info
 
 # tapicero specific options

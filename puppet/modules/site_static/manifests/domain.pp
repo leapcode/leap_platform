@@ -12,9 +12,18 @@ define site_static::domain (
 
   create_resources(site_static::location, $locations)
 
-  x509::cert { $domain: content => $cert }
-  x509::key  { $domain: content => $key }
-  x509::ca   { "${domain}_ca": content => $ca_cert }
+  x509::cert { $domain:
+    content => $cert,
+    notify => Service[apache]
+  }
+  x509::key { $domain:
+    content => $key,
+    notify => Service[apache]
+  }
+  x509::ca { "${domain}_ca":
+    content => $ca_cert,
+    notify => Service[apache]
+  }
 
   apache::vhost::file { $domain:
     content => template('site_static/apache.conf.erb')

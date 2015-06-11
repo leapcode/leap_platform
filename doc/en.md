@@ -1,15 +1,14 @@
 @title = 'LEAP Platform for Service Providers'
 @nav_title = 'Provider Platform'
-@summary = 'Software platform to automate the process of running a communication service provider.'
-@toc = true
+@toc = false
 
 The *LEAP Platform* is set of complementary packages and server recipes to automate the maintenance of LEAP services in a hardened Debian environment. Its goal is to make it as painless as possible for sysadmins to deploy and maintain a service provider's infrastructure for secure communication.
 
 The LEAP Platform consists of three parts, detailed below:
 
-1. The platform recipes.
-2. The provider instance.
-3. The `leap` command line tool.
+1. [The platform recipes.](#the-platform-recipes)
+2. [The provider instance.](#the-provider-instance)
+3. [The `leap` command line tool.](#the-leap-command-line-tool)
 
 The platform recipes
 --------------------
@@ -65,6 +64,15 @@ One other significant difference between LEAP and typical system automation is h
 These two approaches, masterless push and pre-compiled static configuration, allow the sysadmin to manage a set of LEAP servers using traditional software development techniques of branching and merging, to more easily create local testing environments using virtual servers, and to deploy without the added complexity and failure potential of a master server.
 
 The `leap` command line tool is distributed as a git repository: `https://leap.se/git/leap_cli`. It can be installed with `sudo gem install leap_cli`.
+
+Tip: With rubygems, you can always specify the gem version as the first argument to any executable installed by rubygems. For example:
+
+    sudo gem install leap_cli --version 1.6.2
+    sudo gem install leap_cli --version 1.7.2
+    leap _1.6.2_ --version
+    => leap 1.6.2, ruby 2.1.2
+    leap _1.7.2_ --version
+    => leap 1.7.2, ruby 2.1.2
 
 Getting started
 ----------------------------------

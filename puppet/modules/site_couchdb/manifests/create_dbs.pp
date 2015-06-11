@@ -1,9 +1,8 @@
 class site_couchdb::create_dbs {
 
   Class['site_couchdb::setup']
+    -> Class['site_couchdb::bigcouch::settle_cluster']
     -> Class['site_couchdb::create_dbs']
-
-  # Couchdb databases
 
   ### customer database
   ### r/w: webapp,
@@ -29,7 +28,14 @@ class site_couchdb::create_dbs {
 
   ## sessions database
   ## r/w: webapp
-  couchdb::create_db { 'sessions':
+  $sessions_db = rotated_db_name('sessions', 'monthly')
+  couchdb::create_db { $sessions_db:
+    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
+  $sessions_next_db = rotated_db_name('sessions', 'monthly', 'next')
+  couchdb::create_db { $sessions_next_db:
     members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
@@ -51,7 +57,14 @@ class site_couchdb::create_dbs {
   ## tokens database
   ## r: soledad - needs to be restricted with a design document
   ## r/w: webapp
-  couchdb::create_db { 'tokens':
+  $tokens_db = rotated_db_name('tokens', 'monthly')
+  couchdb::create_db { $tokens_db:
+    members => "{ \"names\": [], \"roles\": [\"replication\", \"tokens\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
+  $tokens_next_db = rotated_db_name('tokens', 'monthly', 'next')
+  couchdb::create_db { $tokens_next_db:
     members => "{ \"names\": [], \"roles\": [\"replication\", \"tokens\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
@@ -59,6 +72,13 @@ class site_couchdb::create_dbs {
   ## users database
   ## r/w: webapp
   couchdb::create_db { 'users':
+    members => "{ \"names\": [], \"roles\": [\"replication\", \"users\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
+  ## tmp_users database
+  ## r/w: webapp
+  couchdb::create_db { 'tmp_users':
     members => "{ \"names\": [], \"roles\": [\"replication\", \"users\"] }",
     require => Couchdb::Query::Setup['localhost']
   }

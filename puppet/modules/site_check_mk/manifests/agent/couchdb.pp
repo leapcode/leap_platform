@@ -12,13 +12,21 @@ class site_check_mk::agent::couchdb {
 
 
   # check bigcouch processes
-  file_line {
+  augeas {
     'Bigcouch_epmd_procs':
-      line => 'Bigcouch_epmd_procs  /usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/epmd',
-      path => '/etc/check_mk/mrpe.cfg';
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+        'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_epmd_procs',
+        'set Bigcouch_epmd_procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/epmd\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
     'Bigcouch_beam_procs':
-      line => 'Bigcouch_beam_procs  /usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/beam',
-      path => '/etc/check_mk/mrpe.cfg';
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+        'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_beam_procs',
+        'set Bigcouch_beam_procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a /opt/bigcouch/erts-5.9.1/bin/beam\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
   }
 
   # check open files for bigcouch proc
@@ -27,10 +35,21 @@ class site_check_mk::agent::couchdb {
     source => 'puppet:///modules/site_check_mk/agent/nagios_plugins/check_unix_open_fds.pl',
     mode   => '0755'
   }
-  file_line {
+  augeas {
     'Bigcouch_open_files':
-      line => 'Bigcouch_open_files /srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 28672,28672 -c 30720,30720',
-      path => '/etc/check_mk/mrpe.cfg';
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+        'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_open_files',
+        'set Bigcouch_open_files \'/srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 28672,28672 -c 30720,30720\'' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
   }
 
+
+  # check different couchdb stats
+  file { '/usr/lib/check_mk_agent/local/leap_couch_stats.sh':
+    source  => 'puppet:///modules/site_check_mk/agent/local_checks/couchdb/leap_couch_stats.sh',
+    mode    => '0755',
+    require => Package['check_mk-agent']
+  }
 }

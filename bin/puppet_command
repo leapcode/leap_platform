@@ -4,11 +4,14 @@
 # This is a wrapper script around the puppet command used by the LEAP platform.
 #
 # We do this in order to make it faster and easier to control puppet remotely
-# (exit codes, lockfile, multiple manifests, etc)
+# (exit codes, logging, lockfile, version check, etc)
 #
 
 require 'pty'
 require 'yaml'
+require 'logger'
+require 'socket'
+require 'fileutils'
 
 PUPPET_BIN        = '/usr/bin/puppet'
 PUPPET_DIRECTORY  = '/srv/leap'
@@ -18,6 +21,12 @@ SITE_MODULES      = 'puppet/modules'
 CUSTOM_MODULES    = ':files/puppet/modules'
 DEFAULT_TAGS      = 'leap_base,leap_service'
 HIERA_FILE        = '/etc/leap/hiera.yaml'
+LOG_DIR           = '/var/log/leap'
+DEPLOY_LOG        = '/var/log/leap/deploy.log'
+SUMMARY_LOG       = '/var/log/leap/deploy-summary.log'
+SUMMARY_LOG_1     = '/var/log/leap/deploy-summary.log.1'
+APPLY_START_STR   = "STARTING APPLY"
+APPLY_FINISH_STR  = "APPLY COMPLETE"
 
 def main
   process_command_line_arguments
@@ -28,15 +37,39 @@ def main
   end
 end
 
-def puts(str)
+def open_log_files
+  FileUtils.mkdir_p(LOG_DIR)
+  $logger = Logger.new(DEPLOY_LOG)
+  $summary_logger = Logger.new(SUMMARY_LOG)
+  [$logger, $summary_logger].each do |logger|
+    logger.level = Logger::INFO
+    logger.formatter = proc do |severity, datetime, progname, msg|
+      "%s %s: %s\n" % [datetime.strftime("%b %d %H:%M:%S"), Socket.gethostname, msg]
+    end
+  end
+end
+
+def close_log_files
+  $logger.close
+  $summary_logger.close
+end
+
+def log(str, *args)
+  str = str.strip
   $stdout.puts str
   $stdout.flush
+  $logger.info(str)
+  if args.include? :summary
+    $summary_logger.info(str)
+  end
 end
 
 def process_command_line_arguments
   @commands = []
   @verbosity = 1
   @tags = DEFAULT_TAGS
+  @info = {}
+  @downgrade = false
   loop do
     case ARGV[0]
       when 'apply'        then ARGV.shift; @commands << 'apply'
@@ -44,6 +77,8 @@ def process_command_line_arguments
       when '--verbosity'  then ARGV.shift; @verbosity = ARGV.shift.to_i
       when '--force'      then ARGV.shift; remove_lockfile
       when '--tags'       then ARGV.shift; @tags      = ARGV.shift
+      when '--info'       then ARGV.shift; @info      = parse_info(ARGV.shift)
+      when '--downgrade'  then ARGV.shift; @downgrade = true
       when /^-/           then usage("Unknown option: #{ARGV[0].inspect}")
       else break
     end
@@ -52,16 +87,18 @@ def process_command_line_arguments
 end
 
 def apply
+  platform_version_check! unless @downgrade
+  log "#{APPLY_START_STR} {#{format_info(@info)}}", :summary
   exit_code = puppet_apply do |line|
-    puts line
+    log line
   end
-  puts "Puppet apply complete (#{exitcode_description(exit_code)})."
+  log "#{APPLY_FINISH_STR} (#{exitcode_description(exit_code)}) {#{format_info(@info)}}", :summary
 end
 
 def set_hostname
   hostname = hiera_file['name']
   if hostname.nil? || hostname.empty?
-    puts('ERROR: "name" missing from hiera file')
+    log('ERROR: "name" missing from hiera file')
     exit(1)
   end
   current_hostname_file = File.read('/etc/hostname') rescue nil
@@ -73,18 +110,18 @@ def set_hostname
       f.write hostname
     end
     if File.read('/etc/hostname') == hostname
-      puts "Changed /etc/hostname to #{hostname}"
+      log "Changed /etc/hostname to #{hostname}"
     else
-      puts "ERROR: failed to update /etc/hostname"
+      log "ERROR: failed to update /etc/hostname"
     end
   end
 
   # call /bin/hostname
   if current_hostname != hostname
     if run("/bin/hostname #{hostname}") == 0
-      puts "Changed hostname to #{hostname}"
+      log "Changed hostname to #{hostname}"
     else
-      puts "ERROR: call to `/bin/hostname #{hostname}` returned an error."
+      log "ERROR: call to `/bin/hostname #{hostname}` returned an error."
     end
   end
 end
@@ -96,10 +133,53 @@ def puppet_apply(options={}, &block)
   options = {:verbosity => @verbosity, :tags => @tags}.merge(options)
   manifest = options[:manifest] || SITE_MANIFEST
   modulepath = options[:module_path] || SITE_MODULES + CUSTOM_MODULES
-  fqdn = hiera_file['domain']['name']
+  fqdn = hiera_file['domain']['full']
   domain = hiera_file['domain']['full_suffix']
   Dir.chdir(PUPPET_DIRECTORY) do
     return run("FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} --modulepath='#{modulepath}' #{PUPPET_PARAMETERS} #{manifest}", &block)
+  end
+end
+
+#
+# parse the --info flag. example str: "key1: value1, key2: value2, ..."
+#
+def parse_info(str)
+  str.split(', ').
+    map {|i| i.split(': ')}.
+    inject({}) {|h,i| h[i[0]] = i[1]; h}
+rescue Exception => exc
+  {"platform" => "INVALID_FORMAT"}
+end
+
+def format_info(info)
+  info.to_a.map{|i|i.join(': ')}.join(', ')
+end
+
+#
+# exits with a warning message if the last successful deployed
+# platform was newer than the one we are currently attempting to
+# deploy.
+#
+PLATFORM_RE = /\{.*platform: ([0-9\.]+)[ ,\}].*[\}$]/
+def platform_version_check!
+  return unless @info["platform"]
+  new_version = @info["platform"].split(' ').first
+  return unless new_version
+  if File.exists?(SUMMARY_LOG) && File.size(SUMMARY_LOG) != 0
+    file = SUMMARY_LOG
+  elsif File.exists?(SUMMARY_LOG_1) && File.size(SUMMARY_LOG_1) != 0
+    file = SUMMARY_LOG_1
+  else
+    return
+  end
+  most_recent_line = `tail '#{file}'`.split("\n").grep(PLATFORM_RE).last
+  if most_recent_line
+    prior_version = most_recent_line.match(PLATFORM_RE)[1]
+    if Gem::Version.new(prior_version) > Gem::Version.new(new_version)
+      log("ERROR: You are attempting to deploy platform v#{new_version} but this node uses v#{prior_version}.")
+      log("       Run with --downgrade if you really want to deploy an older platform version.")
+      exit(0)
+    end
   end
 end
 
@@ -108,13 +188,13 @@ end
 #
 def hiera_file
   unless File.exists?(HIERA_FILE)
-    puts("ERROR: hiera file '#{HIERA_FILE}' does not exist.")
+    log("ERROR: hiera file '#{HIERA_FILE}' does not exist.")
     exit(1)
   end
   $hiera_contents ||= YAML.load_file(HIERA_FILE)
   return $hiera_contents
 rescue Exception => exc
-  puts("ERROR: problem reading hiera file '#{HIERA_FILE}' (#{exc})")
+  log("ERROR: problem reading hiera file '#{HIERA_FILE}' (#{exc})")
   exit(1)
 end
 
@@ -150,13 +230,16 @@ def usage(s)
   $stderr.puts("Usage: #{File.basename($0)} COMMAND [OPTIONS]")
   $stderr.puts
   $stderr.puts("COMMAND may be one or more of:
-  set_hostname     -- set the hostname of this server
-  apply            -- apply puppet manifests")
+  set_hostname     -- set the hostname of this server.
+  apply            -- apply puppet manifests.")
   $stderr.puts
   $stderr.puts("OPTIONS may be one or more of:
-  --verbosity VERB -- set the verbosity level 0..5
-  --tags TAGS      -- set the tags to pass through to puppet
-  --force          -- run even when lockfile is present")
+  --verbosity VERB -- set the verbosity level 0..5.
+  --tags TAGS      -- set the tags to pass through to puppet.
+  --force          -- run even when lockfile is present.
+  --info           -- additional info to include in logs (e.g. 'user: alice, platform: 0.6.1')
+  --downgrade      -- allow a deploy even if the platform version is older than previous deploy.
+  ")
   exit(2)
 end
 
@@ -176,13 +259,15 @@ def with_lockfile(lock_file_path=DEFAULT_LOCKFILE)
     File.open(lock_file_path, File::CREAT | File::EXCL | File::WRONLY) do |o|
       o.write(Process.pid)
     end
+    open_log_files
     yield
     remove_lockfile
+    close_log_files
   rescue Errno::EEXIST
-    puts("ERROR: the lock file '#{lock_file_path}' already exists. Wait a minute for the process to die, or run with --force to ignore. Bailing out.")
+    log("ERROR: the lock file '#{lock_file_path}' already exists. Wait a minute for the process to die, or run with --force to ignore. Bailing out.")
     exit(1)
   rescue IOError => exc
-    puts("ERROR: problem with lock file '#{lock_file_path}' (#{exc}). Bailing out.")
+    log("ERROR: problem with lock file '#{lock_file_path}' (#{exc}). Bailing out.")
     exit(1)
   end
 end
@@ -193,7 +278,7 @@ end
 ##
 
 def run(cmd)
-  puts cmd if @verbosity >= 3
+  log(cmd) if @verbosity >= 3
   PTY.spawn("#{cmd}") do |output, input, pid|
     begin
       while line = output.gets do

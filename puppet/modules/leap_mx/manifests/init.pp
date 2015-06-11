@@ -7,6 +7,8 @@ class leap_mx {
   $couchdb_host     = 'localhost'
   $couchdb_port     = '4096'
 
+  $sources          = hiera('sources')
+
   include soledad::common
   include site_apt::preferences::twisted
 
@@ -39,16 +41,26 @@ class leap_mx {
     notify  => Service['leap-mx'];
   }
 
+  file { '/etc/default/leap_mx':
+    content => 'LOGFILE=/var/log/leap/mx.log',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Service['leap-mx'];
+  }
+
   #
   # LEAP-MX CODE AND DEPENDENCIES
   #
 
   package {
-    'leap-mx':
-      ensure  => latest,
-      require => Class['site_apt::preferences::twisted'];
+    $sources['leap-mx']['package']:
+      ensure  => $sources['leap-mx']['revision'],
+      require => [
+        Class['site_apt::preferences::twisted'],
+        Class['site_apt::leap_repo'] ];
 
-    [ 'leap-keymanager' ]:
+    'leap-keymanager':
       ensure => latest;
   }
 
@@ -62,5 +74,19 @@ class leap_mx {
     hasstatus  => true,
     hasrestart => true,
     require    => [ Package['leap-mx'] ];
+  }
+
+  augeas {
+    "logrotate_mx":
+      context => "/files/etc/logrotate.d/leap-mx/rule",
+      changes => [
+        "set file /var/log/leap/mx.log",
+        'set rotate 5',
+        'set schedule daily',
+        'set compress compress',
+        'set missingok missingok',
+        'set ifempty notifempty',
+        'set copytruncate copytruncate'
+      ]
   }
 }

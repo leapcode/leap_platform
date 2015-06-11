@@ -65,6 +65,24 @@ So, you manually override the port in the deploy command, using the old port:
 
 Afterwards, SSH on `blinky` should be listening on port 2200 and you can just run `leap deploy blinky` from then on.
 
+Sysadmins with multiple SSH keys
+-----------------------------------
+
+The command `leap add-user --self` allows only one SSH key. If you want to specify more than one key for a user, you can do it manually:
+
+    users/userx/userx_ssh.pub
+    users/userx/otherkey_ssh.pub
+
+All keys matching 'userx/*_ssh.pub' will be usable.
+
+Removing sysadmin access
+--------------------------------
+
+Suppose you want to remove `userx` from having any further ssh access to the servers. Do this:
+
+    rm -r users/userx
+    leap deploy
+
 X.509 Certificates
 ================================
 
@@ -153,7 +171,7 @@ This command will generate the CSR and private key matching `provider.domain` (y
 The related commercial cert files are:
 
     files/
-      certs/
+      cert/
         domain.org.crt    # Server certificate for domain.org, obtained by commercial CA.
         domain.org.csr    # Certificate signing request
         domain.org.key    # Private key for you certificate

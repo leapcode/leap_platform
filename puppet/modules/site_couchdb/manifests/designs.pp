@@ -11,10 +11,35 @@ class site_couchdb::designs {
     mode    => '0755'
   }
 
-  exec { '/srv/leap/couchdb/scripts/load_design_documents.sh':
-    require     => Vcsrepo['/srv/leap/couchdb/scripts'],
-    refreshonly => false
+  site_couchdb::upload_design {
+    'customers':   design => 'customers/Customer.json';
+    'identities':  design => 'identities/Identity.json';
+    'tickets':     design => 'tickets/Ticket.json';
+    'messages':    design => 'messages/Message.json';
+    'users':       design => 'users/User.json';
+    'tmp_users':   design => 'users/User.json';
+    'shared_docs':
+      db => 'shared',
+      design => 'shared/docs.json';
+    'shared_syncs':
+      db => 'shared',
+      design => 'shared/syncs.json';
+    'shared_transactions':
+      db => 'shared',
+      design => 'shared/transactions.json';
   }
 
-}
+  $sessions_db      = rotated_db_name('sessions', 'monthly')
+  $sessions_next_db = rotated_db_name('sessions', 'monthly', 'next')
+  site_couchdb::upload_design {
+    $sessions_db:       design => 'sessions/Session.json';
+    $sessions_next_db:  design => 'sessions/Session.json';
+  }
 
+  $tokens_db       = rotated_db_name('tokens', 'monthly')
+  $tokens_next_db  = rotated_db_name('tokens', 'monthly', 'next')
+  site_couchdb::upload_design {
+    $tokens_db:      design => 'tokens/Token.json';
+    $tokens_next_db: design => 'tokens/Token.json';
+  }
+}

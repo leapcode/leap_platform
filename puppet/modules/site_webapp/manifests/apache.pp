@@ -7,6 +7,9 @@ class site_webapp::apache {
   $web_domain       = hiera('domain')
   $domain_name      = $web_domain['name']
 
+  $webapp           = hiera('webapp')
+  $webapp_domain    = $webapp['domain']
+
   include site_apache::common
   include site_apache::module::headers
   include site_apache::module::alias

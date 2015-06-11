@@ -15,6 +15,8 @@ class tapicero {
   $couchdb_mode            = $couchdb['mode']
   $couchdb_replication     = $couchdb['replication']
 
+  $sources                 = hiera('sources')
+
   Class['site_config::default'] -> Class['tapicero']
 
   include site_config::ruby::dev
@@ -42,9 +44,9 @@ class tapicero {
 
   file {
 
-    ##
-    ## TAPICERO DIRECTORIES
-    ##
+    #
+    # TAPICERO DIRECTORIES
+    #
 
     '/srv/leap/tapicero':
       ensure  => directory,
@@ -65,9 +67,9 @@ class tapicero {
       group   => 'tapicero',
       require => User['tapicero'];
 
-    ##
-    ## TAPICERO CONFIG
-    ##
+    #
+    # TAPICERO CONFIG
+    #
 
     '/etc/leap/tapicero.yaml':
       content => template('tapicero/tapicero.yaml.erb'),
@@ -76,9 +78,9 @@ class tapicero {
       mode    => '0600',
       notify  => Service['tapicero'];
 
-    ##
-    ## TAPICERO INIT
-    ##
+    #
+    # TAPICERO INIT
+    #
 
     '/etc/init.d/tapicero':
       source  => 'puppet:///modules/tapicero/tapicero.init',
@@ -95,9 +97,9 @@ class tapicero {
   vcsrepo { '/srv/leap/tapicero':
     ensure   => present,
     force    => true,
-    revision => 'origin/version/0.6',
-    provider => git,
-    source   => 'https://leap.se/git/tapicero',
+    revision => $sources['tapicero']['revision'],
+    provider => $sources['tapicero']['type'],
+    source   => $sources['tapicero']['source'],
     owner    => 'tapicero',
     group    => 'tapicero',
     require  => [ User['tapicero'], Group['tapicero'] ],
@@ -131,4 +133,5 @@ class tapicero {
                     Couchdb::Add_user[$::site_couchdb::couchdb_tapicero_user] ];
   }
 
+  leap::logfile { 'tapicero': }
 }

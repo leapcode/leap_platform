@@ -1,3 +1,6 @@
+#
+# configure mx node
+#
 class site_postfix::mx {
 
   $domain_hash         = hiera('domain')
@@ -35,6 +38,12 @@ class site_postfix::mx {
     # because the satellites need to have a different value
     'smtp_tls_security_level':
       value => 'may';
+    # reject inbound mail to system users
+    # see https://leap.se/code/issues/6829
+    # this blocks *only* mails to system users, that don't appear in the
+    # alias map
+    'local_recipient_maps':
+      value => '$alias_maps';
   }
 
   include site_postfix::mx::smtpd_checks

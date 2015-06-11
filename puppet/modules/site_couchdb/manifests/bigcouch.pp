@@ -17,6 +17,7 @@ class site_couchdb::bigcouch {
   # stunnel must running correctly before bigcouch dbs can be set up.
   #
   Class['site_config::default']
+    -> Class['site_config::resolvconf']
     -> Class['couchdb::bigcouch::package::cloudant']
     -> Service['shorewall']
     -> Exec['refresh_stunnel']

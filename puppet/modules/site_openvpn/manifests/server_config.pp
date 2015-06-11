@@ -57,6 +57,8 @@ define site_openvpn::server_config(
   $management, $config, $tls_remote = undef) {
 
   $openvpn_configname = $name
+  $shortname = regsubst(regsubst($name, '_config', ''), '_', '-')
+  $openvpn_status_filename = "/var/run/openvpn-status-${shortname}"
 
   concat {
     "/etc/openvpn/${openvpn_configname}.conf":
@@ -187,7 +189,7 @@ define site_openvpn::server_config(
       server => $openvpn_configname;
     "status ${openvpn_configname}":
       key    => 'status',
-      value  => '/var/run/openvpn-status 10',
+      value  => "${openvpn_status_filename} 10",
       server => $openvpn_configname;
     "status-version ${openvpn_configname}":
       key    => 'status-version',

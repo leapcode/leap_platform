@@ -15,10 +15,10 @@ module LeapCli
     end
 
     #
-    # grab an environment appropriate provider
+    # simple alias for global.provider
     #
     def provider
-      global.env(@node.environment).provider
+      global.provider
     end
 
     #

@@ -11,13 +11,13 @@ class site_webapp {
   $api_version      = $webapp['api_version']
   $secret_token     = $webapp['secret_token']
   $tor              = hiera('tor', false)
+  $sources          = hiera('sources')
 
   Class['site_config::default'] -> Class['site_webapp']
 
   include site_config::ruby::dev
   include site_webapp::apache
   include site_webapp::couchdb
-  include site_webapp::logging
   include site_haproxy
   include site_webapp::cron
   include site_config::x509::cert
@@ -43,9 +43,9 @@ class site_webapp {
   vcsrepo { '/srv/leap/webapp':
     ensure   => present,
     force    => true,
-    revision => $webapp['git']['revision'],
-    provider => git,
-    source   => $webapp['git']['source'],
+    revision => $sources['webapp']['revision'],
+    provider => $sources['webapp']['type'],
+    source   => $sources['webapp']['source'],
     owner    => 'leap-webapp',
     group    => 'leap-webapp',
     require  => [ User['leap-webapp'], Group['leap-webapp'] ],
@@ -91,10 +91,6 @@ class site_webapp {
       content => $provider,
       require => Vcsrepo['/srv/leap/webapp'],
       owner   => leap-webapp, group => leap-webapp, mode => '0644';
-
-    # old provider.json location. this can be removed after everyone upgrades.
-    '/srv/leap/webapp/public/provider.json':
-      ensure => absent;
 
     '/srv/leap/webapp/public/ca.crt':
       ensure  => link,
@@ -171,6 +167,8 @@ class site_webapp {
   package { 'python-u1db':
     ensure => latest,
   }
+
+  leap::logfile { 'webapp': }
 
   include site_shorewall::webapp
   include site_check_mk::agent::webapp

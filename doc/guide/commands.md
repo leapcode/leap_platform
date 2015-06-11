@@ -78,7 +78,7 @@ Default Value: None
 
 ## leap cert dh
 
-Creates a Diffie-Hellman parameter file.
+Creates a Diffie-Hellman parameter file, needed for forward secret OpenVPN ciphers. You don't need this file if you don't provide the VPN service.
 
 
 

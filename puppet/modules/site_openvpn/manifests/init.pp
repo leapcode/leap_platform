@@ -228,6 +228,7 @@ class site_openvpn {
       order   => 10;
   }
 
+  leap::logfile { 'openvpn': }
   include site_check_mk::agent::openvpn
 
 }
