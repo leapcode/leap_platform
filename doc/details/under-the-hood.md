@@ -21,6 +21,20 @@ You can pass any combination of tags, i.e. use
 * "--tags leap_service": Only deploy service(s) (useful for debugging/development)
 * "--tags leap_base": Only deploy basic configuration (again, useful for debugging/development)
 
-See http://docs.puppetlabs.com/puppet/2.7/reference/lang_tags.html for puppet tag usage.
 
+### Doing faster partial deploys
+
+If you only change a tiny bit on the platform puppet recipes, you could achieve a
+*much* faster deploy specifying the resource tag you changed.
+i.e. you changed the way rsyslog config snippets for LEAP logfiles are created
+in `puppet/modules/leap/manifests/logfile.pp`. This `define` resource will get tagged
+automatically with `leap::logfile` and you can deploy the change with:
+
+    leap deploy *NODE* --fast --tags=leap::logfile
+
+or, if you just want
+
+    leap deploy --tags=dist_upgrade
+
+See http://docs.puppetlabs.com/puppet/2.7/reference/lang_tags.html for puppet tag usage.
 

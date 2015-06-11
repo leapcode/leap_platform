@@ -54,4 +54,21 @@ When a user account gets destroyed from the webapp, there's still a leftover doc
     curl -s --netrc-file /etc/couchdb/couchdb.netrc -X DELETE 'http://127.0.0.1:5984/identities/b25cf10f935b58088f0d547fca823265?rev=2-715a9beba597a2ab01851676f12c3e4a'
 
 
+How to find out which userstore belongs to which identity ?
+===========================================================
+
+    /usr/bin/curl -s --netrc-file /etc/couchdb/couchdb.netrc '127.0.0.1:5984/identities/_all_docs?include_docs=true' | grep testuser
+
+    {"id":"665e004870ee17aa4c94331ff3ecb173","key":"665e004870ee17aa4c94331ff3ecb173","value":{"rev":"2-2e335a75c4b79a5c2ef5c9950706fe1b"},"doc":{"_id":"665e004870ee17aa4c94331ff3ecb173","_rev":"2-2e335a75c4b79a5c2ef5c9950706fe1b","user_id":"665e004870ee17aa4c94331ff3cd59eb","address":"testuser@example.org","destination":"testuser@example.org","keys": ...
+
+* search for the "user_id" field
+* in this example testuser@example.org uses the database user-665e004870ee17aa4c94331ff3cd59eb
+
+
+How much disk space is used by a userstore
+==========================================
+
+Beware that this returns the uncompacted disk size (see http://wiki.apache.org/couchdb/Compaction)
+
+    echo "`curl --netrc -s -X GET 'http://127.0.0.1:5984/user-dcd6492d74b90967b6b874100b7dbfcf'|json_pp|grep disk_size|cut -d: -f 2`/1024"|bc
 

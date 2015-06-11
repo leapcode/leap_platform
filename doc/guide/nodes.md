@@ -20,7 +20,7 @@ Brief overview of the services:
 * **soledad**: Handles the data syncing with clients. Typically combined with `couchdb` service, since it communicates heavily with couchdb.
 * **mx**: Incoming and outgoing MX servers. Communicates with the public internet, clients, and `couchdb` nodes.
 * **openvpn**: OpenVPN gateway for clients. You need at least one, but want as many as needed to support the bandwidth your users are doing. The `openvpn` nodes are autonomous and don't need to communicate with any other nodes. Often combined with `tor` service.
-* **monitor**: Internal service to monitor all the other nodes. Currently, you can have zero or one `monitor` nodes.
+* **monitor**: Internal service to monitor all the other nodes. Currently, you can have zero or one `monitor` service defined. It is required that the monitor be on the webapp node. It was not designed to be run as a separate node service.
 * **tor**: Sets up a tor exit node, unconnected to any other service.
 * **dns**: Not yet implemented.
 
@@ -52,46 +52,54 @@ What nodes do you need for a provider that offers particular services?
 
 <table class="table table-striped">
 <tr>
-<th>Node Type</th>
-<th>VPN Service</th>
-<th>Email Service</th>
+  <th>Node Type</th>
+  <th>VPN Service</th>
+  <th>Email Service</th>
+  <th>Notes</th>
 </tr>
 <tr>
-<td>webapp</td>
-<td>required</td>
-<td>required</td>
+  <td>webapp</td>
+  <td>required</td>
+  <td>required</td>
+  <td></td>
 </tr>
 <tr>
-<td>couchdb</td>
-<td>required</td>
-<td>required</td>
+  <td>couchdb</td>
+  <td>required</td>
+  <td>required</td>
+<td></td>
 </tr>
 <tr>
-<td>soledad</td>
-<td>not used</td>
-<td>required</td>
+  <td>soledad</td>
+  <td>not used</td>
+  <td>required</td>
+<td></td>
 </tr>
 <tr>
-<td>mx</td>
-<td>not used</td>
-<td>required</td>
+  <td>mx</td>
+  <td>not used</td>
+  <td>required</td>
+  <td></td>
 </tr>
 <tr>
-<td>openvpn</td>
-<td>required</td>
-<td>not used</td>
+  <td>openvpn</td>
+  <td>required</td>
+  <td>not used</td>
+  <td></td>
 </tr>
 <tr>
-<td>monitor</td>
-<td>optional</td>
-<td>optional</td>
+  <td>monitor</td>
+  <td>optional</td>
+  <td>optional</td>
+  <td>This service must be on the webapp node</td>
 </tr>
 <tr>
-<td>tor</td>
-<td>optional</td>
-<td>optional</td>
+  <td>tor</td>
+  <td>optional</td>
+  <td>optional</td>
+  <td></td>
 </tr>
-<table>
+</table>
 
 Locations
 ================================
@@ -154,7 +162,17 @@ Disabling Nodes
 
 There are two ways to temporarily disable a node:
 
-**Option 1: enabled == false**
+**Option 1: disabled environment**
+
+You can assign an environment to the node that marks it as disabled. Then, if you use environment pinning, the node will be ignored when you deploy. For example:
+
+    {
+      "environment": "disabled"
+    }
+
+Then use `leap env pin ENV` to pin the environment to something other than 'disabled'. This only works if all the other nodes are also assigned to some environment.
+
+**Option 2: enabled == false**
 
 If a node has a property `enabled` set to false, then the `leap` command will skip over the node and pretend that it does not exist. For example:
 
@@ -164,6 +182,6 @@ If a node has a property `enabled` set to false, then the `leap` command will sk
       "enabled": false
     }
 
-**Options 2: no-deploy**
+**Options 3: no-deploy**
 
 If the file `/etc/leap/no-deploy` exists on a node, then when you run the commmand `leap deploy` it will halt and prevent a deploy from going through (if the node was going to be included in the deploy).
