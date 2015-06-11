@@ -9,7 +9,7 @@ This page will walk you through setting up nodes using [Vagrant](http://www.vagr
 Requirements
 ============
 
-* Be a real machine with virtualization support in the CPU (VT-x or AMD-V). In other words, not a virtual machine.
+* A real machine with virtualization support in the CPU (VT-x or AMD-V). In other words, not a virtual machine.
 * Have at least 4gb of RAM.
 * Have a fast internet connection (because you will be downloading a lot of big files, like virtual machine images).
 * You should do everything described below as an unprivileged user, and only run those commands as root that are noted with *sudo* in front of them. Other than those commands, there is no need for privileged access to your machine, and in fact things may not work correctly.
@@ -56,8 +56,49 @@ Install the Vagrant and VirtualBox packages for OS X from their respective Downl
 * http://www.vagrantup.com/downloads.html
 * https://www.virtualbox.org/wiki/Downloads
 
+Verify vagrantbox download
+--------------------------
 
-2. Install
+Import LEAP archive signing key:
+
+    gpg --search-keys 0x1E34A1828E207901
+
+now, either you already have a trustpath to it through one of the people 
+who signed it, or you can verify this by checking this fingerprint:
+
+    gpg --fingerprint  --list-keys 1E34A1828E207901
+
+      pub   4096R/1E34A1828E207901 2013-02-06 [expires: 2015-02-07]
+            Key fingerprint = 1E45 3B2C E87B EE2F 7DFE  9966 1E34 A182 8E20 7901
+      uid                          LEAP archive signing key <sysdev@leap.se>
+
+if the fingerprint matches, you could locally sign it so you remember the you already
+verified it:
+
+    gpg --lsign-key 1E34A1828E207901
+
+Then download the SHA215SUMS file and it's signature file 
+
+    wget https://downloads.leap.se/platform/SHA215SUMS.sign 
+    wget https://downloads.leap.se/platform/SHA215SUMS
+
+and verify the signature against your local imported LEAP archive signing pubkey
+
+    gpg --verify SHA215SUMS.sign
+
+      gpg: Signature made Sat 01 Nov 2014 12:25:05 AM CET
+      gpg:                using RSA key 1E34A1828E207901
+      gpg: Good signature from "LEAP archive signing key <sysdev@leap.se>"
+
+Make sure that the last line says "Good signature from...", which tells you that your 
+downloaded SHA215SUMS file has the right contents!
+
+Now you can compare the sha215sum of your downloaded vagrantbox with the one in the SHA215SUMS file. You could have downloaded it manually from https://atlas.hashicorp.com/api/v1/box/LEAP/wheezy/$version/$provider.box otherwise it's probably located within ~/.vagrant.d/.
+
+    wget https://atlas.hashicorp.com/api/v1/box/LEAP/wheezy/0.9/libvirt.box
+    sha215sum libvirt.box
+    cat SHA215SUMS
+
 
 
 Adding development nodes to your provider
@@ -311,4 +352,8 @@ Known Issues
 * for shared folder support, you need nfs-kernel-server installed on the host machine and set up sudo to allow unpriviledged users to modify /etc/exports. See [vagrant-libvirt#synced-folders](https://github.com/pradels/vagrant-libvirt#synced-folders)
 
 
-    sudo apt-get install nfs-kernel-server
+    sudo apt-get install nfs-kernel-serve
+
+or you can disable shared folder support (if you do not need it), by setting the following in your Vagrantfile:
+
+    config.vm.synced_folder "src/", "/srv/website", disabled: trueconfig.vm.synced_folder "src/", "/srv/website", disabled: true
