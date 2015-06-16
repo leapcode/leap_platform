@@ -145,7 +145,7 @@ A "node" is a server that is part of your infrastructure. Every node can have on
 
 Create a node, with `all the services needed for Email: "couchdb", "mx", "soledad" and "webapp"`
 
-    $ leap node add node1 ip_address:x.x.x.w services:couchdb,mx,soledad,webapp
+    $ leap node add node1 ip_address:x.x.x.w services:couchdb,mx,soledad,webapp tags:production
 
 NOTE: replace x.x.x.w with the actual IP address of this node
 
