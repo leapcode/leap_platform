@@ -33,6 +33,7 @@ class site_static {
   include site_apache::module::expires
   include site_apache::module::removeip
   include site_apache::module::rewrite
+  apache::config::include{ 'ssl_common.inc': }
 
   if (member($formats, 'rack')) {
     include site_apt::preferences::passenger
