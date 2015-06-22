@@ -1,3 +1,5 @@
+# entry class for configuring couchdb/bigcouch node
+# couchdb node
 class site_couchdb {
   tag 'leap_service'
 
@@ -41,6 +43,7 @@ class site_couchdb {
 
   $couchdb_backup           = $couchdb_config['backup']
   $couchdb_mode             = $couchdb_config['mode']
+  $couchdb_pwhash_alg       = $couchdb_config['pwhash_alg']
 
   if $couchdb_mode == 'multimaster' { include site_couchdb::bigcouch }
   if $couchdb_mode == 'master'      { include site_couchdb::master }
