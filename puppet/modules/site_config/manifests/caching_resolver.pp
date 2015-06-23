@@ -12,16 +12,6 @@ class site_config::caching_resolver {
 
   include site_apt::preferences::unbound
 
-  file {
-    # cleanup from how we used to do it
-    '/etc/unbound/conf.d':
-      force   => true,
-      ensure  => absent;
-
-    '/etc/unbound/conf.d/placeholder':
-      ensure  => absent;
-  }
-
   class { 'unbound':
     root_hints => false,
     anchor     => false,
