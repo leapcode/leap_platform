@@ -46,7 +46,10 @@ class Network < LeapTest
       assert accept_port = stunnel_conf['accept_port'], "Field `accept` must be present in property `stunnel.servers.#{stunnel_name}`"
       assert_tcp_socket('localhost', accept_port)
       assert connect_port = stunnel_conf['connect_port'], "Field `connect` must be present in property `stunnel.servers.#{stunnel_name}`"
-      assert_tcp_socket('localhost', connect_port)
+      assert_tcp_socket('localhost', connect_port,
+        "The local connect endpoint for stunnel `#{stunnel_name}` is unavailable.\n"+
+        "This is probably caused by a daemon that died or failed to start on\n"+
+        "port `#{connect_port}`, not stunnel itself.")
     end
     all_stunnel_pids = pgrep('/usr/bin/stunnel').collect{|process| process[:pid]}.uniq
     assert_equal good_stunnel_pids.sort, all_stunnel_pids.sort, "There should not be any extra stunnel processes that are not configured in /etc/stunnel"
