@@ -105,7 +105,7 @@ Leap::Platform.define do
 
   self.monitor_username = 'monitor'
 
-  self.reserved_usernames = ['monitor']
+  self.reserved_usernames = ['monitor', 'root']
 
   self.default_puppet_tags = ['leap_base','leap_service']
 end
