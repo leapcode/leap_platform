@@ -46,6 +46,9 @@ class site_static {
   }
 
   if (member($formats, 'amber')) {
+    package { 'zlib1g-dev':
+      ensure => installed
+    }
     rubygems::gem{'amber-0.3.4': }
   }
 
