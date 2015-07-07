@@ -97,6 +97,7 @@ $CURL -X GET $URL/_all_dbs | json_pp | egrep -v '(\[|\])' > $TMPFILE
 
 # get list of dbs to check
 dbs=$( egrep -v "${DBLIST_EXCLUDE}" $TMPFILE | tr -d '\n"' | sed 's/,/ /g' )
+rm "$TMPFILE"
 
 for db in $dbs
 do
