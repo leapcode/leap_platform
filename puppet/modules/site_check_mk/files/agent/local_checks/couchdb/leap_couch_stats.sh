@@ -97,7 +97,6 @@ $CURL -X GET $URL/_all_dbs | json_pp | egrep -v '(\[|\])' > $TMPFILE
 
 # get list of dbs to check
 dbs=$( egrep -v "${DBLIST_EXCLUDE}" $TMPFILE | tr -d '\n"' | sed 's/,/ /g' )
-rm "$TMPFILE"
 
 for db in $dbs
 do
@@ -118,3 +117,6 @@ end_time=$(date +%s.%N)
 duration=$( echo "scale = 2; $end_time - $start_time" | bc -l )
 
 printf "${exitcode} ${PREFIX}global_stats ${global_stats_perf}|script_duration=%02.2fs ${STATE[exitcode]}: global couchdb status\n" "$duration"
+
+rm "$TMPFILE"
+
