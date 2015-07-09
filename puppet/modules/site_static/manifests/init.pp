@@ -46,7 +46,7 @@ class site_static {
   }
 
   if (member($formats, 'amber')) {
-    rubygems::gem{'amber-0.3.4': }
+    rubygems::gem{'amber-0.3.7': }
   }
 
   create_resources(site_static::domain, $domains)
