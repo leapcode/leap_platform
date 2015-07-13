@@ -1,5 +1,7 @@
-Vagrant.configure("2") do |config|
-  config.vm.define :node1 do |config|
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |vagrant_config|
+  vagrant_config.vm.define :node1 do |config|
 
     # Please verify the sha512 sum of the downloaded box before importing it into vagrant !
     # see https://leap.se/en/docs/platform/details/development#Verify.vagrantbox.download
