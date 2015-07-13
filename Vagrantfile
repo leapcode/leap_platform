@@ -8,6 +8,7 @@ Vagrant.configure("2") do |config|
     config.vm.box = "LEAP/wheezy"
     #config.vm.network :private_network, ip: "10.5.5.102"
     config.vm.provider "virtualbox" do |v|
+      v.memory = 1024
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.name = "node1"
     end
