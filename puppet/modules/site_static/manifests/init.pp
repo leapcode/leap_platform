@@ -46,10 +46,13 @@ class site_static {
   }
 
   if (member($formats, 'amber')) {
+    rubygems::gem{'amber-0.3.7':  
+       require =>  Package['zlib1g-dev']
+     }
+
     package { 'zlib1g-dev':
-      ensure => installed
+        ensure => installed
     }
-    rubygems::gem{'amber-0.3.4': }
   }
 
   create_resources(site_static::domain, $domains)
