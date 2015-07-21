@@ -77,16 +77,16 @@ class leap_mx {
   }
 
   augeas {
-    "logrotate_mx":
-      context => "/files/etc/logrotate.d/leap-mx/rule",
+    'logrotate_mx':
+      context => '/files/etc/logrotate.d/leap-mx/rule',
       changes => [
-        "set file /var/log/leap/mx.log",
-        'set rotate 5',
-        'set schedule daily',
-        'set compress compress',
-        'set missingok missingok',
-        'set ifempty notifempty',
-        'set copytruncate copytruncate'
-      ]
+                  'set file /var/log/leap/mx.log',
+                  'set rotate 5',
+                  'set schedule daily',
+                  'set compress compress',
+                  'set missingok missingok',
+                  'set ifempty notifempty',
+                  'set copytruncate copytruncate'
+                  ]
   }
 }
