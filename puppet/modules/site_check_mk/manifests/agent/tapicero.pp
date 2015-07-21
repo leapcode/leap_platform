@@ -20,7 +20,7 @@ class site_check_mk::agent::tapicero {
     'Tapicero_Heartbeat':
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
-      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/leap/tapicero.log -r "tapicero" -w 300 -c 600\'',
+      changes => 'set Tapicero_Heartbeat \'/usr/local/lib/nagios/plugins/check_last_regex_in_log -f /var/log/leap/tapicero.log -r "tapicero" -w 1200 -c 2400\'',
       require => File['/etc/check_mk/mrpe.cfg'];
   }
 }
