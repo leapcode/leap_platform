@@ -83,9 +83,11 @@ class leap_mx {
                   'set file /var/log/leap/mx.log',
                   'set rotate 5',
                   'set schedule daily',
+                  'clear nocreate',
+                  'rm create',
+                  'rm ifempty',
                   'set compress compress',
                   'set missingok missingok',
-                  'set ifempty notifempty',
                   'set copytruncate copytruncate'
                   ]
   }
