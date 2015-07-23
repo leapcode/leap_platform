@@ -1,13 +1,13 @@
+# creates neccesary databases
 class site_couchdb::create_dbs {
 
   Class['site_couchdb::setup']
-    -> Class['site_couchdb::bigcouch::settle_cluster']
     -> Class['site_couchdb::create_dbs']
 
   ### customer database
   ### r/w: webapp,
   couchdb::create_db { 'customers':
-    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
+    members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
@@ -30,27 +30,27 @@ class site_couchdb::create_dbs {
   ## r/w: webapp
   $sessions_db = rotated_db_name('sessions', 'monthly')
   couchdb::create_db { $sessions_db:
-    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
+    members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
   $sessions_next_db = rotated_db_name('sessions', 'monthly', 'next')
   couchdb::create_db { $sessions_next_db:
-    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
+    members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## shared database
   ## r/w: soledad
   couchdb::create_db { 'shared':
-    members => "{ \"names\": [\"$site_couchdb::couchdb_soledad_user\"], \"roles\": [\"replication\"] }",
+    members => "{ \"names\": [\"${site_couchdb::couchdb_soledad_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## tickets database
   ## r/w: webapp
   couchdb::create_db { 'tickets':
-    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
+    members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 
@@ -87,7 +87,7 @@ class site_couchdb::create_dbs {
   ## store messages to the clients such as payment reminders
   ## r/w: webapp
   couchdb::create_db { 'messages':
-    members => "{ \"names\": [\"$site_couchdb::couchdb_webapp_user\"], \"roles\": [\"replication\"] }",
+    members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
 }

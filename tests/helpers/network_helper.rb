@@ -70,7 +70,7 @@ class LeapTest
       #try_tcp_write(socket,1)
       #try_tcp_read(socket,1)
     rescue StandardError => exc
-      fail ["Failed to open socket #{host}:#{port}", exc].join("\n")
+      fail ["Failed to open socket #{host}:#{port}", exc, msg].compact.join("\n")
     ensure
       socket.close if socket
     end

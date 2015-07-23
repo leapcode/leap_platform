@@ -1,3 +1,4 @@
+# setup check_mk on the monitoring server
 class site_check_mk::server {
 
   $ssh_hash = hiera('ssh')
@@ -6,10 +7,9 @@ class site_check_mk::server {
   $seckey   = $ssh_hash['monitor']['private_key']
 
   $nagios_hiera     = hiera_hash('nagios')
-  $nagios_hosts     = $nagios_hiera['hosts']
+  $hosts            = $nagios_hiera['hosts']
 
-  $hosts            = hiera_hash('hosts')
-  $all_hosts        = inline_template ('<% @hosts.keys.sort.each do |key| -%>"<%= @hosts[key]["domain_internal"] %>", <% end -%>')
+  $all_hosts        = inline_template ('<% @hosts.keys.sort.each do |key| -%><% if @hosts[key]["environment"] != "disabled" %>"<%= @hosts[key]["domain_internal"] %>", <% end -%><% end -%>')
   $domains_internal = $nagios_hiera['domains_internal']
   $environments     = $nagios_hiera['environments']
 

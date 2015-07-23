@@ -33,6 +33,9 @@ class site_static {
   include site_apache::module::expires
   include site_apache::module::removeip
   include site_apache::module::rewrite
+  apache::config::include{ 'ssl_common.inc': }
+
+  include site_config::ruby::dev
 
   if (member($formats, 'rack')) {
     include site_apt::preferences::passenger
@@ -43,8 +46,13 @@ class site_static {
   }
 
   if (member($formats, 'amber')) {
-    include site_config::ruby::dev
-    rubygems::gem{'amber-0.3.4': }
+    rubygems::gem{'amber-0.3.7':  
+       require =>  Package['zlib1g-dev']
+     }
+
+    package { 'zlib1g-dev':
+        ensure => installed
+    }
   }
 
   create_resources(site_static::domain, $domains)

@@ -4,7 +4,7 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.7"
+  self.version = "0.7.1"
   self.compatible_cli = "1.7.0".."1.7.99"
 
   #
@@ -75,8 +75,11 @@ Leap::Platform.define do
     :commercial_key   => 'files/cert/#{arg}.key',
     :commercial_csr   => 'files/cert/#{arg}.csr',
     :commercial_cert  => 'files/cert/#{arg}.crt',
-    :commercial_ca_cert  => 'files/cert/commercial_ca.crt',
-    :vagrantfile      => 'test/Vagrantfile',
+    :commercial_ca_cert       => 'files/cert/commercial_ca.crt',
+    :vagrantfile              => 'test/Vagrantfile',
+    :static_web_provider_json => 'files/web/bootstrap/#{arg}/provider.json',
+    :static_web_htaccess      => 'files/web/bootstrap/#{arg}/htaccess',
+    :static_web_readme        => 'files/web/bootstrap/README',
 
     # node output files
     :hiera             => 'hiera/#{arg}.yaml',
@@ -102,7 +105,7 @@ Leap::Platform.define do
 
   self.monitor_username = 'monitor'
 
-  self.reserved_usernames = ['monitor']
+  self.reserved_usernames = ['monitor', 'root']
 
   self.default_puppet_tags = ['leap_base','leap_service']
 end
