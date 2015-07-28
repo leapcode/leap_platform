@@ -16,6 +16,7 @@
     "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
   },
   "mynetworks": "= nodes['environment' => '!local'].map{|name, n| [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]}.flatten.compact.uniq",
+  "rbls": ["zen.spamhaus.org"],
   "x509": {
     "use": true,
     "use_commercial": true,
