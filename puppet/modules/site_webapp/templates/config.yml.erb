@@ -2,6 +2,11 @@
 <%- cert_options = @webapp['client_certificates'] -%>
 production:
   admins: <%= @webapp['admins'].inspect %>
+  default_locale: :<%= @webapp['default_locale'] %>
+  available_locales:
+<%- @webapp['locales'].each do |locale| -%>
+    - :<%= locale %>
+<%- end -%>
   domain: <%= @provider_domain %>
   force_ssl: <%= @webapp['secure'] %>
   client_ca_key: <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::client_ca_name') %>.key

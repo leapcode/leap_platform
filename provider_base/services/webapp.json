@@ -31,7 +31,9 @@
     },
     "engines": [
       "support"
-    ]
+    ],
+    "locales": "= provider.languages",
+    "default_locale": "= provider.default_language"
   },
   "stunnel": {
     "clients": {
