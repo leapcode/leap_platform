@@ -32,7 +32,7 @@
     "allow_free": "= provider.service.levels.select {|l| l['rate'].nil?}.any?",
     "allow_paid": "= provider.service.levels.select {|l| !l['rate'].nil?}.any?",
     "allow_anonymous": "= provider.service.levels.select {|l| l['name'] == 'anonymous'}.any?",
-    "allow_registration": "= provider.service.levels.select {|l| l['name'] != 'anonymous'}.any?",
+    "allow_registration": "= provider.enrollment_policy != 'closed' && provider.service.levels.select {|l| l['name'] != 'anonymous'}.any?",
     "allow_limited_bandwidth": "= provider.service.levels.select {|l| l['bandwidth'] == 'limited'}.any?",
     "allow_unlimited_bandwidth": "= provider.service.levels.select {|l| l['bandwidth'].nil?}.any?"
   },
