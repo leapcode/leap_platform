@@ -82,12 +82,14 @@ module LeapCli
     # maps a real port to a stunnel port (used as the connect_port in the client config
     # and the accept_port in the server config)
     #
-    def stunnel_port(port)
-      port = port.to_i
-      if port < 50000
-        return port + 10000
+    # generates a port in the range 10000 -> 20000.
+    #
+    def stunnel_port(real_port)
+      if manager.secrets.respond_to?(:taken?)
+        # if secrets library supports it, use a truly random, non-colliding port
+        rand_range("stunnel_map_port_#{real_port}_to", 10000..20000, /^stunnel_map_port_/)
       else
-        return port - 10000
+        (real_port.to_i % 20000) + 10000
       end
     end
 

@@ -21,9 +21,15 @@ module LeapCli
       manager.secrets.set(name, @node.environment) { Base32.encode(Util::Secret.generate(length)) }
     end
 
-    # Picks a random obfsproxy port from given range
-    def rand_range(name, range)
-      manager.secrets.set(name, @node.environment) { rand(range) }
+    # Picks a random number in the given range, ensuring it is unique over keys that
+    # match the specified regexp.
+    def rand_range(name, range, unique_regexp=nil)
+      manager.secrets.set(name, @node.environment) do
+        begin
+          value = rand(range)
+        end until (unique_regexp.nil? || !manager.secrets.taken?(unique_regexp, value, @node.environment))
+        value
+      end
     end
 
     #
