@@ -31,5 +31,12 @@
     "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
     "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`'"
   },
-  "service_type": "user_service"
+  "service_type": "user_service",
+  "firewall": {
+    "mx": {
+      "from": "*",
+      "to": "= ip_address",
+      "port": [25, 465]
+    }
+  }
 }
