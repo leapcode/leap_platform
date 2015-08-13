@@ -54,7 +54,7 @@ class site_check_mk::server {
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
     '/etc/check_mk/conf.d/extra_host_conf.mk':
-      source  => 'puppet:///modules/site_check_mk/extra_host_conf.mk',
+      content => template('site_check_mk/extra_host_conf.mk'),
       notify  => Exec['check_mk-refresh'],
       require => Package['check-mk-server'];
 
