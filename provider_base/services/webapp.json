@@ -55,7 +55,8 @@
   "service_type": "public_service",
   "api": {
     "domain": "= 'api.' + webapp.domain",
-    "port": 4430
+    "port": 4430,
+    "ca_cert_uri": "= 'https://' + webapp.domain + '/ca.crt'"
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",

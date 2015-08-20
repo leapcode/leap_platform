@@ -9,7 +9,7 @@
   hsh['api_version'] = "1"
   hsh['api_uri'] = ["https://", api.domain, ':', api.port].join
 
-  hsh['ca_cert_uri'] = 'https://' + webapp.domain + '/ca.crt'
+  hsh['ca_cert_uri'] = api.ca_cert_uri
   hsh['ca_cert_fingerprint'] = fingerprint(:ca_cert)
 
   hsh.dump_json
