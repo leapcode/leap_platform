@@ -215,6 +215,10 @@ module LeapCli; module Commands
       return true
     else
       cert = load_certificate_file([:node_x509_cert, node.name])
+      if !created_by_authority?(cert, ca_root)
+        log :updating, "cert for node '#{node.name}' because it was signed by an old CA root cert."
+        return true
+      end
       if cert.not_after < Time.now.advance(:months => 2)
         log :updating, "cert for node '#{node.name}' because it will expire soon"
         return true
@@ -244,6 +248,25 @@ module LeapCli; module Commands
       end
     end
     return false
+  end
+
+  def created_by_authority?(cert, ca)
+    authority_key_id = cert.extensions["authorityKeyIdentifier"].identifier.sub(/^keyid:/, '')
+    authority_key_id == public_key_id_for_ca(ca)
+  end
+
+  # calculate the "key id" for a root CA, that matches the value
+  # Authority Key Identifier in the x509 extensions of a cert.
+  def public_key_id_for_ca(ca_cert)
+    @ca_key_ids ||= {}
+    @ca_key_ids[ca_cert.object_id] ||= begin
+      pubkey = ca_cert.key_material.public_key
+      seq = OpenSSL::ASN1::Sequence([
+        OpenSSL::ASN1::Integer.new(pubkey.n),
+        OpenSSL::ASN1::Integer.new(pubkey.e)
+      ])
+      Digest::SHA1.hexdigest(seq.to_der).upcase.scan(/../).join(':')
+    end
   end
 
   def warn_if_commercial_cert_will_soon_expire(node)
