@@ -51,7 +51,7 @@ class site_postfix::mx {
   include site_postfix::mx::checks
   include site_postfix::mx::smtp_tls
   include site_postfix::mx::smtpd_tls
-  include site_postfix::mx::reserved_aliases
+  include site_postfix::mx::static_aliases
 
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug
@@ -68,6 +68,7 @@ class site_postfix::mx {
     preseed             => true,
     root_mail_recipient => $root_mail_recipient,
     smtp_listen         => 'all',
+    default_alias_maps  => false,
     mastercf_tail       =>
     "smtps     inet  n       -       -       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
