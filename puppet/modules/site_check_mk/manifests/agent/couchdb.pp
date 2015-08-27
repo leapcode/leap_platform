@@ -1,9 +1,17 @@
+# configure logwatch and nagios checks for couchdb
 class site_check_mk::agent::couchdb {
 
-  # watch logs
-  file { '/etc/check_mk/logwatch.d/bigcouch.cfg':
-    source => 'puppet:///modules/site_check_mk/agent/logwatch/bigcouch.cfg',
-  }
+  # watch bigcouch logs
+  # currently disabled because bigcouch is too noisy
+  # see https://leap.se/code/issues/7375 for more details
+  # and site_config::remove_files for removing leftovers
+  #file { '/etc/check_mk/logwatch.d/bigcouch.cfg':
+  #  source => 'puppet:///modules/site_check_mk/agent/logwatch/bigcouch.cfg',
+  #}
+
+  # check syslog msg from:
+  # - empd
+  # - /usr/local/bin/couch-doc-update
   concat::fragment { 'syslog_couchdb':
     source  => 'puppet:///modules/site_check_mk/agent/logwatch/syslog/couchdb.cfg',
     target  => '/etc/check_mk/logwatch.d/syslog.cfg',
