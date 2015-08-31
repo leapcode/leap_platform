@@ -1,4 +1,11 @@
 {
+  "mx": {
+    // provider should define their own custom aliases.
+    // these are in *addition* to the standard reserved aliases for root and postmaster, etc.
+    "aliases": {},
+    // this is the domain that is used for the OpenPGP header
+    "key_lookup_domain": "= global.services[:webapp].webapp.domain"
+  },
   "stunnel": {
     "clients": {
       "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
