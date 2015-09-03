@@ -52,6 +52,7 @@ class site_postfix::mx {
   include site_postfix::mx::smtp_tls
   include site_postfix::mx::smtpd_tls
   include site_postfix::mx::static_aliases
+  include site_postfix::mx::rewrite_openpgp_header
 
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug
@@ -74,7 +75,10 @@ class site_postfix::mx {
   -o smtpd_tls_wrappermode=yes
   -o smtpd_tls_security_level=encrypt
   -o smtpd_recipient_restrictions=\$smtps_recipient_restrictions
-  -o smtpd_helo_restrictions=\$smtps_helo_restrictions",
+  -o smtpd_helo_restrictions=\$smtps_helo_restrictions
+  -o cleanup_service_name=clean_smtps
+clean_smtps	  unix	n	-	n	-	0	cleanup
+  -o header_checks=pcre:/etc/postfix/checks/rewrite_openpgp_headers",
     require             => [
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
