@@ -5,12 +5,14 @@ class site_webapp::cron {
     'rotate_databases':
       command     => 'cd /srv/leap/webapp && bundle exec rake db:rotate',
       environment => 'RAILS_ENV=production',
+      user        => 'root',
       hour        => [0,6,12,18],
       minute      => 0;
 
     'delete_tmp_databases':
       command     => 'cd /srv/leap/webapp && bundle exec rake db:deletetmp',
       environment => 'RAILS_ENV=production',
+      user        => 'root',
       hour        => 1,
       minute      => 1;
 
@@ -19,6 +21,7 @@ class site_webapp::cron {
     'remove_expired_sessions':
       command     => 'cd /srv/leap/webapp && bundle exec rake cleanup:sessions',
       environment => 'RAILS_ENV=production',
+      user        => 'leap-webapp',
       hour        => 2,
       minute      => 30,
       ensure      => absent;
@@ -26,6 +29,7 @@ class site_webapp::cron {
     'remove_expired_tokens':
       command     => 'cd /srv/leap/webapp && bundle exec rake cleanup:tokens',
       environment => 'RAILS_ENV=production',
+      user        => 'leap-webapp',
       hour        => 3,
       minute      => 0;
   }
