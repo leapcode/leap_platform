@@ -9,7 +9,7 @@
       "owner", "owners", "postmaster", "reply", "robot", "ssladmin", "staff",
       "support", "tech-support", "tech_support", "techsupport", "ticket",
       "tickets", "vmail", "www-data"],
-    "domain": "= domain.full_suffix",
+    "domain": "= provider.domain",
     "modules": ["user", "billing", "help"],
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
