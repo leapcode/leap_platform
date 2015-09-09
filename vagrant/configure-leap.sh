@@ -53,10 +53,6 @@ if [ $? -eq 1 ]; then
 fi
 
 $LEAP $OPTS -v 2 deploy
-if [ $? -eq 1 ]; then
-  echo 'deploy failed'
-  exit 1
-fi
 
 set +e
 git add .
@@ -82,4 +78,3 @@ echo -e '\n\n\n'
 echo 'You are now ready to use your provider. Please update your /etc/hosts with following dns overrides:'
 
 $LEAP list --print ip_address,domain.full,dns.aliases | sed 's/,//g' | cut -d' ' -f 2-
-
