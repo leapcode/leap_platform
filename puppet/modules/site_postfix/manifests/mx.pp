@@ -74,7 +74,8 @@ class site_postfix::mx {
   -o smtpd_tls_wrappermode=yes
   -o smtpd_tls_security_level=encrypt
   -o smtpd_recipient_restrictions=\$smtps_recipient_restrictions
-  -o smtpd_helo_restrictions=\$smtps_helo_restrictions",
+  -o smtpd_helo_restrictions=\$smtps_helo_restrictions
+  -o smtpd_client_restrictions=",
     require             => [
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
