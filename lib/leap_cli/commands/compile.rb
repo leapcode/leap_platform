@@ -256,7 +256,7 @@ remove this directory if you don't use it.
     ## ZONE FILE
     ##
 
-    def relative_hostname(fqdn)
+    def relative_hostname(fqdn, provider)
       @domain_regexp ||= /\.?#{Regexp.escape(provider.domain)}$/
       fqdn.sub(@domain_regexp, '')
     end
@@ -265,10 +265,11 @@ remove this directory if you don't use it.
     # serial is any number less than 2^32 (4294967296)
     #
     def compile_zone_file
+      provider = manager.env('default').provider
       hosts_seen = {}
       f = $stdout
       f.puts ZONE_HEADER % {:domain => provider.domain, :ns => provider.domain, :contact => provider.contacts.default.first.sub('@','.')}
-      max_width = manager.nodes.values.inject(0) {|max, node| [max, relative_hostname(node.domain.full).length].max }
+      max_width = manager.nodes.values.inject(0) {|max, node| [max, relative_hostname(node.domain.full, provider).length].max }
       put_line = lambda do |host, line|
         host = '@' if host == ''
         f.puts("%-#{max_width}s %s" % [host, line])
@@ -297,18 +298,18 @@ remove this directory if you don't use it.
         f.puts ENV_HEADER % (env.nil? ? 'default' : env)
         nodes.each_node do |node|
           if node.dns.public
-            hostname = relative_hostname(node.domain.full)
-            put_line.call relative_hostname(node.domain.full), "IN A      #{node.ip_address}"
+            hostname = relative_hostname(node.domain.full, provider)
+            put_line.call relative_hostname(node.domain.full, provider), "IN A      #{node.ip_address}"
           end
           if node.dns['aliases']
             node.dns.aliases.each do |host_alias|
               if host_alias != node.domain.full && host_alias != provider.domain
-                put_line.call relative_hostname(host_alias), "IN A      #{node.ip_address}"
+                put_line.call relative_hostname(host_alias, provider), "IN A      #{node.ip_address}"
               end
             end
           end
           if node.services.include? 'mx'
-            put_line.call relative_hostname(node.domain.full_suffix), "IN MX 10  #{relative_hostname(node.domain.full)}"
+            put_line.call relative_hostname(node.domain.full_suffix, provider), "IN MX 10  #{relative_hostname(node.domain.full, provider)}"
           end
         end
       end
