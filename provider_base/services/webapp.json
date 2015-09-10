@@ -20,7 +20,7 @@
     "allow_anonymous_certs": "= provider.service.allow_anonymous",
     "allow_registration": "= provider.service.allow_registration",
     "default_service_level": "= provider.service.default_service_level",
-    "service_levels": "= provider.service.levels",
+    "service_levels": "= service_levels()",
     "secret_token": "= secret :webapp_secret_token",
     "api_version": 1,
     "secure": false,
