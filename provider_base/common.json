@@ -16,6 +16,9 @@
   },
   "ssh": {
     "authorized_keys": "= authorized_keys",
+    "config": {
+      "AllowTcpForwarding": "no"
+    },
     "port": 22,
     "mosh": {
       "ports": "60000:61000",
