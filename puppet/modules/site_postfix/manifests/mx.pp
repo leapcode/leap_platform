@@ -21,16 +21,20 @@ class site_postfix::mx {
   postfix::config {
     'mynetworks':
       value => "127.0.0.0/8 [::1]/128 [fe80::]/64 ${mynetworks}";
+    # Note: mydestination should not include @domain, because this is
+    # used in virtual alias maps.
     'mydestination':
-      value => "\$myorigin, localhost, localhost.\$mydomain, ${domain}";
+      value => "\$myorigin, localhost, localhost.\$mydomain";
     'myhostname':
       value => $host_domain;
     'mailbox_size_limit':
       value => '0';
     'home_mailbox':
       value => 'Maildir/';
+    # Note: virtual-aliases map will take precedence over leap_mx
+    # lookup (tcp:localhost)
     'virtual_alias_maps':
-      value => 'tcp:localhost:4242';
+      value => 'hash:/etc/postfix/virtual-aliases tcp:localhost:4242';
     'luser_relay':
       value => 'vmail';
     'smtpd_tls_received_header':
@@ -68,7 +72,6 @@ class site_postfix::mx {
     preseed             => true,
     root_mail_recipient => $root_mail_recipient,
     smtp_listen         => 'all',
-    default_alias_maps  => false,
     mastercf_tail       =>
     "smtps     inet  n       -       -       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
