@@ -1,6 +1,7 @@
 class site_sshd {
-  $ssh   = hiera_hash('ssh')
-  $hosts = hiera('hosts', '')
+  $ssh        = hiera_hash('ssh')
+  $ssh_config = $ssh['config']
+  $hosts      = hiera('hosts', '')
 
   ##
   ## SETUP AUTHORIZED KEYS
@@ -52,11 +53,12 @@ class site_sshd {
   ## SSHD SERVER CONFIGURATION
   ##
   class { '::sshd':
-    manage_nagios => false,
-    ports         => [ $ssh['port'] ],
-    use_pam       => 'yes',
-    hardened_ssl  => 'yes',
-    print_motd    => 'no',
-    manage_client => false
+    manage_nagios  => false,
+    ports          => [ $ssh['port'] ],
+    use_pam        => 'yes',
+    hardened_ssl   => 'yes',
+    print_motd     => 'no',
+    tcp_forwarding => $ssh_config['AllowTcpForwarding'],
+    manage_client  => false
   }
 }
