@@ -30,29 +30,21 @@ class site_postfix::mx::static_aliases {
   }
 
   #
-  # Custom aliases.
+  # Custom static virtual aliases.
   #
-  # This does not use the puppet mailalias resource because we want to be able
-  # to guarantee the contents of the alias file. This is needed so if you
-  # remove an alias from the node's config, it will get removed from the alias
-  # file.
-  #
-
-  # both alias files must be listed under "alias_database", because once you
-  # specify one, then `newaliases` no longer will default to updating
-  # "/etc/aliases.db".
-  postfix::config {
-    'alias_database':
-      value => "/etc/aliases, /etc/postfix/custom-aliases";
-    'alias_maps':
-      value => "hash:/etc/aliases, hash:/etc/postfix/custom-aliases";
+  exec { 'postmap_virtual_aliases':
+    command => '/usr/sbin/postmap /etc/postfix/virtual-aliases',
+    refreshonly => true,
+    user    => root,
+    group   => root,
+    require => Package['postfix'],
+    subscribe => File['/etc/postfix/virtual-aliases']
   }
-
-  file { '/etc/postfix/custom-aliases':
-    content => template('site_postfix/custom-aliases.erb'),
+  file { '/etc/postfix/virtual-aliases':
+    content => template('site_postfix/virtual-aliases.erb'),
     owner   => root,
     group   => root,
     mode    => 0600,
-    notify  => Exec['newaliases']
+    require => Package['postfix']
   }
 }
