@@ -27,6 +27,11 @@ module LeapCli; module Commands
     c.flag 'port', :arg_name => 'SSH_PORT', :desc => 'Override default SSH port used when trying to connect to the server. Same as `--ssh "-p SSH_PORT"`.'
     c.action do |global_options,options,args|
       local_port, node, remote_port = parse_tunnel_arg(args.first)
+      unless node.ssh.config.AllowTcpForwarding == "yes"
+        log :warning, "It looks like TCP forwarding is not enabled. "+
+          "The tunnel command requires that the node property ssh.config.AllowTcpForwarding "+
+          "be set to 'yes'. Add this property to #{node.name}.json, deploy, and then try tunnel again."
+      end
       options[:ssh] = [options[:ssh], "-N -L 127.0.0.1:#{local_port}:0.0.0.0:#{remote_port}"].join(' ')
       log("Forward port localhost:#{local_port} to #{node.name}:#{remote_port}")
       if is_port_available?(local_port)
