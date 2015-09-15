@@ -9,6 +9,7 @@ class site_static {
   $domains       = $static['domains']
   $formats       = $static['formats']
   $bootstrap     = $static['bootstrap_files']
+  $tor           = hiera('tor', false)
 
   if $bootstrap['enabled'] {
     $bootstrap_domain  = $bootstrap['domain']
@@ -27,14 +28,11 @@ class site_static {
     }
   }
 
-  class { '::apache': no_default_site => true, ssl => true }
   include site_apache::module::headers
   include site_apache::module::alias
   include site_apache::module::expires
   include site_apache::module::removeip
-  include site_apache::module::rewrite
-  apache::config::include{ 'ssl_common.inc': }
-
+  include site_apache::common
   include site_config::ruby::dev
 
   if (member($formats, 'rack')) {
@@ -56,6 +54,13 @@ class site_static {
   }
 
   create_resources(site_static::domain, $domains)
+
+  if $tor {
+    $hidden_service = $tor['hidden_service']
+    if $hidden_service['active'] {
+      include site_webapp::hidden_service
+    }
+  }
 
   include site_shorewall::defaults
   include site_shorewall::service::http
