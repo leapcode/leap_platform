@@ -79,7 +79,7 @@ module LeapCli; module Commands
   # we need to make sure that it owned by us and not world readable.
   #
   def vagrant_ssh_key_file
-    file_path = Path.vagrant_ssh_key_file
+    file_path = Path.vagrant_ssh_pub_key_file
     Util.assert_files_exist! file_path
     uid = File.new(file_path).stat.uid
     if uid == 0 || uid == Process.euid
