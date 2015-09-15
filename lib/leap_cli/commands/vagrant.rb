@@ -73,13 +73,13 @@ module LeapCli; module Commands
   public
 
   #
-  # returns the path to a vagrant ssh key file.
+  # returns the path to a vagrant ssh private key file.
   #
   # if the vagrant.key file is owned by root or ourselves, then
   # we need to make sure that it owned by us and not world readable.
   #
   def vagrant_ssh_key_file
-    file_path = Path.vagrant_ssh_pub_key_file
+    file_path = Path.vagrant_ssh_priv_key_file
     Util.assert_files_exist! file_path
     uid = File.new(file_path).stat.uid
     if uid == 0 || uid == Process.euid
