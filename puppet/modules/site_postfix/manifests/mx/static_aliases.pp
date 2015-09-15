@@ -44,7 +44,7 @@ class site_postfix::mx::static_aliases {
     content => template('site_postfix/virtual-aliases.erb'),
     owner   => root,
     group   => root,
-    mode    => 0600,
+    mode    => '0600',
     require => Package['postfix']
   }
 }
