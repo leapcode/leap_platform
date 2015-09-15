@@ -32,6 +32,7 @@ class site_nagios::server inherits nagios::base {
   }
 
   include site_apache::common
+  include site_webapp::common_vhost
   include site_apache::module::headers
 
   File ['nagios_htpasswd'] {
