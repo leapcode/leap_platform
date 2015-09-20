@@ -23,6 +23,8 @@ class site_config::remove_files {
     '/etc/logrotate.d/mx':;
     '/etc/logrotate.d/stunnel':;
     '/var/log/stunnel4/stunnel.log':;
+    '/etc/apache/sites-enabled/leap_webapp.conf':
+      notify => Service['apache'];
     'leap_mx':
       path => '/var/log/',
       recurse => true,
