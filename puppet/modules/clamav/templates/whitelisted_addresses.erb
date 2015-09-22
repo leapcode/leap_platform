@@ -1,0 +1,5 @@
+<%- if @whitelisted_addresses then -%>
+<%   @whitelisted_addresses.each do |name| -%>
+From::<%= name %>
+<%   end -%>
+<% end -%>

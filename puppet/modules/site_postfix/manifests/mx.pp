@@ -49,6 +49,10 @@ class site_postfix::mx {
     # alias map
     'local_recipient_maps':
       value => '$alias_maps';
+    'smtpd_milters':
+      value => 'unix:/run/clamav/milter.ctl';
+    'milter_default_action':
+      value => 'accept';
   }
 
   include site_postfix::mx::smtpd_checks
@@ -57,6 +61,7 @@ class site_postfix::mx {
   include site_postfix::mx::smtpd_tls
   include site_postfix::mx::static_aliases
   include site_postfix::mx::rewrite_openpgp_header
+  include clamav
 
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug

@@ -1,0 +1,8 @@
+# This is a file designed only t0 set special environment variables
+# eg TMP or TMPDIR.  It is sourced from a shell script, so anything
+# put in here must be in variable=value format, suitable for sourcing
+# from a shell script.
+# Examples:
+# export TMPDIR=/dev/shm
+export TMP=/var/tmp
+export TMPDIR=/var/tmp
