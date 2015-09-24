@@ -43,6 +43,13 @@ class site_config::remove_files {
       rmdirs => true;
   }
 
+  if member($::services, 'webapp') {
+    tidy {
+      '/etc/apache/sites-enabled/leap_webapp.conf':
+        notify => Service['apache'];
+    }
+  }
+
   # leax-mx logged to /var/log/leap_mx.log in the past
   # we need to use a dumb exec here because file_line doesn't
   # allow removing lines that match a regex in the current version
