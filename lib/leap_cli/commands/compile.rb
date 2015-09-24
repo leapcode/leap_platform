@@ -265,54 +265,84 @@ remove this directory if you don't use it.
     # serial is any number less than 2^32 (4294967296)
     #
     def compile_zone_file
-      provider = manager.env('default').provider
+      provider   = manager.env('default').provider
       hosts_seen = {}
-      f = $stdout
-      f.puts ZONE_HEADER % {:domain => provider.domain, :ns => provider.domain, :contact => provider.contacts.default.first.sub('@','.')}
-      max_width = manager.nodes.values.inject(0) {|max, node| [max, relative_hostname(node.domain.full, provider).length].max }
-      put_line = lambda do |host, line|
-        host = '@' if host == ''
-        f.puts("%-#{max_width}s %s" % [host, line])
-      end
+      lines      = []
 
-      f.puts ORIGIN_HEADER
+      #
+      # header
+      #
+      lines << ZONE_HEADER % {:domain => provider.domain, :ns => provider.domain, :contact => provider.contacts.default.first.sub('@','.')}
+
+      #
+      # common records
+      #
+      lines << ORIGIN_HEADER
       # 'A' records for primary domain
       manager.nodes[:environment => '!local'].each_node do |node|
         if node.dns['aliases'] && node.dns.aliases.include?(provider.domain)
-          put_line.call "", "IN A      #{node.ip_address}"
+          lines << ["@", "IN A      #{node.ip_address}"]
         end
       end
-
       # NS records
       if provider['dns'] && provider.dns['nameservers']
         provider.dns.nameservers.each do |ns|
-          put_line.call "", "IN NS #{ns}."
+          lines << ["@", "IN NS #{ns}."]
         end
       end
 
-      # all other records
+      # environment records
       manager.environment_names.each do |env|
         next if env == 'local'
         nodes = manager.nodes[:environment => env]
         next unless nodes.any?
-        f.puts ENV_HEADER % (env.nil? ? 'default' : env)
+        spf = nil
+        lines << ENV_HEADER % (env.nil? ? 'default' : env)
         nodes.each_node do |node|
           if node.dns.public
-            hostname = relative_hostname(node.domain.full, provider)
-            put_line.call relative_hostname(node.domain.full, provider), "IN A      #{node.ip_address}"
+            lines << [relative_hostname(node.domain.full, provider), "IN A      #{node.ip_address}"]
           end
           if node.dns['aliases']
             node.dns.aliases.each do |host_alias|
               if host_alias != node.domain.full && host_alias != provider.domain
-                put_line.call relative_hostname(host_alias, provider), "IN A      #{node.ip_address}"
+                lines << [relative_hostname(host_alias, provider), "IN A      #{node.ip_address}"]
               end
             end
           end
           if node.services.include? 'mx'
-            put_line.call relative_hostname(node.domain.full_suffix, provider), "IN MX 10  #{relative_hostname(node.domain.full, provider)}"
+            mx_domain = relative_hostname(node.domain.full_suffix, provider)
+            lines << [mx_domain, "IN MX 10  #{relative_hostname(node.domain.full, provider)}"]
+            spf ||= [mx_domain, spf_record(node)]
           end
         end
+        lines << spf if spf
       end
+
+      # print the lines
+      max_width = lines.inject(0) {|max, line| line.is_a?(Array) ? [max, line[0].length].max : max}
+      lines.each do |host, line|
+        if line.nil?
+          puts(host)
+        else
+          host = '@' if host == ''
+          puts("%-#{max_width}s %s" % [host, line])
+        end
+      end
+    end
+
+    #
+    # allow mail from any mx node, plus the webapp nodes.
+    #
+    # TODO: ipv6
+    #
+    def spf_record(node)
+      ips = node.nodes_like_me['services' => 'webapp'].values.collect {|n|
+        "ip4:" + n.ip_address
+      }
+      # TXT strings may not be longer than 255 characters, although
+      # you can chain multiple strings together.
+      strings = "v=spf1 MX #{ips.join(' ')} -all".scan(/.{1,255}/).join('" "')
+      %(IN TXT    "#{strings}")
     end
 
     ENV_HEADER = %[
