@@ -21,7 +21,8 @@ production = {
   "default_service_level" => @webapp['default_service_level'],
   "service_levels" => @webapp['service_levels'],
   "allow_registration" => @webapp['allow_registration'],
-  "handle_blacklist" => @webapp['forbidden_usernames']
+  "handle_blacklist" => @webapp['forbidden_usernames'],
+  "invite_required" => @webapp['invite_required']
 }
 
 if @webapp['engines'] && @webapp['engines'].any?
