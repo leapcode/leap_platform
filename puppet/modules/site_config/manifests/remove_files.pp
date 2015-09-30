@@ -23,8 +23,6 @@ class site_config::remove_files {
     '/etc/logrotate.d/mx':;
     '/etc/logrotate.d/stunnel':;
     '/var/log/stunnel4/stunnel.log':;
-    '/etc/apache/sites-enabled/leap_webapp.conf':
-      notify => Service['apache'];
     'leap_mx':
       path => '/var/log/',
       recurse => true,
@@ -37,6 +35,13 @@ class site_config::remove_files {
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,
       rmdirs => true;
+  }
+
+  if member($::services, 'webapp') {
+    tidy {
+      '/etc/apache/sites-enabled/leap_webapp.conf':
+        notify => Service['apache'];
+    }
   }
 
   # leax-mx logged to /var/log/leap_mx.log in the past
