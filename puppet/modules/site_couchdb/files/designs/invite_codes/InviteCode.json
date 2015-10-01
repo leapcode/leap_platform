@@ -1,0 +1,22 @@
+{
+   "_id": "_design/InviteCode",
+   "language": "javascript",
+   "views": {
+       "by__id": {
+           "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['_id'] != null)) {\n                    emit(doc['_id'], 1);\n                  }\n                }\n",
+           "reduce": "_sum"
+       },
+       "by_invite_code": {
+           "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['invite_code'] != null)) {\n                    emit(doc['invite_code'], 1);\n                  }\n                }\n",
+           "reduce": "_sum"
+       },
+       "by_invite_count": {
+           "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['invite_count'] != null)) {\n                    emit(doc['invite_count'], 1);\n                  }\n                }\n",
+           "reduce": "_sum"
+       },
+       "all": {
+           "map": "                function(doc) {\n                  if (doc['type'] == 'InviteCode') {\n                    emit(doc._id, null);\n                  }\n                }\n"
+       }
+   },
+   "couchrest-hash": "83fb8f504520b4a9c7ddbb7928cd0ce3"
+}
