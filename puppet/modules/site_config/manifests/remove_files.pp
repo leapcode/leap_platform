@@ -41,6 +41,7 @@ class site_config::remove_files {
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,
       rmdirs => true;
+    '/etc/leap/soledad-server.conf':;
   }
 
   # leax-mx logged to /var/log/leap_mx.log in the past

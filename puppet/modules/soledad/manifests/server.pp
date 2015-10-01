@@ -1,3 +1,4 @@
+# setup soledad-server
 class soledad::server {
   tag 'leap_service'
   include soledad
@@ -22,13 +23,19 @@ class soledad::server {
   # SOLEDAD CONFIG
   #
 
-  file { '/etc/leap/soledad-server.conf':
-    content => template('soledad/soledad-server.conf.erb'),
-    owner   => 'soledad',
-    group   => 'soledad',
-    mode    => '0600',
-    notify  => Service['soledad-server'],
-    require => Class['soledad'];
+  file {
+    '/etc/soledad':
+      ensure => directory,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755';
+    '/etc/soledad/soledad-server.conf':
+      content => template('soledad/soledad-server.conf.erb'),
+      owner   => 'soledad',
+      group   => 'soledad',
+      mode    => '0640',
+      notify  => Service['soledad-server'],
+      require => Class['soledad'];
   }
 
   package { $sources['soledad']['package']:
