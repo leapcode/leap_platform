@@ -9,5 +9,12 @@
       "client_version": "= static.bootstrap_files.enabled ? provider.client_version : nil"
     }
   },
-  "service_type": "public_service"
+  "service_type": "public_service",
+  "firewall": {
+    "static": {
+      "from": "*",
+      "to": "= ip_address",
+      "port": [80, 443]
+    }
+  }
 }

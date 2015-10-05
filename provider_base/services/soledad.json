@@ -8,5 +8,12 @@
       "salt": "= hex_secret :couch_soledad_password_salt, 128"
     }
   },
-  "service_type": "public_service"
+  "service_type": "public_service",
+  "firewall": {
+    "soledad": {
+      "from": "*",
+      "to": "= ip_address",
+      "port": "= soledad.port"
+    }
+  }
 }

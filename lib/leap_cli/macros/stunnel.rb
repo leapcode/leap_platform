@@ -49,12 +49,14 @@ module LeapCli
       result = Config::ObjectList.new
       node_list.each_node do |node|
         if node.name != self.name || options[:include_self]
+          s_port = stunnel_port(port)
           result["#{node.name}_#{port}"] = Config::Object[
             'accept_port', @next_stunnel_port,
             'connect', node.domain.internal,
-            'connect_port', stunnel_port(port),
+            'connect_port', s_port,
             'original_port', port
           ]
+          manager.connections.add(:from => @node.ip_address, :to => node.ip_address, :port => s_port)
           @next_stunnel_port += 1
         end
       end
@@ -73,6 +75,15 @@ module LeapCli
       {
         "accept_port" => stunnel_port(port),
         "connect_port" => port
+      }
+    end
+
+    #
+    # lists the ips that connect to this node, on particular ports.
+    #
+    def stunnel_firewall
+      manager.connections.select {|connection|
+        connection['to'] == @node.ip_address
       }
     end
 

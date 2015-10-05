@@ -34,5 +34,12 @@
       "port" : "= rand_range('scramblesuit_port_'+name, 18000..32000)"
     },
     "gateway_address": "= openvpn.gateway_address"
+  },
+  "firewall": {
+    "vpn": {
+      "from": "*",
+      "to": "= openvpn.gateway_address",
+      "port": "= openvpn.ports + [obfsproxy.scramblesuit.port]"
+    }
   }
 }

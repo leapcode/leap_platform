@@ -50,6 +50,14 @@
     "clients": {},
     "servers": {}
   },
+  "firewall": {
+    "ssh": {
+      "from": "sysadmin",
+      "to": "= ip_address",
+      "port": "= ssh.port"
+    },
+    "stunnel": "=> stunnel_firewall"
+  },
   "platform": {
     "version": "= Leap::Platform.version.to_s",
     "major_version": "= Leap::Platform.major_version"
