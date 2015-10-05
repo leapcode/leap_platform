@@ -41,6 +41,7 @@ class site_config::remove_files {
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,
       rmdirs => true;
+    '/etc/leap/soledad-server.conf':;
   }
 
   if member($::services, 'webapp') {

@@ -12,27 +12,40 @@ class site_couchdb::setup {
 
   $user = $site_couchdb::couchdb_admin_user
 
-  # /etc/couchdb/couchdb-admin.netrc is deployed by couchdb::query::setup
-  # we symlink to couchdb.netrc for puppet commands.
-  # we symlink this to /root/.netrc for couchdb_scripts (eg. backup)
-  # and makes life easier for the admin (i.e. using curl/wget without
-  # passing credentials)
+  # setup /etc/couchdb/couchdb-admin.netrc for couchdb admin access
+  couchdb::query::setup { 'localhost':
+    user => $user,
+    pw   => $site_couchdb::couchdb_admin_pw
+  }
+
+  # We symlink /etc/couchdb/couchdb-admin.netrc to /etc/couchdb/couchdb.netrc
+  # for puppet commands, and to to /root/.netrc for couchdb_scripts
+  # (eg. backup) and to makes life easier for the admin on the command line
+  # (i.e. using curl/wget without passing credentials)
   file {
     '/etc/couchdb/couchdb.netrc':
       ensure  => link,
       target  => "/etc/couchdb/couchdb-${user}.netrc";
-
     '/root/.netrc':
       ensure  => link,
       target  => '/etc/couchdb/couchdb.netrc';
-
-    '/srv/leap/couchdb':
-      ensure => directory
   }
 
-  couchdb::query::setup { 'localhost':
-    user  => $user,
-    pw    => $site_couchdb::couchdb_admin_pw,
+  # setup /etc/couchdb/couchdb-soledad-admin.netrc file for couchdb admin
+  # access, accessible only for the soledad-admin user to create soledad
+  # userdbs
+  file { '/etc/couchdb/couchdb-soledad-admin.netrc':
+    content => "machine localhost login ${user} password ${site_couchdb::couchdb_admin_pw}",
+    mode    => '0400',
+    owner   => 'soledad-admin',
+    group   => 'root',
+    require => [ Package['couchdb'], User['soledad-admin'] ];
+  }
+
+  # Checkout couchdb_scripts repo
+  file {
+    '/srv/leap/couchdb':
+      ensure => directory
   }
 
   vcsrepo { '/srv/leap/couchdb/scripts':
