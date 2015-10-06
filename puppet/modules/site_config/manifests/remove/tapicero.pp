@@ -32,12 +32,14 @@ class site_config::remove::tapicero {
       recurse => true,
       matches => 'tapicero*',
       require   => [ Exec['kill_tapicero'] ];
-    '/etc/check_mk/logwatch.d/tapicero.cfg':;
+    '/etc/check_mk/logwatch.d/tapicero.cfg':
+      notify => Exec['check_mk-refresh'];
     'checkmk_logwatch_spool':
       path    => '/var/lib/check_mk/logwatch',
       recurse => true,
       matches => '*tapicero.log',
-      require   => [ Exec['kill_tapicero'] ];
+      require => Exec['kill_tapicero'],
+      notify  => Exec['check_mk-refresh'];
   }
 
   # remove local nagios plugin checks via mrpe
@@ -46,12 +48,14 @@ class site_config::remove::tapicero {
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
       changes => 'rm /files/etc/check_mk/mrpe.cfg/Tapicero_Procs',
-      require => File['/etc/check_mk/mrpe.cfg'];
+      require => File['/etc/check_mk/mrpe.cfg'],
+      notify  => Exec['check_mk-refresh'];
     'Tapicero_Heartbeat':
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
       changes => 'rm Tapicero_Heartbeat',
-      require => File['/etc/check_mk/mrpe.cfg'];
+      require => File['/etc/check_mk/mrpe.cfg'],
+      notify  => Exec['check_mk-refresh'];
   }
 
 }

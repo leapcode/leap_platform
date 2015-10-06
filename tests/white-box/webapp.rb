@@ -95,7 +95,7 @@ class Webapp < LeapTest
   end
 
   #
-  # returns true if the per-user db created by tapicero exists.
+  # returns true if the per-user db created by soledad-server exists.
   # we try three times, and give up after that.
   #
   def assert_user_db_exists(user)

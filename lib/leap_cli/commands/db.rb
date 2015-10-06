@@ -40,7 +40,6 @@ module LeapCli; module Commands
   def destroy_all_dbs(nodes)
     ssh_connect(nodes) do |ssh|
       ssh.run('/etc/init.d/bigcouch stop && test ! -z "$(ls /opt/bigcouch/var/lib/ 2> /dev/null)" && rm -r /opt/bigcouch/var/lib/* && echo "db destroyed" || echo "db already destroyed"')
-      ssh.run('grep ^seq_dir /etc/leap/tapicero.yaml | cut -f2 -d\" | xargs rm -rv')
     end
   end
 

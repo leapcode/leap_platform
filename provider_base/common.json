@@ -83,11 +83,6 @@
       "package": "soledad-server",
       "revision": "latest"
     },
-    "tapicero": {
-      "type": "git",
-      "source": "https://leap.se/git/tapicero",
-      "revision": "origin/version/0.7"
-    },
     "webapp": {
       "type": "git",
       "source": "https://leap.se/git/leap_web",
