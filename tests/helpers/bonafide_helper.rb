@@ -34,7 +34,10 @@ class LeapTest
     url = api_url("/1/users.json")
 
     params = user.to_params
-    params['user[invite_code]'] = generate_invite_code
+
+    if property('webapp.invite_required')
+      params['user[invite_code]'] = generate_invite_code
+    end
 
     assert_post(url, params) do |body|
       assert response = JSON.parse(body), 'response should be JSON'
@@ -45,9 +48,7 @@ class LeapTest
   end
 
   def generate_invite_code
-    if property('webapp.invite_required')
-      `cd /srv/leap/webapp/ && sudo RAILS_ENV=production bundle exec rake generate_invites[1]`.gsub(/\n/, "")
-    end
+    `cd /srv/leap/webapp/ && sudo -u leap-webapp RAILS_ENV=production bundle exec rake generate_invites[1]`.gsub(/\n/, "")
   end
 
 
