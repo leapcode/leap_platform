@@ -12,16 +12,6 @@
 class site_config::remove::files {
 
   #
-  # Platform 0.8 removals
-  #
-
-  tidy {
-    '/etc/apache/sites-enabled/leap_webapp.conf':
-      notify => Service['apache'];
-  }
-
-
-  #
   # Platform 0.7 removals
   #
 
@@ -42,13 +32,6 @@ class site_config::remove::files {
       recurse => true,
       rmdirs => true;
     '/etc/leap/soledad-server.conf':;
-  }
-
-  if member($::services, 'webapp') {
-    tidy {
-      '/etc/apache/sites-enabled/leap_webapp.conf':
-        notify => Service['apache'];
-    }
   }
 
   # leax-mx logged to /var/log/leap_mx.log in the past
