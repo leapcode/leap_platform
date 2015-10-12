@@ -36,7 +36,8 @@ class LeapTest
     params = user.to_params
 
     if property('webapp.invite_required')
-      params['user[invite_code]'] = generate_invite_code
+      @invite_code = generate_invite_code
+      params['user[invite_code]'] = @invite_code
     end
 
     assert_post(url, params) do |body|
