@@ -1,5 +1,22 @@
-# remove tapicero leftovers from previous deploys
+# remove tapicero leftovers from previous deploys on couchdb nodes
 class site_config::remove::tapicero {
+
+  # remove tapicero couchdb user
+  $couchdb_config = hiera('couch')
+  $couchdb_mode   = $couchdb_config['mode']
+
+  if $couchdb_mode == 'multimaster'
+  {
+    $port = 5986
+  } else {
+    $port = 5984
+  }
+
+  exec { 'remove_couchdb_user':
+    onlyif  => "/usr/bin/curl -s 127.0.0.1:${port}/_users/org.couchdb.user:tapicero | grep -qv 'not_found'",
+    command => "/usr/local/bin/couch-doc-update --host 127.0.0.1:${port} --db _users --id org.couchdb.user:tapicero --delete"
+  }
+
 
   exec { 'kill_tapicero':
     onlyif  => '/usr/bin/test -s /var/run/tapicero.pid',
@@ -33,11 +50,6 @@ class site_config::remove::tapicero {
       matches => 'tapicero*',
       require   => [ Exec['kill_tapicero'] ];
     '/etc/check_mk/logwatch.d/tapicero.cfg':;
-    'checkmk_logwatch_spool':
-      path    => '/var/lib/check_mk/logwatch',
-      recurse => true,
-      matches => '*tapicero.log',
-      require => Exec['kill_tapicero'],
   }
 
   # remove local nagios plugin checks via mrpe
