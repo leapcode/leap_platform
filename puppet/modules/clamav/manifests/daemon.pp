@@ -14,20 +14,23 @@ class clamav::daemon {
       pattern    => '/usr/sbin/clamd',
       enable     => true,
       hasrestart => true,
-      subscribe  => File['/etc/default/clamav-daemon'];
+      subscribe  => File['/etc/default/clamav-daemon'],
+      require    => Package['clamav-daemon'];
   }
 
   file {
     '/var/run/clamav':
-      ensure => directory,
-      mode   => '0750',
-      owner  => clamav,
-      group  => postfix;
+      ensure  => directory,
+      mode    => '0750',
+      owner   => clamav,
+      group   => postfix,
+      require => [Package['postfix'], Package['clamav-daemon']];
 
     '/var/lib/clamav':
-      mode  => '0755',
-      owner => clamav,
-      group => clamav;
+      mode    => '0755',
+      owner   => clamav,
+      group   => clamav,
+      require => Package['clamav-daemon'];
 
     '/etc/default/clamav-daemon':
       source => 'puppet:///modules/clamav/clamav-daemon_default',
@@ -41,7 +44,8 @@ class clamav::daemon {
       content => template('clamav/local.pdb.erb'),
       mode    => '0644',
       owner   => clamav,
-      group   => clamav;
+      group   => clamav,
+      require => Package['clamav-daemon'];
   }
 
   file_line {

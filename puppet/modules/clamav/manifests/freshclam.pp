@@ -8,14 +8,16 @@ class clamav::freshclam {
       enable     => true,
       name       => clamav-freshclam,
       pattern    => '/usr/bin/freshclam',
-      hasrestart => true;
+      hasrestart => true,
+      require    => Package['clamav-freshclam'];
   }
 
   file_line {
     'freshclam_notify':
-      path   => '/etc/clamav/freshclam.conf',
-      line   => 'NotifyClamd /etc/clamav/clamd.conf',
-      notify => Service[freshclam];
+      path    => '/etc/clamav/freshclam.conf',
+      line    => 'NotifyClamd /etc/clamav/clamd.conf',
+      require => Package['clamav-freshclam'],
+      notify  => Service['freshclam'];
   }
 
 }

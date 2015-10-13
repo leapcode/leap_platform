@@ -14,6 +14,7 @@ class clamav::milter {
       name       => clamav-milter,
       pattern    => '/usr/sbin/clamav-milter',
       hasrestart => true,
+      require    => Package['clamav-milter'],
       subscribe  => File['/etc/default/clamav-milter'];
   }
 
@@ -29,6 +30,7 @@ class clamav::milter {
       mode      => '0644',
       owner     => root,
       group     => root,
+      require   => Package['clamav-milter'],
       subscribe => Service['clamav-milter'];
 
     '/etc/default/clamav-milter':
@@ -41,8 +43,8 @@ class clamav::milter {
       content => template('clamav/whitelisted_addresses.erb'),
       mode    => '0644',
       owner   => root,
-      group   => root;
-
+      group   => root,
+      require => Package['clamav-milter'];
   }
 
 }
