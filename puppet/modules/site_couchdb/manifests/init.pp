@@ -62,4 +62,7 @@ class site_couchdb {
 
   include site_check_mk::agent::couchdb
 
+  # remove tapicero leftovers on couchdb nodes
+  include site_config::remove::tapicero
+
 }

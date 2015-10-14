@@ -24,6 +24,9 @@
   },
   "mynetworks": "= nodes['environment' => '!local'].map{|name, n| [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]}.flatten.compact.uniq",
   "rbls": ["zen.spamhaus.org"],
+  "clamav": {
+    "whitelisted_addresses": []
+  },
   "x509": {
     "use": true,
     "use_commercial": true,
