@@ -1,9 +1,10 @@
 class clamav::unofficial_sigs {
 
-  package { [ 'clamav-unofficial-sigs', 'wget', 'gnupg',
-              'socat', 'rsync', 'curl' ]:
+  package { 'clamav-unofficial-sigs':
     ensure => installed
   }
+
+  ensure_packages(['wget', 'gnupg', 'socat', 'rsync', 'curl'])
 
   file {
     '/var/log/clamav-unofficial-sigs.log':
