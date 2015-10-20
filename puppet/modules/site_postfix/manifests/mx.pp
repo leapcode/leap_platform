@@ -50,7 +50,7 @@ class site_postfix::mx {
     'local_recipient_maps':
       value => '$alias_maps';
     'smtpd_milters':
-      value => 'unix:/run/clamav/milter.ctl';
+      value => 'unix:/run/clamav/milter.ctl,unix:/var/run/opendkim/opendkim.sock';
     'milter_default_action':
       value => 'accept';
   }
