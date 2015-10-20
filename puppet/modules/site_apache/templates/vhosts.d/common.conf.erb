@@ -4,7 +4,7 @@
   ServerAlias <%= domain %>
   ServerAlias www.<%= domain %>
   RewriteEngine On
-  RewriteRule ^.*$ https://<%= domain -%>%{REQUEST_URI} [R=permanent,L]
+  RewriteRule ^.*$ https://<%= webapp_domain -%>%{REQUEST_URI} [R=permanent,L]
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 </VirtualHost>
 
