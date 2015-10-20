@@ -30,4 +30,14 @@
     ExpiresDefault "access plus 1 year"
   </Location>
 <% end -%>
+
+<% if (defined? @services) and (@services.include? 'static') -%>
+  DocumentRoot "/srv/static/root/public"
+  AccessFileName .htaccess
+
+  Alias /provider.json /srv/leap/provider.json
+  <Location /provider.json>
+    Header set X-Minimum-Client-Version 0.5
+  </Location>
+<% end -%>
 </VirtualHost>
