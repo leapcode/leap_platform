@@ -41,34 +41,6 @@ class Webapp < LeapTest
     pass
   end
 
-  def test_05_Can_create_and_authenticate_and_delete_user_via_API?
-    if property('webapp.allow_registration')
-      assert_tmp_user
-      pass
-    else
-      skip "New user registrations are disabled."
-    end
-  end
-
-  def test_06_Can_sync_Soledad?
-    return unless property('webapp.allow_registration')
-    soledad_config = property('definition_files.soledad_service')
-    if soledad_config && !soledad_config.empty?
-      soledad_server = pick_soledad_server(soledad_config)
-      if soledad_server
-        assert_tmp_user do |user|
-          assert_user_db_exists(user)
-          command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
-          soledad_url = "https://#{soledad_server}/user-#{user.id}"
-          assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
-          pass
-        end
-      end
-    else
-      skip 'No soledad service configuration'
-    end
-  end
-
   private
 
   def url_options
