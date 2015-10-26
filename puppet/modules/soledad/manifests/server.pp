@@ -4,9 +4,10 @@ class soledad::server {
   include soledad
   include site_apt::preferences::twisted
 
-  $soledad           = hiera('soledad')
-  $couchdb_user      = $soledad['couchdb_soledad_user']['username']
-  $couchdb_password  = $soledad['couchdb_soledad_user']['password']
+  $soledad              = hiera('soledad')
+  $couchdb_user         = $soledad['couchdb_soledad_user']['username']
+  $couchdb_password     = $soledad['couchdb_soledad_user']['password']
+  $couchdb_leap_mx_user = $soledad['couchdb_leap_mx_user']['username']
 
   $couchdb_host = 'localhost'
   $couchdb_port = '5984'

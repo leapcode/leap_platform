@@ -6,6 +6,9 @@
       "username": "= global.services[:couchdb].couch.users[:soledad].username",
       "password": "= secret :couch_soledad_password",
       "salt": "= hex_secret :couch_soledad_password_salt, 128"
+    },
+    "couchdb_leap_mx_user": {
+      "username": "= global.services[:couchdb].couch.users[:leap_mx].username"
     }
   },
   "service_type": "public_service",

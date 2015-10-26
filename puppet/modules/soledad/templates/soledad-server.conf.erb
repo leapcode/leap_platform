@@ -2,3 +2,11 @@
 couch_url   = http://<%= @couchdb_user %>:<%= @couchdb_password %>@<%= @couchdb_host %>:<%= @couchdb_port %>
 create_cmd  = sudo -u soledad-admin /usr/bin/create-user-db
 admin_netrc = /etc/couchdb/couchdb-soledad-admin.netrc
+
+[database-security]
+members = <%= @couchdb_user %>, <%= @couchdb_leap_mx_user %>
+# not needed, but for documentation:
+# members_roles = replication
+# admins = admin
+# admins_roles = replication
+
