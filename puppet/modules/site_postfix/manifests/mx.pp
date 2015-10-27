@@ -62,6 +62,7 @@ class site_postfix::mx {
   include site_postfix::mx::static_aliases
   include site_postfix::mx::rewrite_openpgp_header
   include clamav
+  include postfwd
 
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug

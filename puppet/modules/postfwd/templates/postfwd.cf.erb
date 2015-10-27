@@ -1,0 +1,31 @@
+### This file managed by Puppet
+# Before deploying a rule
+# 1. test with an additional "sender==test@domain.org;" in the rule so it
+#   only applies to your test account
+# 2. then when ready to test for all users, use WARN and watch the logs
+#   for a few days and make sure it working the way you like
+# 3. Then when ready to deploy for real set a proper error code
+
+## Overrides - make like the following example
+# id=exampleuser; sasl_username==exampleuser; action=dunno
+
+## Rules that apply to all senders
+# Recipient Per Message Limit
+# We only receive mail via smtp from sasl authenticated users
+# directly. We want to limit to a lower amount to prevent phished accounts
+# spamming
+id=RCPTSENDER; recipient_count=150; action=REJECT Too many recipients, please try again. Contact http://<%= @domain %>/tickets/new if this is in error. ERROR:RCPTSENDER 
+
+# Message Rate Limit
+# This limits sasl authenticated users to no more than 50/60mins
+# NOTE: sasl_username needs to be set to something or this check will fail
+id=MSGRATE ; sasl_username=!!(^$); action==rate($$sasl_username/100/3600/450 4.7.1 exceeded message rate. Contact Contact http://<%= @domain %>/tickets/new if this is in error. ERROR:MSGRATE)
+
+# Total Recipient Rate Limit
+# This adds up the recipients for all the sasl authenticated users messages
+# and can't exceed more than 250/60min
+# NOTE: sasl_username needs to be set to something or this check will fail
+id=RCPTRATE ; sasl_username=!!(^$); action==rcpt($$sasl_username/500/3600/450 4.7.1 exceeded message rate. Contact http://<%= @domain %>/tickets/new if this is in error. ERROR:RCPTRATE)
+
+# Size per client Limit
+id=SENDSIZE ;  state==END_OF_DATA ;  client_address==!!(10.0.1.0/24); action==size($$client_address/314572800/3600/450 4.7.1 Sorry you have sent too much data. Contact http://<%= @domain %>/tickets/new if this is in error. ERROR:SENDSIZE)
