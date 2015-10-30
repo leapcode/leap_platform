@@ -1,78 +1,75 @@
 #!/usr/bin/env python
+"""
+soledad_sync.py
 
-#
-# Test Soledad sync
-#
-# This script performs a slightly modified U1DB sync to the Soledad server and
-# returns whether that sync was successful or not.
-#
-# It takes three arguments:
-#
-#   uuid   -- uuid of the user to sync
-#   token  -- a valid session token
-#   server -- the url of the soledad server we should connect to
-#
-# For example:
-#
-#   soledad_sync.py f6bef0586fcfdb8705e26a58f2d9e580 uYO-4ucEJFksJ6afjmcYwIyap2vW7bv6uLxk0w_RfCc https://199.119.112.9:2323/user-f6bef0586fcfdb8705e26a58f2d9e580
-#
+This script exercises soledad synchronization.
+Its exit code is 0 if the sync took place correctly, 1 otherwise.
 
+It takes 5 arguments:
+
+  uuid: uuid of the user to sync
+  token: a valid session token
+  server: the url of the soledad server we should connect to
+  cert_file: the file containing the certificate for the CA that signed the
+             cert for the soledad server.
+  password: the password for the user to sync
+
+__author__: kali@leap.se
+"""
 import os
 import sys
-import traceback
 import tempfile
-import shutil
-import u1db
 
-from u1db.remote.http_target import HTTPSyncTarget
+# This is needed because the twisted shipped with wheezy is too old
+# to do proper ssl verification.
+os.environ['SKIP_TWISTED_SSL_CHECK'] = '1'
 
-#
-# monkey patch U1DB's HTTPSyncTarget to perform token based auth
-#
+from twisted.internet import defer, reactor
 
-def set_token_credentials(self, uuid, token):
-    self._creds = {'token': (uuid, token)}
+from client_side_db import _get_soledad_instance
+from leap.common.events import flags
 
-def _sign_request(self, method, url_query, params):
-    uuid, token = self._creds['token']
-    auth = '%s:%s' % (uuid, token)
-    return [('Authorization', 'Token %s' % auth.encode('base64')[:-1])]
+flags.set_events_enabled(False)
 
-HTTPSyncTarget.set_token_credentials = set_token_credentials
-HTTPSyncTarget._sign_request = _sign_request
+NUMDOCS = 1
+USAGE = "Usage: %s uuid token server cert_file password" % sys.argv[0]
 
-#
-# Create a temporary local u1db replica and attempt to sync to it.
-# Returns a failure message if something went wrong.
-#
 
-def soledad_sync(uuid, token, server):
-    tempdir = tempfile.mkdtemp()
-    try:
-        db = u1db.open(os.path.join(tempdir, '%s.db' % uuid), True)
-        creds = {'token': {'uuid': uuid, 'token': token}}
-        db.sync(server, creds=creds, autocreate=False)
-    finally:
-        shutil.rmtree(tempdir)
+def bail(msg, exitcode):
+    print "[!] %s" % msg
+    sys.exit(exitcode)
 
-#
-# exit codes:
-#
-# 0 - OK
-# 1 - WARNING
-# 2 - ERROR
-#
+
+def create_docs(soledad):
+    """
+    Populates the soledad database with dummy messages, so we can exercise
+    sending payloads during the sync.
+    """
+    deferreds = []
+    for index in xrange(NUMDOCS):
+        deferreds.append(soledad.create_doc({'payload': 'dummy'}))
+    return defer.gatherResults(deferreds)
+
+# main program
 
 if __name__ == '__main__':
-    try:
-        uuid, token, server = sys.argv[1:]
-        result = soledad_sync(uuid, token, server)
-        if result is None:
-            exit(0)
-        else:
-            print(result)
-            exit(1)
-    except Exception as exc:
-        print(exc.message or str(exc))
-        traceback.print_exc(file=sys.stdout)
-        exit(2)
+
+    tempdir = tempfile.mkdtemp()
+    if len(sys.argv) < 6:
+        bail(USAGE, 2)
+    uuid, token, server, cert_file, passphrase = sys.argv[1:]
+    s = _get_soledad_instance(
+        uuid, passphrase, tempdir, server, cert_file, token)
+
+    def onSyncDone(sync_result):
+        print "SYNC_RESULT:", sync_result
+        s.close()
+        reactor.stop()
+
+    def start_sync():
+        d = create_docs(s)
+        d.addCallback(lambda _: s.sync())
+        d.addCallback(onSyncDone)
+
+    reactor.callWhenRunning(start_sync)
+    reactor.run()
