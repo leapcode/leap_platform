@@ -57,10 +57,11 @@ class Webapp < LeapTest
       soledad_server = pick_soledad_server(soledad_config)
       if soledad_server
         assert_tmp_user do |user|
-          assert_user_db_exists(user)
           command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
           soledad_url = "https://#{soledad_server}/user-#{user.id}"
-          assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
+	  soledad_cert = "/usr/local/share/ca-certificates/leap_ca.crt"
+          assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url} #{soledad_cert} #{user.password}"
+          assert_user_db_exists(user)
           pass
         end
       end
