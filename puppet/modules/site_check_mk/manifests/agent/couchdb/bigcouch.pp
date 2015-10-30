@@ -36,13 +36,6 @@ class site_check_mk::agent::couchdb::bigcouch {
       require => File['/etc/check_mk/mrpe.cfg'];
   }
 
-  # check open files for bigcouch proc
-  include site_check_mk::agent::package::perl_plugin
-  file { '/srv/leap/nagios/plugins/check_unix_open_fds.pl':
-    source => 'puppet:///modules/site_check_mk/agent/nagios_plugins/check_unix_open_fds.pl',
-    mode   => '0755'
-  }
-
   augeas {
     'Bigcouch_open_files':
       incl    => '/etc/check_mk/mrpe.cfg',
