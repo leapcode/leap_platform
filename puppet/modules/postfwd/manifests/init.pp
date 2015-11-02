@@ -14,7 +14,7 @@ class postfwd {
 
   file {
     '/etc/default/postfwd':
-      source  => 'puppet:///modules/postfwd/postfwd',
+      source  => 'puppet:///modules/postfwd/postfwd_default',
       mode    => '0644',
       owner   => root,
       group   => root,
@@ -25,14 +25,7 @@ class postfwd {
       mode    => '0644',
       owner   => root,
       group   => root,
-      require => File['/etc/postfix'];
-  }
-
-  exec {
-    '/etc/init.d/postfwd reload':
-      refreshonly => true,
-      subscribe   => [ File['/etc/postfix/postfwd.cf'],
-                       File['/etc/default/postfwd'] ];
+      require => Package['postfix'];
   }
 
   service {
