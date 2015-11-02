@@ -1,8 +1,7 @@
 # setup soledad-server
 class soledad::server {
   tag 'leap_service'
-  include soledad
-  include site_apt::preferences::twisted
+  include soledad::common
 
   $soledad              = hiera('soledad')
   $couchdb_user         = $soledad['couchdb_soledad_user']['username']
@@ -36,7 +35,17 @@ class soledad::server {
       group   => 'soledad',
       mode    => '0640',
       notify  => Service['soledad-server'],
-      require => Class['soledad'];
+      require => [ User['soledad'], Group['soledad'] ];
+    '/srv/leap/soledad':
+      ensure  => directory,
+      owner   => 'soledad',
+      group   => 'soledad',
+      require => [ User['soledad'], Group['soledad'] ];
+    '/var/lib/soledad':
+      ensure  => directory,
+      owner   => 'soledad',
+      group   => 'soledad',
+      require => [ User['soledad'], Group['soledad'] ];
   }
 
   package { $sources['soledad']['package']:
@@ -52,7 +61,7 @@ class soledad::server {
     group   => 'soledad',
     mode    => '0600',
     notify  => Service['soledad-server'],
-    require => Class['soledad'];
+    require => [ User['soledad'], Group['soledad'] ];
   }
 
   service { 'soledad-server':
@@ -60,7 +69,7 @@ class soledad::server {
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => Class['soledad'],
+    require    => [ User['soledad'], Group['soledad'] ],
     subscribe  => [
       Package['soledad-server'],
       Class['Site_config::X509::Key'],
@@ -70,4 +79,26 @@ class soledad::server {
 
   include site_shorewall::soledad
   include site_check_mk::agent::soledad
+
+  # set up users, group and directories for soledad-server
+  # although the soledad users are already created by the
+  # soledad-server package
+  group { 'soledad':
+    ensure => present,
+    system => true,
+  }
+  user {
+    'soledad':
+      ensure    => present,
+      system    => true,
+      gid       => 'soledad',
+      home      => '/srv/leap/soledad',
+      require   => Group['soledad'];
+    'soledad-admin':
+      ensure  => present,
+      system  => true,
+      gid     => 'soledad',
+      home    => '/srv/leap/soledad',
+      require => Group['soledad'];
+  }
 }

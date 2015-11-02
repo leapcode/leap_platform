@@ -167,10 +167,8 @@ class site_webapp {
 
 
   # needed for the soledad-sync check which is run on the
-  # webapp node (#6520)
-  package { 'python-u1db':
-    ensure => latest,
-  }
+  # webapp node
+  include soledad::client
 
   leap::logfile { 'webapp': }
 
