@@ -1,9 +1,11 @@
+# install leap deb repo together with leap-keyring package
+# containing the apt signing key
 class site_apt::leap_repo {
   $platform = hiera_hash('platform')
   $major_version = $platform['major_version']
 
   apt::sources_list { 'leap.list':
-    content => "deb http://deb.leap.se/${major_version} wheezy main\n",
+    content => "deb http://deb.leap.se/${major_version} ${::lsbdistcodename} main\n",
     before  => Exec[refresh_apt]
   }
 
