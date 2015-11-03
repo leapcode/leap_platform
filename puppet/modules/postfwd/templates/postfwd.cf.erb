@@ -26,6 +26,3 @@ id=MSGRATE ; sasl_username=!!(^$); action==rate($$sasl_username/100/3600/450 4.7
 # and can't exceed more than 250/60min
 # NOTE: sasl_username needs to be set to something or this check will fail
 id=RCPTRATE ; sasl_username=!!(^$); action==rcpt($$sasl_username/500/3600/450 4.7.1 exceeded message rate. Contact http://<%= @domain %>/tickets/new if this is in error. ERROR:RCPTRATE)
-
-# Size per client Limit
-id=SENDSIZE ;  state==END_OF_DATA ;  client_address==!!(10.0.1.0/24); action==size($$client_address/314572800/3600/450 4.7.1 Sorry you have sent too much data. Contact http://<%= @domain %>/tickets/new if this is in error. ERROR:SENDSIZE)
