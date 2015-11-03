@@ -1,18 +1,18 @@
 <VirtualHost *:80>
-  ServerName <%= webapp_domain %>
-  ServerAlias <%= domain_name %>
-  ServerAlias <%= domain %>
-  ServerAlias www.<%= domain %>
+  ServerName <%= @webapp_domain %>
+  ServerAlias <%= @domain_name %>
+  ServerAlias <%= @domain %>
+  ServerAlias www.<%= @domain %>
   RewriteEngine On
-  RewriteRule ^.*$ https://<%= webapp_domain -%>%{REQUEST_URI} [R=permanent,L]
+  RewriteRule ^.*$ https://<%= @webapp_domain -%>%{REQUEST_URI} [R=permanent,L]
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 </VirtualHost>
 
 <VirtualHost *:443>
-  ServerName <%= webapp_domain %>
-  ServerAlias <%= domain_name %>
-  ServerAlias <%= domain %>
-  ServerAlias www.<%= domain %>
+  ServerName <%= @webapp_domain %>
+  ServerAlias <%= @domain_name %>
+  ServerAlias <%= @domain %>
+  ServerAlias www.<%= @domain %>
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 
   SSLCACertificatePath /etc/ssl/certs
@@ -69,4 +69,3 @@
   </DirectoryMatch>
 <% end -%>
 </VirtualHost>
-
