@@ -14,7 +14,7 @@ module LeapCli; module Commands
           "`config.vm.box` option. The value here should be the name of an installed box or a "+
           "shorthand name of a box in HashiCorp's Atlas.",
         :arg_name => 'BASEBOX',
-        :default_value => 'LEAP/wheezy'
+        :default_value => 'LEAP/jessie'
       )
       start.action do |global_options,options,args|
         vagrant_command(["up", "sandbox on"], args, options)
@@ -146,7 +146,7 @@ module LeapCli; module Commands
     lines = []
     netmask = IPAddr.new('255.255.255.255').mask(LeapCli.leapfile.vagrant_network.split('/').last).to_s
 
-    basebox = options[:basebox] || 'LEAP/wheezy'
+    basebox = options[:basebox] || 'LEAP/jessie'
 
     if vagrant_version <= Gem::Version.new('1.1.0')
       lines << %[Vagrant::Config.run do |config|]
