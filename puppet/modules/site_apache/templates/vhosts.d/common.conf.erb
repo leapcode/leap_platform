@@ -32,6 +32,12 @@
 
 <% if (defined? @services) and (@services.include? 'webapp') -%>
   DocumentRoot /srv/leap/webapp/public
+  <% if Gem::Version.new(@apache_version) > Gem::Version.new('2.3') %>
+  <Directory /srv/leap/webapp/public>
+    AllowOverride None
+    Require all granted
+  </Directory>
+  <% end %>
 
   RewriteEngine On
   # Check for maintenance file and redirect all requests
