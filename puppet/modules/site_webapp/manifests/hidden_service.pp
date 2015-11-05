@@ -4,10 +4,10 @@ class site_webapp::hidden_service {
   $tor_domain       = "${hidden_service['address']}.onion"
 
   include site_apache::common
-  include site_apache::module::headers
-  include site_apache::module::alias
-  include site_apache::module::expires
-  include site_apache::module::removeip
+  include apache::module::headers
+  include apache::module::alias
+  include apache::module::expires
+  include apache::module::removeip
 
   include tor::daemon
   tor::daemon::hidden_service { 'webapp': ports => '80 127.0.0.1:80' }

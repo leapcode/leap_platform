@@ -1,3 +1,4 @@
+# configure apache and passenger to serve the webapp
 class site_webapp::apache {
 
   $web_api          = hiera('api')
@@ -11,10 +12,10 @@ class site_webapp::apache {
   $webapp_domain    = $webapp['domain']
 
   include site_apache::common
-  include site_apache::module::headers
-  include site_apache::module::alias
-  include site_apache::module::expires
-  include site_apache::module::removeip
+  include apache::module::headers
+  include apache::module::alias
+  include apache::module::expires
+  include apache::module::removeip
   include site_webapp::common_vhost
 
   class { 'passenger': use_munin => false }
