@@ -382,7 +382,19 @@ class Ya2YAML
 end
 
 module Puppet::Parser::Functions
-  newfunction(:sorted_yaml, :type => :rvalue, :doc => "This function outputs yaml, but ensures the keys are sorted.") do |argument|
-    return Ya2YAML.new()._ya2yaml(argument)
+  newfunction(:sorted_yaml,
+    :type => :rvalue,
+    :doc => "This function outputs yaml, but ensures the keys are sorted."
+    ) do |arguments|
+
+    if arguments.is_a?(Array)
+      if arguments.size != 1
+        raise(Puppet::ParseError, "sorted_yaml(): Wrong number of arguments given (#{arguments.size} for 1)")
+      end
+      yaml = arguments.first
+    else
+      yaml = arguments
+    end
+    return Ya2YAML.new()._ya2yaml(yaml)
   end
 end
