@@ -17,6 +17,19 @@ class site_check_mk::server {
     ensure => installed,
   }
 
+  # we don't use check-mk-multisite, and the jessie version
+  # of this config file breaks with apache 2.4
+  # until https://gitlab.com/shared-puppet-modules-group/apache/issues/11
+  # is not fixed, we need to use a generic file type here
+  #apache::config::global { 'check-mk-multisite.conf':
+  #  ensure => absent
+  #}
+
+  file { '/etc/apache2/conf-enabled/check-mk-multisite.conf':
+    ensure  => absent,
+    require => Package['check-mk-server'];
+  }
+
   # override paths to use the system check_mk rather than OMD
   class { 'check_mk::config':
     site              => '',
