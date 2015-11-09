@@ -1,14 +1,14 @@
 <VirtualHost *:80>
-  ServerName <%= api_domain %>
+  ServerName <%= @api_domain %>
   RewriteEngine On
-  RewriteRule ^.*$ https://<%= api_domain -%>:<%= api_port -%>%{REQUEST_URI} [R=permanent,L]
+  RewriteRule ^.*$ https://<%= @api_domain -%>:<%= @api_port -%>%{REQUEST_URI} [R=permanent,L]
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 </VirtualHost>
 
-Listen 0.0.0.0:<%= api_port %>
+Listen 0.0.0.0:<%= @api_port %>
 
-<VirtualHost *:<%= api_port -%>>
-  ServerName <%= api_domain %>
+<VirtualHost *:<%= @api_port -%>>
+  ServerName <%= @api_domain %>
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 
   SSLCACertificatePath /etc/ssl/certs
