@@ -1,10 +1,10 @@
+# install soledad-common, both needed both soledad-client and soledad-server
 class soledad::common {
 
-  include soledad
+  include site_apt::preferences::twisted
 
   package { 'soledad-common':
-    ensure  => latest,
-    require => User['soledad']
+    ensure  => latest;
   }
 
 }

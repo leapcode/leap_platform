@@ -229,6 +229,13 @@ class site_openvpn {
   }
 
   leap::logfile { 'openvpn': }
+
+  # Because we currently do not support ipv6 and instead block it (so no leaks
+  # happen), we get a large number of these messages, so we ignore them (#6540)
+  rsyslog::snippet { '01-ignore_icmpv6_send':
+    content => ':msg, contains, "icmpv6_send: no reply to icmp error" ~'
+  }
+
   include site_check_mk::agent::openvpn
 
 }

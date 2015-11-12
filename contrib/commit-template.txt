@@ -1,0 +1,7 @@
+#[bug|feat|docs|style|refactor|test|pkg|i18n]
+
+#- Tested: [local singlenode|local multinode|citest|unstable.bitmask.net]
+#- Resolves: #XYZ
+#- Related: #XYZ
+#- Documentation: #XYZ
+#- Releases: XYZ

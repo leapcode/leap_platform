@@ -32,11 +32,17 @@ class site_webapp::hidden_service {
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600';
+
+    '/etc/apache2/mods-enabled/status.conf':
+      ensure => absent,
+      notify => Service['apache'];
   }
 
   apache::vhost::file {
     'hidden_service':
-      content => template('site_apache/vhosts.d/hidden_service.conf.erb')
+      content => template('site_apache/vhosts.d/hidden_service.conf.erb');
+    'server_status':
+      vhost_source => 'modules/site_webapp/server-status.conf';
   }
 
   include site_shorewall::tor

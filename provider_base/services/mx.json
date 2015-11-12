@@ -1,4 +1,11 @@
 {
+  "mx": {
+    // provider should define their own custom aliases.
+    // these are in *addition* to the standard reserved aliases for root and postmaster, etc.
+    "aliases": {},
+    // this is the domain that is used for the OpenPGP header
+    "key_lookup_domain": "= global.services[:webapp].webapp.domain"
+  },
   "stunnel": {
     "clients": {
       "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
@@ -16,6 +23,10 @@
     "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
   },
   "mynetworks": "= nodes['environment' => '!local'].map{|name, n| [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]}.flatten.compact.uniq",
+  "rbls": ["zen.spamhaus.org"],
+  "clamav": {
+    "whitelisted_addresses": []
+  },
   "x509": {
     "use": true,
     "use_commercial": true,
@@ -23,5 +34,12 @@
     "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
     "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`'"
   },
-  "service_type": "user_service"
+  "service_type": "user_service",
+  "firewall": {
+    "mx": {
+      "from": "*",
+      "to": "= ip_address",
+      "port": [25, 465]
+    }
+  }
 }

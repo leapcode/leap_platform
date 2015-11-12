@@ -15,12 +15,13 @@ class site_webapp::apache {
   include site_apache::module::alias
   include site_apache::module::expires
   include site_apache::module::removeip
+  include site_webapp::common_vhost
 
   class { 'passenger': use_munin => false }
 
   apache::vhost::file {
     'api':
-      content => template('site_apache/vhosts.d/api.conf.erb')
+      content => template('site_apache/vhosts.d/api.conf.erb');
   }
 
 }

@@ -1,3 +1,4 @@
+# common things to set up on every node
 class site_config::default {
   tag 'leap_base'
 
@@ -29,7 +30,7 @@ class site_config::default {
   # i.e. openstack/aws nodes, vagrant nodes
 
   # fix dhclient from changing resolver information
-   if $::dhcp_enabled == 'true' {
+  if $::dhcp_enabled == 'true' {
     include site_config::dhclient
   }
 
@@ -58,7 +59,9 @@ class site_config::default {
 
   # set up core leap files and directories
   include site_config::files
-  include site_config::remove_files
+
+  # remove leftovers from previous deploys
+  include site_config::remove
 
   if ! member($services, 'mx') {
     include site_postfix::satellite

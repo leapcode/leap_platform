@@ -9,7 +9,6 @@ class CouchDB < LeapTest
   end
 
   def test_00_Are_daemons_running?
-    assert_running '^tapicero', :single => true
     if multimaster?
       assert_running 'bin/beam'
       assert_running 'bin/epmd'
@@ -70,7 +69,7 @@ class CouchDB < LeapTest
   end
 
   def test_04_Do_ACL_users_exist?
-    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp', 'replication']
+    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'webapp', 'replication']
     url = couchdb_backend_url("/_users/_all_docs", :username => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)

@@ -90,4 +90,13 @@ class site_couchdb::create_dbs {
     members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
     require => Couchdb::Query::Setup['localhost']
   }
+
+  ## invite_codes db
+  ## store invite codes for new signups
+  ## r/w: webapp
+  couchdb::create_db { 'invite_codes':
+    members => "{ \"names\": [\"${site_couchdb::couchdb_webapp_user}\"], \"roles\": [\"replication\"] }",
+    require => Couchdb::Query::Setup['localhost']
+  }
+
 }

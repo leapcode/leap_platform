@@ -20,7 +20,6 @@ if member($services, 'openvpn') {
 
 if member($services, 'couchdb') {
   include site_couchdb
-  include tapicero
 }
 
 if member($services, 'webapp') {

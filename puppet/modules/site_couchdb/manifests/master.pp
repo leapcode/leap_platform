@@ -6,4 +6,6 @@ class site_couchdb::master {
     chttpd_bind_address => '127.0.0.1',
     pwhash_alg          => $site_couchdb::couchdb_pwhash_alg
   }
+
+  include site_check_mk::agent::couchdb::master
 }

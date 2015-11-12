@@ -1,3 +1,4 @@
+# add couchdb users for all services
 class site_couchdb::add_users {
 
   Class['site_couchdb::create_dbs']
@@ -32,16 +33,6 @@ class site_couchdb::add_users {
     roles   => '["tokens"]',
     pw      => $site_couchdb::couchdb_soledad_pw,
     salt    => $site_couchdb::couchdb_soledad_salt,
-    require => Couchdb::Query::Setup['localhost']
-  }
-
-  ### tapicero couchdb user
-  ### admin: needs to be able to create user-<uuid> databases
-  ### read: users
-  couchdb::add_user { $site_couchdb::couchdb_tapicero_user:
-    roles   => '["users"]',
-    pw      => $site_couchdb::couchdb_tapicero_pw,
-    salt    => $site_couchdb::couchdb_tapicero_salt,
     require => Couchdb::Query::Setup['localhost']
   }
 

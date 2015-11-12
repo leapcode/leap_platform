@@ -32,13 +32,26 @@ class LeapTest
   def assert_create_user
     user = SRP::User.new
     url = api_url("/1/users.json")
-    assert_post(url, user.to_params) do |body|
+
+    params = user.to_params
+
+    if property('webapp.invite_required')
+      @invite_code = generate_invite_code
+      params['user[invite_code]'] = @invite_code
+    end
+
+    assert_post(url, params) do |body|
       assert response = JSON.parse(body), 'response should be JSON'
       assert response['ok'], "Creating a user should be successful, got #{response.inspect} instead."
     end
     user.ok = true
     return user
   end
+
+  def generate_invite_code
+    `cd /srv/leap/webapp/ && sudo -u leap-webapp RAILS_ENV=production bundle exec rake generate_invites[1]`.gsub(/\n/, "")
+  end
+
 
   #
   # attempts to authenticate user. if successful,

@@ -1,3 +1,4 @@
+# configure webapp service
 class site_webapp {
   tag 'leap_service'
   $definition_files = hiera('definition_files')
@@ -25,6 +26,9 @@ class site_webapp {
   include site_config::x509::ca
   include site_config::x509::client_ca::ca
   include site_config::x509::client_ca::key
+
+  # remove leftovers from previous installations on webapp nodes
+  include site_config::remove::webapp
 
   group { 'leap-webapp':
     ensure    => present,
@@ -163,10 +167,8 @@ class site_webapp {
 
 
   # needed for the soledad-sync check which is run on the
-  # webapp node (#6520)
-  package { 'python-u1db':
-    ensure => latest,
-  }
+  # webapp node
+  include soledad::client
 
   leap::logfile { 'webapp': }
 

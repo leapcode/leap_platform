@@ -1,0 +1,14 @@
+#
+# clamav-milter init options
+#
+
+## SOCKET_RWGROUP
+# by default, the socket created by the milter has permissions
+# clamav:clamav:755. SOCKET_RWGROUP changes the group and changes the
+# permissions to 775 to give read-write access to that group.
+#
+# If you are using postfix to speak to the milter, you have to give permission
+# to the postfix group to write
+#
+SOCKET_RWGROUP=postfix
+export TMPDIR=/var/tmp
