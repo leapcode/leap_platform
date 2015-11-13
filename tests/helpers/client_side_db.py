@@ -1,27 +1,20 @@
 import logging
 import os
-import argparse
 import tempfile
 import getpass
 import requests
 import srp._pysrp as srp
 import binascii
-import logging
 import json
-import time
 
-from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks
 
 from leap.soledad.client import Soledad
-from leap.keymanager import KeyManager
-from leap.keymanager.openpgp import OpenPGPKey
 
 
 """
 Helper functions to give access to client-side Soledad database.
 """
-
 
 # create a logger
 logger = logging.getLogger(__name__)
@@ -123,23 +116,6 @@ def get_soledad_instance(uuid, passphrase, basedir, server_url, cert_file,
         auth_token=token,
         defer_encryption=True)
 
-
-def _get_keymanager_instance(username, provider, soledad, token,
-                             ca_cert_path=None, api_uri=None, api_version=None,
-                             uid=None, gpgbinary=None):
-    return KeyManager(
-        "{username}@{provider}".format(username=username, provider=provider),
-        "http://uri",
-        soledad,
-        token=token,
-        ca_cert_path=ca_cert_path,
-        api_uri=api_uri,
-        api_version=api_version,
-        uid=uid,
-        gpgbinary=gpgbinary)
-
-
-
 def _get_passphrase(args):
     passphrase = args.passphrase
     if passphrase is None:
@@ -183,86 +159,3 @@ def _get_all_docs(soledad):
     _, docs = yield soledad.get_all_docs()
     for doc in docs:
         print json.dumps(doc.content, indent=4)
-
-
-# main program
-
-@inlineCallbacks
-def _main(soledad, km, args):
-    try:
-        if args.create_docs:
-            for i in xrange(args.create_docs):
-                t = time.time()
-                logger.debug(
-                    "Creating doc %d/%d..." % (i + 1, args.create_docs))
-                content = {
-                    'datetime': time.strftime(
-                        "%Y-%m-%d %H:%M:%S", time.gmtime(t)),
-                    'timestamp': t,
-                    'index': i,
-                    'total': args.create_docs,
-                }
-                yield soledad.create_doc(content)
-        if args.sync:
-            yield soledad.sync()
-        if args.repeat_sync:
-            old_gen = 0
-            new_gen = yield soledad.sync()
-            while old_gen != new_gen:
-                old_gen = new_gen
-                new_gen = yield soledad.sync()
-        if args.get_all_docs:
-            yield _get_all_docs(soledad)
-        if args.export_private_key:
-            yield _export_key(args, km, args.export_private_key, private=True)
-        if args.export_public_key:
-            yield _export_key(args, km, args.expoert_public_key, private=False)
-        if args.export_incoming_messages:
-            yield _export_incoming_messages(
-                soledad, args.export_incoming_messages)
-    except Exception as e:
-        logger.error(e)
-    finally:
-        soledad.close()
-        reactor.callWhenRunning(reactor.stop)
-
-
-if __name__ == '__main__':
-    args = _parse_args()
-    passphrase = _get_passphrase(args)
-    basedir = _get_basedir(args)
-
-    if not args.use_auth_data:
-        # get auth data from server
-        uuid, server_url, cert_file, token = \
-            _get_soledad_info(
-                args.username, args.provider, passphrase, basedir)
-    else:
-        # load auth data from file
-        with open(args.use_auth_data) as f:
-            auth_data = json.loads(f.read())
-            uuid = auth_data['uuid']
-            server_url = auth_data['server_url']
-            cert_file = auth_data['cert_file']
-            token = auth_data['token']
-
-    # export auth data to a file
-    if args.export_auth_data:
-        with open(args.export_auth_data, "w") as f:
-            f.write(json.dumps({
-                'uuid': uuid,
-                'server_url': server_url,
-                'cert_file': cert_file,
-                'token': token,
-            }))
-
-    soledad = _get_soledad_instance(
-        uuid, passphrase, basedir, server_url, cert_file, token)
-    km = _get_keymanager_instance(
-        args.username,
-        args.provider,
-        soledad,
-        token,
-        uid=uuid)
-    _main(soledad, km, args)
-    reactor.run()
