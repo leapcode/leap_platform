@@ -18,7 +18,7 @@ class site_nagios::server::apache {
   include apache::module::cgi
 
   # apache >= 2.4, debian jessie
-  if ( versioncmp($::apache_version, '2.4') >= 0 ) {
+  if ( $::lsbdistcodename == 'jessie' ) {
     include apache::module::authn_core
   }
 

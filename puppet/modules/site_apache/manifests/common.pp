@@ -10,7 +10,7 @@ class site_apache::common {
   include apache::module::mime
 
   # load mods depending on apache version
-  if ( versioncmp($::apache_version, '2.4') >= 0 ) {
+  if ( $::lsbdistcodename == 'jessie' ) {
     # apache >= 2.4, debian jessie
     # needed for mod_ssl config
     include apache::module::socache_shmcb
