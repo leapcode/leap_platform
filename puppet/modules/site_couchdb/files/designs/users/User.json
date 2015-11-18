@@ -11,12 +11,12 @@
     },
     "by_created_at_and_one_month_warning_not_sent": {
       "map": "function (doc) {\n  if ((doc['type'] == 'User') && (doc['created_at'] != null) && (doc['one_month_warning_sent'] == null)) {\n    emit(doc['created_at'], 1);\n  }    \n}\n",
-      "reduce": "function(key, values, rereduce) { return sum(values); }"
+      "reduce": "          function(key, values, rereduce) {\n            return sum(values);\n          }\n"
     },
     "by_created_at": {
       "map": "                function(doc) {\n                  if ((doc['type'] == 'User') && (doc['created_at'] != null)) {\n                    emit(doc['created_at'], 1);\n                  }\n                }\n",
       "reduce": "_sum"
     }
   },
-  "couchrest-hash": "61840ab3ec0f94ef8bbd6dd208db3b70"
+  "couchrest-hash": "d854607d299887a347e554176cb79e20"
 }
