@@ -27,6 +27,13 @@ class site_config::remove::files {
       path => '/var/log/',
       recurse => true,
       matches => 'leap_mx*';
+    # We rotate 5 logs, so we should only have mx.log, mx.log.[1-5], with an
+    # optional .gz suffix. The following will remove any logs that are out
+    # of this range
+    'leap_mx_rotate':
+      path => '/var/log/leap/',
+      recurse => true,
+      matches => [ 'mx.log.[6-9](.gz)?', 'mx.log.[0-9][0-9]'];
     '/srv/leap/webapp/public/provider.json':;
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,
