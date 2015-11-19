@@ -34,6 +34,9 @@ class Mx < LeapTest
   def test_03_Are_MX_daemons_running?
     assert_running 'leap_mx'
     assert_running '/usr/lib/postfix/master'
+    assert_running '/usr/sbin/postfwd'
+    assert_running 'postfwd2::cache'
+    assert_running 'postfwd2::policy'
     assert_running '/usr/sbin/unbound'
     pass
   end
