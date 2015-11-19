@@ -7,11 +7,19 @@ class site_apt {
   $apt_url_security  = $apt_config['security']
   $apt_url_backports = $apt_config['backports']
 
+  # needed on jessie hosts for getting pnp4nagios from testing
+  if ( $::operatingsystemmajrelease == '8' ) {
+    $use_next_release = true
+  } else {
+    $use_next_release = false
+  }
+
   class { 'apt':
-    custom_key_dir => 'puppet:///modules/site_apt/keys',
-    debian_url     => $apt_url_basic,
-    security_url   => $apt_url_security,
-    backports_url  => $apt_url_backports
+    custom_key_dir   => 'puppet:///modules/site_apt/keys',
+    debian_url       => $apt_url_basic,
+    security_url     => $apt_url_security,
+    backports_url    => $apt_url_backports,
+    use_next_release => $use_next_release
   }
 
   # enable http://deb.leap.se debian package repository
