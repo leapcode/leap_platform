@@ -41,13 +41,7 @@ class leap_mx {
     notify  => Service['leap-mx'];
   }
 
-  file { '/etc/default/leap_mx':
-    content => 'LOGFILE=/var/log/leap/mx.log',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    notify  => Service['leap-mx'];
-  }
+  leap::logfile { 'mx': }
 
   #
   # LEAP-MX CODE AND DEPENDENCIES
@@ -74,21 +68,5 @@ class leap_mx {
     hasstatus  => true,
     hasrestart => true,
     require    => [ Package['leap-mx'] ];
-  }
-
-  augeas {
-    'logrotate_mx':
-      context => '/files/etc/logrotate.d/leap-mx/rule',
-      changes => [
-                  'set file /var/log/leap/mx.log',
-                  'set rotate 5',
-                  'set schedule daily',
-                  'clear nocreate',
-                  'rm create',
-                  'rm ifempty',
-                  'set compress compress',
-                  'set missingok missingok',
-                  'set copytruncate copytruncate'
-                  ]
   }
 }
