@@ -2,10 +2,14 @@ import logging
 import os
 import tempfile
 import getpass
-import requests
-import srp._pysrp as srp
 import binascii
 import json
+
+try:
+    import requests
+    import srp._pysrp as srp
+except ImportError:
+    pass
 
 from twisted.internet.defer import inlineCallbacks
 
@@ -14,6 +18,7 @@ from leap.soledad.client import Soledad
 
 """
 Helper functions to give access to client-side Soledad database.
+Copied over from soledad/scripts folder.
 """
 
 # create a logger
@@ -31,6 +36,27 @@ safe_unhexlify = lambda x: binascii.unhexlify(x) if (
 def _fail(reason):
     logger.error('Fail: ' + reason)
     exit(2)
+
+
+def get_soledad_instance(uuid, passphrase, basedir, server_url, cert_file,
+                         token):
+    # setup soledad info
+    logger.info('UUID is %s' % uuid)
+    logger.info('Server URL is %s' % server_url)
+    secrets_path = os.path.join(
+        basedir, '%s.secret' % uuid)
+    local_db_path = os.path.join(
+        basedir, '%s.db' % uuid)
+    # instantiate soledad
+    return Soledad(
+        uuid,
+        unicode(passphrase),
+        secrets_path=secrets_path,
+        local_db_path=local_db_path,
+        server_url=server_url,
+        cert_file=cert_file,
+        auth_token=token,
+        defer_encryption=True)
 
 
 def _get_api_info(provider):
@@ -95,26 +121,6 @@ def _get_soledad_info(username, provider, passphrase, basedir):
         f.write(ca_cert)
     return auth[2]['id'], server_url, cert_file, auth[2]['token']
 
-
-def get_soledad_instance(uuid, passphrase, basedir, server_url, cert_file,
-                         token):
-    # setup soledad info
-    logger.info('UUID is %s' % uuid)
-    logger.info('Server URL is %s' % server_url)
-    secrets_path = os.path.join(
-        basedir, '%s.secret' % uuid)
-    local_db_path = os.path.join(
-        basedir, '%s.db' % uuid)
-    # instantiate soledad
-    return Soledad(
-        uuid,
-        unicode(passphrase),
-        secrets_path=secrets_path,
-        local_db_path=local_db_path,
-        server_url=server_url,
-        cert_file=cert_file,
-        auth_token=token,
-        defer_encryption=True)
 
 def _get_passphrase(args):
     passphrase = args.passphrase
