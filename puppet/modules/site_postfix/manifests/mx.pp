@@ -34,17 +34,17 @@ class site_postfix::mx {
     'virtual_mailbox_domains':
       value => 'deliver.local';
     'virtual_mailbox_base':
-      value => '/var/mail/vmail';
+      value => '/var/mail/leap-mx';
     'virtual_mailbox_maps':
       value => 'static:Maildir/';
-    # Note: virtual-aliases map will take precedence over leap_mx
+    # Note: virtual-aliases map will take precedence over leap-mx
     # lookup (tcp:localhost)
     'virtual_alias_maps':
       value => 'hash:/etc/postfix/virtual-aliases tcp:localhost:4242';
     'luser_relay':
       value => '';
     # uid and gid are set to an arbitrary hard-coded value here, this
-    # must match the 'vmail' user block below
+    # must match the 'leap-mx' user/group
     'virtual_uid_maps':
       value => 'static:42424';
     'virtual_gid_maps':
@@ -79,22 +79,6 @@ class site_postfix::mx {
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug
 
-  # Make the 'vmail' user for leap-mx. This user is where all legitimate,
-  # non-system mail is delivered so leap-mx can process it. Previously, we let
-  # the system pick a uid/gid, but we need to know what they are set to in order
-  # to set the virtual_uid_maps and virtual_gid_maps. Its a bit overkill write a
-  # fact just for this, so instead we pick arbitrary numbers that seem unlikely
-  # to be used and then use them in the postfix configuration
-  user { 'vmail':
-    ensure     => present,
-    comment    => 'Leap Mailspool',
-    home       => '/var/mail/vmail',
-    shell      => '/bin/false',
-    uid        => '42424',
-    gid        => '42424',
-    managehome => true,
-  }
-
   class { 'postfix':
     preseed             => true,
     root_mail_recipient => $root_mail_recipient,
@@ -114,6 +98,6 @@ clean_smtps	  unix	n	-	n	-	0	cleanup
       Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Client_ca::Key'],
       Class['Site_config::X509::Client_ca::Ca'],
-      User['vmail'] ]
+      User['leap-mx'] ]
   }
 }

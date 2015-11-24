@@ -12,7 +12,7 @@ STATUS[1]='Warning'
 STATUS[2]='Critical'
 CHECKNAME='Leap_MX_Queue'
 
-WATCHDIR='/var/mail/vmail/Maildir/new/'
+WATCHDIR='/var/mail/leap-mx/Maildir/new/'
 
 
 total=`find $WATCHDIR -type f -mmin +$MAXAGE | wc -l`

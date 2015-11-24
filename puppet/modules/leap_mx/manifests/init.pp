@@ -15,18 +15,29 @@ class leap_mx {
   #
   # USER AND GROUP
   #
+  # Make the user for leap-mx. This user is where all legitimate, non-system
+  # mail is delivered so leap-mx can process it. Previously, we let the system
+  # pick a uid/gid, but we need to know what they are set to in order to set the
+  # virtual_uid_maps and virtual_gid_maps. Its a bit overkill write a fact just
+  # for this, so instead we pick arbitrary numbers that seem unlikely to be used
+  # and then use them in the postfix configuration
 
   group { 'leap-mx':
     ensure    => present,
+    gid       => 42424,
     allowdupe => false;
   }
 
   user { 'leap-mx':
-    ensure    => present,
-    allowdupe => false,
-    gid       => 'leap-mx',
-    home      => '/etc/leap',
-    require   => Group['leap-mx'];
+    ensure     => present,
+    comment    => 'Leap Mail',
+    allowdupe  => false,
+    uid        => 42424,
+    gid        => 'leap-mx',
+    home       => '/var/mail/leap-mx',
+    shell      => '/bin/false',
+    managehome => true,
+    require    => Group['leap-mx'];
   }
 
   #
@@ -52,7 +63,8 @@ class leap_mx {
       ensure  => $sources['leap-mx']['revision'],
       require => [
         Class['site_apt::preferences::twisted'],
-        Class['site_apt::leap_repo'] ];
+        Class['site_apt::leap_repo']
+        User['leap-mx'] ];
 
     'leap-keymanager':
       ensure => latest;
