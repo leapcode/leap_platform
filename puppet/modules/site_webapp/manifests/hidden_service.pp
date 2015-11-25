@@ -8,6 +8,7 @@ class site_webapp::hidden_service {
   include apache::module::alias
   include apache::module::expires
   include apache::module::removeip
+  include apache::module::status
 
   include tor::daemon
   tor::daemon::hidden_service { 'webapp': ports => '80 127.0.0.1:80' }
