@@ -32,6 +32,8 @@ class site_static {
   include apache::module::alias
   include apache::module::expires
   include apache::module::removeip
+  include apache::module::dir
+  include apache::module::negotiation
   include site_apache::common
   include site_config::ruby::dev
 
