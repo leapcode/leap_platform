@@ -122,6 +122,19 @@ class site_nickserver {
       require => Vcsrepo['/srv/leap/nickserver'];
   }
 
+  # register initscript at systemd on nodes newer than wheezy
+  # see https://leap.se/code/issues/7614
+  case $::operatingsystemrelease {
+    /^7.*/: { }
+    default:  {
+      exec { 'register_systemd_nickserver':
+        refreshonly => true,
+        command     => '/bin/systemctl enable nickserver',
+        subscribe   => File['/etc/init.d/nickserver'];
+      }
+    }
+  }
+
   service { 'nickserver':
     ensure     => running,
     enable     => true,
@@ -129,6 +142,8 @@ class site_nickserver {
     hasstatus  => true,
     require    => [
       File['/etc/init.d/nickserver'],
+      File['/usr/bin/nickserver'],
+      Exec['register_systemd_nickserver'],
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
