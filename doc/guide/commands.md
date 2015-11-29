@@ -47,7 +47,7 @@ SSH public key file for this new user
 Default Value: None
 
 * `--self`
-Add yourself as a trusted sysadin by choosing among the public keys available for the current user.
+Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.
 
 
 # leap cert
