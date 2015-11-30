@@ -7,10 +7,5 @@ class site_couchdb::master {
     pwhash_alg          => $site_couchdb::couchdb_pwhash_alg
   }
 
-  # couchdb is not available in jessie, and the
-  # leap deb repo only hosts a wheeyz version.
-  # we install it therefore from unstable
-  include site_apt::sid_repo
-
   include site_check_mk::agent::couchdb::master
 }
