@@ -10,7 +10,7 @@ class Soledad < LeapTest
   end
 
   def test_00_Is_Soledad_running?
-    assert_running 'soledad'
+    assert_running '.*/usr/bin/twistd.*--wsgi=leap.soledad.server.application'
     pass
   end
 

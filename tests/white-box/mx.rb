@@ -32,15 +32,15 @@ class Mx < LeapTest
   end
 
   def test_03_Are_MX_daemons_running?
-    assert_running 'leap_mx'
-    assert_running '/usr/lib/postfix/master'
-    assert_running '/usr/sbin/postfwd'
-    assert_running 'postfwd2::cache'
-    assert_running 'postfwd2::policy'
-    assert_running '/usr/sbin/unbound'
-    assert_running '^/usr/sbin/clamd -c /etc/clamav/clamd.conf$'
-    assert_running '^/usr/sbin/clamav-milter --config-file=/etc/clamav/clamav-milter.conf$'
-    assert_running '^/usr/bin/freshclam -d --quiet --config-file=/etc/clamav/freshclam.conf$'
+    assert_running '.*/usr/bin/twistd.*leap_mx.tac'
+    assert_running '^/usr/lib/postfix/master$'
+    assert_running '^/usr/sbin/postfwd'
+    assert_running 'postfwd2::cache$'
+    assert_running 'postfwd2::policy$'
+    assert_running '^/usr/sbin/unbound$'
+    assert_running '^/usr/sbin/clamd'
+    assert_running '^/usr/sbin/clamav-milter'
+    assert_running '^/usr/bin/freshclam'
     pass
   end
 

@@ -27,8 +27,8 @@ class Webapp < LeapTest
   end
 
   def test_03_Are_daemons_running?
-    assert_running '/usr/sbin/apache2'
-    assert_running '/usr/bin/nickserver'
+    assert_running '^/usr/sbin/apache2'
+    assert_running '^/usr/bin/ruby /usr/bin/nickserver'
     pass
   end
 
