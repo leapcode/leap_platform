@@ -147,6 +147,8 @@ module LeapCli; module Commands
     netmask = IPAddr.new('255.255.255.255').mask(LeapCli.leapfile.vagrant_network.split('/').last).to_s
 
     basebox = options[:basebox] || 'LEAP/jessie'
+    # override basebox with custom setting from Leapfile or ~/.leaprc
+    basebox = leapfile.vagrant_basebox || basebox
 
     if vagrant_version <= Gem::Version.new('1.1.0')
       lines << %[Vagrant::Config.run do |config|]
