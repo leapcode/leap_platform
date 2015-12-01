@@ -63,7 +63,7 @@ class leap_mx {
       ensure  => $sources['leap-mx']['revision'],
       require => [
         Class['site_apt::preferences::twisted'],
-        Class['site_apt::leap_repo']
+        Class['site_apt::leap_repo'],
         User['leap-mx'] ];
 
     'leap-keymanager':
