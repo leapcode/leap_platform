@@ -98,14 +98,6 @@ class LeapTest
         assert(response = JSON.parse(body), 'Delete response should be JSON')
         assert(response["success"], 'Deleting user should be a success')
       end
-      domain = property('domain.full_suffix')
-      identities_url = couchdb_url("/identities/_design/Identity/_view/by_address?key=%22#{user.username}@#{domain}%22")
-      get(identities_url) do |body, response, error|
-        assert error.nil?, "Error checking identities db: #{error}"
-        assert response.code.to_i == 200, "Unable to check that user identity was deleted: HTTP response from API should have code 200, was #{response.code} #{error} #{body}"
-        assert(response = JSON.parse(body), 'Couch response should be JSON')
-        assert response['rows'].empty?, "Identity should have been deleted for test user #{user.username} (id #{user.id}), but was not! Response was: #{body}."
-      end
     end
   end
 
