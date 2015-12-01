@@ -28,10 +28,12 @@ class site_static {
     }
   }
 
-  include site_apache::module::headers
-  include site_apache::module::alias
-  include site_apache::module::expires
-  include site_apache::module::removeip
+  include apache::module::headers
+  include apache::module::alias
+  include apache::module::expires
+  include apache::module::removeip
+  include apache::module::dir
+  include apache::module::negotiation
   include site_apache::common
   include site_config::ruby::dev
 
