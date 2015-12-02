@@ -130,7 +130,8 @@ class site_nickserver {
       exec { 'register_systemd_nickserver':
         refreshonly => true,
         command     => '/bin/systemctl enable nickserver',
-        subscribe   => File['/etc/init.d/nickserver'];
+        subscribe   => File['/etc/init.d/nickserver'],
+        before      => Service['nickserver'];
       }
     }
   }
@@ -143,7 +144,6 @@ class site_nickserver {
     require    => [
       File['/etc/init.d/nickserver'],
       File['/usr/bin/nickserver'],
-      Exec['register_systemd_nickserver'],
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
