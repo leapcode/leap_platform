@@ -119,7 +119,9 @@ class Webapp < LeapTest
       sleep 0.2
       get(couchdb_url(url)) do |body, response, error|
         last_body, last_response, last_error = body, response, error
-        if response.code.to_i == 200
+	# After moving to couchdb, webapp user is not allowed to Read user dbs,
+	# but the return code for non-existent databases is 404. See #7674
+        if response.code.to_i == 401
           return
         end
       end
