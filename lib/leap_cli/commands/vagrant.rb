@@ -117,18 +117,11 @@ module LeapCli; module Commands
 
   def vagrant_setup(options)
     assert_bin! 'vagrant', 'Vagrant is required for running local virtual machines. Run "sudo apt-get install vagrant".'
+    assert! (vagrant_version >= Gem::Version.new('1.1')), 'Vagrant version >= 1.1 is required for running local virtual machines. Please upgrade.'
 
-    if vagrant_version <= Gem::Version.new('1.0.0')
-      gem_path = assert_run!('vagrant gem which sahara')
-      if gem_path.nil? || gem_path.empty? || gem_path =~ /^ERROR/
-        log :installing, "vagrant plugin 'sahara'"
-        assert_run! 'vagrant gem install sahara -v 0.0.13'
-      end
-    else
-      unless assert_run!('vagrant plugin list | grep sahara | cat').chars.any?
-        log :installing, "vagrant plugin 'sahara'"
-        assert_run! 'vagrant plugin install sahara'
-      end
+    unless assert_run!('vagrant plugin list | grep sahara | cat').chars.any?
+      log :installing, "vagrant plugin 'sahara'"
+      assert_run! 'vagrant plugin install sahara'
     end
     create_vagrant_file(options)
   end
@@ -144,39 +137,23 @@ module LeapCli; module Commands
 
   def create_vagrant_file(options)
     lines = []
-    netmask = IPAddr.new('255.255.255.255').mask(LeapCli.leapfile.vagrant_network.split('/').last).to_s
 
     basebox = options[:basebox] || 'LEAP/jessie'
     # override basebox with custom setting from Leapfile or ~/.leaprc
     basebox = leapfile.vagrant_basebox || basebox
 
-    if vagrant_version <= Gem::Version.new('1.1.0')
-      lines << %[Vagrant::Config.run do |config|]
-      manager.each_node do |node|
-        if node.vagrant?
-          lines << %[  config.vm.define :#{node.name} do |config|]
-          lines << %[    config.vm.box = "#{basebox}"]
-          lines << %[    config.vm.network :hostonly, "#{node.ip_address}", :netmask => "#{netmask}"]
-          lines << %[    config.vm.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]]
-          lines << %[    config.vm.customize ["modifyvm", :id, "--name", "#{node.name}"]]
-          lines << %[    #{leapfile.custom_vagrant_vm_line}] if leapfile.custom_vagrant_vm_line
-          lines << %[  end]
-        end
-      end
-    else
-      lines << %[Vagrant.configure("2") do |config|]
-      manager.each_node do |node|
-        if node.vagrant?
-          lines << %[  config.vm.define :#{node.name} do |config|]
-          lines << %[    config.vm.box = "#{basebox}"]
-          lines << %[    config.vm.network :private_network, ip: "#{node.ip_address}"]
-          lines << %[    config.vm.provider "virtualbox" do |v|]
-          lines << %[      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]]
-          lines << %[      v.name = "#{node.name}"]
-          lines << %[    end]
-          lines << %[    #{leapfile.custom_vagrant_vm_line}] if leapfile.custom_vagrant_vm_line
-          lines << %[  end]
-        end
+    lines << %[Vagrant.configure("2") do |config|]
+    manager.each_node do |node|
+      if node.vagrant?
+        lines << %[  config.vm.define :#{node.name} do |config|]
+        lines << %[    config.vm.box = "#{basebox}"]
+        lines << %[    config.vm.network :private_network, ip: "#{node.ip_address}"]
+        lines << %[    config.vm.provider "virtualbox" do |v|]
+        lines << %[      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]]
+        lines << %[      v.name = "#{node.name}"]
+        lines << %[    end]
+        lines << %[    #{leapfile.custom_vagrant_vm_line}] if leapfile.custom_vagrant_vm_line
+        lines << %[  end]
       end
     end
 
