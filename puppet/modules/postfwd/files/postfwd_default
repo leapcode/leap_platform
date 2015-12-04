@@ -13,7 +13,7 @@ PORT=10040
 # run as user postfwd
 RUNAS="postfw"
 # Arguments passed on start (--daemon implied)
-# RISEUP disable summary and cache-no-size
+# disable summary and cache-no-size
 #ARGS="--summary=600 --cache=600 --cache-rdomain-only --cache-no-size"
 ARGS="--cache=600 --cache-rdomain-only --no-rulestats"
 

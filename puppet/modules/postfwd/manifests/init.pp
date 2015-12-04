@@ -18,14 +18,15 @@ class postfwd {
       mode    => '0644',
       owner   => root,
       group   => root,
-      require => Package['postfwd'];
+      before  => Package['postfwd'];
 
     '/etc/postfix/postfwd.cf':
       content => template('postfwd/postfwd.cf.erb'),
       mode    => '0644',
       owner   => root,
       group   => root,
-      require => Package['postfix'];
+      require => Package['postfix'],
+      before  => Package['postfwd'];
   }
 
   service {
