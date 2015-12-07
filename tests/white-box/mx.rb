@@ -32,7 +32,7 @@ class Mx < LeapTest
   end
 
   def test_03_Are_MX_daemons_running?
-    assert_running '.*/usr/bin/twistd.*leap_mx.tac'
+    assert_running '.*/usr/bin/twistd.*mx.tac'
     assert_running '^/usr/lib/postfix/master$'
     assert_running '^/usr/sbin/postfwd'
     assert_running 'postfwd2::cache$'
