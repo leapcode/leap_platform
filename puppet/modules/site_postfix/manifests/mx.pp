@@ -51,6 +51,12 @@ class site_postfix::mx {
       value => 'static:42424';
     'smtpd_tls_received_header':
       value => 'yes';
+    # the following is needed for matching user's client cert fingerprints to
+    # enable relaying (#3634)
+    'smtpd_tls_fingerprint_digest':
+      value => 'sha1';
+    'relay_clientcerts':
+      value => 'tcp:localhost:2424';
     # Note: we are setting this here, instead of in site_postfix::mx::smtp_tls
     # because the satellites need to have a different value
     'smtp_tls_security_level':
