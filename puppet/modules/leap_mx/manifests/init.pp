@@ -40,6 +40,14 @@ class leap_mx {
     require    => Group['leap-mx'];
   }
 
+  file { '/var/mail/leap-mx':
+    ensure  => directory,
+    owner   => 'leap-mx',
+    group   => 'leap-mx',
+    mode    => '0755',
+    require => User['leap-mx'],
+  }
+
   #
   # LEAP-MX CONFIG
   #
