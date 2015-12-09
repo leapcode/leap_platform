@@ -1,3 +1,7 @@
+# common things to set up on every node
+# leftover from the past, where we did two puppetruns
+# after another. We should consolidate this into site_config::default
+# in the future.
 class site_config::setup {
   tag 'leap_base'
 
@@ -13,9 +17,7 @@ class site_config::setup {
   include stdlib
 
   # configure /etc/hosts
-  class { 'site_config::hosts':
-    stage => setup,
-  }
+  class { 'site_config::hosts': }
 
   include site_config::initial_firewall
 
