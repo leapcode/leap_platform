@@ -33,7 +33,8 @@ HELPER_PATHS = [
 ]
 TEST_PATHS   = [
   '../../tests/white-box/*.rb',
-  '/srv/leap/files/tests/white-box/*.rb'
+  '/srv/leap/files/tests/white-box/*.rb',
+  '/srv/leap/tests_custom/*.rb'
 ]
 
 ##
