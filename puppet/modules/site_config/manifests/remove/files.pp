@@ -14,7 +14,7 @@ class site_config::remove::files {
   # Platform 0.8 removals
   tidy {
     '/etc/default/leap_mx':;
-    '/etc/logrotate.d/leap-mx':;
+    '/etc/logrotate.d/mx':;
   }
 
   #
@@ -23,7 +23,6 @@ class site_config::remove::files {
 
   tidy {
     '/etc/rsyslog.d/99-tapicero.conf':;
-    '/etc/rsyslog.d/99-leap-mx.conf':;
     '/etc/rsyslog.d/01-webapp.conf':;
     '/etc/rsyslog.d/50-stunnel.conf':;
     '/etc/logrotate.d/stunnel':;
@@ -32,13 +31,10 @@ class site_config::remove::files {
       path => '/var/log/',
       recurse => true,
       matches => 'leap_mx*';
-    # We rotate 5 logs, so we should only have mx.log, mx.log.[1-5], with an
-    # optional .gz suffix. The following will remove any logs that are out
-    # of this range
-    'leap_mx_rotate':
+    'mx':
       path => '/var/log/leap/',
       recurse => true,
-      matches => [ 'mx.log.[6-9](.gz)?', 'mx.log.[0-9][0-9]'];
+      matches => 'mx.log*';
     '/srv/leap/webapp/public/provider.json':;
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,

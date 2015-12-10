@@ -60,7 +60,7 @@ class leap_mx {
     notify  => Service['leap-mx'];
   }
 
-  leap::logfile { 'mx': }
+  leap::logfile { 'mx': process => 'leap-mx' }
 
   #
   # LEAP-MX CODE AND DEPENDENCIES
