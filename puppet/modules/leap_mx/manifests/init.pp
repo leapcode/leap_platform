@@ -40,12 +40,37 @@ class leap_mx {
     require    => Group['leap-mx'];
   }
 
-  file { '/var/mail/leap-mx':
-    ensure  => directory,
-    owner   => 'leap-mx',
-    group   => 'leap-mx',
-    mode    => '0755',
-    require => User['leap-mx'],
+  file {
+    '/var/mail/leap-mx':
+      ensure  => directory,
+      owner   => 'leap-mx',
+      group   => 'leap-mx',
+      mode    => '0755',
+      require => User['leap-mx'];
+
+    '/var/mail/leap-mx/Maildir':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
+
+    '/var/mail/leap-mx/Maildir/new':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
+
+    '/var/mail/leap-mx/Maildir/cur':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
+
+    '/var/mail/leap-mx/Maildir/tmp':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
   }
 
   #
