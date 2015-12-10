@@ -1,17 +1,17 @@
 # setup apt on all nodes
 class site_apt {
 
-  $sources            = hiera('sources')
-  $apt_config         = $sources['apt']
+  $sources           = hiera('sources')
+  $apt_config        = $sources['apt']
 
   # debian repo urls
-  $apt_url_basic      = $apt_config['basic']
-  $apt_url_security   = $apt_config['security']
-  $apt_url_backports  = $apt_config['backports']
+  $apt_url_basic     = $apt_config['basic']
+  $apt_url_security  = $apt_config['security']
+  $apt_url_backports = $apt_config['backports']
 
   # leap repo url
-  $apt_config_leap    = $apt_config['leap']
-  $apt_url_leap_basic = $apt_config_leap['basic']
+  $platform_sources       = $sources['platform']
+  $apt_url_platform_basic = $platform_sources['apt']['basic']
 
   # needed on jessie hosts for getting pnp4nagios from testing
   if ( $::operatingsystemmajrelease == '8' ) {

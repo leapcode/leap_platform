@@ -78,6 +78,11 @@
       "source": "https://leap.se/git/nickserver",
       "revision": "origin/master"
     },
+    "platform": {
+      "apt": {
+        "basic": "= 'http://deb.leap.se/' + Leap::Platform.major_version"
+      }
+    },
     "soledad": {
       "type": "apt",
       "package": "soledad-server",

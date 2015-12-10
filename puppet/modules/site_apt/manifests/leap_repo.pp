@@ -4,14 +4,8 @@ class site_apt::leap_repo {
   $platform = hiera_hash('platform')
   $major_version = $platform['major_version']
 
-  if $::site_apt::apt_url_leap_basic == '' {
-    $content = "deb http://deb.leap.se/${major_version} ${::lsbdistcodename} main\n"
-  } else {
-    $content = "deb ${::site_apt::apt_url_leap_basic} ${::lsbdistcodename} main\n"
-  }
-
   apt::sources_list { 'leap.list':
-    content => $content,
+    content => "deb ${::site_apt::apt_url_platform_basic} ${::lsbdistcodename} main\n",
     before  => Exec[refresh_apt]
   }
 
