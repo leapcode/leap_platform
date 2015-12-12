@@ -32,7 +32,7 @@
 
 <% if (defined? @services) and (@services.include? 'webapp') -%>
   DocumentRoot /srv/leap/webapp/public
-  <% if Gem::Version.new(@apache_version) > Gem::Version.new('2.3') %>
+  <% if scope.function_guess_apache_version([]) == '2.4' %>
   <Directory /srv/leap/webapp/public>
     AllowOverride None
     Require all granted
