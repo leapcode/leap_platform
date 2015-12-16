@@ -93,7 +93,7 @@ module LeapCli; module Commands
 
   def seed_node_data(node, args)
     args.each do |seed|
-      key, value = seed.split(':')
+      key, value = seed.split(':', 2)
       value = format_seed_value(value)
       assert! key =~ /^[0-9a-z\._]+$/, "illegal characters used in property '#{key}'"
       if key =~ /\./
