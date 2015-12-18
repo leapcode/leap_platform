@@ -71,6 +71,15 @@ class site_postfix::mx {
       value => 'unix:/run/clamav/milter.ctl,unix:/var/run/opendkim/opendkim.sock';
     'milter_default_action':
       value => 'accept';
+    # Make sure that the right values are set, these could be set to different
+    # things on install, depending on preseed or debconf options
+    # selected (see #7478)
+    'relay_transport':
+      value => 'relay';
+    'default_transport':
+      value => 'smtp';
+    'mailbox_command':
+      value => '';
   }
 
   include site_postfix::mx::smtpd_checks
