@@ -53,12 +53,27 @@ if [ $? -eq 1 ]; then
   exit 1
 fi
 
+# couchrest gem does currently not install on jessie
+# https://leap.se/code/issues/7754
+# workaround is to install rake as gem
+gem install rake
+
 $LEAP $OPTS -v 2 deploy
 
 set +e
 git add .
 git commit -m'initialized and deployed provider'
 set -e
+
+# Vagrant: leap_mx fails to start on jessie
+# https://leap.se/code/issues/7755
+# Workaround: we stop and start leap-mx after deploy and
+# before testing
+
+service leap-mx stop
+service leap-mx start
+
+
 
 echo '==============================================='
 echo 'testing the platform'
