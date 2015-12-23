@@ -27,6 +27,7 @@ $SUDO echo -e '\n@log = "/var/log/leap/deploy.log"' >> Leapfile
 
 if [ ! -e /home/${USER}/.ssh/id_rsa ]; then
   $SUDO ssh-keygen -f /home/${USER}/.ssh/id_rsa -P ''
+  mkdir /root/.ssh
   cat /home/${USER}/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 fi
 
@@ -37,7 +38,7 @@ chown ${USER}:${USER} ${PROVIDERDIR}/files/nodes/${NODE}/${NODE}_ssh.pub
 $LEAP $OPTS add-user --self
 $LEAP $OPTS cert ca
 $LEAP $OPTS cert csr
-$LEAP $OPTS node add $NODE ip_address:"$(facter ipaddress)"  services:"$services" tags:production
+$LEAP $OPTS node add $NODE ip_address:"$(facter ipaddress)"  services:"$services" couch.master:true couch.pwhash_alg:pbkdf2 tags:production
 echo '{ "webapp": { "admins": ["testadmin"] } }' > services/webapp.json
 
 $LEAP $OPTS compile
