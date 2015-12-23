@@ -3,7 +3,20 @@ class leap::cli::install ( $source = false ) {
   if $source {
     # needed for building leap_cli from source
     include ::git
-    include ::site_config::ruby::dev
+    include ::rubygems
+    include ::site_config::packages::build_essential
+
+    class { '::ruby':
+      install_dev => true
+    }
+
+    class { 'bundler::install': install_method => 'package' }
+
+    Class[Ruby] ->
+      Class[rubygems] ->
+      Class[::site_config::packages::build_essential] ->
+      Class[bundler::install]
+
 
     vcsrepo { '/srv/leap/cli':
       ensure   => present,
@@ -20,8 +33,10 @@ class leap::cli::install ( $source = false ) {
     exec { 'install_leap_cli':
       command     => '/usr/bin/rake build && /usr/bin/rake install',
       cwd         => '/srv/leap/cli',
+      user        => 'root',
+      environment => 'USER=root',
       refreshonly => true,
-      require     => [ Package['ruby-dev'], File['/etc/gemrc'], Package['rake'] ]
+      require     => [ Class[bundler::install] ]
     }
   }
   else {
