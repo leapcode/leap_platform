@@ -8,8 +8,7 @@ class site_webapp::hidden_service {
   include apache::module::alias
   include apache::module::expires
   include apache::module::removeip
-  include apache::module::status
-
+  
   include tor::daemon
   tor::daemon::hidden_service { 'webapp': ports => '80 127.0.0.1:80' }
 
@@ -33,11 +32,12 @@ class site_webapp::hidden_service {
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600';
-
-    '/etc/apache2/mods-enabled/status.conf':
-      ensure => absent,
-      notify => Service['apache'];
   }
+
+  # it is necessary to zero out the config of the status module
+  # because we are configuring our own version that is unavailable
+  # over the hidden service (see: #7456 and #7776)
+  apache::module { 'status': ensure => present, conf_content => ' ' }
 
   apache::vhost::file {
     'hidden_service':
