@@ -87,24 +87,24 @@ class site_openvpn {
 
   if $openvpn_allow_unlimited {
     site_openvpn::server_config { 'tcp_config':
-      port        => '1194',
-      proto       => 'tcp',
-      local       => $unlimited_gateway_address,
-      tls_remote  => "\"${openvpn_unlimited_prefix}\"",
-      server      => "${openvpn_unlimited_tcp_network_prefix}.0 ${openvpn_unlimited_tcp_netmask}",
-      push        => "\"dhcp-option DNS ${openvpn_unlimited_tcp_network_prefix}.1\"",
-      management  => '127.0.0.1 1000',
-      config      => $openvpn_config
+      port       => '1194',
+      proto      => 'tcp',
+      local      => $unlimited_gateway_address,
+      tls_remote => "\"${openvpn_unlimited_prefix}\"",
+      server     => "${openvpn_unlimited_tcp_network_prefix}.0 ${openvpn_unlimited_tcp_netmask}",
+      push       => "\"dhcp-option DNS ${openvpn_unlimited_tcp_network_prefix}.1\"",
+      management => '127.0.0.1 1000',
+      config     => $openvpn_config
     }
     site_openvpn::server_config { 'udp_config':
-      port        => '1194',
-      proto       => 'udp',
-      local       => $unlimited_gateway_address,
-      tls_remote  => "\"${openvpn_unlimited_prefix}\"",
-      server      => "${openvpn_unlimited_udp_network_prefix}.0 ${openvpn_unlimited_udp_netmask}",
-      push        => "\"dhcp-option DNS ${openvpn_unlimited_udp_network_prefix}.1\"",
-      management  => '127.0.0.1 1001',
-      config      => $openvpn_config
+      port       => '1194',
+      proto      => 'udp',
+      local      => $unlimited_gateway_address,
+      tls_remote => "\"${openvpn_unlimited_prefix}\"",
+      server     => "${openvpn_unlimited_udp_network_prefix}.0 ${openvpn_unlimited_udp_netmask}",
+      push       => "\"dhcp-option DNS ${openvpn_unlimited_udp_network_prefix}.1\"",
+      management => '127.0.0.1 1001',
+      config     => $openvpn_config
     }
   } else {
     tidy { '/etc/openvpn/tcp_config.conf': }
@@ -113,24 +113,24 @@ class site_openvpn {
 
   if $openvpn_allow_limited {
     site_openvpn::server_config { 'limited_tcp_config':
-      port        => '1194',
-      proto       => 'tcp',
-      local       => $limited_gateway_address,
-      tls_remote  => "\"${openvpn_limited_prefix}\"",
-      server      => "${openvpn_limited_tcp_network_prefix}.0 ${openvpn_limited_tcp_netmask}",
-      push        => "\"dhcp-option DNS ${openvpn_limited_tcp_network_prefix}.1\"",
-      management  => '127.0.0.1 1002',
-      config      => $openvpn_config
+      port       => '1194',
+      proto      => 'tcp',
+      local      => $limited_gateway_address,
+      tls_remote => "\"${openvpn_limited_prefix}\"",
+      server     => "${openvpn_limited_tcp_network_prefix}.0 ${openvpn_limited_tcp_netmask}",
+      push       => "\"dhcp-option DNS ${openvpn_limited_tcp_network_prefix}.1\"",
+      management => '127.0.0.1 1002',
+      config     => $openvpn_config
     }
     site_openvpn::server_config { 'limited_udp_config':
-      port        => '1194',
-      proto       => 'udp',
-      local       => $limited_gateway_address,
-      tls_remote  => "\"${openvpn_limited_prefix}\"",
-      server      => "${openvpn_limited_udp_network_prefix}.0 ${openvpn_limited_udp_netmask}",
-      push        => "\"dhcp-option DNS ${openvpn_limited_udp_network_prefix}.1\"",
-      management  => '127.0.0.1 1003',
-      config      => $openvpn_config
+      port       => '1194',
+      proto      => 'udp',
+      local      => $limited_gateway_address,
+      tls_remote => "\"${openvpn_limited_prefix}\"",
+      server     => "${openvpn_limited_udp_network_prefix}.0 ${openvpn_limited_udp_netmask}",
+      push       => "\"dhcp-option DNS ${openvpn_limited_udp_network_prefix}.1\"",
+      management => '127.0.0.1 1003',
+      config     => $openvpn_config
     }
   } else {
     tidy { '/etc/openvpn/limited_tcp_config.conf': }
