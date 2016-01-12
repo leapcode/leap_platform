@@ -10,6 +10,7 @@ NODE='node1'
 SUDO="sudo -u ${USER}"
 PROVIDERDIR="/home/${USER}/leap/configuration"
 LEAP="$SUDO /usr/local/bin/leap"
+GIT="$SUDO git"
 
 echo '==============================================='
 echo 'configuring leap'
@@ -43,9 +44,9 @@ echo '{ "webapp": { "admins": ["testadmin"] } }' > services/webapp.json
 
 $LEAP $OPTS compile
 
-git init
-git add .
-git commit -m'configured provider'
+$GIT init
+$GIT add .
+$GIT commit -m'configured provider'
 
 $LEAP $OPTS node init $NODE
 if [ $? -eq 1 ]; then
@@ -61,8 +62,8 @@ gem install rake
 $LEAP $OPTS -v 2 deploy
 
 set +e
-git add .
-git commit -m'initialized and deployed provider'
+$GIT add .
+$GIT commit -m'initialized and deployed provider'
 set -e
 
 # Vagrant: leap_mx fails to start on jessie
