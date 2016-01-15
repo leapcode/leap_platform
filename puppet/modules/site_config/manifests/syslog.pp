@@ -1,7 +1,13 @@
 # configure rsyslog on all nodes
 class site_config::syslog {
 
-  include site_apt::preferences::rsyslog
+  # only pin rsyslog packages to backports on wheezy
+  case $::operatingsystemrelease {
+    /^7.*/: {
+      include site_apt::preferences::rsyslog
+    }
+    default:  { }
+  }
 
   class { 'rsyslog::client':
     log_remote => false,
