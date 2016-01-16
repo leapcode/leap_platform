@@ -204,4 +204,17 @@ define site_openvpn::server_config(
       value  => '3',
       server => $openvpn_configname;
   }
+
+  # register openvpn services at systemd on nodes newer than wheezy
+  # see https://leap.se/code/issues/7798
+  case $::operatingsystemrelease {
+    /^7.*/: { }
+    default:  {
+      exec { "enable_systemd_${openvpn_configname}":
+        refreshonly => true,
+        command     => "/bin/systemctl enable openvpn@${openvpn_configname}",
+        subscribe   => File["/etc/openvpn/${openvpn_configname}.conf"];
+      }
+    }
+  }
 }
