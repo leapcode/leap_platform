@@ -151,10 +151,10 @@ module LeapCli; module Commands
         lines << %[    config.vm.provider "virtualbox" do |v|]
         lines << %[      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]]
         lines << %[      v.name   = "#{node.name}"]
-        lines << %[      v.memory = 1024]
+        lines << %[      v.memory = 1536]
         lines << %[    end]
         lines << %[    config.vm.provider "libvirt" do |v|]
-        lines << %[      v.memory = 1024]
+        lines << %[      v.memory = 1536]
         lines << %[    end]
         lines << %[    #{leapfile.custom_vagrant_vm_line}] if leapfile.custom_vagrant_vm_line
         lines << %[  end]
