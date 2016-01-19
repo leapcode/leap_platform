@@ -1,6 +1,8 @@
 # remove tapicero leftovers from previous deploys on couchdb nodes
 class site_config::remove::tapicero {
 
+  ensure_packages('curl')
+
   # remove tapicero couchdb user
   $couchdb_config = hiera('couch')
   $couchdb_mode   = $couchdb_config['mode']
@@ -14,7 +16,8 @@ class site_config::remove::tapicero {
 
   exec { 'remove_couchdb_user':
     onlyif  => "/usr/bin/curl -s 127.0.0.1:${port}/_users/org.couchdb.user:tapicero | grep -qv 'not_found'",
-    command => "/usr/local/bin/couch-doc-update --host 127.0.0.1:${port} --db _users --id org.couchdb.user:tapicero --delete"
+    command => "/usr/local/bin/couch-doc-update --host 127.0.0.1:${port} --db _users --id org.couchdb.user:tapicero --delete",
+    require => Package['curl']
   }
 
 
