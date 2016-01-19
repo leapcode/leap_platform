@@ -213,7 +213,11 @@ define site_openvpn::server_config(
       exec { "enable_systemd_${openvpn_configname}":
         refreshonly => true,
         command     => "/bin/systemctl enable openvpn@${openvpn_configname}",
-        subscribe   => File["/etc/openvpn/${openvpn_configname}.conf"];
+        subscribe   => File["/etc/openvpn/${openvpn_configname}.conf"],
+        notify      => Service["openvpn@${openvpn_configname}"];
+      }
+      service { "openvpn@${openvpn_configname}":
+        ensure  => running
       }
     }
   }
