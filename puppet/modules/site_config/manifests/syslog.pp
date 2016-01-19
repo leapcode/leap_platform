@@ -1,6 +1,13 @@
+# configure rsyslog on all nodes
 class site_config::syslog {
 
-  include site_apt::preferences::rsyslog
+  # only pin rsyslog packages to backports on wheezy
+  case $::operatingsystemrelease {
+    /^7.*/: {
+      include site_apt::preferences::rsyslog
+    }
+    default:  { }
+  }
 
   class { 'rsyslog::client':
     log_remote => false,
@@ -15,12 +22,13 @@ action(type="mmanon" ipv4.bits="32" mode="rewrite")'
   augeas {
     'logrotate_leap_deploy':
       context => '/files/etc/logrotate.d/leap_deploy/rule',
-      changes => [ 'set file /var/log/leap/deploy.log',
-                   'set rotate 5',
-                   'set size 1M',
-                   'set compress compress',
-                   'set missingok missingok',
-                   'set copytruncate copytruncate' ];
+      changes => [
+        'set file /var/log/leap/deploy.log',
+        'set rotate 5',
+        'set size 1M',
+        'set compress compress',
+        'set missingok missingok',
+        'set copytruncate copytruncate' ];
 
     # NOTE:
     # the puppet_command script requires the option delaycompress
@@ -28,12 +36,13 @@ action(type="mmanon" ipv4.bits="32" mode="rewrite")'
 
     'logrotate_leap_deploy_summary':
       context => '/files/etc/logrotate.d/leap_deploy_summary/rule',
-      changes => [ 'set file /var/log/leap/deploy-summary.log',
-                   'set rotate 5',
-                   'set size 100k',
-                   'set delaycompress delaycompress',
-                   'set compress compress',
-                   'set missingok missingok',
-                   'set copytruncate copytruncate' ]
+      changes => [
+        'set file /var/log/leap/deploy-summary.log',
+        'set rotate 5',
+        'set size 100k',
+        'set delaycompress delaycompress',
+        'set compress compress',
+        'set missingok missingok',
+        'set copytruncate copytruncate' ]
   }
 }
