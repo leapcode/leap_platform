@@ -12,6 +12,8 @@ class site_postfix::mx::smtpd_tls {
     'smtpd_tls_cert_file':  value  => $cert_path;
     'smtpd_tls_key_file':   value  => $key_path;
     'smtpd_tls_ask_ccert':  value  => 'yes';
+    'smtpd_tls_received_header':
+      value => 'yes';
     'smtpd_tls_security_level':
       value  => 'may';
     'smtpd_tls_eecdh_grade':

@@ -2,9 +2,13 @@ class site_postfix::mx::smtp_tls {
 
   include site_config::x509::ca
   include x509::variables
+  $cert_name = hiera('name')
   $ca_path   = "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt"
   $cert_path = "${x509::variables::certs}/${site_config::params::cert_name}.crt"
   $key_path  = "${x509::variables::keys}/${site_config::params::cert_name}.key"
+
+  include site_config::x509::cert
+  include site_config::x509::key
 
   # smtp TLS
   postfix::config {

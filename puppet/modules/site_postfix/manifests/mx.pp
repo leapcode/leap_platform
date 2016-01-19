@@ -49,10 +49,9 @@ class site_postfix::mx {
       value => 'static:42424';
     'virtual_gid_maps':
       value => 'static:42424';
-    'smtpd_tls_received_header':
-      value => 'yes';
-    # the following is needed for matching user's client cert fingerprints to
-    # enable relaying (#3634)
+    # the two following configs are needed for matching user's client cert
+    # fingerprints to enable relaying (#3634). Satellites do not have
+    # these configured.
     'smtpd_tls_fingerprint_digest':
       value => 'sha1';
     'relay_clientcerts':
