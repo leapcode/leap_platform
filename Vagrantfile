@@ -31,6 +31,8 @@ Vagrant.configure("2") do |box|
 
     # forward leap_web ports
     config.vm.network "forwarded_port", guest: 443, host:4443
+    # forward pixelated ports
+    config.vm.network "forwarded_port", guest: 8080,  host:8080
   end
 
   box.vm.define :"wheezy", autostart: false do |config|
