@@ -30,7 +30,6 @@ Vagrant.configure("2") do |box|
     config.ssh.username = "vagrant"
 
     # forward leap_web ports
-    config.vm.network "forwarded_port", guest: 80,  host:8080
     config.vm.network "forwarded_port", guest: 443, host:4443
   end
 
@@ -57,7 +56,6 @@ Vagrant.configure("2") do |box|
     config.ssh.username = "vagrant"
 
     # forward leap_web ports
-    config.vm.network "forwarded_port", guest: 80,  host:8080
     config.vm.network "forwarded_port", guest: 443, host:4443
   end
 end
