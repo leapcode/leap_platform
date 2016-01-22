@@ -10,7 +10,6 @@ class site_config::default {
   # make sure apt is updated before any packages are installed
   include apt::update
   Package { require => Exec['apt_updated'] }
-  include site_config::packages::uninstall
 
   include site_config::slow
 
@@ -28,7 +27,10 @@ class site_config::default {
   # i.e. openstack/aws nodes, vagrant nodes
 
   # fix dhclient from changing resolver information
+  # facter returns 'true' as string
+  # lint:ignore:quoted_booleans
   if $::dhcp_enabled == 'true' {
+  # lint:endignore
     include site_config::dhclient
   }
 
@@ -45,7 +47,7 @@ class site_config::default {
   include haveged
 
   # install/remove base packages
-  include site_config::packages::base
+  include site_config::packages
 
   # include basic shorewall config
   include site_shorewall::defaults

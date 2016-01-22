@@ -61,13 +61,6 @@ class site_nickserver {
     require   => Group['nickserver'];
   }
 
-  #
-  # NICKSERVER CODE NOTE: in order to support TLS, libssl-dev must be installed
-  # before EventMachine gem is built/installed.
-  #
-
-  package { 'libssl-dev': ensure => installed }
-
   vcsrepo { '/srv/leap/nickserver':
     ensure   => present,
     revision => $sources['nickserver']['revision'],
