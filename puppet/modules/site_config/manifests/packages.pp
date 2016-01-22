@@ -14,7 +14,7 @@ class site_config::packages {
     'eject', 'ftp',
     'g++', 'g++-4.6', 'g++-4.7', 'g++-4.8', 'g++-4.9',
     'gcc', 'gcc-4.6', 'gcc-4.7', 'gcc-4.8', 'gcc-4.9',
-    'laptop-detect', 'libc6-dev', 'libssl-dev', 'lpr', 'make', 'portmap',
+    'laptop-detect', 'libc6-dev', 'libssl-dev', 'lpr', 'make',
     'pppconfig', 'pppoe', 'pump', 'qstat',
     'samba-common', 'samba-common-bin', 'smbclient',
     'tcl8.5', 'tk8.5', 'os-prober', 'unzip', 'xauth', 'x11-common',
@@ -22,9 +22,10 @@ class site_config::packages {
       ensure => purged;
   }
 
-  notice($::site_config::params::environment)
-  if $::site_config::params::environment != 'local' {
-    package { [ 'nfs-common', 'nfs-kernel-server', 'rpcbind' ]:
+  # leave a few packages installed on local environments
+  # vagrant i.e. needs them for mounting shared folders
+    if $::site_config::params::environment != 'local' {
+    package { [ 'nfs-common', 'nfs-kernel-server', 'rpcbind', 'portmap' ]:
       ensure => purged;
     }
   }
