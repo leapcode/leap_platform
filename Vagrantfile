@@ -13,11 +13,11 @@ Vagrant.configure("2") do |box|
     config.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.name   = "jessie"
-      v.memory = 1024
+      v.memory = 1536
     end
 
     config.vm.provider "libvirt" do |v|
-      v.memory = 1024
+      v.memory = 1536
     end
 
     config.vm.provision "puppet" do |puppet|
@@ -41,11 +41,11 @@ Vagrant.configure("2") do |box|
     config.vm.provider "virtualbox" do |v|
       v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       v.name   = "wheezy"
-      v.memory = 1024
+      v.memory = 1536
     end
 
     config.vm.provider "libvirt" do |v|
-      v.memory = 1024
+      v.memory = 1536
     end
 
     config.vm.provision "puppet" do |puppet|
