@@ -66,4 +66,13 @@ class site_couchdb {
   # remove tapicero leftovers on couchdb nodes
   include site_config::remove::tapicero
 
+  # Destroy every per-user storage database
+  # where the corresponding user record does not exist.
+  cron { 'cleanup_stale_userdbs':
+    command => '(/bin/date; /srv/leap/couchdb/scripts/cleanup-user-dbs) >> /var/log/leap/couchdb-cleanup.log',
+    user    => 'root',
+    hour    => 4,
+    minute  => 7;
+  }
+
 }
