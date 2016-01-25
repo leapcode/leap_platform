@@ -19,4 +19,8 @@ class site_config::remove::bigcouch {
     command     => "sed -i '/bigcouch.log/d' /etc/check_mk/logwatch.state",
     refreshonly => true,
   }
+
+  cron { 'compact_all_shards':
+    ensure => absent
+  }
 }
