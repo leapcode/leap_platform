@@ -2,20 +2,24 @@
 # debug script to be run on remote servers
 # called from leap_cli with the 'leap debug' cmd
 
-regexp='(leap|pixelated|stunnel|couch|soledad|haproxy)'
+apps='(leap|pixelated|stunnel|couch|soledad|haproxy)'
+
+facts='(apt_running |^architecture |^augeasversion |^couchdb_.* |^debian_.* |^dhcp_enabled |^domain |^facterversion |^filesystems |^fqdn |^hardwaremodel |^hostname |^interface.* |^ipaddress.* |^is_pe |^is_virtual |^kernel.* |^lib |^lsb.* |^memory.* |^mtu_.* |^netmask.* |^network_.* |^operatingsystem |^os.* |^path |^physicalprocessorcount |^processor.* |^ps |^puppetversion |^root_home |^rsyslog_version |^rubysitedir |^rubyversion |^selinux |^ssh_version |^swapfree.* |^swapsize.* |^type |^virtual)'
+
 
 # query facts and filter out private stuff
-echo -e '\n\n'
-facter | egrep -iv '(^ssh|^uniqueid)'
+export FACTERLIB="/srv/leap/puppet/modules/apache/lib/facter:/srv/leap/puppet/modules/apt/lib/facter:/srv/leap/puppet/modules/concat/lib/facter:/srv/leap/puppet/modules/couchdb/lib/facter:/srv/leap/puppet/modules/rsyslog/lib/facter:/srv/leap/puppet/modules/site_config/lib/facter:/srv/leap/puppet/modules/sshd/lib/facter:/srv/leap/puppet/modules/stdlib/lib/facter"
+
+facter 2>/dev/null | egrep -i "$facts"
 
 # query installed versions
 echo -e '\n\n'
-dpkg -l | egrep "$regexp"
+dpkg -l | egrep "$apps"
 
 
 # query running procs
 echo -e '\n\n'
-ps aux|egrep "$regexp"
+ps aux|egrep "$apps"
 
 echo -e '\n\n'
 echo -e "Last deploy:\n"

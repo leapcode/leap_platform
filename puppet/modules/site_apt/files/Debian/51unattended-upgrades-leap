@@ -1,0 +1,6 @@
+// this file is managed by puppet !
+
+Unattended-Upgrade::Allowed-Origins {
+  "leap.se:stable";
+}
+

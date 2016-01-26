@@ -8,4 +8,8 @@ class site_couchdb::master {
   }
 
   include site_check_mk::agent::couchdb::master
+
+  # remove bigcouch leftovers from previous installations
+  include ::site_config::remove::bigcouch
+
 }
