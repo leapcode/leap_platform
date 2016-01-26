@@ -15,6 +15,7 @@ Leap::Platform.define do
   #
   # absolute paths on the destination server
   #
+  self.hiera_dir  = '/etc/leap' if self.respond_to?(:hiera_dir)
   self.hiera_path = '/etc/leap/hiera.yaml'
   self.leap_dir   = '/srv/leap'
   self.files_dir  = '/srv/leap/files'
