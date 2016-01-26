@@ -25,6 +25,7 @@ import tempfile
 os.environ['SKIP_TWISTED_SSL_CHECK'] = '1'
 
 from twisted.internet import defer, reactor
+from twisted.python import log
 
 from client_side_db import get_soledad_instance
 from leap.common.events import flags
@@ -66,10 +67,15 @@ if __name__ == '__main__':
         s.close()
         reactor.stop()
 
+    def log_and_exit(f):
+        log.err(f)
+        reactor.stop()
+
     def start_sync():
         d = create_docs(s)
         d.addCallback(lambda _: s.sync())
         d.addCallback(onSyncDone)
+        d.addErrback(log_and_exit)
 
     reactor.callWhenRunning(start_sync)
     reactor.run()
