@@ -3,5 +3,7 @@
 # the "--fast" parameter
 class site_config::slow {
   tag 'leap_slow'
+
+  include apt::update
   class { 'site_apt::dist_upgrade': }
 }

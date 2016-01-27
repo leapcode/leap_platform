@@ -11,6 +11,15 @@ $services = hiera('services', [])
 $services_str = join($services, ', ')
 notice("Services for ${fqdn}: ${services_str}")
 
+# In the default deployment case, we want to run an 'apt-get dist-upgrade'
+# to ensure the latest packages are installed. This is done by including the
+# class 'site_config::slow' here. However, you only changed a small bit of
+# the platform and want to skip this slow part of deployment, you can do that
+# by using 'leap deploy --fast' which will only apply those resources that are
+# tagged with 'leap_base' or 'leap_service'.
+# See https://leap.se/en/docs/platform/details/under-the-hood#tags
+include site_config::slow
+
 if member($services, 'openvpn') {
   include site_openvpn
 }
