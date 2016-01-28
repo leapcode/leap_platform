@@ -10,11 +10,7 @@ class site_config::remove::bigcouch {
       Exec['remove_bigcouch_logwatch_stateline']
     ]
   }
-  # remove leftover bigcouch logwatch spool files
-  exec { 'remove_bigcouch_logwatch_spoolfiles':
-    command     => 'find /var/lib/check_mk/logwatch -name \'\\opt\\bigcouch\\var\\log\\bigcouch.log\' -exec rm {} \;',
-    refreshonly => true,
-  }
+
   exec { 'remove_bigcouch_logwatch_stateline':
     command     => "sed -i '/bigcouch.log/d' /etc/check_mk/logwatch.state",
     refreshonly => true,
