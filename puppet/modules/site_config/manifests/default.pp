@@ -7,18 +7,6 @@ class site_config::default {
   include site_config::params
   include site_config::setup
 
-  # By default, the class 'site_config::slow' is included in site.pp.
-  # It basically does an 'apt-get update' and 'apt-get dist-upgrade'.
-  # This class can be excluded by using 'leap deploy --fast',
-  # see https://leap.se/en/docs/platform/details/under-the-hood#tags for more
-  # details.
-  # The following Package resource override makes sure that *if* an
-  # 'apt-get update' is executed by 'site_config::slow', it should be done
-  # before any packages are installed.
-
-  Package { require => Exec['apt_updated'] }
-
-
   # default class, used by all hosts
 
   include lsb, git
