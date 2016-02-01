@@ -1,17 +1,13 @@
 # remove leftovers on monitoring nodes
 class site_config::remove::monitoring {
 
+  # Remove check_mk loggwatch spoolfiles for
+  # tapicero and bigcouch
   tidy {
-    'checkmk_logwatch_spool':
+    'remove_logwatch_spoolfiles':
       path    => '/var/lib/check_mk/logwatch',
       recurse => true,
-      matches => '*tapicero.log'
-  }
-
-  # remove leftover bigcouch logwatch spool files
-  exec { 'remove_bigcouch_logwatch_spoolfiles':
-    command     => 'find /var/lib/check_mk/logwatch -name \'\\opt\\bigcouch\\var\\log\\bigcouch.log\' -exec rm {} \;',
-    refreshonly => true,
+      matches => [ '*tapicero.log', '*bigcouch.log'];
   }
 
 }
