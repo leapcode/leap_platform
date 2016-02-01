@@ -24,8 +24,7 @@ class site_config::setup {
   include site_apt
 
   package { 'facter':
-    ensure  => latest,
-    require => Exec['refresh_apt']
+    ensure  => latest
   }
 
   # if squid_deb_proxy_client is set to true, install and configure
