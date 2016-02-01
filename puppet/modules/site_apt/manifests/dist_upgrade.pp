@@ -11,7 +11,7 @@ class site_apt::dist_upgrade {
       command     => "/usr/bin/apt-get -q -y -o 'DPkg::Options::=--force-confold'  dist-upgrade",
       refreshonly => false,
       timeout     => 1200,
-      require     => Exec['refresh_apt']
+      require     => Exec['apt_updated']
     }
   }
 }

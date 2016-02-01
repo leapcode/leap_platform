@@ -16,7 +16,7 @@ class site_config::default {
   # 'apt-get update' is executed by 'site_config::slow', it should be done
   # before any packages are installed.
 
-  Package { require => Exec['refresh_apt'] }
+  Package { require => Exec['apt_updated'] }
 
 
   # default class, used by all hosts
