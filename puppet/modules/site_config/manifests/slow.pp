@@ -4,6 +4,7 @@
 class site_config::slow {
   tag 'leap_slow'
 
+  include site_config::default
   include apt::update
   class { 'site_apt::dist_upgrade': }
 }
