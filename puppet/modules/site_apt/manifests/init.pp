@@ -55,7 +55,7 @@ class site_apt {
 # All packages should be installed _after_ refresh_apt is called,
 # which does an apt-get update.
 
-  Exec['refresh_apt'] ->
+  Exec['apt_updated'] ->
   Package <||>
 
 }
