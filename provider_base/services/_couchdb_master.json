@@ -1,8 +1,0 @@
-//
-// Applied to master couchdb node when there is a single master
-//
-{
-  "couch": {
-    "mode": "master"
-  }
-}

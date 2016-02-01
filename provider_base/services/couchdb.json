@@ -8,8 +8,8 @@
         }
     },
     "couch": {
-        "master": false,
         "port": 5984,
+        "mode": "plain",
         "users": {
             "admin": {
                 "username": "admin",

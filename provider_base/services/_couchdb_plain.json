@@ -1,0 +1,8 @@
+//
+// Applied to couchdb node when there is a single plain couchdb
+//
+{
+  "couch": {
+    "mode": "plain"
+  }
+}
