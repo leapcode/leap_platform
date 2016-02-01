@@ -6,7 +6,6 @@ class site_config::remove::bigcouch {
   file { '/etc/check_mk/logwatch.d/bigcouch.cfg':
     ensure => absent,
     notify => [
-      Exec['remove_bigcouch_logwatch_spoolfiles'],
       Exec['remove_bigcouch_logwatch_stateline']
     ]
   }
