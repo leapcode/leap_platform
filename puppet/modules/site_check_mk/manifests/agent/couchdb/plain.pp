@@ -1,5 +1,5 @@
 # configure logwatch and nagios checks for plain single couchdb master
-class site_check_mk::agent::couchdb::master {
+class site_check_mk::agent::couchdb::plain {
 
   # remove bigcouch leftovers
   augeas {

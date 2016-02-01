@@ -1,5 +1,6 @@
 //
 // Applied to all non-master couchdb nodes
+// NOT CURRENTLY SUPPORTED
 //
 {
   "stunnel": {
