@@ -13,7 +13,4 @@ class site_apt::leap_repo {
     ensure => latest
   }
 
-  # We wont be able to install the leap-keyring package unless the leap apt
-  # source has been added and apt has been refreshed
-  Exec['refresh_apt'] -> Package['leap-keyring']
 }
