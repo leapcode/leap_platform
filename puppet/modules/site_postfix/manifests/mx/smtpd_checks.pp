@@ -1,3 +1,5 @@
+# smtpd checks for incoming mail on smtp port 25 and
+# mail sent via the bitmask client using smtps port 465
 class site_postfix::mx::smtpd_checks {
 
   postfix::config {
@@ -23,6 +25,8 @@ class site_postfix::mx::smtpd_checks {
     # disable a user by removing their valid client cert (#3634)
     'smtps_recipient_restrictions':
       value => 'permit_tls_clientcerts, check_recipient_access tcp:localhost:2244, reject_unauth_destination, permit';
+    'smtps_relay_restrictions':
+      value => 'permit_mynetworks, permit_tls_clientcerts, defer_unauth_destination';
     'smtps_helo_restrictions':
       value => 'permit_mynetworks, check_helo_access hash:$checks_dir/helo_checks, permit';
     'smtpd_sender_restrictions':
