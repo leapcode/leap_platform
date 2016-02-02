@@ -14,6 +14,7 @@
 require 'minitest/unit'
 require 'yaml'
 require 'tsort'
+require 'timeout'
 
 ##
 ## CONSTANTS
@@ -115,6 +116,16 @@ class LeapTest < MiniTest::Unit::TestCase
   end
 
   #
+  # thrown Timeout::Error if test run
+  # takes longer than $timeout
+  #
+  def run(*args)
+    Timeout::timeout($timeout, Timeout::Error) do
+      super(*args)
+    end
+  end
+
+  #
   # The default pass just does an `assert true`. In our case, we want to make the passes more explicit.
   #
   def pass
@@ -144,6 +155,7 @@ class LeapTest < MiniTest::Unit::TestCase
     MiniTest::Unit.runner.warn(self.class, method_name, msg.join("\n"))
   end
 
+  #
   # Always runs test methods within a test class in alphanumeric order
   #
   def self.test_order
@@ -215,6 +227,12 @@ class LeapRunner < MiniTest::Unit
       when MiniTest::Assertion then
         @failures += 1
         report_line("FAIL", klass, meth, e, e.message)
+        if $halt_on_failure
+          raise TestFailure.new
+        end
+      when Timeout::Error then
+        @failures += 1
+        report_line("TIMEOUT", klass, meth, nil, "Test stopped because timeout exceeded (#{$timeout} seconds).")
         if $halt_on_failure
           raise TestFailure.new
         end
@@ -371,13 +389,14 @@ end
 
 def print_help
   puts ["USAGE: run_tests [OPTIONS]",
-       "  --continue       Don't halt on an error, but continue to the next test.",
-       "  --checkmk        Print test results in checkmk format (must come before --test).",
-       "  --test TEST      Run only the test with name TEST.",
-       "  --list-tests     Prints the names of all available tests and exit.",
-       "  --retry COUNT    If the tests don't pass, retry COUNT additional times (default is zero)",
-       "  --wait SECONDS   Wait for SECONDS between retries (default is 5)",
-       "  --debug          Print out full stack trace on errors"].join("\n")
+       "  --continue        Don't halt on an error, but continue to the next test.",
+       "  --checkmk         Print test results in checkmk format (must come before --test).",
+       "  --test TEST       Run only the test with name TEST.",
+       "  --list-tests      Prints the names of all available tests and exit.",
+       "  --retry COUNT     If the tests don't pass, retry COUNT additional times (default is zero).",
+       "  --timeout SECONDS Halt a test if it exceed SECONDS (default is 30).",
+       "  --wait SECONDS    Wait for SECONDS between retries (default is 5).",
+       "  --debug           Print out full stack trace on errors."].join("\n")
   exit(0)
 end
 
@@ -455,6 +474,7 @@ def main
   $output_format = :human
   $retry = false
   $wait = 5
+  $timeout = 30
   loop do
     case ARGV[0]
       when '--continue' then ARGV.shift; $halt_on_failure = false;
@@ -463,6 +483,7 @@ def main
       when '--test' then ARGV.shift; pin_test_name(ARGV.shift)
       when '--list-tests' then list_tests
       when '--retry' then ARGV.shift; $retry = ARGV.shift.to_i
+      when '--timeout' then ARGV.shift; $timeout = ARGV.shift.to_i;
       when '--wait' then ARGV.shift; $wait = ARGV.shift.to_i
       when '--debug' then ARGV.shift
       when '-d' then ARGV.shift
