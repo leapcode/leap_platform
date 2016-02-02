@@ -60,7 +60,7 @@ class site_webapp {
 
   exec { 'bundler_update':
     cwd     => '/srv/leap/webapp',
-    command => '/bin/bash -c "/usr/bin/bundle check --path vendor/bundle || /usr/bin/bundle install --path vendor/bundle --without test development"',
+    command => '/bin/bash -c "/usr/bin/bundle check --path vendor/bundle || /usr/bin/bundle install --path vendor/bundle --without test development debug"',
     unless  => '/usr/bin/bundle check --path vendor/bundle',
     user    => 'leap-webapp',
     timeout => 600,
