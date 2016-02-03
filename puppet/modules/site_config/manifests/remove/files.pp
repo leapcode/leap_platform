@@ -15,6 +15,7 @@ class site_config::remove::files {
   tidy {
     '/etc/default/leap_mx':;
     '/etc/logrotate.d/mx':;
+    '/etc/rsyslog.d/50-mx.conf':;
   }
 
   #
@@ -30,11 +31,7 @@ class site_config::remove::files {
     'leap_mx':
       path => '/var/log/',
       recurse => true,
-      matches => 'leap_mx*';
-    'mx':
-      path => '/var/log/leap/',
-      recurse => true,
-      matches => 'mx.log*';
+      matches => ['leap_mx*', 'mx.log.[6-9](.gz)?', 'mx.log.[0-9][0-9](.gz)?'];
     '/srv/leap/webapp/public/provider.json':;
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,
