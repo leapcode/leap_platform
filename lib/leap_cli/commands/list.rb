@@ -52,7 +52,7 @@ module LeapCli; module Commands
         elsif prop_value == ""
           "empty"
         elsif prop_value.is_a? LeapCli::Config::Object
-          node[prop].dump_json(:compact) # TODO: add option of getting pre-evaluation values.
+          node[prop].dump_json(:format => :compact) # TODO: add option of getting pre-evaluation values.
         else
           prop_value.to_s
         end

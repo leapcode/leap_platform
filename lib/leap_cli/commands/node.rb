@@ -33,11 +33,13 @@ module LeapCli; module Commands
         if options[:local]
           node['ip_address'] = pick_next_vagrant_ip_address
         end
-        seed_node_data(node, args[1..-1])
+        seed_node_data_from_cmd_line(node, args[1..-1])
+        seed_node_data_from_template(node)
         validate_ip_address(node)
         begin
-          write_file! [:node_config, name], node.dump_json + "\n"
           node['name'] = name
+          json = node.dump_json(:exclude => ['name'])
+          write_file!([:node_config, name], json + "\n")
           if file_exists? :ca_cert, :ca_key
             generate_cert_for_node(manager.reload_node!(node))
           end
@@ -91,7 +93,7 @@ module LeapCli; module Commands
     node
   end
 
-  def seed_node_data(node, args)
+  def seed_node_data_from_cmd_line(node, args)
     args.each do |seed|
       key, value = seed.split(':', 2)
       value = format_seed_value(value)
@@ -107,6 +109,23 @@ module LeapCli; module Commands
         current_object[final_key] = value
       else
         node[key] = value
+      end
+    end
+  end
+
+  #
+  # load "new node template" information into the `node`, modifying `node`.
+  # values in the template will not override existing node values.
+  #
+  def seed_node_data_from_template(node)
+    return unless manager.respond_to?(:template)
+    node.inherit_from!(manager.template('common'))
+    [node['services']].flatten.each do |service|
+      if service
+        template = manager.template(service)
+        if template
+          node.inherit_from!(template)
+        end
       end
     end
   end
@@ -142,6 +161,11 @@ module LeapCli; module Commands
   end
 
   def validate_ip_address(node)
+    if node['ip_address'] == "REQUIRED"
+      bail! do
+        log :error, "ip_address is not set. Specify with `leap node add NAME ip_address:ADDRESS`."
+      end
+    end
     IPAddr.new(node['ip_address'])
   rescue ArgumentError
     bail! do
