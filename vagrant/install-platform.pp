@@ -1,7 +1,5 @@
 class {'apt': }
-File['/etc/apt/preferences'] ->
-  Exec['refresh_apt'] ->
-  Package <| ( title != 'lsb' ) |>
+Exec['update_apt'] -> Package <||>
 
 
 if $::lsbdistcodename == 'wheezy' {
