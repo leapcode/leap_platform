@@ -1,0 +1,7 @@
+{
+  "openvpn": {
+    "gateway_address": "REQUIRED",
+    "ports": ["443"],
+    "protocols": ["tcp"]
+  }
+}

@@ -31,6 +31,7 @@ Leap::Platform.define do
     :files_dir        => 'files',
     :nodes_dir        => 'nodes',
     :services_dir     => 'services',
+    :templates_dir    => 'templates',
     :tags_dir         => 'tags',
     :node_files_dir   => 'files/nodes/#{arg}',
 
@@ -41,6 +42,7 @@ Leap::Platform.define do
     :node_config      => 'nodes/#{arg}.json',
     :service_config   => 'services/#{arg}.json',
     :tag_config       => 'tags/#{arg}.json',
+    :template_config  => 'templates/#{arg}.json',
 
     # input config files, environmentally scoped
     :provider_env_config  => 'provider.#{arg}.json',
