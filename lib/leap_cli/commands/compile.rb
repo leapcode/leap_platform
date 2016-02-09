@@ -62,7 +62,8 @@ module LeapCli
     # but this should not be done if we are not examining all possible nodes.
     #
     def compile_hiera_files(nodes, clean_export)
-      update_compiled_ssh_configs # must come first
+      update_certificates(nodes)  # \ must come first so that output will
+      update_compiled_ssh_configs # / get included in compiled hiera files.
       sanity_check(nodes)
       manager.export_nodes(nodes)
       manager.export_secrets(clean_export)
