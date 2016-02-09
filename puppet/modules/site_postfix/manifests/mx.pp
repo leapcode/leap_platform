@@ -79,16 +79,19 @@ class site_postfix::mx {
       value => 'smtp';
     'mailbox_command':
       value => '';
+    'header_checks':
+      value => '';
   }
 
-  include site_postfix::mx::smtpd_checks
-  include site_postfix::mx::checks
-  include site_postfix::mx::smtp_tls
-  include site_postfix::mx::smtpd_tls
-  include site_postfix::mx::static_aliases
-  include site_postfix::mx::rewrite_openpgp_header
-  include clamav
-  include postfwd
+  include ::site_postfix::mx::smtpd_checks
+  include ::site_postfix::mx::checks
+  include ::site_postfix::mx::smtp_tls
+  include ::site_postfix::mx::smtpd_tls
+  include ::site_postfix::mx::static_aliases
+  include ::site_postfix::mx::rewrite_openpgp_header
+  include ::site_postfix::mx::received_anon
+  include ::clamav
+  include ::postfwd
 
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug
@@ -111,7 +114,7 @@ ${smtpd_relay_restrictions}  -o smtpd_recipient_restrictions=\$smtps_recipient_r
   -o smtpd_client_restrictions=
   -o cleanup_service_name=clean_smtps
 clean_smtps   unix  n - n - 0 cleanup
-  -o header_checks=pcre:/etc/postfix/checks/rewrite_openpgp_headers"
+  -o header_checks=pcre:/etc/postfix/checks/rewrite_openpgp_headers,pcre:/etc/postfix/checks/received_anon"
 
   class { 'postfix':
     preseed             => true,
