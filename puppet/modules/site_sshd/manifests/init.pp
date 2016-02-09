@@ -76,6 +76,7 @@ MACs hmac-sha2-512,hmac-sha2-256,hmac-ripemd160'
     tcp_forwarding          => $ssh_config['AllowTcpForwarding'],
     manage_client           => false,
     use_storedconfigs       => false,
-    tail_additional_options => $tail_additional_options
+    tail_additional_options => $tail_additional_options,
+    hostkey_type            => [ 'rsa', 'dsa', 'ecdsa' ]
   }
 }
