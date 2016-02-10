@@ -1,7 +1,6 @@
 {
   "soledad": {
     "port": 2323,
-    "require_couchdb": "=> assert %(services.include? 'couchdb')",
     "couchdb_soledad_user": {
       "username": "= global.services[:couchdb].couch.users[:soledad].username",
       "password": "= secret :couch_soledad_password",
