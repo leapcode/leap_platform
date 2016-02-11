@@ -4,7 +4,7 @@ class site_couchdb::plain {
     admin_pw            => $site_couchdb::couchdb_admin_pw,
     admin_salt          => $site_couchdb::couchdb_admin_salt,
     chttpd_bind_address => '127.0.0.1',
-    pwhash_alg          => $site_couchdb::couchdb_pwhash_alg
+    pwhash_alg          => 'pbkdf2'
   }
 
   include site_check_mk::agent::couchdb::plain
