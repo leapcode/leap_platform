@@ -10,8 +10,9 @@ class site_postfix::mx {
   $mynetworks          = join(hiera('mynetworks', ''), ' ')
   $rbls                = suffix(prefix(hiera('rbls', []), 'reject_rbl_client '), ',')
 
-  $root_mail_recipient = hiera('contacts')
-  $postfix_smtp_listen = 'all'
+  $root_mail_recipient    = hiera('contacts')
+  $postfix_smtp_listen    = 'all'
+  $postfix_use_postscreen = 'yes'
 
   include site_config::x509::cert
   include site_config::x509::key
@@ -81,6 +82,10 @@ class site_postfix::mx {
       value => '';
     'header_checks':
       value => '';
+    'postscreen_access_list':
+      value => 'permit_mynetworks';
+    'postscreen_greet_action':
+      value => 'enforce';
   }
 
   include ::site_postfix::mx::smtpd_checks
@@ -121,6 +126,7 @@ clean_smtps   unix  n - n - 0 cleanup
     root_mail_recipient => $root_mail_recipient,
     smtp_listen         => 'all',
     mastercf_tail       => $mastercf_tail,
+    use_postscreen      => 'yes',
     require             => [
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
