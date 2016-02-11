@@ -1,3 +1,22 @@
+Platform 0.8
+-----------------------
+
+This release focuses on many improvements to email service.
+
+* It is possible to require invite codes for new users signing up.
+* Admins can now suspect/enable users and block/enable their ability to send
+  and receive email.
+* Bigcouch is now officially deprecated. New nodes created with `leap node add
+  services:couchdb` will default to using plain CouchDB.
+* Support for SPF and DKIM.
+
+Compatibility:
+
+* Tapicero has been removed. Now, soledad and couchdb must be on the same node.
+* Requires Debian Jessie. Wheezy is no longer supported.
+* Includes:
+  * webapp 0.8
+
 Platform 0.7.1
 -----------------------
 
