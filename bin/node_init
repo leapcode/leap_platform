@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# LEAP Platform node initialization.
+# This script is run on the target server when `leap node init` is run.
+#
+
+DEBIAN_VERSION="^(jessie|8\.)"
+LEAP_DIR="/srv/leap"
+HIERA_DIR="/etc/leap"
+INIT_FILE="/srv/leap/initialized"
+REQUIRED_PACKAGES="puppet rsync lsb-release locales"
+
+PATH="/bin:/sbin:/usr/sbin:/usr/bin"
+APT_GET="apt-get -q -y -o DPkg::Options::=--force-confold"
+APT_GET_UPDATE="apt-get update -o Acquire::Languages=none"
+BAD_APT_RESPONSE="(BADSIG|NO_PUBKEY|KEYEXPIRED|REVKEYSIG|NODATA|Could not resolve|failed to fetch)"
+export DEBIAN_FRONTEND=noninteractive
+
+test -f $INIT_FILE && rm $INIT_FILE
+if ! egrep -q "$DEBIAN_VERSION" /etc/debian_version; then
+  echo "ERROR: This operating system is not supported. The file /etc/debian_version must match /$DEBIAN_VERSION/ but is: `cat /etc/debian_version`"
+  exit 1
+fi
+mkdir -p $LEAP_DIR
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+
+#
+# UPDATE PACKAGES
+# (exit code is not reliable, sadly)
+#
+echo "updating package list"
+
+error_count=0
+while read line; do
+  error=$(echo $line | egrep "$BAD_APT_RESPONSE")
+  if [[ $error ]]; then
+    errors[error_count]=$error
+    ((error_count++))
+    break # should we halt on first error?
+  fi
+  echo $line
+done < <($APT_GET_UPDATE 2>&1)
+
+if [[ $error_count > 0 ]]; then
+  echo "ERROR: fatal error in 'apt-get update', bailing out."
+  for e in "${errors[@]}"; do
+    echo "       $e"
+  done
+  exit 1
+fi
+
+#
+# UPDATE TIME
+#
+if [[ ! $(which ntpd) ]]; then
+  echo "installing ntpd"
+  $APT_GET install ntp
+  exit_code=$?
+  if [[ $exit_code -ne 0 ]]; then
+    echo "ERROR: bailing out."
+    exit $exit_code
+  fi
+fi
+
+echo "updating server time"
+systemctl -q is-active ntp.service && systemctl stop ntp.service
+ntpd -gxq
+systemctl -q is-active ntp.service || systemctl start ntp.service
+
+#
+# INSTALL PACKAGES
+#
+echo "installing required packages"
+$APT_GET install $REQUIRED_PACKAGES
+exit_code=$?
+if [[ $exit_code -ne 0 ]]; then
+  echo "ERROR: bailing out."
+  exit $exit_code
+fi
+
+#
+# FINALIZE
+#
+mkdir -p $HIERA_DIR
+chmod 0755 $HIERA_DIR
+touch $INIT_FILE
