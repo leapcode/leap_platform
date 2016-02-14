@@ -298,6 +298,7 @@ remove this directory if you don't use it.
         nodes = manager.nodes[:environment => env]
         next unless nodes.any?
         spf = nil
+        dkim = nil
         lines << ENV_HEADER % (env.nil? ? 'default' : env)
         nodes.each_node do |node|
           if node.dns.public
@@ -314,9 +315,11 @@ remove this directory if you don't use it.
             mx_domain = relative_hostname(node.domain.full_suffix, provider)
             lines << [mx_domain, "IN MX 10  #{relative_hostname(node.domain.full, provider)}"]
             spf ||= [mx_domain, spf_record(node)]
+            dkim ||= dkim_record(node)
           end
         end
         lines << spf if spf
+        lines << dkim if dkim
       end
 
       # print the lines
@@ -331,6 +334,8 @@ remove this directory if you don't use it.
       end
     end
 
+    private
+
     #
     # allow mail from any mx node, plus the webapp nodes.
     #
@@ -344,6 +349,43 @@ remove this directory if you don't use it.
       # you can chain multiple strings together.
       strings = "v=spf1 MX #{ips.join(' ')} -all".scan(/.{1,255}/).join('" "')
       %(IN TXT    "#{strings}")
+    end
+
+    #
+    # for example:
+    #
+    # selector._domainkey IN TXT "v=DKIM1;h=sha256;k=rsa;s=email;p=MIGfMA0GCSq...GSIb3DQ"
+    #
+    # specification: http://dkim.org/specs/rfc4871-dkimbase.html#rfc.section.7.4
+    #
+    def dkim_record(node)
+      # PEM encoded public key (base64), without the ---PUBLIC KEY--- armor parts.
+      assert_files_exist! :dkim_pub_key
+      dkim_pub_key = Path.named_path(:dkim_pub_key)
+      public_key = File.readlines(dkim_pub_key).grep(/^[^\-]+/).join
+
+      host = node.mx.dkim.selector + "._domainkey"
+      attrs = [
+        "v=DKIM1",
+        "h=sha256",
+        "k=rsa",
+        "s=email",
+        "p=" + public_key
+      ]
+
+      return [host, "IN TXT    " + txt_wrap(attrs.join(';'))]
+    end
+
+    #
+    # DNS TXT records cannot be longer than 255 characters.
+    #
+    # However, multiple responses will be concatenated together.
+    # It looks like this:
+    #
+    #   IN TXT "v=spf1 .... first" "second string..."
+    #
+    def txt_wrap(str)
+      '"' + str.scan(/.{1,255}/).join('" "') + '"'
     end
 
     ENV_HEADER = %[
@@ -380,6 +422,8 @@ $ORIGIN %{domain}.
     ##
     ## FIREWALL
     ##
+
+    public
 
     def compile_firewall
       manager.nodes.each_node(&:evaluate)

@@ -76,6 +76,9 @@ Leap::Platform.define do
     :commercial_key   => 'files/cert/#{arg}.key',
     :commercial_csr   => 'files/cert/#{arg}.csr',
     :commercial_cert  => 'files/cert/#{arg}.crt',
+    :dkim_priv_key    => 'files/mx/dkim.key',
+    :dkim_pub_key     => 'files/mx/dkim.pub',
+
     :commercial_ca_cert       => 'files/cert/commercial_ca.crt',
     :vagrantfile              => 'test/Vagrantfile',
     :static_web_provider_json => 'files/web/bootstrap/#{arg}/provider.json',
