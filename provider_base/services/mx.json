@@ -4,7 +4,15 @@
     // these are in *addition* to the standard reserved aliases for root and postmaster, etc.
     "aliases": {},
     // this is the domain that is used for the OpenPGP header
-    "key_lookup_domain": "= global.services[:webapp].webapp.domain"
+    "key_lookup_domain": "= global.services[:webapp].webapp.domain",
+    "dkim": {
+      // bit sizes larger than 2048 are not necessarily supported
+      "bit_size": 2048,
+      "public_key": "= remote_file_path(:dkim_pub_key) { generate_dkim_key(mx.dkim.bit_size) }",
+      "private_key": "= remote_file_path(:dkim_priv_key) { generate_dkim_key(mx.dkim.bit_size) }",
+      // generate selector based on first ten digits of pub key fingerprint:
+      "selector": "= fingerprint(local_file_path(:dkim_pub_key) { generate_dkim_key(mx.dkim.bit_size) }, :mode => :rsa).slice(0,10)"
+    }
   },
   "stunnel": {
     "clients": {
