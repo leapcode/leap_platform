@@ -37,9 +37,10 @@ class site_apt {
 
   include ::site_apt::unattended_upgrades
 
-  apt::sources_list { 'secondary.list.disabled':
-    content => template('site_apt/secondary.list');
-  }
+  # not currently used
+  #apt::sources_list { 'secondary.list':
+  #  content => template('site_apt/secondary.list');
+  #}
 
   apt::preferences_snippet { 'facter':
     release  => "${::lsbdistcodename}-backports",

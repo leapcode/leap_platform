@@ -16,6 +16,8 @@ class site_config::remove::files {
     '/etc/default/leap_mx':;
     '/etc/logrotate.d/mx':;
     '/etc/rsyslog.d/50-mx.conf':;
+    '/etc/apt/preferences.d/openvpn':;
+    '/etc/apt/sources.list.d/secondary.list.disabled.list':;
   }
 
   #
