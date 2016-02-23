@@ -25,6 +25,7 @@ Vagrant.configure("2") do |box|
       puppet.module_path = "./puppet/modules"
       puppet.manifest_file = "install-platform.pp"
       puppet.options = "--verbose"
+      puppet.hiera_config_path = "hiera.yaml"
     end
     config.vm.provision "shell", path: "vagrant/configure-leap.sh"
     config.ssh.username = "vagrant"
