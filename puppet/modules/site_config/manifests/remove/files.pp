@@ -33,7 +33,8 @@ class site_config::remove::files {
     'leap_mx':
       path => '/var/log/',
       recurse => true,
-      matches => ['leap_mx*', 'mx.log.[6-9](.gz)?', 'mx.log.[0-9][0-9](.gz)?'];
+      matches => ['leap_mx*', 'mx.log.[1-5]', 'mx.log.[6-9](.gz)?',
+                  'mx.log.[0-9][0-9](.gz)?'];
     '/srv/leap/webapp/public/provider.json':;
     '/srv/leap/couchdb/designs/tmp_users':
       recurse => true,
