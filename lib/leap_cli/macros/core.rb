@@ -4,13 +4,6 @@ module LeapCli
   module Macro
 
     #
-    # return a fingerprint for a x509 certificate
-    #
-    def fingerprint(filename)
-      "SHA256: " + X509.fingerprint("SHA256", Path.named_path(filename))
-    end
-
-    #
     # Creates a hash from the ssh key info in users directory, for use in
     # updating authorized_keys file. Additionally, the 'monitor' public key is
     # included, which is used by the monitor nodes to run particular commands

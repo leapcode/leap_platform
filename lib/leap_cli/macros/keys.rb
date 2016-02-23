@@ -8,17 +8,28 @@ module LeapCli
   module Macro
 
     #
+    # return a fingerprint for a key or certificate
+    #
+    def fingerprint(filename, options={})
+      options[:mode] ||= :x509
+      if options[:mode] == :x509
+        "SHA256: " + X509.fingerprint("SHA256", Path.named_path(filename))
+      elsif options[:mode] == :rsa
+        key = OpenSSL::PKey::RSA.new(File.read(filename))
+        Digest::SHA1.new.hexdigest(key.to_der)
+      end
+    end
+
+    ##
+    ## TOR
+    ##
+
+    #
     # return the path to the tor public key
     # generating key if it is missing
     #
     def tor_public_key_path(path_name, key_type)
-      path = file_path(path_name)
-      if path.nil?
-        generate_tor_key(key_type)
-        file_path(path_name)
-      else
-        path
-      end
+      file_path(path_name) { generate_tor_key(key_type) }
     end
 
     #
@@ -26,13 +37,7 @@ module LeapCli
     # generating key if it is missing
     #
     def tor_private_key_path(path_name, key_type)
-      path = file_path(path_name)
-      if path.nil?
-        generate_tor_key(key_type)
-        file_path(path_name)
-      else
-        path
-      end
+      file_path(path_name) { generate_tor_key(key_type) }
     end
 
     #
@@ -59,6 +64,15 @@ module LeapCli
         Base32.encode(sha1sum.slice(0,10)).downcase
       else
         LeapCli.log :warning, 'Tor public key file "%s" does not exist' % tor_public_key_path
+      end
+    end
+
+    def generate_dkim_key(bit_size=2048)
+      LeapCli.log :generating, "%s bit RSA DKIM key" % bit_size do
+        private_key = OpenSSL::PKey::RSA.new(bit_size)
+        public_key = private_key.public_key
+        LeapCli::Util.write_file! :dkim_priv_key, private_key.to_pem
+        LeapCli::Util.write_file! :dkim_pub_key, public_key.to_pem
       end
     end
 
