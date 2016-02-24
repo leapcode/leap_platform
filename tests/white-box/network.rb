@@ -1,4 +1,5 @@
 require 'socket'
+require 'openssl'
 
 raise SkipTest if $node["dummy"]
 
@@ -66,6 +67,23 @@ class Network < LeapTest
   def test_03_Is_shorewall_running?
     ignore unless File.exists?('/sbin/shorewall')
     assert_run('/sbin/shorewall status')
+    pass
+  end
+
+  THIRTY_DAYS = 60*60*24*30
+
+  def test_04_Are_server_certificates_valid?
+    cert_paths = ["/etc/x509/certs/leap_commercial.crt", "/etc/x509/certs/leap.crt"]
+    cert_paths.each do |cert_path|
+      if File.exists?(cert_path)
+        cert = OpenSSL::X509::Certificate.new(File.read(cert_path))
+        if cert.not_after > Time.now
+          fail "The certificate #{cert_path} expired on #{cert.not_after}"
+        elsif cert.not_after > Time.now + THIRTY_DAYS
+          fail "The certificate #{cert_path} will expire soon, on #{cert.not_after}"
+        end
+      end
+    end
     pass
   end
 
