@@ -266,6 +266,8 @@ remove this directory if you don't use it.
     # serial is any number less than 2^32 (4294967296)
     #
     def compile_zone_file
+      # note: we use the default provider for all nodes, because we use it
+      # to generate hostnames that are relative to the default domain.
       provider   = manager.env('default').provider
       hosts_seen = {}
       lines      = []
@@ -315,7 +317,7 @@ remove this directory if you don't use it.
             mx_domain = relative_hostname(node.domain.full_suffix, provider)
             lines << [mx_domain, "IN MX 10  #{relative_hostname(node.domain.full, provider)}"]
             spf ||= [mx_domain, spf_record(node)]
-            dkim ||= dkim_record(node)
+            dkim ||= dkim_record(node, provider)
           end
         end
         lines << spf if spf
@@ -358,13 +360,16 @@ remove this directory if you don't use it.
     #
     # specification: http://dkim.org/specs/rfc4871-dkimbase.html#rfc.section.7.4
     #
-    def dkim_record(node)
+    def dkim_record(node, provider)
       # PEM encoded public key (base64), without the ---PUBLIC KEY--- armor parts.
       assert_files_exist! :dkim_pub_key
       dkim_pub_key = Path.named_path(:dkim_pub_key)
       public_key = File.readlines(dkim_pub_key).grep(/^[^\-]+/).join
 
-      host = node.mx.dkim.selector + "._domainkey"
+      host = relative_hostname(
+        node.mx.dkim.selector + "._domainkey." + node.domain.full_suffix,
+        provider)
+
       attrs = [
         "v=DKIM1",
         "h=sha256",
