@@ -39,7 +39,7 @@ chown ${USER}:${USER} ${PROVIDERDIR}/files/nodes/${NODE}/${NODE}_ssh.pub
 $LEAP $OPTS add-user --self
 $LEAP $OPTS cert ca
 $LEAP $OPTS cert csr
-$LEAP $OPTS node add $NODE ip_address:"$(facter ipaddress)"  services:"$services" couch.master:true couch.pwhash_alg:pbkdf2 tags:production
+$LEAP $OPTS node add $NODE ip_address:"$(facter ipaddress)"  services:"$services" tags:production
 echo '{ "webapp": { "admins": ["testadmin"] } }' > services/webapp.json
 
 $LEAP $OPTS compile
