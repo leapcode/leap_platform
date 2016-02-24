@@ -77,9 +77,9 @@ class Network < LeapTest
     cert_paths.each do |cert_path|
       if File.exists?(cert_path)
         cert = OpenSSL::X509::Certificate.new(File.read(cert_path))
-        if cert.not_after > Time.now
+        if Time.now > cert.not_after
           fail "The certificate #{cert_path} expired on #{cert.not_after}"
-        elsif cert.not_after > Time.now + THIRTY_DAYS
+        elsif Time.now + THIRTY_DAYS > cert.not_after
           fail "The certificate #{cert_path} will expire soon, on #{cert.not_after}"
         end
       end
