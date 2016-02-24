@@ -17,13 +17,12 @@ module LeapCli
       filepath = Path.find_file(filename)
       if filepath
         if filepath =~ /\.erb$/
-          ERB.new(File.read(filepath, :encoding => 'UTF-8'), nil, '%<>').result(binding)
+          return ERB.new(File.read(filepath, :encoding => 'UTF-8'), nil, '%<>').result(binding)
         else
-          File.read(filepath, :encoding => 'UTF-8')
+          return File.read(filepath, :encoding => 'UTF-8')
         end
       else
         raise FileMissing.new(Path.named_path(filename), options)
-        ""
       end
     end
 
@@ -61,7 +60,7 @@ module LeapCli
           return nil
         end
       else
-        local_path
+        return local_path
       end
     end
 
@@ -69,6 +68,8 @@ module LeapCli
     # Returns the location of a file once it is deployed via rsync to the a
     # remote server. An internal list of discovered file paths is saved, in
     # order to rsync these files when needed.
+    #
+    # If the file does not exist, nil is returned.
     #
     # If there is a block given and the file does not actually exist, the
     # block will be yielded to give an opportunity for some code to create the
@@ -91,6 +92,8 @@ module LeapCli
     def remote_file_path(path, options={}, &block)
       local_path = local_file_path(path, options, &block)
 
+      return nil if local_path.nil?
+
       # if file is under Path.provider_base, we must copy the default file to
       # to Path.provider in order for rsync to be able to sync the file.
       if local_path =~ /^#{Regexp.escape(Path.provider_base)}/
@@ -109,12 +112,12 @@ module LeapCli
       relative_path = Path.relative_path(local_path)
       relative_path.sub!(/^files\//, '') # remove "files/" prefix
       @node.file_paths << relative_path
-      File.join(Leap::Platform.files_dir, relative_path)
+      return File.join(Leap::Platform.files_dir, relative_path)
     end
 
     # deprecated
     def file_path(path, options={})
-      remote_file_path(path, options)
+      return remote_file_path(path, options)
     end
 
   end
