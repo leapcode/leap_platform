@@ -64,9 +64,11 @@ def log(str, *args)
   str = str.strip
   $stdout.puts str
   $stdout.flush
-  $logger.info(str)
-  if args.include? :summary
-    $summary_logger.info(str)
+  if $logger
+    $logger.info(str)
+    if args.include? :summary
+      $summary_logger.info(str)
+    end
   end
 end
 
