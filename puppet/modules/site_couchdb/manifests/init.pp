@@ -40,8 +40,9 @@ class site_couchdb {
   $couchdb_mode             = $couchdb_config['mode']
   $couchdb_pwhash_alg       = $couchdb_config['pwhash_alg']
 
-  if $couchdb_mode == 'multimaster' { include site_couchdb::bigcouch }
-  if $couchdb_mode == 'plain'       { include site_couchdb::plain }
+  if $couchdb_mode == 'multimaster'      { include site_couchdb::bigcouch }
+  if $couchdb_mode =~ /^(plain|master)$/ { include site_couchdb::plain }
+
   # if $couchdb_mode == 'mirror'      { include site_couchdb::mirror }
 
   Class['site_config::default']
