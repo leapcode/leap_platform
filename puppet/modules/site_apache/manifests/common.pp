@@ -4,7 +4,11 @@ class site_apache::common {
   include apache::module::rewrite
   include apache::module::env
 
-  class { '::apache': no_default_site => true, ssl => true }
+  class { '::apache':
+    no_default_site  => true,
+    ssl              => true,
+    ssl_cipher_suite => 'HIGH:MEDIUM:!aNULL:!MD5'
+  }
 
   # needed for the mod_ssl config
   include apache::module::mime
