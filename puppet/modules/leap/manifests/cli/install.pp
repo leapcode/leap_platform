@@ -4,7 +4,6 @@ class leap::cli::install ( $source = false ) {
     # needed for building leap_cli from source
     include ::git
     include ::rubygems
-    include ::site_config::packages::build_essential
 
     class { '::ruby':
       install_dev => true
@@ -14,7 +13,6 @@ class leap::cli::install ( $source = false ) {
 
     Class[Ruby] ->
       Class[rubygems] ->
-      Class[::site_config::packages::build_essential] ->
       Class[bundler::install]
 
 
