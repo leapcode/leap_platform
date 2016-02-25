@@ -17,7 +17,7 @@ class site_check_mk::agent {
     method                      => 'ssh',
     homedir                     => '/etc/nagios/check_mk',
     register_agent              => false,
-    requires                    => Package['time']
+    require                     => Package['time']
   } ->
 
   class { 'site_check_mk::agent::mrpe': } ->
