@@ -17,6 +17,7 @@ It takes 5 arguments:
 __author__: kali@leap.se
 """
 import os
+import shutil
 import sys
 import tempfile
 
@@ -56,8 +57,13 @@ def create_docs(soledad):
 if __name__ == '__main__':
 
     tempdir = tempfile.mkdtemp()
+
+    def rm_tempdir():
+        shutil.rmtree(tempdir)
+
     if len(sys.argv) < 6:
         bail(USAGE, 2)
+
     uuid, token, server, cert_file, passphrase = sys.argv[1:]
     s = get_soledad_instance(
         uuid, passphrase, tempdir, server, cert_file, token)
@@ -65,10 +71,12 @@ if __name__ == '__main__':
     def onSyncDone(sync_result):
         print "SYNC_RESULT:", sync_result
         s.close()
+        rm_tempdir()
         reactor.stop()
 
     def log_and_exit(f):
         log.err(f)
+        rm_tempdir()
         reactor.stop()
 
     def start_sync():
