@@ -3,5 +3,5 @@ alias ncli_problems='ncli -z '!o,!A''
 
 <% @environments.keys.sort.each do |env_name| %>
 alias ncli_<%= env_name %>='ncli -z '!o,!A' -g <%= env_name %>'
-alias ncli_<%= env_name %>_recheck='ncli -s Check_MK -g <%= env_name %> -r'
+alias ncli_<%= env_name %>_recheck='ncli -s Check_MK -g <%= env_name %> -a R'
 <% end -%>
