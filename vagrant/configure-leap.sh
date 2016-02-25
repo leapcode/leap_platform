@@ -61,10 +61,8 @@ gem install rake
 
 $LEAP $OPTS -v 2 deploy
 
-set +e
 $GIT add .
 $GIT commit -m'initialized and deployed provider'
-set -e
 
 # Vagrant: leap_mx fails to start on jessie
 # https://leap.se/code/issues/7755
