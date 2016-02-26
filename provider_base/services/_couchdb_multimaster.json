@@ -1,6 +1,6 @@
 //
 // Only applied to master couchdb nodes when there are multiple masters
-//
+// NOT CURRENTLY USED.
 {
   "stunnel": {
     "servers": {

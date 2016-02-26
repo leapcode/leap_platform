@@ -9,7 +9,7 @@
     },
     "couch": {
         "port": 5984,
-        "mode": "multimaster",
+        "mode": "plain",
         "users": {
             "admin": {
                 "username": "admin",

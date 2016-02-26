@@ -40,10 +40,13 @@ class site_couchdb {
   $couchdb_mode             = $couchdb_config['mode']
   $couchdb_pwhash_alg       = $couchdb_config['pwhash_alg']
 
-  if $couchdb_mode == 'multimaster'      { include site_couchdb::bigcouch }
-  if $couchdb_mode =~ /^(plain|master)$/ { include site_couchdb::plain }
+  # ensure bigcouch has been purged from the system:
+  # TODO: remove this check in 0.9 release
+  if file('/opt/bigcouch/bin/bigcouch', '/dev/null') != '' {
+    fail 'ERROR: BigCouch appears to be installed. Make sure you have migrated to CouchDB before proceeding. See https://leap.se/upgrade-0-8'
+  }
 
-  # if $couchdb_mode == 'mirror'      { include site_couchdb::mirror }
+  include site_couchdb::plain
 
   Class['site_config::default']
     -> Service['shorewall']
