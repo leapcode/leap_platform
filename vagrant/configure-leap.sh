@@ -28,7 +28,7 @@ echo -e '\n@log = "./deploy.log"' >> Leapfile
 
 if [ ! -e /home/${USER}/.ssh/id_rsa ]; then
   $SUDO ssh-keygen -f /home/${USER}/.ssh/id_rsa -P ''
-  mkdir /root/.ssh
+  [ -d /root/.ssh ] || mkdir /root/.ssh
   cat /home/${USER}/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 fi
 
