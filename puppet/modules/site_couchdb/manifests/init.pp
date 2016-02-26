@@ -38,7 +38,6 @@ class site_couchdb {
 
   $couchdb_backup           = $couchdb_config['backup']
   $couchdb_mode             = $couchdb_config['mode']
-  $couchdb_pwhash_alg       = $couchdb_config['pwhash_alg']
 
   # ensure bigcouch has been purged from the system:
   # TODO: remove this check in 0.9 release

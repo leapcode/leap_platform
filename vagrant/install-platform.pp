@@ -1,13 +1,6 @@
 class {'apt': }
 Exec['update_apt'] -> Package <||>
 
-
-if $::lsbdistcodename == 'wheezy' {
-  package { 'ruby-hiera-puppet':
-    ensure => installed
-  }
-}
-
 # install leap_cli from source, so it will work with the develop
 # branch of leap_platform
 class { '::leap::cli::install':

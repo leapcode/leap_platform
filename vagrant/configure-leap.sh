@@ -24,7 +24,7 @@ chown ${USER}:${USER} ${PROVIDERDIR}
 cd $PROVIDERDIR
 
 $LEAP $OPTS new --contacts "$contacts" --domain "$provider_domain" --name "$provider_name" --platform=/vagrant .
-$SUDO echo -e '\n@log = "/var/log/leap/deploy.log"' >> Leapfile
+echo -e '\n@log = "./deploy.log"' >> Leapfile
 
 if [ ! -e /home/${USER}/.ssh/id_rsa ]; then
   $SUDO ssh-keygen -f /home/${USER}/.ssh/id_rsa -P ''
@@ -61,10 +61,8 @@ gem install rake
 
 $LEAP $OPTS -v 2 deploy
 
-set +e
 $GIT add .
 $GIT commit -m'initialized and deployed provider'
-set -e
 
 # Vagrant: leap_mx fails to start on jessie
 # https://leap.se/code/issues/7755
