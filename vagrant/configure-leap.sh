@@ -97,3 +97,4 @@ $LEAP leap list --print ip_address,domain.full,dns.aliases | sed 's/^.*  //' | s
 
 echo 'Please see https://leap.se/en/docs/platform/tutorials/vagrant#use-the-bitmask-client-to-do-an-initial-soledad-sync for more details how to use and test your LEAP provider.'
 echo -e "\nIf you don't want to use the Bitmask client, please ignore the above instructions.\n"
+echo -e 'The LEAP webapp is now available at https://localhost:4443\n'
