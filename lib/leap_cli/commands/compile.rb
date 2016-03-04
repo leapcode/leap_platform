@@ -29,10 +29,17 @@ module LeapCli
         end
       end
 
-      c.desc "Compile a DNS zone file for your provider."
+      c.desc "Prints a DNS zone file for your provider."
       c.command :zone do |zone|
         zone.action do |global_options, options, args|
           compile_zone_file
+        end
+      end
+
+      c.desc "Print entries suitable for an /etc/hosts file, useful for testing your provider."
+      c.command :hosts do |hosts|
+        hosts.action do |global_options, options, args|
+          compile_hosts_file
         end
       end
 
@@ -43,7 +50,7 @@ module LeapCli
         end
       end
 
-      c.desc "Generate a list of firewall rules. These rules are already "+
+      c.desc "Prints a list of firewall rules. These rules are already "+
              "implemented on each node, but you might want the list of all "+
              "rules in case you also have a restrictive network firewall."
       c.command :firewall do |zone|
@@ -332,6 +339,24 @@ remove this directory if you don't use it.
         else
           host = '@' if host == ''
           puts("%-#{max_width}s %s" % [host, line])
+        end
+      end
+    end
+
+    #
+    # outputs entries suitable for an /etc/hosts file
+    #
+    def compile_hosts_file
+      manager.environment_names.each do |env|
+        nodes = manager.nodes[:environment => env]
+        next unless nodes.any?
+        puts
+        puts "## environment '#{env || 'default'}'"
+        nodes.each do |name, node|
+          puts "%s %s" % [
+            node.ip_address,
+            [name, node.get('domain.full'), node.get('dns.aliases')].compact.join(' ')
+          ]
         end
       end
     end
