@@ -19,12 +19,18 @@ class site_webapp::couchdb {
       mode    => '0600',
       require => Vcsrepo['/srv/leap/webapp'];
 
+    # couchdb.admin.yml is a symlink to prevent the vcsrepo resource
+    # from changing its user permissions every time.
     '/srv/leap/webapp/config/couchdb.admin.yml':
+      ensure => 'link',
+      target => '/srv/leap/couchdb/couchdb.admin.yml',
+      require => Vcsrepo['/srv/leap/webapp'];
+
+    '/srv/leap/couchdb/couchdb.admin.yml':
       content => template('site_webapp/couchdb.admin.yml.erb'),
       owner   => 'root',
       group   => 'root',
-      mode    => '0600',
-      require => Vcsrepo['/srv/leap/webapp'];
+      mode    => '0600';
 
     '/srv/leap/webapp/log':
       ensure  => directory,
