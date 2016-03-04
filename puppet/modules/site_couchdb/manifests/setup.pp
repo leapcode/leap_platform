@@ -34,12 +34,14 @@ class site_couchdb::setup {
   # setup /etc/couchdb/couchdb-soledad-admin.netrc file for couchdb admin
   # access, accessible only for the soledad-admin user to create soledad
   # userdbs
-  file { '/etc/couchdb/couchdb-soledad-admin.netrc':
-    content => "machine localhost login ${user} password ${site_couchdb::couchdb_admin_pw}",
-    mode    => '0400',
-    owner   => 'soledad-admin',
-    group   => 'root',
-    require => [ Package['couchdb'], User['soledad-admin'] ];
+  if member(hiera('services', []), 'soledad') {
+    file { '/etc/couchdb/couchdb-soledad-admin.netrc':
+      content => "machine localhost login ${user} password ${site_couchdb::couchdb_admin_pw}",
+      mode    => '0400',
+      owner   => 'soledad-admin',
+      group   => 'root',
+      require => [ Package['couchdb'], User['soledad-admin'] ];
+    }
   }
 
   # Checkout couchdb_scripts repo
