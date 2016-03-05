@@ -30,7 +30,8 @@ class site_webapp::couchdb {
       content => template('site_webapp/couchdb.admin.yml.erb'),
       owner   => 'root',
       group   => 'root',
-      mode    => '0600';
+      mode    => '0600',
+      require => File['/srv/leap/couchdb'];
 
     '/srv/leap/webapp/log':
       ensure  => directory,
