@@ -23,15 +23,15 @@ class site_webapp::couchdb {
     # from changing its user permissions every time.
     '/srv/leap/webapp/config/couchdb.admin.yml':
       ensure => 'link',
-      target => '/srv/leap/couchdb/couchdb.admin.yml',
+      target => '/etc/leap/couchdb.admin.yml',
       require => Vcsrepo['/srv/leap/webapp'];
 
-    '/srv/leap/couchdb/couchdb.admin.yml':
+    '/etc/leap/couchdb.admin.yml':
       content => template('site_webapp/couchdb.admin.yml.erb'),
       owner   => 'root',
       group   => 'root',
       mode    => '0600',
-      require => File['/srv/leap/couchdb'];
+      require => File['/etc/leap'];
 
     '/srv/leap/webapp/log':
       ensure  => directory,
