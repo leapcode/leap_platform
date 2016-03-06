@@ -119,6 +119,7 @@ class site_postfix::mx {
 smtps     inet  n       -       -       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_tls_security_level=encrypt
+  -o tls_preempt_cipherlist=yes
 ${smtpd_relay_restrictions}  -o smtpd_recipient_restrictions=\$smtps_recipient_restrictions
   -o smtpd_helo_restrictions=\$smtps_helo_restrictions
   -o smtpd_client_restrictions=

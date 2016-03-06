@@ -28,5 +28,15 @@ class site_postfix::mx::smtp_tls {
     # see issue #4011
     'smtp_tls_protocols':
       value => '!SSLv2, !SSLv3';
+    'smtp_tls_mandatory_protocols':
+      value => '!SSLv2, !SSLv3';
+    'tls_ssl_options':
+      value => 'NO_COMPRESSION';
+    # We can switch between the different postfix internal list of ciphers by
+    # using smtpd_tls_ciphers.  For server-to-server connections we leave this
+    # at its default because of opportunistic encryption combined with many mail
+    # servers only support outdated protocols and ciphers and if we are too
+    # strict with required ciphers, then connections *will* fall-back to
+    # plain-text. Bad ciphers are still better than plain text transmission.
   }
 }

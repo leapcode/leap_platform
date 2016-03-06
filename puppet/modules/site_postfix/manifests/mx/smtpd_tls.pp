@@ -20,6 +20,17 @@ class site_postfix::mx::smtpd_tls {
       value => 'ultra';
     'smtpd_tls_session_cache_database':
       value => 'btree:${data_directory}/smtpd_scache';
+    # see issue #4011
+    'smtpd_tls_mandatory_protocols':
+      value => '!SSLv2, !SSLv3';
+    'smtpd_tls_protocols':
+      value => '!SSLv2, !SSLv3';
+    # For connections to MUAs, TLS is mandatory and the ciphersuite is modified.
+    # MX and SMTP client configuration
+    'smtpd_tls_mandatory_ciphers':
+      value => 'high';
+    'tls_high_cipherlist':
+      value => 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!RC4:!MD5:!PSK!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
   }
 
   # Setup DH parameters
