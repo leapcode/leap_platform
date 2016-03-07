@@ -3,15 +3,6 @@
 
 . /vagrant/vagrant/vagrant.config
 
-#OPTS='--no-color'
-OPTS=''
-USER='vagrant'
-NODE='node1'
-SUDO="sudo -u ${USER}"
-PROVIDERDIR="/home/${USER}/leap/configuration"
-LEAP="$SUDO /usr/local/bin/leap"
-GIT="$SUDO git"
-
 echo '==============================================='
 echo 'configuring leap'
 echo '==============================================='
@@ -93,8 +84,9 @@ echo -e '\n=====================================================================
 echo -e 'You are now ready to use your local LEAP provider.\n'
 echo 'If you want to use the *Bitmask client* with your provider, please update your /etc/hosts with following dns overrides:'
 
-$LEAP leap list --print ip_address,domain.full,dns.aliases | sed 's/^.*  //' | sed 's/, null//g' | tr -d '\]\[",'
+$LEAP list --print ip_address,domain.full,dns.aliases | sed 's/^.*  //' | sed 's/, null//g' | tr -d '\]\[",'
 
 echo 'Please see https://leap.se/en/docs/platform/tutorials/vagrant#use-the-bitmask-client-to-do-an-initial-soledad-sync for more details how to use and test your LEAP provider.'
 echo -e "\nIf you don't want to use the Bitmask client, please ignore the above instructions.\n"
 echo -e 'The LEAP webapp is now available at https://localhost:4443\n'
+echo -e 'Please add an exception in your browser dialog to allow the self-signed certificate.\n'
