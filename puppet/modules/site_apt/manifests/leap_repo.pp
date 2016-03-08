@@ -9,7 +9,7 @@ class site_apt::leap_repo {
     before  => Exec[refresh_apt]
   }
 
-  package { 'leap-keyring':
+  package { 'leap-archive-keyring':
     ensure => latest
   }
 
