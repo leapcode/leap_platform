@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
 
   # Fix annoying 'stdin: is not a tty' warning
   # see http://foo-o-rama.com/vagrant--stdin-is-not-a-tty--fix.html
-  config.vm.provision "fix-no-tty", type: "shell" do |s|
+  config.vm.provision "shell" do |s|
     s.privileged = false
     s.inline     = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
   end
