@@ -21,7 +21,7 @@ class site_nagios::server inherits nagios::base {
     # it in site_apache::common
     httpd              => 'absent',
     allow_external_cmd => true,
-    stored_config      => false,
+    storeconfigs       => false,
   }
 
   # Delete nagios config files provided by packages
