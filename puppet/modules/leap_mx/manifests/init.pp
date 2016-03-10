@@ -10,7 +10,6 @@ class leap_mx {
   $sources          = hiera('sources')
 
   include soledad::common
-  include site_apt::preferences::twisted
 
   #
   # USER AND GROUP
@@ -98,7 +97,6 @@ class leap_mx {
     $sources['leap-mx']['package']:
       ensure  => $sources['leap-mx']['revision'],
       require => [
-        Class['site_apt::preferences::twisted'],
         Class['site_apt::leap_repo'],
         User['leap-mx'] ];
 

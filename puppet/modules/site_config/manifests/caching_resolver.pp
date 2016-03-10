@@ -1,8 +1,6 @@
 class site_config::caching_resolver {
   tag 'leap_base'
 
-  include site_apt::preferences::unbound
-
   class { 'unbound':
     root_hints => false,
     anchor     => false,

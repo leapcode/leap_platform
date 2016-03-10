@@ -42,11 +42,6 @@ class site_apt {
   #  content => template('site_apt/secondary.list');
   #}
 
-  apt::preferences_snippet { 'facter':
-    release  => "${::lsbdistcodename}-backports",
-    priority => 999
-  }
-
   apt::preferences_snippet { 'leap':
     priority => 999,
     package  => '*',

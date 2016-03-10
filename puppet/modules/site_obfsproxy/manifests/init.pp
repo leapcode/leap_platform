@@ -20,8 +20,6 @@ class site_obfsproxy {
   }
 
   include site_config::default
-  include site_apt::preferences::twisted
-  include site_apt::preferences::obfsproxy
 
   class { 'obfsproxy':
     transport    => $transport,
