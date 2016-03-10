@@ -46,11 +46,13 @@ class site_nagios::server inherits nagios::base {
   # is not fixed, we need to manually deploy the config file
   file {
     '/etc/apache2/conf-available/nagios3.conf':
-      ensure => present,
-      source => 'puppet:///modules/nagios/configs/apache2.conf';
+      ensure  => present,
+      source  => 'puppet:///modules/nagios/configs/apache2.conf',
+      require => [ Package['nagios3'], Package['apache2'] ];
     '/etc/apache2/conf-enabled/nagios3.conf':
       ensure  => link,
-      target  => '/etc/apache2/conf-available/nagios3.conf';
+      target  => '/etc/apache2/conf-available/nagios3.conf',
+      require => [ Package['nagios3'], Package['apache2'] ];
   }
 
   include site_apache::common
