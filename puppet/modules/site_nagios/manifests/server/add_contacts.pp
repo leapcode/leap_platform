@@ -1,3 +1,4 @@
+# configure a nagios_contact
 define site_nagios::server::add_contacts ($contact_emails) {
 
   $environment = $name
@@ -11,6 +12,7 @@ define site_nagios::server::add_contacts ($contact_emails) {
       host_notification_options     => 'd,r',
       service_notification_commands => 'notify-service-by-email',
       host_notification_commands    => 'notify-host-by-email',
-      email                         => join($contact_emails, ', ')
+      email                         => join($contact_emails, ', '),
+      require                       => Package['nagios']
   }
 }
