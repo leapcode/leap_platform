@@ -10,7 +10,9 @@ define site_static::domain (
   $domain = $name
   $base_dir = '/srv/static'
 
-  create_resources(site_static::location, $locations)
+  if is_hash($locations) {
+    create_resources(site_static::location, $locations)
+  }
 
   x509::cert { $domain:
     content => $cert,
