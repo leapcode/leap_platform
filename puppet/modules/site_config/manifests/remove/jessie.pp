@@ -6,4 +6,9 @@ class site_config::remove::jessie {
       notify => Exec['apt_updated'];
   }
 
+  apt::preferences_snippet {
+    [ 'facter', 'obfsproxy', 'python-twisted', 'unbound' ]:
+      ensure => absent;
+  }
+
 }

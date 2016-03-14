@@ -4,7 +4,6 @@ class soledad::server {
 
   include site_config::default
   include soledad::common
-  include site_apt::preferences::twisted
 
   $soledad              = hiera('soledad')
   $couchdb_user         = $soledad['couchdb_soledad_user']['username']
@@ -53,9 +52,7 @@ class soledad::server {
 
   package { $sources['soledad']['package']:
     ensure  => $sources['soledad']['revision'],
-    require => [
-      Class['site_apt::preferences::twisted'],
-      Class['site_apt::leap_repo'] ];
+    require => Class['site_apt::leap_repo'];
   }
 
   file { '/etc/default/soledad':

@@ -8,9 +8,7 @@ class soledad::client {
   package {
     'soledad-client':
       ensure  => latest,
-      require => [
-        Class['site_apt::preferences::twisted'],
-        Class['site_apt::leap_repo'] ];
+      require => Class['site_apt::leap_repo'];
     'python-u1db':
       ensure => latest;
   }

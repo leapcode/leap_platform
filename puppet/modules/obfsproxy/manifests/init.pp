@@ -67,8 +67,7 @@ class obfsproxy (
   }
 
   package { 'obfsproxy':
-    ensure  => present,
-    require => Class['site_apt::preferences::obfsproxy'],
+    ensure  => present
   }
 
   service { 'obfsproxy':
