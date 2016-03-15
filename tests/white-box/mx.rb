@@ -38,12 +38,12 @@ class Mx < LeapTest
     assert_running 'postfwd2::cache$'
     assert_running 'postfwd2::policy$'
     assert_running '^/usr/sbin/unbound$'
-    if File.exists?('/var/lib/clamav/daily.cld')
+    assert_running '^/usr/bin/freshclam'
+    if Dir.glob("/var/lib/clamav/main.{c[vl]d,inc}").size > 0 and Dir.glob("/var/lib/clamav/daily.{c[vl]d,inc}").size > 1 
       assert_running '^/usr/sbin/clamd'
       assert_running '^/usr/sbin/clamav-milter'
-      assert_running '^/usr/bin/freshclam'
     else
-      skip "The clamav signature file (/var/lib/clamav/daily.cld) has yet to be downloaded, so clamd is not running."
+      skip "Downloading the clamav signature files (/var/lib/clamav/{daily,main}.{c[vl]d,inc}) is still in progress, so clamd is not running.\nDon't worry, mail delivery will work without clamav. The download should finish soon."
     end
     pass
   end
