@@ -59,7 +59,7 @@ class Webapp < LeapTest
         assert_tmp_user do |user|
           command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
           soledad_url = "https://#{soledad_server}/user-#{user.id}"
-	  soledad_cert = "/usr/local/share/ca-certificates/leap_ca.crt"
+          soledad_cert = "/usr/local/share/ca-certificates/leap_ca.crt"
           assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url} #{soledad_cert} #{user.password}"
           assert_user_db_exists(user)
           pass
@@ -119,8 +119,8 @@ class Webapp < LeapTest
       sleep 0.2
       get(couchdb_url(url)) do |body, response, error|
         last_body, last_response, last_error = body, response, error
-	# After moving to couchdb, webapp user is not allowed to Read user dbs,
-	# but the return code for non-existent databases is 404. See #7674
+        # After moving to couchdb, webapp user is not allowed to Read user dbs,
+        # but the return code for non-existent databases is 404. See #7674
         if response.code.to_i == 401
           return
         end
