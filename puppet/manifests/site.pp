@@ -6,6 +6,9 @@ Exec {
   path      => '/usr/bin:/usr/sbin/:/bin:/sbin:/usr/local/bin:/usr/local/sbin'
 }
 
+Package <| provider == 'apt' |>  {
+  install_options => ['--no-install-recommends'],
+}
 
 $services = hiera('services', [])
 $services_str = join($services, ', ')
