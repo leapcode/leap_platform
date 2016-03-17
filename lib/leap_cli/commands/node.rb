@@ -53,7 +53,7 @@ module LeapCli; module Commands
     node.arg_name 'OLD_NAME NEW_NAME'
     node.command :mv do |mv|
       mv.action do |global_options,options,args|
-        node = get_node_from_args(args)
+        node = get_node_from_args(args, include_disabled: true)
         new_name = args.last
         assert_valid_node_name!(new_name, node.vagrant?)
         ensure_dir [:node_files_dir, new_name]
@@ -69,7 +69,7 @@ module LeapCli; module Commands
     node.arg_name 'NAME' #:optional => false #, :multiple => false
     node.command :rm do |rm|
       rm.action do |global_options,options,args|
-        node = get_node_from_args(args)
+        node = get_node_from_args(args, include_disabled: true)
         remove_node_files(node.name)
         if node.vagrant?
           vagrant_command("destroy --force", [node.name])
