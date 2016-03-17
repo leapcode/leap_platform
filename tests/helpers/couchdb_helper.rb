@@ -66,6 +66,7 @@ class LeapTest
   #   port: 5984
   #
   def couchdb_url_via_localhost(path="", options=nil)
+    path = path.gsub('"', '%22')
     port = (options && options[:port]) || assert_property('couch.port')
     if options && options[:username]
       password = property("couch.users.%{username}.password" % options)

@@ -87,12 +87,13 @@ class LeapTest
     options ||= {}
     error_msg = options[:error_msg] || (url.respond_to?(:memo) ? url.memo : nil)
     http_send(method, url, params, options) do |body, response, error|
-      if body && response && response.code.to_i >= 200 && response.code.to_i < 300
+      ok = response && response.code.to_i >= 200 && response.code.to_i < 300
+      if body && ok
         if block
           yield(body) if block.arity == 1
           yield(response, body) if block.arity == 2
         end
-      elsif response
+      elsif response && !ok
         fail ["Expected a 200 status code from #{method} #{url}, but got #{response.code} instead.", error_msg, body].compact.join("\n")
       else
         fail ["Expected a response from #{method} #{url}, but got \"#{error}\" instead.", error_msg, body].compact.join("\n"), error

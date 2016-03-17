@@ -9,8 +9,8 @@ class CouchDB < LeapTest
   end
 
   def test_00_Are_daemons_running?
+    assert_running 'bin/beam'
     if multimaster?
-      assert_running 'bin/beam'
       assert_running 'bin/epmd'
     end
     pass
