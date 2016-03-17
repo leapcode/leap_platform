@@ -39,6 +39,7 @@ class Mx < LeapTest
     assert_running 'postfwd2::policy$'
     assert_running '^/usr/sbin/unbound$'
     assert_running '^/usr/bin/freshclam'
+    assert_running '^/usr/sbin/opendkim'
     if Dir.glob("/var/lib/clamav/main.{c[vl]d,inc}").size > 0 and Dir.glob("/var/lib/clamav/daily.{c[vl]d,inc}").size > 0
       assert_running '^/usr/sbin/clamd'
       assert_running '^/usr/sbin/clamav-milter'
