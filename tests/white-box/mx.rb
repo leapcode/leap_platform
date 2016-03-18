@@ -39,23 +39,32 @@ class Mx < LeapTest
     assert_get(couchdb_url("/identities", url_options)) do |body|
       assert response = JSON.parse(body)
       doc_count = response['doc_count'].to_i
-      if doc_count < 1
-        skip "There are no identity records yet."
+      if doc_count <= 1
+        # the design document counts as one document.
+        skip "There are no identity documents yet."
       else
-        offset = rand(doc_count) # pick a random document
-        count_url = couchdb_url("/identities/_all_docs?include_docs=true&limit=1&skip=#{offset}", url_options)
-        assert_get(count_url) do |body|
-          assert response = JSON.parse(body)
-          record = response['rows'].first
-          address = record['doc']['address']
-          assert address, "address should not be empty"
-          url_base = %(/identities/_design/Identity/_view/by_address)
-          params = %(?include_docs=true&reduce=false&startkey="#{address}"&endkey="#{address}")
-          assert_get(couchdb_url(url_base+params, url_options)) do |body|
+        # try five times to get a valid doc
+        for i in 1..5
+          offset    = rand(doc_count) # pick a random document
+          count_url = couchdb_url("/identities/_all_docs?include_docs=true&limit=1&skip=#{offset}", url_options)
+          assert_get(count_url) do |body|
             assert response = JSON.parse(body)
-            assert record = response['rows'].first
-            assert_equal address, record['doc']['address']
-            pass
+            record = response['rows'].first
+            if record['id'] =~ /_design/
+              next
+            else
+              address = record['doc']['address']
+              assert address, "Identity document #{record['id']} is missing an address field. #{record['doc'].inspect}"
+              url_base = %(/identities/_design/Identity/_view/by_address)
+              params = %(?include_docs=true&reduce=false&startkey="#{address}"&endkey="#{address}")
+              assert_get(couchdb_url(url_base+params, url_options)) do |body|
+                assert response = JSON.parse(body)
+                assert record = response['rows'].first
+                assert_equal address, record['doc']['address']
+                pass
+              end
+              break
+            end
           end
         end
       end

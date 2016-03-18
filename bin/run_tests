@@ -279,7 +279,7 @@ class LeapRunner < MiniTest::Unit
   def report_line(prefix, klass, meth, e=nil, message=nil)
     msg_txt = nil
     if message
-      message = message.sub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:REDACTED@")
+      message = message.gsub(/http:\/\/([a-z_]+):([a-zA-Z0-9_]+)@/, "http://\\1:REDACTED@")
       if $output_format == :human
         indent = "\n  "
         msg_txt = indent + message.split("\n").join(indent)
