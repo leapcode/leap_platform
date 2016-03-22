@@ -10,28 +10,14 @@ module LeapCli
       c.command :all do |all|
         all.action do |global_options,options,args|
           environment = args.first
-          if !LeapCli.leapfile.environment.nil? && !environment.nil? && environment != LeapCli.leapfile.environment
-            bail! "You cannot specify an ENVIRONMENT argument while the environment is pinned."
-          end
-          if environment
-            if manager.environment_names.include?(environment)
-              compile_hiera_files(manager.filter([environment]), false)
-            else
-              bail! "There is no environment named `#{environment}`."
-            end
-          else
-            clean_export = LeapCli.leapfile.environment.nil?
-            compile_hiera_files(manager.filter, clean_export)
-          end
-          if file_exists?(:static_web_readme)
-            compile_provider_json(environment)
-          end
+          compile_command(environment)
         end
       end
 
       c.desc "Prints a DNS zone file for your provider."
       c.command :zone do |zone|
         zone.action do |global_options, options, args|
+          compile_command(nil)
           compile_zone_file
         end
       end
@@ -39,6 +25,7 @@ module LeapCli
       c.desc "Print entries suitable for an /etc/hosts file, useful for testing your provider."
       c.command :hosts do |hosts|
         hosts.action do |global_options, options, args|
+          compile_command(nil)
           compile_hosts_file
         end
       end
@@ -46,6 +33,7 @@ module LeapCli
       c.desc "Compile provider.json bootstrap files for your provider."
       c.command 'provider.json' do |provider|
         provider.action do |global_options, options, args|
+          compile_command(nil)
           compile_provider_json
         end
       end
@@ -55,6 +43,7 @@ module LeapCli
              "rules in case you also have a restrictive network firewall."
       c.command :firewall do |zone|
         zone.action do |global_options, options, args|
+          compile_command(nil)
           compile_firewall
         end
       end
@@ -63,6 +52,25 @@ module LeapCli
     end
 
     protected
+
+    def compile_command(environment)
+      if !LeapCli.leapfile.environment.nil? && !environment.nil? && environment != LeapCli.leapfile.environment
+        bail! "You cannot specify an ENVIRONMENT argument while the environment is pinned."
+      end
+      if environment
+        if manager.environment_names.include?(environment)
+          compile_hiera_files(manager.filter([environment]), false)
+        else
+          bail! "There is no environment named `#{environment}`."
+        end
+      else
+        clean_export = LeapCli.leapfile.environment.nil?
+        compile_hiera_files(manager.filter, clean_export)
+      end
+      if file_exists?(:static_web_readme)
+        compile_provider_json(environment)
+      end
+    end
 
     #
     # a "clean" export of secrets will also remove keys that are no longer used,
