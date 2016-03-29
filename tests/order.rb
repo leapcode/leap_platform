@@ -9,11 +9,14 @@ class LeapCli::Config::Node
   #
   def test_dependencies
     dependents = LeapCli::Config::ObjectList.new
-    unless services.include?('couchdb')
-      if services.include?('webapp') || services.include?('mx') || services.include?('soledad')
+
+    # webapp, mx, and soledad depend on couchdb nodes
+    if services.include?('webapp') || services.include?('mx') || services.include?('soledad')
+      if !services.include?('couchdb')
         dependents.merge! nodes_like_me[:services => 'couchdb']
       end
     end
+
     dependents.keys.delete_if {|name| self.name == name}
   end
 end

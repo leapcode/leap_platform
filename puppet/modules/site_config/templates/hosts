@@ -6,7 +6,8 @@
 <%- if @hosts then -%>
 <%   @hosts.keys.sort.each do |name| -%>
 <%-     props = @hosts[name] -%>
-<%=     props["ip_address"] %> <%= props["domain_full"] %> <%= props["domain_internal"] %> <%= name %>
+<%-     aliases = props["aliases"] ? props["aliases"].join(' ') : nil -%>
+<%=     [props["ip_address"], props["domain_full"], props["domain_internal"], aliases, name].compact.uniq.join(' ') %>
 <%   end -%>
 <% end -%>
 
