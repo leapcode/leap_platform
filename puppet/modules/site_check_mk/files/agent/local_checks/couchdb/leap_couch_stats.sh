@@ -11,7 +11,7 @@ start_time=$(date +%s.%N)
 CURL='curl -s --netrc-file /etc/couchdb/couchdb.netrc'
 URL='http://127.0.0.1:5984'
 TMPFILE=$(mktemp)
-DBLIST_EXCLUDE='(user-|sessions_|tokens_)'
+DBLIST_EXCLUDE='(user-|sessions_|tokens_|_replicator|_users)'
 PREFIX='Couchdb_'
 
 
@@ -104,7 +104,7 @@ do
 done
 
 # special handling for rotated dbs
-suffix=$(($(date +'%s') / (60*60*24*30) + 1))
+suffix=$(($(date +'%s') / (60*60*24*30)))
 db_stats "sessions_${suffix}" "sessions"
 db_stats "tokens_${suffix}" "tokens"
 
