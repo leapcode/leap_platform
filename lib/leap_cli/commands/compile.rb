@@ -18,7 +18,7 @@ module LeapCli
       c.command :zone do |zone|
         zone.action do |global_options, options, args|
           compile_command(nil)
-          compile_zone_file
+          compile_zone_file(global_options[:yes] || global_options[:force])
         end
       end
 
@@ -280,7 +280,7 @@ remove this directory if you don't use it.
     #
     # serial is any number less than 2^32 (4294967296)
     #
-    def compile_zone_file
+    def compile_zone_file(force=false)
       # note: we use the default provider for all nodes, because we use it
       # to generate hostnames that are relative to the default domain.
       provider   = manager.env('default').provider
@@ -290,7 +290,12 @@ remove this directory if you don't use it.
       #
       # header
       #
-      lines << ZONE_HEADER % {:domain => provider.domain, :ns => provider.domain, :contact => provider.contacts.default.first.sub('@','.')}
+      lines << ZONE_HEADER % {
+        :domain => provider.domain,
+        :ns => provider.domain,
+        :contact => provider.contacts.default.first.sub('@','.'),
+        :serial => generate_zone_serial
+      }
 
       #
       # common records
@@ -302,11 +307,22 @@ remove this directory if you don't use it.
           lines << ["@", "IN A      #{node.ip_address}"]
         end
       end
+
       # NS records
       if provider['dns'] && provider.dns['nameservers']
-        provider.dns.nameservers.each do |ns|
-          lines << ["@", "IN NS #{ns}."]
+        unless provider.dns.nameservers.is_a?(Array)
+          # TODO: remove me once we have JSON schema working
+          bail! {log :error, 'dns.nameservers must be an array' }
         end
+        provider.dns.nameservers.each do |ns|
+          lines << ["@", "IN NS     #{ns}."]
+        end
+      elsif !force
+        log :warning, "Property dns.nameservers is not configured in provider.json." do
+          log "This will produce a zone file without any NS records."
+          log "Use --force to skip this warning."
+        end
+        return unless agree("Continue? ")
       end
 
       # environment records
@@ -341,6 +357,7 @@ remove this directory if you don't use it.
 
       # print the lines
       max_width = lines.inject(0) {|max, line| line.is_a?(Array) ? [max, line[0].length].max : max}
+      max_width = [max_width, 24].min
       lines.each do |host, line|
         if line.nil?
           puts(host)
@@ -426,6 +443,22 @@ remove this directory if you don't use it.
       '"' + str.scan(/.{1,255}/).join('" "') + '"'
     end
 
+    #
+    # For zone serial number, we want something that will be
+    # different each time you deploy but also will be greater
+    # than any prior likely serial that was prefixed by the
+    # year, such as 2016040600.
+    #
+    # so, we use time_t of right now, modified with first
+    # digit incremented by one.
+    #
+    # this will work until Time.at(2**32 - 1_000_000_000)
+    # aka 2074-05-31 04:41:36 UTC.
+    #
+    def generate_zone_serial
+      Time.now.utc.to_i + 1_000_000_000
+    end
+
     ENV_HEADER = %[
 ;;
 ;; ENVIRONMENT %s
@@ -442,7 +475,7 @@ $TTL 600
 $ORIGIN %{domain}.
 
 @ IN SOA %{ns}. %{contact}. (
-  0000          ; serial
+  %{serial}    ; serial
   7200          ; refresh (  24 hours)
   3600          ; retry   (   2 hours)
   1209600       ; expire  (1000 hours)
