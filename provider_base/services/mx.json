@@ -30,7 +30,7 @@
     "password": "= secret :couch_leap_mx_password",
     "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
   },
-  "mynetworks": "= nodes['environment' => '!local'].map{|name, n| [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]}.flatten.compact.uniq",
+  "mynetworks": "= host_ips(nodes)",
   "rbls": ["zen.spamhaus.org"],
   "clamav": {
     "whitelisted_addresses": []

@@ -40,7 +40,7 @@ class site_postfix::mx::static_aliases {
   $local_aliases = [
     'admin', 'administrator', 'bin', 'cron', 'games', 'ftp', 'lp', 'maildrop',
     'mysql', 'news', 'nobody', 'noc', 'postgresql', 'ssladmin', 'sys',
-    'usenet', 'uucp', 'www', 'www-data'
+    'usenet', 'uucp', 'www', 'www-data', 'leap-mx'
   ]
 
   postfix::mailalias {

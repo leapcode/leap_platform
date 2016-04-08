@@ -4,6 +4,24 @@ module LeapCli
   module Macro
 
     ##
+    ## IPs
+    ##
+
+    #
+    # returns a simple array of all the IPs for the specified node list
+    #
+    def host_ips(node_list)
+      if self.vagrant?
+        node_list = node_list['environment' => 'local']
+      else
+        node_list = node_list['environment' => '!local']
+      end
+      node_list.map {|name, n|
+        [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]
+      }.flatten.compact.uniq
+    end
+
+    ##
     ## HOSTS
     ##
 
@@ -48,6 +66,10 @@ module LeapCli
           'domain_full' => node.domain.full,
           'port' => node.ssh.port
         }
+        if node.dns['aliases'] && node.dns['aliases'].any?
+          # include aliases, but without domain.full
+          hosts[node.name]['aliases'] = node.dns['aliases'] - [node.domain.full]
+        end
         node_location = node['location'] ? node['location']['name'] : nil
         if my_location == node_location
           if facts = @node.manager.facts[node.name]

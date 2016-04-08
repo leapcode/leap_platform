@@ -33,7 +33,11 @@
       "support"
     ],
     "locales": "= provider.languages",
-    "default_locale": "= provider.default_language"
+    "default_locale": "= provider.default_language",
+    "api_tokens": {
+      "monitor": "= secret :api_monitor_auth_token",
+      "allowed_ips": "= host_ips(nodes_like_me)"
+    }
   },
   "stunnel": {
     "clients": {
@@ -55,8 +59,10 @@
   "service_type": "public_service",
   "api": {
     "domain": "= 'api.' + webapp.domain",
+    "version": 1,
     "port": 4430,
-    "ca_cert_uri": "= 'https://' + webapp.domain + '/ca.crt'"
+    "ca_cert_uri": "= 'https://' + webapp.domain + '/ca.crt'",
+    "uri": "= %(https://#{api.domain}:#{api.port}/#{api.version})"
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",

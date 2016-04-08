@@ -74,8 +74,8 @@ class Webapp < LeapTest
 
   def url_options
     {
-      :username => property('couchdb_webapp_user.username'),
-      :password => property('couchdb_webapp_user.password')
+      :username => property('webapp.couchdb_webapp_user.username'),
+      :password => property('webapp.couchdb_webapp_user.password')
     }
   end
 
@@ -130,19 +130,5 @@ class Webapp < LeapTest
     yield last_body, last_response, last_error
     return
   end
-
-  #
-  # I tried, but couldn't get this working:
-  # #
-  # # get an CSRF authenticity token
-  # #
-  # url = api_url("/")
-  # csrf_token = nil
-  # assert_get(url) do |body|
-  #   lines = body.split("\n").grep(/csrf-token/)
-  #   assert lines.any?, 'failed to find csrf-token'
-  #   csrf_token = lines.first.split('"')[1]
-  #   assert csrf_token, 'failed to find csrf-token'
-  # end
 
 end
