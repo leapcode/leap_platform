@@ -47,8 +47,13 @@ module LeapCli
     # applies a JSON partial to this node
     #
     def apply_partial(partial_path)
-      manager.partials(partial_path).each do |partial_data|
-        self.deep_merge!(partial_data)
+      if env.partials[partial_path]
+        self.deep_merge!(env.partials[partial_path])
+      else
+        raise ArgumentError.new(
+          "No such partial `%s`. Available partials include:\n%s" %
+          [partial_path, env.partials.keys.join(", ")]
+        )
       end
     end
 

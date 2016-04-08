@@ -11,14 +11,14 @@ module LeapCli
     # the list of all the nodes
     #
     def nodes
-      global.nodes
+      env.nodes
     end
 
     #
     # simple alias for global.provider
     #
     def provider
-      global.provider
+      env.provider
     end
 
     #

@@ -17,7 +17,7 @@ module LeapCli
         node_list = node_list['environment' => '!local']
       end
       node_list.map {|name, n|
-        [n.ip_address, (global.facts[name]||{})['ec2_public_ipv4']]
+        [n.ip_address, (manager.facts[name]||{})['ec2_public_ipv4']]
       }.flatten.compact.uniq
     end
 

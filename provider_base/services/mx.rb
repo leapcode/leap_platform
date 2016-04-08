@@ -1,1 +1,1 @@
-apply_partial('services/_api_tester.json')
+apply_partial('_api_tester')
