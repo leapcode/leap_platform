@@ -109,7 +109,7 @@ define site_openvpn::server_config(
     "cert ${openvpn_configname}":
       key     => 'cert',
       value   => "${x509::variables::certs}/${site_config::params::cert_name}.crt",
-        server  => $openvpn_configname;
+      server  => $openvpn_configname;
     "key ${openvpn_configname}":
       key     => 'key',
       value   => "${x509::variables::keys}/${site_config::params::cert_name}.key",
@@ -202,6 +202,10 @@ define site_openvpn::server_config(
     "verb ${openvpn_configname}":
       key    => 'verb',
       value  => '3',
+      server => $openvpn_configname;
+    "log-append /var/log/leap/openvpn_${proto}.log":
+      key    => 'log-append',
+      value  => "/var/log/leap/openvpn_${proto}.log",
       server => $openvpn_configname;
   }
 

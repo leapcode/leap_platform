@@ -40,6 +40,8 @@ class site_config::remove::files {
       recurse => true,
       rmdirs => true;
     '/etc/leap/soledad-server.conf':;
+    '/var/log/leap/openvpn.log':;
+    '/etc/rsyslog.d/50-openvpn.conf':;
   }
 
   # leax-mx logged to /var/log/leap_mx.log in the past

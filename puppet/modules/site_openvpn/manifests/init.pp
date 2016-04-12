@@ -224,7 +224,8 @@ class site_openvpn {
       order   => 10;
   }
 
-  leap::logfile { 'openvpn': }
+  leap::logfile { 'openvpn_tcp': }
+  leap::logfile { 'openvpn_udp': }
 
   # Because we currently do not support ipv6 and instead block it (so no leaks
   # happen), we get a large number of these messages, so we ignore them (#6540)
