@@ -92,6 +92,15 @@ class site_postfix::mx {
       value => 'enforce';
   }
 
+  # Make sure that the cleanup serivce is not chrooted, otherwise it cannot
+  # access the opendkim milter socket (#8020)
+  exec { 'unset_cleanup_chroot':
+    command => '/usr/sbin/postconf -F "cleanup/unix/chroot=n"',
+    onlyif  => '/usr/sbin/postconf -h -F "cleanup/unix/chroot" | egrep -q ^n',
+    notify  => Service['postfix'],
+    require => File['/etc/postfix/master.cf']
+  }
+
   include ::site_postfix::mx::smtpd_checks
   include ::site_postfix::mx::checks
   include ::site_postfix::mx::smtp_tls
