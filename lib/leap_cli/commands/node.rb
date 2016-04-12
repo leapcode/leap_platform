@@ -29,7 +29,7 @@ module LeapCli; module Commands
         assert_files_missing! [:node_config, name]
 
         # create and seed new node
-        node = Config::Node.new(manager)
+        node = Config::Node.new(manager.env)
         if options[:local]
           node['ip_address'] = pick_next_vagrant_ip_address
         end
@@ -118,7 +118,6 @@ module LeapCli; module Commands
   # values in the template will not override existing node values.
   #
   def seed_node_data_from_template(node)
-    return unless manager.respond_to?(:template)
     node.inherit_from!(manager.template('common'))
     [node['services']].flatten.each do |service|
       if service
