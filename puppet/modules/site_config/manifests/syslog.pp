@@ -23,8 +23,9 @@ class site_config::syslog {
   }
 
   class { '::rsyslog::client':
-    log_remote => false,
-    log_local  => true
+    log_remote    => false,
+    log_local     => true,
+    custom_config => 'site_rsyslog/client.conf.erb'
   }
 
   rsyslog::snippet { '00-anonymize_logs':

@@ -1,0 +1,134 @@
+
+# An "In-Memory Queue" is created for remote logging.
+$WorkDirectory <%= scope.lookupvar('rsyslog::spool_dir') -%>    # where to place spool files
+$ActionQueueFileName queue      # unique name prefix for spool files
+$ActionQueueMaxDiskSpace <%= scope.lookupvar('rsyslog::client::spool_size') -%>     # spool space limit (use as much as possible)
+$ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
+$ActionQueueType LinkedList     # run asynchronously
+$ActionResumeRetryCount -1      # infinety retries if host is down
+<% if scope.lookupvar('rsyslog::client::log_templates') and ! scope.lookupvar('rsyslog::client::log_templates').empty?-%>
+
+# Define custom logging templates
+<% scope.lookupvar('rsyslog::client::log_templates').flatten.compact.each do |log_template| -%>
+$template <%= log_template['name'] %>,"<%= log_template['template'] %>"
+<% end -%>
+<% end -%>
+<% if scope.lookupvar('rsyslog::client::actionfiletemplate') -%>
+
+# Using specified format for default logging format:
+$ActionFileDefaultTemplate <%= scope.lookupvar('rsyslog::client::actionfiletemplate') %>
+<% else -%>
+
+#Using default format for default logging format:
+$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+<% end -%>
+<% if scope.lookupvar('rsyslog::client::ssl') -%>
+
+# Setup SSL connection.
+# CA/Cert
+$DefaultNetStreamDriverCAFile <%= scope.lookupvar('rsyslog::client::ssl_ca') %>
+
+# Connection settings.
+$DefaultNetstreamDriver gtls
+$ActionSendStreamDriverMode 1
+$ActionSendStreamDriverAuthMode anon
+<% end -%>
+<% if scope.lookupvar('rsyslog::client::remote_servers')  -%>
+
+<% scope.lookupvar('rsyslog::client::remote_servers').flatten.compact.each do |server| -%>
+<% if server['pattern'] and server['pattern'] != ''-%>
+<% pattern = server['pattern'] -%>
+<% else -%>
+<% pattern = '*.*' -%>
+<% end -%>
+<% if server['protocol'] == 'TCP' or server['protocol'] == 'tcp'-%>
+<% protocol = '@@' -%>
+<% protocol_type = 'TCP' -%>
+<% else -%>
+<% protocol = '@' -%>
+<% protocol_type = 'UDP' -%>
+<% end -%>
+<% if server['host'] and server['host'] != ''-%>
+<% host = server['host'] -%>
+<% else -%>
+<% host = 'localhost' -%>
+<% end -%>
+<% if server['port'] and server['port'] != ''-%>
+<% port = server['port'] -%>
+<% else -%>
+<% port = '514' -%>
+<% end -%>
+<% if server['format'] -%>
+<% format = ";#{server['format']}" -%>
+<% format_type = server['format'] -%>
+<% else -%>
+<% format = '' -%>
+<% format_type = 'the default' -%>
+<% end -%>
+# Sending logs that match <%= pattern %> to <%= host %> via <%= protocol_type %> on <%= port %> using <%=format_type %> format.
+<%= pattern %> <%= protocol %><%= host %>:<%= port %><%= format %>
+<% end -%>
+<% elsif scope.lookupvar('rsyslog::client::log_remote') -%>
+
+# Log to remote syslog server using <%= scope.lookupvar('rsyslog::client::remote_type') %>
+<% if scope.lookupvar('rsyslog::client::remote_type') == 'tcp' -%>
+*.* @@<%= scope.lookupvar('rsyslog::client::server') -%>:<%= scope.lookupvar('rsyslog::client::port') -%>;<%= scope.lookupvar('remote_forward_format') -%>
+<% else -%>
+*.* @<%= scope.lookupvar('rsyslog::client::server') -%>:<%= scope.lookupvar('rsyslog::client::port') -%>;<%= scope.lookupvar('remote_forward_format') -%>
+<% end -%>
+<% end -%>
+<% if scope.lookupvar('rsyslog::client::log_auth_local') or scope.lookupvar('rsyslog::client::log_local') -%>
+
+# Logging locally.
+
+<% if scope.lookupvar('rsyslog::log_style') == 'debian' -%>
+# Log auth messages locally
+.*;auth,authpriv.none;mail.none -/var/log/syslog
+<% elsif scope.lookupvar('rsyslog::log_style') == 'redhat' -%>
+# Log auth messages locally
+auth,authpriv.*                 /var/log/secure
+<% end -%>
+<% end -%>
+<% if scope.lookupvar('rsyslog::client::log_local') -%>
+<% if scope.lookupvar('rsyslog::log_style') == 'debian' -%>
+# First some standard log files.  Log by facility.
+#
+*.*;auth,authpriv.none         -/var/log/syslog
+cron.*                          /var/log/cron.log
+daemon.*                       -/var/log/daemon.log
+kern.*                         -/var/log/kern.log
+mail.*                         -/var/log/mail.log
+user.*                         -/var/log/user.log
+
+#
+# Some "catch-all" log files.
+#
+*.=debug;\
+       auth,authpriv.none;\
+       news.none;mail.none     -/var/log/debug
+*.=info;*.=notice;*.=warn;\
+       auth,authpriv.none;\
+       cron,daemon.none;\
+       mail,news.none          -/var/log/messages
+
+# Log anything (except mail) of level info or higher.
+# Don't log private authentication messages!
+*.info;mail.none;authpriv.none;cron.none                /var/log/messages
+
+# Log cron stuff
+cron.*                         /var/log/cron
+
+# Everybody gets emergency messages
+<% if @rsyslog_version and @rsyslog_version.split('.')[0].to_i >= 8 -%>
+*.emerg       :omusrmsg:*
+<% else -%>
+*.emerg				*
+<% end -%>
+
+# Save boot messages also to boot.log
+local7.*                       -/var/log/boot.log
+<% end -%>
+<% end -%>
+
+
+
