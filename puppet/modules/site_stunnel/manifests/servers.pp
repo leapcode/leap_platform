@@ -16,6 +16,8 @@ define site_stunnel::servers (
   $rndfile    = '/var/lib/stunnel4/.rnd',
   $debuglevel = '4' ) {
 
+  $logfile = "/var/log/stunnel4/${name}.log"
+
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca
@@ -35,7 +37,9 @@ define site_stunnel::servers (
     pid        => "/var/run/stunnel4/${pid}.pid",
     rndfile    => '/var/lib/stunnel4/.rnd',
     debuglevel => $debuglevel,
-    sslversion => 'TLSv1';
+    sslversion => 'TLSv1',
+    syslog     => 'no',
+    output     => $logfile;
   }
 
   # allow incoming connections on $accept_port
