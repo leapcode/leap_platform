@@ -82,6 +82,8 @@ end
 class LeapTest < MiniTest::Unit::TestCase
   class Pass < MiniTest::Assertion
   end
+  class SilentPass < Pass
+  end
   class Ignore < MiniTest::Assertion
   end
 
@@ -130,6 +132,12 @@ class LeapTest < MiniTest::Unit::TestCase
   #
   def pass
     raise LeapTest::Pass
+  end
+
+  #
+  # This is just like pass(), but the result is normally silent, unless `run_tests --test TEST`
+  def silent_pass
+    raise LeapTest::SilentPass
   end
 
   #
@@ -220,6 +228,10 @@ class LeapRunner < MiniTest::Unit
         @ignores += 1
         if @verbose
           report_line("IGNORE", klass, meth, e, e.message)
+        end
+      when LeapTest::SilentPass then
+        if $pinned_test_method || $output_format == :checkmk
+          report_line("PASS", klass, meth)
         end
       when LeapTest::Pass then
         @passes += 1

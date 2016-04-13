@@ -151,7 +151,7 @@ class CouchDB < LeapTest
       # either way, make sure we leave a db for the mx tests:
       assert_create_user_db(user["id"], :username => 'admin')
     end
-    # no 'pass' at the end, since this is not a real test.
+    silent_pass
   end
 
   private
