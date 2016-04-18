@@ -57,13 +57,8 @@ class site_sshd {
   # therefore we don't use it here, but include all other options
   # that would be applied by the 'hardened' parameter
   # not all options are available on wheezy
-  if ( $::lsbdistcodename == 'wheezy' ) {
-    $tail_additional_options = 'Ciphers aes256-ctr
+  $tail_additional_options = 'Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
 MACs hmac-sha2-512,hmac-sha2-256,hmac-ripemd160'
-  } else {
-    $tail_additional_options = 'Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
-MACs hmac-sha2-512,hmac-sha2-256,hmac-ripemd160'
-  }
 
   ##
   ## SSHD SERVER CONFIGURATION
