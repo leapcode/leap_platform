@@ -1,3 +1,4 @@
+# deploy local caching resolver
 class site_config::caching_resolver {
   tag 'leap_base'
 

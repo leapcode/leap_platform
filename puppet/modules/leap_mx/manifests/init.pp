@@ -1,3 +1,4 @@
+# deploy leap mx service
 class leap_mx {
 
   $leap_mx          = hiera('couchdb_leap_mx_user')

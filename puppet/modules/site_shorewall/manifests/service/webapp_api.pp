@@ -1,3 +1,4 @@
+# configure shorewall for webapp api
 class site_shorewall::service::webapp_api {
 
   $api = hiera('api')

@@ -1,4 +1,5 @@
-define site_couchdb::upload_design($db = $title, $design) {
+# upload a design doc to a db
+define site_couchdb::upload_design($design, $db = $title) {
   $design_name = regsubst($design, '^.*\/(.*)\.json$', '\1')
   $id = "_design/${design_name}"
   $file = "/srv/leap/couchdb/designs/${design}"

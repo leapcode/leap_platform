@@ -1,3 +1,4 @@
+# deploy static service
 class site_static {
   tag 'leap_service'
 
@@ -48,8 +49,8 @@ class site_static {
 
   if (member($formats, 'amber')) {
     rubygems::gem{'amber-0.3.8':
-       require =>  Package['zlib1g-dev']
-     }
+      require =>  Package['zlib1g-dev']
+    }
 
     package { 'zlib1g-dev':
         ensure => installed

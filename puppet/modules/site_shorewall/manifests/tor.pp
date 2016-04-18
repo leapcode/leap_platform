@@ -1,3 +1,4 @@
+# configure shorewall for tor
 class site_shorewall::tor {
 
   include site_shorewall::defaults

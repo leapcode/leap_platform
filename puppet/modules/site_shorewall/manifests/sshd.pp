@@ -1,3 +1,4 @@
+# configure shorewall for sshd
 class site_shorewall::sshd {
 
   $ssh_config     = hiera('ssh')

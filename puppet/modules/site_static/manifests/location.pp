@@ -1,3 +1,4 @@
+# configure static service for location
 define site_static::location($path, $format, $source) {
 
   $file_path = "/srv/static/${name}"

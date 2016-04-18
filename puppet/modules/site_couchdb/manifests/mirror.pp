@@ -1,3 +1,4 @@
+# configure mirroring of couch nodes
 class site_couchdb::mirror {
 
   Class['site_couchdb::add_users']

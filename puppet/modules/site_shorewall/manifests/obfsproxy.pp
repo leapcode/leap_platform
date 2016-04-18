@@ -1,3 +1,4 @@
+# configure shorewell for obfsproxy
 class site_shorewall::obfsproxy {
 
   include site_shorewall::defaults

@@ -1,3 +1,4 @@
+# configure static service for domain
 define site_static::domain (
   $ca_cert,
   $key,
