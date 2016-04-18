@@ -16,12 +16,6 @@ class site_config::packages::build_essential inherits ::site_config::packages {
       }
     }
 
-    /^7.*/: {
-      Package[ 'gcc-4.7','g++-4.7', 'cpp-4.7' ] {
-        ensure => present
-      }
-    }
-
     default:  { }
   }
 
