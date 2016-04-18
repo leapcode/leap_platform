@@ -7,7 +7,7 @@ class site_config::remove::jessie {
   }
 
   apt::preferences_snippet {
-    [ 'facter', 'obfsproxy', 'python-twisted', 'unbound' ]:
+    [ 'facter', 'obfsproxy', 'python-twisted', 'unbound', 'passenger' ]:
       ensure => absent;
   }
 
