@@ -16,15 +16,15 @@ define site_static::domain (
 
   x509::cert { $domain:
     content => $cert,
-    notify => Service[apache]
+    notify  => Service[apache]
   }
   x509::key { $domain:
     content => $key,
-    notify => Service[apache]
+    notify  => Service[apache]
   }
   x509::ca { "${domain}_ca":
     content => $ca_cert,
-    notify => Service[apache]
+    notify  => Service[apache]
   }
 
   apache::vhost::file { $domain:

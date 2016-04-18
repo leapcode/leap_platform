@@ -7,7 +7,7 @@ class site_shorewall::tor {
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_tor':
-    content => "PARAM   -       -       tcp    $tor_port ",
+    content => "PARAM   -       -       tcp    ${tor_port} ",
     notify  => Service['shorewall'],
     require => Package['shorewall']
   }

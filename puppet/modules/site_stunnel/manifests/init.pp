@@ -36,8 +36,8 @@ class site_stunnel {
   # the default is to keep 356 log files for each stunnel.
   # here we set a more reasonable number.
   augeas {
-    "logrotate_stunnel":
-      context => "/files/etc/logrotate.d/stunnel4/rule",
+    'logrotate_stunnel':
+      context => '/files/etc/logrotate.d/stunnel4/rule',
       changes => [
         'set rotate 5',
       ]

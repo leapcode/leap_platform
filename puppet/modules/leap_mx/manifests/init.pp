@@ -85,7 +85,7 @@ class leap_mx {
   }
 
   leap::logfile { 'leap-mx':
-    log => '/var/log/leap/mx.log',
+    log     => '/var/log/leap/mx.log',
     process => 'leap-mx'
   }
 
