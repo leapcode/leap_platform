@@ -1,25 +1,17 @@
 # configure rsyslog on all nodes
 class site_config::syslog {
 
-  # only pin rsyslog packages to backports on wheezy
-  case $::operatingsystemrelease {
-    /^7.*/: {
-      include ::site_apt::preferences::rsyslog
-    }
-    # on jessie+ systems, systemd and journald are enabled,
-    # and journald logs IP addresses, so we need to disable
-    # it until a solution is found, (#7863):
-    # https://github.com/systemd/systemd/issues/2447
-    default: {
-      include ::journald
-      augeas {
-        'disable_journald':
-          incl    => '/etc/systemd/journald.conf',
-          lens    => 'Puppet.lns',
-          changes => 'set /files/etc/systemd/journald.conf/Journal/Storage \'none\'',
-          notify  => Service['systemd-journald'];
-      }
-    }
+  # on jessie+ systems, systemd and journald are enabled,
+  # and journald logs IP addresses, so we need to disable
+  # it until a solution is found, (#7863):
+  # https://github.com/systemd/systemd/issues/2447
+  include ::journald
+  augeas {
+    'disable_journald':
+      incl    => '/etc/systemd/journald.conf',
+      lens    => 'Puppet.lns',
+      changes => 'set /files/etc/systemd/journald.conf/Journal/Storage \'none\'',
+      notify  => Service['systemd-journald'];
   }
 
   class { '::rsyslog::client':
