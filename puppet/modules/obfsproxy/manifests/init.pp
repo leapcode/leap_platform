@@ -1,3 +1,4 @@
+# deploy obfsproxy service
 class obfsproxy (
   $transport,
   $bind_address,
@@ -23,18 +24,18 @@ class obfsproxy (
   }
 
   file { '/etc/init.d/obfsproxy':
-    path      => '/etc/init.d/obfsproxy',
-    ensure    => present,
-    source    => 'puppet:///modules/obfsproxy/obfsproxy_init',
-    owner     => 'root',
-    group     => 'root',
-    mode      => '0750',
-    require   => File[$conf],
+    ensure  => present,
+    path    => '/etc/init.d/obfsproxy',
+    source  => 'puppet:///modules/obfsproxy/obfsproxy_init',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    require => File[$conf],
   }
 
   file { $conf :
-    path    => $conf,
     ensure  => present,
+    path    => $conf,
     owner   => 'root',
     group   => 'root',
     mode    => '0600',

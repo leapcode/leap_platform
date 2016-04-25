@@ -1,3 +1,4 @@
+# configure mirroring of couch nodes
 class site_couchdb::mirror {
 
   Class['site_couchdb::add_users']
@@ -22,55 +23,55 @@ class site_couchdb::mirror {
 
   ### customer database
   couchdb::mirror_db { 'customers':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## identities database
   couchdb::mirror_db { 'identities':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## keycache database
   couchdb::mirror_db { 'keycache':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## sessions database
   couchdb::mirror_db { 'sessions':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## shared database
   couchdb::mirror_db { 'shared':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## tickets database
   couchdb::mirror_db { 'tickets':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## tokens database
   couchdb::mirror_db { 'tokens':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## users database
   couchdb::mirror_db { 'users':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 
   ## messages db
   couchdb::mirror_db { 'messages':
-    from => $from,
+    from    => $from,
     require => Couchdb::Query::Setup['localhost']
   }
 

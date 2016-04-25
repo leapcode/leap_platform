@@ -1,3 +1,4 @@
+# configure static service for location
 define site_static::location($path, $format, $source) {
 
   $file_path = "/srv/static/${name}"
@@ -14,10 +15,10 @@ define site_static::location($path, $format, $source) {
 
   if ($format == 'amber') {
     exec {"amber_build_${name}":
-      cwd     => $file_path,
-      command => 'amber rebuild',
-      user    => 'www-data',
-      timeout => 600,
+      cwd       => $file_path,
+      command   => 'amber rebuild',
+      user      => 'www-data',
+      timeout   => 600,
       subscribe => Vcsrepo[$file_path]
     }
   }

@@ -1,3 +1,4 @@
+# deploy local caching resolver
 class site_config::caching_resolver {
   tag 'leap_base'
 
@@ -6,7 +7,7 @@ class site_config::caching_resolver {
     anchor     => false,
     ssl        => false,
     settings   => {
-      server       => {
+      server => {
         verbosity      => '1',
         interface      => [ '127.0.0.1', '::1' ],
         port           => '53',

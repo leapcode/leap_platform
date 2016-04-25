@@ -32,17 +32,17 @@ define try::file (
   exec {
     "chmod_${name}":
       command => "/bin/chmod -R ${mode} '${name}'",
-      onlyif => "/usr/bin/test $mode",
+      onlyif => "/usr/bin/test ${mode}",
       refreshonly => true,
       loglevel => debug;
     "chown_${name}":
       command => "/bin/chown -R ${owner} '${name}'",
-      onlyif => "/usr/bin/test $owner",
+      onlyif => "/usr/bin/test ${owner}",
       refreshonly => true,
       loglevel => debug;
     "chgrp_${name}":
       command => "/bin/chgrp -R ${group} '${name}'",
-      onlyif => "/usr/bin/test $group",
+      onlyif => "/usr/bin/test ${group}",
       refreshonly => true,
       loglevel => debug;
   }
@@ -50,31 +50,31 @@ define try::file (
   if $target {
     exec { "symlink_${name}":
       command => "/bin/ln -s ${target} ${name}",
-      onlyif => "/usr/bin/test -d '${target}'",
+      onlyif  => "/usr/bin/test -d '${target}'",
     }
   } elsif $source {
     if $ensure == 'directory' {
       if $purge {
         exec { "rsync_${name}":
           command => "/usr/bin/rsync -r --delete '${source}/' '${name}'",
-          onlyif => "/usr/bin/test -d '${source}'",
-          unless => "/usr/bin/diff -rq '${source}' '${name}'",
-          notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
+          onlyif  => "/usr/bin/test -d '${source}'",
+          unless  => "/usr/bin/diff -rq '${source}' '${name}'",
+          notify  => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
         }
       } else {
         exec { "cp_r_${name}":
           command => "/bin/cp -r '${source}' '${name}'",
-          onlyif => "/usr/bin/test -d '${source}'",
-          unless => "/usr/bin/diff -rq '${source}' '${name}'",
-          notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
+          onlyif  => "/usr/bin/test -d '${source}'",
+          unless  => "/usr/bin/diff -rq '${source}' '${name}'",
+          notify  => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
         }
       }
     } else {
       exec { "cp_${name}":
         command => "/bin/cp --remove-destination '${source}' '${name}'",
-        onlyif => "/usr/bin/test -e '${source}'",
-        unless => "/usr/bin/test ! -h '${name}' && /usr/bin/diff -q '${source}' '${name}'",
-        notify => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
+        onlyif  => "/usr/bin/test -e '${source}'",
+        unless  => "/usr/bin/test ! -h '${name}' && /usr/bin/diff -q '${source}' '${name}'",
+        notify  => [Exec["chmod_${name}"], Exec["chown_${name}"], Exec["chgrp_${name}"]]
       }
     }
   }

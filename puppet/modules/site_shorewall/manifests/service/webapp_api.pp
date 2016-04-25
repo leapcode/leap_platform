@@ -1,3 +1,4 @@
+# configure shorewall for webapp api
 class site_shorewall::service::webapp_api {
 
   $api = hiera('api')
@@ -5,7 +6,7 @@ class site_shorewall::service::webapp_api {
 
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_webapp_api':
-    content => "PARAM   -       -       tcp    $api_port ",
+    content => "PARAM   -       -       tcp    ${api_port} ",
     notify  => Service['shorewall'],
     require => Package['shorewall']
   }

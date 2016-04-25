@@ -1,3 +1,4 @@
+# configure smtpd tls
 class site_postfix::mx::smtpd_tls {
 
   include x509::variables
@@ -19,7 +20,7 @@ class site_postfix::mx::smtpd_tls {
     'smtpd_tls_eecdh_grade':
       value => 'ultra';
     'smtpd_tls_session_cache_database':
-      value => 'btree:${data_directory}/smtpd_scache';
+      value => "btree:\${data_directory}/smtpd_scache";
     # see issue #4011
     'smtpd_tls_mandatory_protocols':
       value => '!SSLv2, !SSLv3';

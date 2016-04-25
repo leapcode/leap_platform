@@ -1,3 +1,4 @@
+# deploy clamav daemon
 class clamav::daemon {
 
   $domain_hash           = hiera('domain')
@@ -55,7 +56,7 @@ class clamav::daemon {
       require => Package['clamav-daemon'],
       notify  => Service['clamav-daemon'];
 
-     'enable_phishscanurls':
+    'enable_phishscanurls':
       path    => '/etc/clamav/clamd.conf',
       match   => 'PhishingScanURLs no',
       line    => 'PhishingScanURLs yes',
