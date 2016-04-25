@@ -1,3 +1,4 @@
+# configure smtp tls
 class site_postfix::mx::smtp_tls {
 
   include site_config::x509::ca
@@ -24,7 +25,7 @@ class site_postfix::mx::smtp_tls {
     'smtp_tls_fingerprint_digest':
       value => 'sha1';
     'smtp_tls_session_cache_database':
-      value => 'btree:${data_directory}/smtp_cache';
+      value => "btree:\${data_directory}/smtp_cache";
     # see issue #4011
     'smtp_tls_protocols':
       value => '!SSLv2, !SSLv3';
