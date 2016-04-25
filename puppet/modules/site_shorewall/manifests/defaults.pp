@@ -47,6 +47,18 @@ class site_shorewall::defaults {
     ensure => installed
   }
 
+  include ::systemd
+  file { '/etc/systemd/system/shorewall.service':
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => 'puppet:///modules/site_shorewall/Debian/shorewall.service',
+    require => Package['shorewall'],
+    notify  => Service['shorewall'],
+    } ~>
+    Exec['systemctl-daemon-reload']
+
   augeas {
     # stop instead of clear firewall on shutdown
     'shorewall_SAFESTOP':
@@ -54,14 +66,14 @@ class site_shorewall::defaults {
       lens    => 'Shellvars.lns',
       incl    => '/etc/shorewall/shorewall.conf',
       require => Package['shorewall'],
-      notify  => Service[shorewall];
+      notify  => Service['shorewall'];
     # require that the interface exist
     'shorewall_REQUIRE_INTERFACE':
       changes => 'set /files/etc/shorewall/shorewall.conf/REQUIRE_INTERFACE Yes',
       lens    => 'Shellvars.lns',
       incl    => '/etc/shorewall/shorewall.conf',
       require => Package['shorewall'],
-      notify  => Service[shorewall];
+      notify  => Service['shorewall'];
     # configure shorewall-init
     'shorewall-init':
       changes => 'set /files/etc/default/shorewall-init/PRODUCTS shorewall',

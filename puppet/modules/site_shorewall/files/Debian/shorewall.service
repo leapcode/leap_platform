@@ -1,0 +1,23 @@
+#
+#     The Shoreline Firewall (Shorewall) Packet Filtering Firewall
+#
+#     Copyright 2011 Jonathan Underwood <jonathan.underwood@gmail.com>
+#     Copyright 2015 Tom Eastep <teastep@shorewall.net>
+#
+[Unit]
+Description=Shorewall IPv4 firewall
+Wants=network-online.target
+After=network-online.target
+Conflicts=iptables.service firewalld.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=-/etc/default/shorewall
+StandardOutput=syslog
+ExecStart=/sbin/shorewall $OPTIONS start $STARTOPTIONS
+ExecStop=/sbin/shorewall $OPTIONS stop
+ExecReload=/sbin/shorewall $OPTIONS reload $RELOADOPTIONS
+
+[Install]
+WantedBy=basic.target

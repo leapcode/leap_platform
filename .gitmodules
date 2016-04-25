@@ -91,3 +91,6 @@
 [submodule "puppet/modules/check_mk"]
 	path = puppet/modules/check_mk
 	url = https://leap.se/git/puppet_check_mk
+[submodule "puppet/modules/systemd"]
+	path = puppet/modules/systemd
+	url = https://leap.se/git/puppet_systemd
