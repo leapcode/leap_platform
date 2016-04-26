@@ -90,7 +90,10 @@ class LeapTest
   #
   def identity_exists?(address)
     url = api_url("/identities/#{URI.encode(address)}.json")
-    get(url, nil, api_options(:auth => :monitor)) do |body, response|
+    options = {:ok_codes => [200, 404]}.merge(
+      api_options(:auth => :monitor)
+    )
+    assert_get(url, nil, options) do |body, response|
       return response.code == "200"
     end
   end
@@ -118,7 +121,9 @@ class LeapTest
   #
   def find_user_by_login(login)
     url = api_url("/users/0.json?login=#{login}")
-    options = {:ok_codes => [200, 404]}.merge(api_options(:auth => :monitor))
+    options = {:ok_codes => [200, 404]}.merge(
+      api_options(:auth => :monitor)
+    )
     assert_get(url, nil, options) do |body, response|
       if response.code == "200"
         return JSON.parse(body)
