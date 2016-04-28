@@ -30,7 +30,7 @@
 # auth SHA1
 #
 #   dkg: For HMAC digest to authenticate packets, we just want SHA256. OpenVPN lists
-#   a number of “digest” with names like “RSA-SHA256”, but this are legacy and
+#   a number of "digest" with names like "RSA-SHA256", but this are legacy and
 #   should be avoided.
 #
 #   elijah: i am not so sure that the digest algo matters for 'auth' option, because
@@ -40,14 +40,14 @@
 # cipher AES-128-CBC
 #
 #   dkg: For the choice of cipher, we need to select an algorithm and a
-#   cipher mode. OpenVPN defaults to Blowfish, which is a fine algorithm — but
+#   cipher mode. OpenVPN defaults to Blowfish, which is a fine algorithm - but
 #   our control channel is already relying on AES not being broken; if the
 #   control channel is cracked, then the key material for the tunnel is exposed,
 #   and the choice of algorithm is moot. So it makes more sense to me to rely on
 #   the same cipher here: AES128. As for the cipher mode, OFB seems cleaner to
 #   me, but CBC is more well-tested, and the OpenVPN man page (at least as of
-#   version 2.2.1) says “CBC is recommended and CFB and OFB should be considered
-#   advanced modes.”
+#   version 2.2.1) says "CBC is recommended and CFB and OFB should be considered
+#   advanced modes."
 #
 #   note: the default is BF-CBC (blowfish)
 #
