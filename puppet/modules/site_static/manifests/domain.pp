@@ -11,20 +11,18 @@ define site_static::domain (
   $domain = $name
   $base_dir = '/srv/static'
 
+  $cafile = "${cert}\n${ca_cert}"
+
   if is_hash($locations) {
     create_resources(site_static::location, $locations)
   }
 
   x509::cert { $domain:
-    content => $cert,
+    content => $cafile,
     notify  => Service[apache]
   }
   x509::key { $domain:
     content => $key,
-    notify  => Service[apache]
-  }
-  x509::ca { "${domain}_ca":
-    content => $ca_cert,
     notify  => Service[apache]
   }
 

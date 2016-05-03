@@ -56,7 +56,6 @@
 
   SSLCertificateKeyFile    /etc/x509/keys/<%= @domain %>.key
   SSLCertificateFile       /etc/x509/certs/<%= @domain %>.crt
-  SSLCertificateChainFile  /etc/ssl/certs/<%= @domain %>_ca.pem
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 

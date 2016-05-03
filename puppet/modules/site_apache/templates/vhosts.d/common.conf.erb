@@ -16,7 +16,6 @@
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 
   SSLCACertificatePath /etc/ssl/certs
-  SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::commercial_ca_name') %>.crt
   SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.key
   SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.crt
 
