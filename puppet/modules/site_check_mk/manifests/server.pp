@@ -43,8 +43,9 @@ class site_check_mk::server {
   }
 
   Exec['check_mk-refresh'] ->
-    Exec['check_mk-reload'] ->
-      Service['nagios']
+    Exec['check_mk-refresh-inventory-daily'] ->
+      Exec['check_mk-reload'] ->
+        Service['nagios']
 
   file {
     '/etc/check_mk/conf.d/use_ssh.mk':
