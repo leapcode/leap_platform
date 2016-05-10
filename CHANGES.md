@@ -1,14 +1,20 @@
 Platform 0.8
 --------------------------------------
 
-This release focused on the email service. Debian Jessie is now required,
-which also means that you must migrate all data from BigCouch to CouchDB.
+This release focuses on the email service.
 
-UPGRADING: It is tricky to upgrade the OS and migrate the database. You can
-follow the tutorial here: https://leap.se/en/upgrade-0-8
+Requirements:
+ . You must upgrade to Debian Jessie, see below for details
+ . You must migrate all data from BigCouch to CouchDB
+ . Soledad and couchdb services must be on the same node
 
 WARNING: failure to migrate data from BigCouch to CouchDB will cause all user
-accounts to get destroyed.
+accounts to get destroyed. See UPGRADING below for how to safely do this.
+
+UPGRADING: You must upgrade to Debian Jessie and migrate from BigCouch to
+Couchdb. It is tricky to upgrade the OS and migrate the database, so we have
+writen and tested a step-by-step guide that you can carefully follow in
+doc/upgrading/upgrade-0-8.md, or online at: https://leap.se/en/upgrade-0-8
 
 Other new features:
 
@@ -17,7 +23,7 @@ Other new features:
 * Tapicero has been removed. Now user storage databases are created as needed
   by soledad, and deleted eventually when no longer needed.
 
-* Admins can now suspect/enable users and block/enable their ability to send
+* Admins can now suspend/enable users and block/enable their ability to send
   and receive email.
 
 * Support for SPF and DKIM.
