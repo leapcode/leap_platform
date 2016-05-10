@@ -81,19 +81,31 @@ class LeapTest
 
   #
   # calls http_send, yielding results if successful or failing with
-  # descriptive infor otherwise.
+  # descriptive info otherwise.
+  #
+  # options:
+  # - error_msg: custom error message to display.
+  # - ok_codes: in addition to 2xx, codes in this array will not produce an error.
   #
   def assert_http_send(method, url, params=nil, options=nil, &block)
     options ||= {}
     error_msg = options[:error_msg] || (url.respond_to?(:memo) ? url.memo : nil)
     http_send(method, url, params, options) do |body, response, error|
-      if body && response && response.code.to_i >= 200 && response.code.to_i < 300
-        if block
-          yield(body) if block.arity == 1
-          yield(response, body) if block.arity == 2
+      if response
+        code = response.code.to_i
+        ok = code >= 200 && code < 300
+        if options[:ok_codes]
+          ok ||= options[:ok_codes].include?(code)
         end
-      elsif response
-        fail ["Expected a 200 status code from #{method} #{url}, but got #{response.code} instead.", error_msg, body].compact.join("\n")
+        if ok
+          if block
+            yield(body) if block.arity == 1
+            yield(body, response) if block.arity == 2
+            yield(body, response, error) if block.arity == 3
+          end
+        else
+          fail ["Expected success code from #{method} #{url}, but got #{response.code} instead.", error_msg, body].compact.join("\n")
+        end
       else
         fail ["Expected a response from #{method} #{url}, but got \"#{error}\" instead.", error_msg, body].compact.join("\n"), error
       end

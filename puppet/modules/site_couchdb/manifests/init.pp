@@ -26,11 +26,6 @@ class site_couchdb {
   $couchdb_soledad_pw       = $couchdb_soledad['password']
   $couchdb_soledad_salt     = $couchdb_soledad['salt']
 
-  $couchdb_tapicero         = $couchdb_users['tapicero']
-  $couchdb_tapicero_user    = $couchdb_tapicero['username']
-  $couchdb_tapicero_pw      = $couchdb_tapicero['password']
-  $couchdb_tapicero_salt    = $couchdb_tapicero['salt']
-
   $couchdb_webapp           = $couchdb_users['webapp']
   $couchdb_webapp_user      = $couchdb_webapp['username']
   $couchdb_webapp_pw        = $couchdb_webapp['password']
@@ -43,11 +38,14 @@ class site_couchdb {
 
   $couchdb_backup           = $couchdb_config['backup']
   $couchdb_mode             = $couchdb_config['mode']
-  $couchdb_pwhash_alg       = $couchdb_config['pwhash_alg']
 
-  if $couchdb_mode == 'multimaster' { include site_couchdb::bigcouch }
-  if $couchdb_mode == 'master'      { include site_couchdb::master }
-  if $couchdb_mode == 'mirror'      { include site_couchdb::mirror }
+  # ensure bigcouch has been purged from the system:
+  # TODO: remove this check in 0.9 release
+  if file('/opt/bigcouch/bin/bigcouch', '/dev/null') != '' {
+    fail 'ERROR: BigCouch appears to be installed. Make sure you have migrated to CouchDB before proceeding. See https://leap.se/upgrade-0-8'
+  }
+
+  include site_couchdb::plain
 
   Class['site_config::default']
     -> Service['shorewall']
@@ -55,6 +53,7 @@ class site_couchdb {
     -> Class['couchdb']
     -> Class['site_couchdb::setup']
 
+  include ::site_config::default
   include site_stunnel
 
   include site_couchdb::setup
@@ -66,6 +65,17 @@ class site_couchdb {
   if $couchdb_backup   { include site_couchdb::backup }
 
   include site_check_mk::agent::couchdb
-  include site_check_mk::agent::tapicero
+
+  # remove tapicero leftovers on couchdb nodes
+  include site_config::remove::tapicero
+
+  # Destroy every per-user storage database
+  # where the corresponding user record does not exist.
+  cron { 'cleanup_stale_userdbs':
+    command => '(/bin/date; /srv/leap/couchdb/scripts/cleanup-user-dbs) >> /var/log/leap/couchdb-cleanup.log',
+    user    => 'root',
+    hour    => 4,
+    minute  => 7;
+  }
 
 }

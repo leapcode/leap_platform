@@ -9,9 +9,8 @@ class CouchDB < LeapTest
   end
 
   def test_00_Are_daemons_running?
-    assert_running '^tapicero', :single => true
+    assert_running 'bin/beam'
     if multimaster?
-      assert_running 'bin/beam'
       assert_running 'bin/epmd'
     end
     pass
@@ -70,7 +69,7 @@ class CouchDB < LeapTest
   end
 
   def test_04_Do_ACL_users_exist?
-    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'tapicero', 'webapp', 'replication']
+    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'webapp', 'replication']
     url = couchdb_backend_url("/_users/_all_docs", :username => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
@@ -126,6 +125,33 @@ class CouchDB < LeapTest
       end
     end
     pass
+  end
+
+  #
+  # This is not really a "test", just an attempt to make sure that
+  # the mx tests that fire off dummy emails don't fill up the
+  # storage db.
+  #
+  # mx tests can't run this because they don't have access to
+  # the storage db.
+  #
+  # This "test" is responsible for both creating the db if it does not
+  # exist, and destroying if it does.
+  #
+  # Yes, this is super hacky. Properly, we should add something to
+  # the soledad api to support create/delete of user storage dbs.
+  #
+  def test_99_Delete_mail_storage_used_in_mx_tests
+    user = find_user_by_login(TEST_EMAIL_USER)
+    if user
+      if user_db_exists?(user["id"])
+        # keep the test email db from filling up:
+        assert_destroy_user_db(user["id"], :username => 'admin')
+      end
+      # either way, make sure we leave a db for the mx tests:
+      assert_create_user_db(user["id"], :username => 'admin')
+    end
+    silent_pass
   end
 
   private

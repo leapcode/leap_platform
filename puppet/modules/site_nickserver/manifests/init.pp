@@ -61,13 +61,6 @@ class site_nickserver {
     require   => Group['nickserver'];
   }
 
-  #
-  # NICKSERVER CODE NOTE: in order to support TLS, libssl-dev must be installed
-  # before EventMachine gem is built/installed.
-  #
-
-  package { 'libssl-dev': ensure => installed }
-
   vcsrepo { '/srv/leap/nickserver':
     ensure   => present,
     revision => $sources['nickserver']['revision'],
@@ -122,6 +115,20 @@ class site_nickserver {
       require => Vcsrepo['/srv/leap/nickserver'];
   }
 
+  # register initscript at systemd on nodes newer than wheezy
+  # see https://leap.se/code/issues/7614
+  case $::operatingsystemrelease {
+    /^7.*/: { }
+    default:  {
+      exec { 'register_systemd_nickserver':
+        refreshonly => true,
+        command     => '/bin/systemctl enable nickserver',
+        subscribe   => File['/etc/init.d/nickserver'],
+        before      => Service['nickserver'];
+      }
+    }
+  }
+
   service { 'nickserver':
     ensure     => running,
     enable     => true,
@@ -129,6 +136,7 @@ class site_nickserver {
     hasstatus  => true,
     require    => [
       File['/etc/init.d/nickserver'],
+      File['/usr/bin/nickserver'],
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];

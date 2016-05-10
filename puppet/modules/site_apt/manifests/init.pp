@@ -3,15 +3,29 @@ class site_apt {
 
   $sources           = hiera('sources')
   $apt_config        = $sources['apt']
+
+  # debian repo urls
   $apt_url_basic     = $apt_config['basic']
   $apt_url_security  = $apt_config['security']
   $apt_url_backports = $apt_config['backports']
 
+  # leap repo url
+  $platform_sources       = $sources['platform']
+  $apt_url_platform_basic = $platform_sources['apt']['basic']
+
+  # needed on jessie hosts for getting pnp4nagios from testing
+  if ( $::operatingsystemmajrelease == '8' ) {
+    $use_next_release = true
+  } else {
+    $use_next_release = false
+  }
+
   class { 'apt':
-    custom_key_dir => 'puppet:///modules/site_apt/keys',
-    debian_url     => $apt_url_basic,
-    security_url   => $apt_url_security,
-    backports_url  => $apt_url_backports
+    custom_key_dir   => 'puppet:///modules/site_apt/keys',
+    debian_url       => $apt_url_basic,
+    security_url     => $apt_url_security,
+    backports_url    => $apt_url_backports,
+    use_next_release => $use_next_release
   }
 
   # enable http://deb.leap.se debian package repository
@@ -23,14 +37,10 @@ class site_apt {
 
   include ::site_apt::unattended_upgrades
 
-  apt::sources_list { 'secondary.list.disabled':
-    content => template('site_apt/secondary.list');
-  }
-
-  apt::preferences_snippet { 'facter':
-    release  => "${::lsbdistcodename}-backports",
-    priority => 999
-  }
+  # not currently used
+  #apt::sources_list { 'secondary.list':
+  #  content => template('site_apt/secondary.list');
+  #}
 
   apt::preferences_snippet { 'leap':
     priority => 999,
@@ -38,13 +48,8 @@ class site_apt {
     pin      => 'origin "deb.leap.se"'
   }
 
-  # All packages should be installed _after_ refresh_apt is called,
-  # which does an apt-get update.
-  # There is one exception:
-  # The creation of sources.list depends on the lsb package
+  # All packages should be installed after 'update_apt' is called,
+  # which does an 'apt-get update'.
+  Exec['update_apt'] -> Package <||>
 
-  File['/etc/apt/preferences'] ->
-    Apt::Preferences_snippet <| |> ->
-    Exec['refresh_apt'] ->
-    Package <| ( title != 'lsb' ) |>
 }

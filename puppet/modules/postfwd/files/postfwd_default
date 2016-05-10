@@ -1,0 +1,19 @@
+### This file managed by Puppet
+# Global options for postfwd(8).
+
+# Set to '1' to enable startup (daemon mode)
+STARTUP=1
+
+# Config file
+CONF=/etc/postfix/postfwd.cf
+# IP where listen to
+INET=127.0.0.1
+# Port where listen to
+PORT=10040
+# run as user postfwd
+RUNAS="postfw"
+# Arguments passed on start (--daemon implied)
+# disable summary and cache-no-size
+#ARGS="--summary=600 --cache=600 --cache-rdomain-only --cache-no-size"
+ARGS="--cache=600 --cache-rdomain-only --no-rulestats"
+

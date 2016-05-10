@@ -1,0 +1,11 @@
+This directory contains ruby source files that define the available sub-
+commands of the `leap` executable.
+
+For example, the command:
+
+  leap compile
+
+Lives in lib/leap_cli/commands/init.rb
+
+These files use a DSL (called GLI) for defining command suites.
+See https://github.com/davetron5000/gli for more information.

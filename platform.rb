@@ -4,8 +4,8 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.7.1"
-  self.compatible_cli = "1.7.0".."1.7.99"
+  self.version = "0.8"
+  self.compatible_cli = "1.8".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -15,6 +15,7 @@ Leap::Platform.define do
   #
   # absolute paths on the destination server
   #
+  self.hiera_dir  = '/etc/leap' if self.respond_to?(:hiera_dir)
   self.hiera_path = '/etc/leap/hiera.yaml'
   self.leap_dir   = '/srv/leap'
   self.files_dir  = '/srv/leap/files'
@@ -30,18 +31,21 @@ Leap::Platform.define do
     :files_dir        => 'files',
     :nodes_dir        => 'nodes',
     :services_dir     => 'services',
+    :templates_dir    => 'templates',
     :tags_dir         => 'tags',
     :node_files_dir   => 'files/nodes/#{arg}',
 
     # input config files
     :common_config    => 'common.json',
     :provider_config  => 'provider.json',
-    :secrets_config   => 'secrets.json',
-    :node_config      => 'nodes/#{arg}.json',
     :service_config   => 'services/#{arg}.json',
     :tag_config       => 'tags/#{arg}.json',
+    :template_config  => 'templates/#{arg}.json',
+    :secrets_config   => 'secrets.json',
+    :node_config      => 'nodes/#{arg}.json',
 
     # input config files, environmentally scoped
+    :common_env_config    => 'commmon.#{arg}.json',
     :provider_env_config  => 'provider.#{arg}.json',
     :service_env_config   => 'services/#{arg[0]}.#{arg[1]}.json',
     :tag_env_config       => 'tags/#{arg[0]}.#{arg[1]}.json',
@@ -75,6 +79,9 @@ Leap::Platform.define do
     :commercial_key   => 'files/cert/#{arg}.key',
     :commercial_csr   => 'files/cert/#{arg}.csr',
     :commercial_cert  => 'files/cert/#{arg}.crt',
+    :dkim_priv_key    => 'files/mx/dkim.key',
+    :dkim_pub_key     => 'files/mx/dkim.pub',
+
     :commercial_ca_cert       => 'files/cert/commercial_ca.crt',
     :vagrantfile              => 'test/Vagrantfile',
     :static_web_provider_json => 'files/web/bootstrap/#{arg}/provider.json',

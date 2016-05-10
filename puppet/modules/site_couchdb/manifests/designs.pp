@@ -12,12 +12,13 @@ class site_couchdb::designs {
   }
 
   site_couchdb::upload_design {
-    'customers':   design => 'customers/Customer.json';
-    'identities':  design => 'identities/Identity.json';
-    'tickets':     design => 'tickets/Ticket.json';
-    'messages':    design => 'messages/Message.json';
-    'users':       design => 'users/User.json';
-    'tmp_users':   design => 'users/User.json';
+    'customers':    design => 'customers/Customer.json';
+    'identities':   design => 'identities/Identity.json';
+    'tickets':      design => 'tickets/Ticket.json';
+    'messages':     design => 'messages/Message.json';
+    'users':        design => 'users/User.json';
+    'tmp_users':    design => 'users/User.json';
+    'invite_codes': design => 'invite_codes/InviteCode.json';
     'shared_docs':
       db => 'shared',
       design => 'shared/docs.json';

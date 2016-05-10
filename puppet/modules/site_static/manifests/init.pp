@@ -1,6 +1,8 @@
+# deploy static service
 class site_static {
   tag 'leap_service'
 
+  include site_config::default
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca_bundle
@@ -9,6 +11,7 @@ class site_static {
   $domains       = $static['domains']
   $formats       = $static['formats']
   $bootstrap     = $static['bootstrap_files']
+  $tor           = hiera('tor', false)
 
   if $bootstrap['enabled'] {
     $bootstrap_domain  = $bootstrap['domain']
@@ -27,14 +30,13 @@ class site_static {
     }
   }
 
-  class { '::apache': no_default_site => true, ssl => true }
-  include site_apache::module::headers
-  include site_apache::module::alias
-  include site_apache::module::expires
-  include site_apache::module::removeip
-  include site_apache::module::rewrite
-  apache::config::include{ 'ssl_common.inc': }
-
+  include apache::module::headers
+  include apache::module::alias
+  include apache::module::expires
+  include apache::module::removeip
+  include apache::module::dir
+  include apache::module::negotiation
+  include site_apache::common
   include site_config::ruby::dev
 
   if (member($formats, 'rack')) {
@@ -46,9 +48,9 @@ class site_static {
   }
 
   if (member($formats, 'amber')) {
-    rubygems::gem{'amber-0.3.7':  
-       require =>  Package['zlib1g-dev']
-     }
+    rubygems::gem{'amber-0.3.8':
+      require =>  Package['zlib1g-dev']
+    }
 
     package { 'zlib1g-dev':
         ensure => installed
@@ -56,6 +58,13 @@ class site_static {
   }
 
   create_resources(site_static::domain, $domains)
+
+  if $tor {
+    $hidden_service = $tor['hidden_service']
+    if $hidden_service['active'] {
+      include site_webapp::hidden_service
+    }
+  }
 
   include site_shorewall::defaults
   include site_shorewall::service::http

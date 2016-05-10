@@ -1,8 +1,7 @@
 # configures nagios on monitoring node
+# lint:ignore:inherits_across_namespaces
 class site_nagios::server inherits nagios::base {
-
-  # First, purge old nagios config (see #1467)
-  class { 'site_nagios::server::purge': }
+# lint:endignore
 
   $nagios_hiera     = hiera('nagios')
   $nagiosadmin_pw   = htpasswd_sha1($nagios_hiera['nagiosadmin_pw'])
@@ -22,17 +21,43 @@ class site_nagios::server inherits nagios::base {
     # it in site_apache::common
     httpd              => 'absent',
     allow_external_cmd => true,
-    stored_config      => false,
+    storeconfigs       => false,
   }
 
-  file { '/etc/apache2/conf.d/nagios3.conf':
-    ensure => link,
-    target => '/usr/share/doc/nagios3-common/examples/apache2.conf',
-    notify => Service['apache']
+  # Delete nagios config files provided by packages
+  # These don't get parsed by nagios.conf, but are
+  # still irritating duplicates to the real config
+  # files deployed by puppet in /etc/nagios3/
+  file { [
+    '/etc/nagios3/conf.d/contacts_nagios2.cfg',
+    '/etc/nagios3/conf.d/extinfo_nagios2.cfg',
+    '/etc/nagios3/conf.d/generic-host_nagios2.cfg',
+    '/etc/nagios3/conf.d/generic-service_nagios2.cfg',
+    '/etc/nagios3/conf.d/hostgroups_nagios2.cfg',
+    '/etc/nagios3/conf.d/localhost_nagios2.cfg',
+    '/etc/nagios3/conf.d/pnp4nagios.cfg',
+    '/etc/nagios3/conf.d/services_nagios2.cfg',
+    '/etc/nagios3/conf.d/timeperiods_nagios2.cfg' ]:
+      ensure => absent;
+  }
+
+  # deploy apache nagios3 config
+  # until https://gitlab.com/shared-puppet-modules-group/apache/issues/11
+  # is not fixed, we need to manually deploy the config file
+  file {
+    '/etc/apache2/conf-available/nagios3.conf':
+      ensure  => present,
+      source  => 'puppet:///modules/nagios/configs/apache2.conf',
+      require => [ Package['nagios3'], Package['apache2'] ];
+    '/etc/apache2/conf-enabled/nagios3.conf':
+      ensure  => link,
+      target  => '/etc/apache2/conf-available/nagios3.conf',
+      require => [ Package['nagios3'], Package['apache2'] ];
   }
 
   include site_apache::common
-  include site_apache::module::headers
+  include site_webapp::common_vhost
+  include apache::module::headers
 
   File ['nagios_htpasswd'] {
     source  => undef,

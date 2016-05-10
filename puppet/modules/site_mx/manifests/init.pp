@@ -2,6 +2,7 @@ class site_mx {
   tag 'leap_service'
   Class['site_config::default'] -> Class['site_mx']
 
+  include site_config::default
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca

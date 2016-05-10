@@ -1,3 +1,4 @@
+# deploy leap mx service
 class leap_mx {
 
   $leap_mx          = hiera('couchdb_leap_mx_user')
@@ -10,23 +11,66 @@ class leap_mx {
   $sources          = hiera('sources')
 
   include soledad::common
-  include site_apt::preferences::twisted
 
   #
   # USER AND GROUP
   #
+  # Make the user for leap-mx. This user is where all legitimate, non-system
+  # mail is delivered so leap-mx can process it. Previously, we let the system
+  # pick a uid/gid, but we need to know what they are set to in order to set the
+  # virtual_uid_maps and virtual_gid_maps. Its a bit overkill write a fact just
+  # for this, so instead we pick arbitrary numbers that seem unlikely to be used
+  # and then use them in the postfix configuration
 
   group { 'leap-mx':
     ensure    => present,
+    gid       => 42424,
     allowdupe => false;
   }
 
   user { 'leap-mx':
-    ensure    => present,
-    allowdupe => false,
-    gid       => 'leap-mx',
-    home      => '/etc/leap',
-    require   => Group['leap-mx'];
+    ensure     => present,
+    comment    => 'Leap Mail',
+    allowdupe  => false,
+    uid        => 42424,
+    gid        => 'leap-mx',
+    home       => '/var/mail/leap-mx',
+    shell      => '/bin/false',
+    managehome => true,
+    require    => Group['leap-mx'];
+  }
+
+  file {
+    '/var/mail/leap-mx':
+      ensure  => directory,
+      owner   => 'leap-mx',
+      group   => 'leap-mx',
+      mode    => '0755',
+      require => User['leap-mx'];
+
+    '/var/mail/leap-mx/Maildir':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
+
+    '/var/mail/leap-mx/Maildir/new':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
+
+    '/var/mail/leap-mx/Maildir/cur':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
+
+    '/var/mail/leap-mx/Maildir/tmp':
+      ensure => directory,
+      owner  => 'leap-mx',
+      group  => 'leap-mx',
+      mode   => '0700';
   }
 
   #
@@ -41,12 +85,9 @@ class leap_mx {
     notify  => Service['leap-mx'];
   }
 
-  file { '/etc/default/leap_mx':
-    content => 'LOGFILE=/var/log/leap/mx.log',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    notify  => Service['leap-mx'];
+  leap::logfile { 'leap-mx':
+    log     => '/var/log/leap/mx.log',
+    process => 'leap-mx'
   }
 
   #
@@ -57,8 +98,8 @@ class leap_mx {
     $sources['leap-mx']['package']:
       ensure  => $sources['leap-mx']['revision'],
       require => [
-        Class['site_apt::preferences::twisted'],
-        Class['site_apt::leap_repo'] ];
+        Class['site_apt::leap_repo'],
+        User['leap-mx'] ];
 
     'leap-keymanager':
       ensure => latest;
@@ -74,21 +115,5 @@ class leap_mx {
     hasstatus  => true,
     hasrestart => true,
     require    => [ Package['leap-mx'] ];
-  }
-
-  augeas {
-    'logrotate_mx':
-      context => '/files/etc/logrotate.d/leap-mx/rule',
-      changes => [
-                  'set file /var/log/leap/mx.log',
-                  'set rotate 5',
-                  'set schedule daily',
-                  'clear nocreate',
-                  'rm create',
-                  'rm ifempty',
-                  'set compress compress',
-                  'set missingok missingok',
-                  'set copytruncate copytruncate'
-                  ]
   }
 }

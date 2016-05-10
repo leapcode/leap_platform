@@ -1,0 +1,13 @@
+//
+// This partial should be added to any service that runs tests that rely on
+// accessing the bonafide webapp API.
+//
+{
+  "testing": {
+    "monitor_auth_token": "= secret :api_monitor_auth_token",
+    "api_uri": "= global.services[:webapp].api.uri",
+    // api_hosts is not used directly, but calling hostnames() will ensure
+    // that the hostnames are added to /etc/hosts
+    "api_hosts": "= hostnames(nodes_like_me[:services => 'webapp'])"
+  }
+}

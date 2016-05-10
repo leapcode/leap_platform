@@ -9,7 +9,7 @@
       "owner", "owners", "postmaster", "reply", "robot", "ssladmin", "staff",
       "support", "tech-support", "tech_support", "techsupport", "ticket",
       "tickets", "vmail", "www-data"],
-    "domain": "= domain.full_suffix",
+    "domain": "= provider.domain",
     "modules": ["user", "billing", "help"],
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
@@ -20,7 +20,7 @@
     "allow_anonymous_certs": "= provider.service.allow_anonymous",
     "allow_registration": "= provider.service.allow_registration",
     "default_service_level": "= provider.service.default_service_level",
-    "service_levels": "= provider.service.levels",
+    "service_levels": "= service_levels()",
     "secret_token": "= secret :webapp_secret_token",
     "api_version": 1,
     "secure": false,
@@ -31,7 +31,13 @@
     },
     "engines": [
       "support"
-    ]
+    ],
+    "locales": "= provider.languages",
+    "default_locale": "= provider.default_language",
+    "api_tokens": {
+      "monitor": "= secret :api_monitor_auth_token",
+      "allowed_ips": "= host_ips(nodes_like_me)"
+    }
   },
   "stunnel": {
     "clients": {
@@ -53,7 +59,10 @@
   "service_type": "public_service",
   "api": {
     "domain": "= 'api.' + webapp.domain",
-    "port": 4430
+    "version": 1,
+    "port": 4430,
+    "ca_cert_uri": "= 'https://' + webapp.domain + '/ca.crt'",
+    "uri": "= %(https://#{api.domain}:#{api.port}/#{api.version})"
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",
@@ -73,5 +82,12 @@
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
     "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`.'",
     "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`.'"
+  },
+  "firewall": {
+    "webapp": {
+      "from": "*",
+      "to": "= ip_address",
+      "port": "= [api.port, 443, 80, nickserver.port]"
+    }
   }
 }

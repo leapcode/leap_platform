@@ -48,7 +48,7 @@
   Include include.d/ssl_common.inc
   
 <%- if @tls_only -%>
-  Header add Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+  Header always set Strict-Transport-Security: "max-age=15768000;includeSubdomains"
 <%- end -%>
   Header set X-Frame-Options "deny"
   Header always unset X-Powered-By
@@ -56,7 +56,6 @@
 
   SSLCertificateKeyFile    /etc/x509/keys/<%= @domain %>.key
   SSLCertificateFile       /etc/x509/certs/<%= @domain %>.crt
-  SSLCertificateChainFile  /etc/ssl/certs/<%= @domain %>_ca.pem
 
   RequestHeader set X_FORWARDED_PROTO 'https'
 

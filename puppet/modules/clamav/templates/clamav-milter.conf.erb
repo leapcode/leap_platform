@@ -1,0 +1,28 @@
+# THIS FILE MANAGED BY PUPPET
+MilterSocket /var/run/clamav/milter.ctl
+FixStaleSocket true
+User clamav
+MilterSocketGroup clamav
+MilterSocketMode 666
+AllowSupplementaryGroups true
+ReadTimeout 120
+Foreground false
+PidFile /var/run/clamav/clamav-milter.pid
+ClamdSocket unix:/var/run/clamav/clamd.ctl
+OnClean Accept
+OnInfected Reject
+OnFail Defer
+AddHeader Replace
+LogSyslog true
+LogFacility LOG_LOCAL6
+LogVerbose yes
+LogInfected Basic
+LogTime true
+LogFileUnlock false
+LogClean Off
+LogRotate true
+SupportMultipleRecipients false
+MaxFileSize 10M
+TemporaryDirectory /var/tmp
+RejectMsg "Message refused due to content violation: %v - contact https://<%= @domain %>/tickets/new if this is in error"
+Whitelist /etc/clamav/whitelisted_addresses

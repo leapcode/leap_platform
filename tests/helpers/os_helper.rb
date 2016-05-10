@@ -9,7 +9,10 @@ class LeapTest
     output.each_line.map{|line|
       pid = line.split(' ')[0]
       process = line.gsub(/(#{pid} |\n)/, '')
-      if process =~ /pgrep --full --list-name/
+      # filter out pgrep cmd itself
+      # on wheezy hosts, the "process" var contains the whole cmd including all parameters
+      # on jessie hosts, it only contains the first cmd (which is the default sheel invoked by 'sh')
+      if process =~ /^sh/
         nil
       else
         {:pid => pid, :process => process}

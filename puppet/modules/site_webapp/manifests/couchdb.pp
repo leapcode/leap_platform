@@ -14,29 +14,36 @@ class site_webapp::couchdb {
   file {
     '/srv/leap/webapp/config/couchdb.yml':
       content => template('site_webapp/couchdb.yml.erb'),
-      owner   => leap-webapp,
-      group   => leap-webapp,
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
       mode    => '0600',
       require => Vcsrepo['/srv/leap/webapp'];
 
+    # couchdb.admin.yml is a symlink to prevent the vcsrepo resource
+    # from changing its user permissions every time.
     '/srv/leap/webapp/config/couchdb.admin.yml':
-      content => template('site_webapp/couchdb.admin.yml.erb'),
-      owner   => leap-webapp,
-      group   => leap-webapp,
-      mode    => '0600',
+      ensure => 'link',
+      target => '/etc/leap/couchdb.admin.yml',
       require => Vcsrepo['/srv/leap/webapp'];
+
+    '/etc/leap/couchdb.admin.yml':
+      content => template('site_webapp/couchdb.admin.yml.erb'),
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0600',
+      require => File['/etc/leap'];
 
     '/srv/leap/webapp/log':
       ensure  => directory,
-      owner   => leap-webapp,
-      group   => leap-webapp,
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
       mode    => '0755',
       require => Vcsrepo['/srv/leap/webapp'];
 
     '/srv/leap/webapp/log/production.log':
       ensure  => present,
-      owner   => leap-webapp,
-      group   => leap-webapp,
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
       mode    => '0666',
       require => Vcsrepo['/srv/leap/webapp'];
   }

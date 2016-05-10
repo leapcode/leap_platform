@@ -1,18 +1,17 @@
 <VirtualHost *:80>
-  ServerName <%= api_domain %>
+  ServerName <%= @api_domain %>
   RewriteEngine On
-  RewriteRule ^.*$ https://<%= api_domain -%>:<%= api_port -%>%{REQUEST_URI} [R=permanent,L]
+  RewriteRule ^.*$ https://<%= @api_domain -%>:<%= @api_port -%>%{REQUEST_URI} [R=permanent,L]
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 </VirtualHost>
 
-Listen 0.0.0.0:<%= api_port %>
+Listen 0.0.0.0:<%= @api_port %>
 
-<VirtualHost *:<%= api_port -%>>
-  ServerName <%= api_domain %>
+<VirtualHost *:<%= @api_port -%>>
+  ServerName <%= @api_domain %>
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 
   SSLCACertificatePath /etc/ssl/certs
-  SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::ca_name') %>.crt
   SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.key
   SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::cert_name') %>.crt
 
@@ -27,6 +26,12 @@ Listen 0.0.0.0:<%= api_port %>
   </IfModule>
 
   DocumentRoot /srv/leap/webapp/public
+  <% if scope.function_guess_apache_version([]) == '2.4' %>
+  <Directory /srv/leap/webapp/public>
+    AllowOverride None
+    Require all granted
+  </Directory>
+  <% end %>
 
   # Check for maintenance file and redirect all requests
   RewriteEngine On

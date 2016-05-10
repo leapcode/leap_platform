@@ -1,0 +1,13 @@
+# THIS FILE IS MANAGED BY PUPPET
+#
+# This will replace the OpenPGP header that the client adds, because it is
+# sometimes incorrect (due to the client not always knowing what the proper URL
+# is for the webapp).
+# e.g. This will rewrite this header:
+# OpenPGP: id=4C0E01CD50E2F653; url="https://leap.se/key/elijah"; preference="signencrypt
+# with this replacement:
+# OpenPGP: id=4C0E01CD50E2F653; url="https://user.leap.se/key/elijah"; preference="signencrypt
+#
+# Note: whitespace in the pattern is represented by [[:space:]] to avoid these warnings from postmap:
+# "record is in "key: value" format; is this an alias file?" and "duplicate entry"
+/^(OpenPGP:[[:space:]]id=[[:alnum:]]+;[[:space:]]url="https:\/\/)<%= @domain %>(\/key\/[[:alpha:]]+";.*)/i REPLACE ${1}<%= @correct_domain %>${2}

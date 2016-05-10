@@ -1,8 +1,13 @@
+# installs check-mk agent
 class site_check_mk::agent {
 
   $ssh_hash = hiera('ssh')
   $pubkey   = $ssh_hash['authorized_keys']['monitor']['key']
   $type     = $ssh_hash['authorized_keys']['monitor']['type']
+
+
+  # /usr/bin/mk-job depends on /usr/bin/time
+  ensure_packages('time')
 
   class { 'site_apt::preferences::check_mk': } ->
 
@@ -10,8 +15,10 @@ class site_check_mk::agent {
     agent_package_name          => 'check-mk-agent',
     agent_logwatch_package_name => 'check-mk-agent-logwatch',
     method                      => 'ssh',
-    homedir                     => '/etc/nagios/check_mk',
-    register_agent              => false
+    authdir                     => '/root/.ssh',
+    authfile                    => 'authorized_keys',
+    register_agent              => false,
+    require                     => Package['time']
   } ->
 
   class { 'site_check_mk::agent::mrpe': } ->

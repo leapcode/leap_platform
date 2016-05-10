@@ -1,3 +1,4 @@
+# configure shorewall for sshd
 class site_shorewall::sshd {
 
   $ssh_config     = hiera('ssh')
@@ -7,7 +8,7 @@ class site_shorewall::sshd {
 
   # define macro for incoming sshd
   file { '/etc/shorewall/macro.leap_sshd':
-    content => "PARAM   -       -       tcp    $ssh_port",
+    content => "PARAM   -       -       tcp    ${ssh_port}",
     notify  => Service['shorewall'],
     require => Package['shorewall']
   }

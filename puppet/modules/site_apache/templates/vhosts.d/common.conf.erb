@@ -1,22 +1,21 @@
 <VirtualHost *:80>
-  ServerName <%= webapp_domain %>
-  ServerAlias <%= domain_name %>
-  ServerAlias <%= domain %>
-  ServerAlias www.<%= domain %>
+  ServerName <%= @webapp_domain %>
+  ServerAlias <%= @domain_name %>
+  ServerAlias <%= @domain %>
+  ServerAlias www.<%= @domain %>
   RewriteEngine On
-  RewriteRule ^.*$ https://<%= domain -%>%{REQUEST_URI} [R=permanent,L]
+  RewriteRule ^.*$ https://<%= @webapp_domain -%>%{REQUEST_URI} [R=permanent,L]
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 </VirtualHost>
 
 <VirtualHost *:443>
-  ServerName <%= webapp_domain %>
-  ServerAlias <%= domain_name %>
-  ServerAlias <%= domain %>
-  ServerAlias www.<%= domain %>
+  ServerName <%= @webapp_domain %>
+  ServerAlias <%= @domain_name %>
+  ServerAlias <%= @domain %>
+  ServerAlias www.<%= @domain %>
   CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log common
 
   SSLCACertificatePath /etc/ssl/certs
-  SSLCertificateChainFile <%= scope.lookupvar('x509::variables::local_CAs') %>/<%= scope.lookupvar('site_config::params::commercial_ca_name') %>.crt
   SSLCertificateKeyFile <%= scope.lookupvar('x509::variables::keys') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.key
   SSLCertificateFile <%= scope.lookupvar('x509::variables::certs') %>/<%= scope.lookupvar('site_config::params::commercial_cert_name') %>.crt
 
@@ -32,6 +31,12 @@
 
 <% if (defined? @services) and (@services.include? 'webapp') -%>
   DocumentRoot /srv/leap/webapp/public
+  <% if scope.function_guess_apache_version([]) == '2.4' %>
+  <Directory /srv/leap/webapp/public>
+    AllowOverride None
+    Require all granted
+  </Directory>
+  <% end %>
 
   RewriteEngine On
   # Check for maintenance file and redirect all requests
@@ -69,4 +74,3 @@
   </DirectoryMatch>
 <% end -%>
 </VirtualHost>
-

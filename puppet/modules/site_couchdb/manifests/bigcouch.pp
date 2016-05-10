@@ -44,4 +44,7 @@ class site_couchdb::bigcouch {
     require => Package['couchdb'],
     notify  => Service['couchdb']
   }
+
+  include site_check_mk::agent::couchdb::bigcouch
+
 }

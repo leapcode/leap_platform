@@ -1,5 +1,5 @@
 @title = 'Command Line Reference'
-@summary = "A copy of leap --help"
+@summary = 'A copy of leap --help'
 
 The command "leap" can be used to manage a bevy of servers running the LEAP platform from the comfort of your own home.
 
@@ -7,7 +7,7 @@ The command "leap" can be used to manage a bevy of servers running the LEAP plat
 # Global Options
 
 * `--log FILE`
-Override default log file
+Override default log file.
 Default Value: None
 
 * `-v|--verbose LEVEL`
@@ -15,19 +15,22 @@ Verbosity level 0..5
 Default Value: 1
 
 * `--[no-]color`
-Disable colors in output
+Disable colors in output.
 
-* `--debug`
-Enable debugging library (leap_cli development only)
+* `-d|--debug`
+Print full stack trace for exceptions and load `debugger` gem if installed.
+
+* `--force`
+Like --yes, but also skip prompts that are potentially dangerous to skip.
 
 * `--help`
 Show this message
 
 * `--version`
-Display version number and exit
+Display version number and exit.
 
 * `--yes`
-Skip prompts and assume "yes"
+Skip prompts and assume "yes".
 
 
 # leap add-user  USERNAME
@@ -47,7 +50,7 @@ SSH public key file for this new user
 Default Value: None
 
 * `--self`
-Add yourself as a trusted sysadin by choosing among the public keys available for the current user.
+Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.
 
 
 # leap cert
@@ -66,19 +69,51 @@ See see what values are used in the generation of the certificates (like name an
 
 Creates a CSR for use in buying a commercial X.509 certificate.
 
-Unless specified, the CSR is created for the provider's primary domain. The properties used for this CSR come from `provider.ca.server_certificates`.
+Unless specified, the CSR is created for the provider's primary domain. The properties used for this CSR come from `provider.ca.server_certificates`, but may be overridden here.
 
 **Options**
 
+* `--bits BITS`
+Override default certificate bit length
+Default Value: None
+
+* `--country|-C COUNTRY`
+Set C in distinguished name.
+Default Value: None
+
+* `--digest DIGEST`
+Override default signature digest
+Default Value: None
+
 * `--domain DOMAIN`
 Specify what domain to create the CSR for.
-Unless specified, the CSR is created for the provider's primary domain. The properties used for this CSR come from `provider.ca.server_certificates`.
+Unless specified, the CSR is created for the provider's primary domain. The properties used for this CSR come from `provider.ca.server_certificates`, but may be overridden here.
+Default Value: None
+
+* `--email EMAIL`
+Set emailAddress in distinguished name.
+Default Value: None
+
+* `--locality|-L LOCALITY`
+Set L in distinguished name.
+Default Value: None
+
+* `--organization|-O ORGANIZATION`
+Override default O in distinguished name.
+Default Value: None
+
+* `--state|--ST STATE`
+Set ST in distinguished name.
+Default Value: None
+
+* `--unit|--OU UNIT`
+Set OU in distinguished name.
 Default Value: None
 
 
 ## leap cert dh
 
-Creates a Diffie-Hellman parameter file, needed for forward secret OpenVPN ciphers. You don't need this file if you don't provide the VPN service.
+Creates a Diffie-Hellman parameter file, needed for forward secret OpenVPN ciphers.
 
 
 
@@ -112,9 +147,27 @@ Compiles node configuration files into hiera files used for deployment.
 
 
 
+## leap compile firewall
+
+Prints a list of firewall rules. These rules are already implemented on each node, but you might want the list of all rules in case you also have a restrictive network firewall.
+
+
+
+## leap compile hosts
+
+Print entries suitable for an /etc/hosts file, useful for testing your provider.
+
+
+
+## leap compile provider.json
+
+Compile provider.json bootstrap files for your provider.
+
+
+
 ## leap compile zone
 
-Compile a DNS zone file for your provider.
+Prints a DNS zone file for your provider.
 
 
 Default Command: all
@@ -127,9 +180,26 @@ Database commands.
 
 ## leap db destroy  [FILTER]
 
-Destroy all the databases. If present, limit to FILTER nodes.
+Destroy one or more databases. If present, limit to FILTER nodes. For example `leap db destroy --db sessions,tokens testing`.
 
 
+
+**Options**
+
+* `--db DATABASES`
+Comma separated list of databases to destroy (no space). Use "--db all" to destroy all databases.
+Default Value: None
+
+* `--user USERS`
+Comma separated list of usernames. The storage databases for these user(s) will be destroyed.
+Default Value: None
+
+
+# leap debug  FILTER
+
+Output debug information.
+
+The FILTER can be the name of a node, service, or tag.
 
 # leap deploy  FILTER
 
@@ -149,10 +219,13 @@ Default Value: None
 
 * `--tags TAG[,TAG]`
 Specify tags to pass through to puppet (overriding the default).
-Default Value: leap_base,leap_service
+Default Value: None
 
 * `--dev`
 Development mode: don't run 'git submodule update' before deploy.
+
+* `--downgrade`
+Allows deploy to run with an older platform version.
 
 * `--fast`
 Makes the deploy command faster by skipping some slow steps. A "fast" deploy can be used safely if you recently completed a normal deploy.
@@ -160,7 +233,7 @@ Makes the deploy command faster by skipping some slow steps. A "fast" deploy can
 * `--force`
 Deploy even if there is a lockfile.
 
-* `--[no-]sync`
+* `--sync`
 Sync files, but don't actually apply recipes.
 
 
@@ -170,9 +243,9 @@ Manipulate and query environment information.
 
 The 'environment' node property can be used to isolate sets of nodes into entirely separate environments. A node in one environment will never interact with a node from another environment. Environment pinning works by modifying your ~/.leaprc file and is dependent on the absolute file path of your provider directory (pins don't apply if you move the directory)
 
-## leap env ls
+## leap env ls  [ENVIRONMENT]
 
-List the available environments. The pinned environment, if any, will be marked with '*'.
+List the available environments. The pinned environment, if any, will be marked with '*'. Will also set the pin if run with an environment argument.
 
 
 
@@ -211,6 +284,26 @@ Gets help for the application or its commands. Can also list the commands in a w
 
 * `-c`
 List commands one per line, to assist with shell completion
+
+
+# leap history  FILTER
+
+Display recent deployment history for a set of nodes.
+
+The FILTER can be the name of a node, service, or tag.
+
+**Options**
+
+* `--ip IPADDRESS`
+Override the default SSH IP address.
+Default Value: None
+
+* `--port PORT`
+Override the default SSH port.
+Default Value: None
+
+* `--last`
+Show last deploy only
 
 
 # leap inspect  FILE
@@ -275,6 +368,13 @@ Starts up the virtual machine(s)
 
 
 
+**Options**
+
+* `--basebox BASEBOX`
+The basebox to use. This value is passed to vagrant as the `config.vm.box` option. The value here should be the name of an installed box or a shorthand name of a box in HashiCorp's Atlas.
+Default Value: LEAP/jessie
+
+
 ## leap local status  [FILTER]
 
 Print the status of local virtual machine(s)
@@ -291,6 +391,17 @@ Shuts down the virtual machine(s)
 
 Log in to the specified node with an interactive shell using mosh (requires node to have mosh.enabled set to true).
 
+
+
+**Options**
+
+* `--port SSH_PORT`
+Override default SSH port used when trying to connect to the server. Same as `--ssh "-p SSH_PORT"`.
+Default Value: None
+
+* `--ssh arg`
+Pass through raw options to ssh (e.g. `--ssh '-F ~/sshconfig'`).
+Default Value: None
 
 
 # leap new  DIRECTORY
@@ -376,6 +487,18 @@ Removes all the files related to the node named NAME.
 
 
 
+# leap scp  FILE1 FILE2
+
+Secure copy from FILE1 to FILE2. Files are specified as NODE_NAME:FILE_PATH. For local paths, omit "NODE_NAME:".
+
+
+
+**Options**
+
+* `-r`
+Copy recursively
+
+
 # leap ssh  NAME
 
 Log in to the specified node with an interactive shell.
@@ -384,12 +507,12 @@ Log in to the specified node with an interactive shell.
 
 **Options**
 
-* `--port arg`
-Override ssh port for remote host
+* `--port SSH_PORT`
+Override default SSH port used when trying to connect to the server. Same as `--ssh "-p SSH_PORT"`.
 Default Value: None
 
 * `--ssh arg`
-Pass through raw options to ssh (e.g. --ssh '-F ~/sshconfig')
+Pass through raw options to ssh (e.g. `--ssh '-F ~/sshconfig'`).
 Default Value: None
 
 
@@ -405,9 +528,9 @@ Creates files needed to run tests.
 
 
 
-## leap test run
+## leap test run  [FILTER]
 
-Run tests.
+Run the test suit on FILTER nodes.
 
 
 
@@ -417,3 +540,20 @@ Run tests.
 Continue over errors and failures (default is --no-continue).
 
 Default Command: run
+
+# leap tunnel  [LOCAL_PORT:]NAME:REMOTE_PORT
+
+Creates an SSH port forward (tunnel) to the node NAME. REMOTE_PORT is the port on the remote node that the tunnel will connect to. LOCAL_PORT is the optional port on your local machine. For example: `leap tunnel couch1:5984`.
+
+
+
+**Options**
+
+* `--port SSH_PORT`
+Override default SSH port used when trying to connect to the server. Same as `--ssh "-p SSH_PORT"`.
+Default Value: None
+
+* `--ssh arg`
+Pass through raw options to ssh (e.g. --ssh '-F ~/sshconfig').
+Default Value: None
+

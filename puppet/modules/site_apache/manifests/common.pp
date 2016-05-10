@@ -1,27 +1,30 @@
+# install basic apache modules needed for all services (nagios, webapp)
 class site_apache::common {
-  # installs x509 cert + key and common config
-  # that both nagios + leap webapp use
 
-  $web_domain       = hiera('domain')
-  $domain_name      = $web_domain['name']
+  include apache::module::rewrite
+  include apache::module::env
 
-  include x509::variables
-  include site_config::x509::commercial::cert
-  include site_config::x509::commercial::key
-  include site_config::x509::commercial::ca
-
-  Class['Site_config::X509::Commercial::Key'] ~> Service[apache]
-  Class['Site_config::X509::Commercial::Cert'] ~> Service[apache]
-  Class['Site_config::X509::Commercial::Ca'] ~> Service[apache]
-
-  include site_apache::module::rewrite
-
-  class { '::apache': no_default_site => true, ssl => true }
-
-  apache::vhost::file {
-    'common':
-      content => template('site_apache/vhosts.d/common.conf.erb')
+  class { '::apache':
+    no_default_site  => true,
+    ssl              => true,
+    ssl_cipher_suite => 'HIGH:MEDIUM:!aNULL:!MD5'
   }
 
-  apache::config::include{ 'ssl_common.inc': }
+  # needed for the mod_ssl config
+  include apache::module::mime
+
+  # load mods depending on apache version
+  if ( $::lsbdistcodename == 'jessie' ) {
+    # apache >= 2.4, debian jessie
+    # needed for mod_ssl config
+    include apache::module::socache_shmcb
+    # generally needed
+    include apache::module::mpm_prefork
+  } else {
+    # apache < 2.4, debian wheezy
+    # for "Order" directive, i.e. main apache2.conf
+    include apache::module::authz_host
+  }
+
+  include site_apache::common::tls
 }

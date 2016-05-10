@@ -109,7 +109,7 @@ define site_openvpn::server_config(
     "cert ${openvpn_configname}":
       key     => 'cert',
       value   => "${x509::variables::certs}/${site_config::params::cert_name}.crt",
-        server  => $openvpn_configname;
+      server  => $openvpn_configname;
     "key ${openvpn_configname}":
       key     => 'key',
       value   => "${x509::variables::keys}/${site_config::params::cert_name}.key",
@@ -203,5 +203,26 @@ define site_openvpn::server_config(
       key    => 'verb',
       value  => '3',
       server => $openvpn_configname;
+    "log-append /var/log/leap/openvpn_${proto}.log":
+      key    => 'log-append',
+      value  => "/var/log/leap/openvpn_${proto}.log",
+      server => $openvpn_configname;
+  }
+
+  # register openvpn services at systemd on nodes newer than wheezy
+  # see https://leap.se/code/issues/7798
+  case $::operatingsystemrelease {
+    /^7.*/: { }
+    default:  {
+      exec { "enable_systemd_${openvpn_configname}":
+        refreshonly => true,
+        command     => "/bin/systemctl enable openvpn@${openvpn_configname}",
+        subscribe   => File["/etc/openvpn/${openvpn_configname}.conf"],
+        notify      => Service["openvpn@${openvpn_configname}"];
+      }
+      service { "openvpn@${openvpn_configname}":
+        ensure  => running
+      }
+    }
   }
 }

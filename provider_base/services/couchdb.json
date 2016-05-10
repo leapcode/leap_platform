@@ -8,8 +8,8 @@
         }
     },
     "couch": {
-        "master": false,
         "port": 5984,
+        "mode": "plain",
         "users": {
             "admin": {
                 "username": "admin",
@@ -30,11 +30,6 @@
                 "username": "soledad",
                 "password": "= secret :couch_soledad_password",
                 "salt": "= hex_secret :couch_soledad_password_salt, 128"
-            },
-            "tapicero": {
-                "username": "tapicero",
-                "password": "= secret :couch_tapicero_password",
-                "salt": "= hex_secret :couch_tapicero_password_salt, 128"
             },
             "webapp": {
                 "username": "webapp",

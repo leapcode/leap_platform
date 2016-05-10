@@ -2,7 +2,7 @@
   "nagios": {
     "nagiosadmin_pw": "= secret :nagios_admin_password",
     "domains_internal": "= nagios.hosts.values.map{|h|h['domain_internal_suffix']}.uniq",
-    "environments": "= Hash[ nagios.hosts.values.map{|h|h['environment']}.uniq.map{|e| [e||'default',{'contact_emails'=>global.env(e).provider.contacts.default}]} ]",
+    "environments": "= Hash[ nagios.hosts.values.map{|h|h['environment']}.uniq.map{|e| [e||'default',{'contact_emails'=>manager.env(e).provider.contacts.default}]} ]",
     "hosts": "= (self.environment == 'local' ? nodes_like_me : nodes[:environment => '!local']).pick_fields('environment', 'domain.internal', 'domain.internal_suffix', 'domain.full_suffix', 'ip_address', 'services', 'openvpn.gateway_address', 'ssh.port')"
   },
   "hosts": "= self.environment == 'local' ? hosts_file(nodes_like_me) : hosts_file(nodes[:environment => '!local'])",
@@ -18,5 +18,12 @@
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
     "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
     "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`'"
+  },
+  "firewall": {
+    "monitor": {
+      "from": "sysadmin",
+      "to": "= ip_address",
+      "port": [443, 80]
+    }
   }
 }

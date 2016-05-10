@@ -1,3 +1,4 @@
+# check check_mk agent checks for mx service
 class site_check_mk::agent::mx {
 
   # watch logs
@@ -6,13 +7,13 @@ class site_check_mk::agent::mx {
   }
 
   # local nagios plugin checks via mrpe
+  # removed because leap_cli integrates a check for running mx procs already,
+  # which is also integrated into nagios (called "Mx/Are_MX_daemons_running")
   augeas {
     'Leap_MX_Procs':
       incl    => '/etc/check_mk/mrpe.cfg',
       lens    => 'Spacevars.lns',
-      changes => [
-        'rm /files/etc/check_mk/mrpe.cfg/Leap_MX_Procs',
-        'set Leap_MX_Procs \'/usr/lib/nagios/plugins/check_procs -w 1:1 -c 1:1 -a "/usr/bin/python /usr/bin/twistd --pidfile=/var/run/leap_mx.pid --rundir=/var/lib/leap_mx/ --python=/usr/share/app/leap_mx.tac --logfile=/var/log/leap/mx.log"\'' ],
+      changes => 'rm /files/etc/check_mk/mrpe.cfg/Leap_MX_Procs',
       require => File['/etc/check_mk/mrpe.cfg'];
   }
 

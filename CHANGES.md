@@ -1,5 +1,51 @@
+Platform 0.8
+--------------------------------------
+
+This release focuses on the email service.
+
+Requirements:
+ . You must upgrade to Debian Jessie, see below for details
+ . You must migrate all data from BigCouch to CouchDB
+ . Soledad and couchdb services must be on the same node
+
+WARNING: failure to migrate data from BigCouch to CouchDB will cause all user
+accounts to get destroyed. See UPGRADING below for how to safely do this.
+
+UPGRADING: You must upgrade to Debian Jessie and migrate from BigCouch to
+Couchdb. It is tricky to upgrade the OS and migrate the database, so we have
+writen and tested a step-by-step guide that you can carefully follow in
+doc/upgrading/upgrade-0-8.md, or online at: https://leap.se/en/upgrade-0-8
+
+Other new features:
+
+* It is possible to require invite codes for new users signing up.
+
+* Tapicero has been removed. Now user storage databases are created as needed
+  by soledad, and deleted eventually when no longer needed.
+
+* Admins can now suspend/enable users and block/enable their ability to send
+  and receive email.
+
+* Support for SPF and DKIM.
+
+Compatibility:
+
+* Now, soledad and couchdb must be on the same node.
+* Requires Debian Jessie. Wheezy is no longer supported.
+* Requires CouchDB, BigCouch is no longer supported.
+* Requires leap_cli version 1.8
+* Requires bitmask client version >= 0.9
+* Includes:
+  * leap_mx 0.8
+  * webapp 0.8
+  * soledad 0.8
+
+Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.8
+Issues fixed: https://leap.se/code/versions/189
+
+
 Platform 0.7.1
------------------------
+--------------------------------------
 
 Compatibility:
 

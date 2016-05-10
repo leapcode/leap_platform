@@ -27,8 +27,8 @@ class Webapp < LeapTest
   end
 
   def test_03_Are_daemons_running?
-    assert_running '/usr/sbin/apache2'
-    assert_running '/usr/bin/nickserver'
+    assert_running '^/usr/sbin/apache2'
+    assert_running '^/usr/bin/ruby /usr/bin/nickserver'
     pass
   end
 
@@ -57,10 +57,11 @@ class Webapp < LeapTest
       soledad_server = pick_soledad_server(soledad_config)
       if soledad_server
         assert_tmp_user do |user|
-          assert_user_db_exists(user)
           command = File.expand_path "../../helpers/soledad_sync.py", __FILE__
           soledad_url = "https://#{soledad_server}/user-#{user.id}"
-          assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url}"
+          soledad_cert = "/usr/local/share/ca-certificates/leap_ca.crt"
+          assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url} #{soledad_cert} #{user.password}"
+          assert_user_db_exists(user)
           pass
         end
       end
@@ -73,8 +74,8 @@ class Webapp < LeapTest
 
   def url_options
     {
-      :username => property('couchdb_webapp_user.username'),
-      :password => property('couchdb_webapp_user.password')
+      :username => property('webapp.couchdb_webapp_user.username'),
+      :password => property('webapp.couchdb_webapp_user.password')
     }
   end
 
@@ -95,7 +96,7 @@ class Webapp < LeapTest
   end
 
   #
-  # returns true if the per-user db created by tapicero exists.
+  # returns true if the per-user db created by soledad-server exists.
   # we try three times, and give up after that.
   #
   def assert_user_db_exists(user)
@@ -118,7 +119,9 @@ class Webapp < LeapTest
       sleep 0.2
       get(couchdb_url(url)) do |body, response, error|
         last_body, last_response, last_error = body, response, error
-        if response.code.to_i == 200
+        # After moving to couchdb, webapp user is not allowed to Read user dbs,
+        # but the return code for non-existent databases is 404. See #7674
+        if response.code.to_i == 401
           return
         end
       end
@@ -127,19 +130,5 @@ class Webapp < LeapTest
     yield last_body, last_response, last_error
     return
   end
-
-  #
-  # I tried, but couldn't get this working:
-  # #
-  # # get an CSRF authenticity token
-  # #
-  # url = api_url("/")
-  # csrf_token = nil
-  # assert_get(url) do |body|
-  #   lines = body.split("\n").grep(/csrf-token/)
-  #   assert lines.any?, 'failed to find csrf-token'
-  #   csrf_token = lines.first.split('"')[1]
-  #   assert csrf_token, 'failed to find csrf-token'
-  # end
 
 end

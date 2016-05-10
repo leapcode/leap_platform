@@ -1,60 +1,27 @@
-#######################################################################
-###
-### NOTE!
-###
-###  Currently, mirrors do not work! The only thing that works is all
-###  nodes multimaster or a single master.
-###
-#######################################################################
 #
 # custom logic for couchdb json resolution
 # ============================================
 #
-# There are three modes for a node:
-#
-# Multimaster
-# -----------
-#
-#    Multimaster uses bigcouch (soon to use couchdb in replication mode
-#    similar to bigcouch).
-#
-#    Use "multimaster" mode when:
-#
-#     * multiple nodes are marked couch.master
-#     * OR no nodes are marked couch.master
-#
-# Master
-# ------
-#
-#    Master uses plain couchdb that is readable and writable.
-#
-#    Use "master" mode when:
-#
-#     * Exactly one node, this one, is marked as master.
-#
-# Mirror
-# ------
-#
-#    Mirror creates a read-only copy of the database. It uses plain coucdhb
-#    with legacy couchdb replication (http based).
-#
-#    This does not currently work, because http replication can't handle
-#    the number of user databases.
-#
-#    Use "mirror" mode when:
-#
-#     * some nodes are marked couch.master
-#     * AND this node is not a master
+# bigcouch is no longer maintained, so now couchdb is required...
+# no matter what!
 #
 
-master_count = nodes_like_me['services' => 'couchdb']['couch.master' => true].size
-
-if master_count == 0
-  apply_partial 'services/_couchdb_multimaster.json'
-elsif couch.master && master_count > 1
-  apply_partial 'services/_couchdb_multimaster.json'
-elsif couch.master && master_count == 1
-  apply_partial 'services/_couchdb_master.json'
-else
-  apply_partial 'services/_couchdb_mirror.json'
+if self.couch['master']
+  LeapCli::log :warning, %("The node property {couch.master:true} is deprecated.\n) +
+    %(   Only {couch.mode:plain} is supported. (node #{self.name}))
 end
+
+couchdb_nodes = nodes_like_me['services' => 'couchdb']
+
+if couchdb_nodes.size > 1
+  LeapCli::log :error, "Having multiple nodes with {services:couchdb} is no longer supported (nodes #{couchdb_nodes.keys.join(', ')})."
+elsif self.couch.mode == "multimaster"
+  LeapCli::log :error, "Nodes with {couch.mode:multimaster} are no longer supported (node #{self.name})."
+end
+
+#
+# This is needed for the "test" that creates and removes the storage db
+# for test_user_email. If that test is removed, then this is no longer
+# necessary:
+#
+apply_partial('_api_tester')

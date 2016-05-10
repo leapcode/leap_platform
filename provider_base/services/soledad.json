@@ -1,12 +1,21 @@
 {
   "soledad": {
     "port": 2323,
-    "require_couchdb": "=> assert %(services.include? 'couchdb')",
     "couchdb_soledad_user": {
       "username": "= global.services[:couchdb].couch.users[:soledad].username",
       "password": "= secret :couch_soledad_password",
       "salt": "= hex_secret :couch_soledad_password_salt, 128"
+    },
+    "couchdb_leap_mx_user": {
+      "username": "= global.services[:couchdb].couch.users[:leap_mx].username"
     }
   },
-  "service_type": "public_service"
+  "service_type": "public_service",
+  "firewall": {
+    "soledad": {
+      "from": "*",
+      "to": "= ip_address",
+      "port": "= soledad.port"
+    }
+  }
 }

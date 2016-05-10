@@ -1,10 +1,10 @@
+# Unfortunately, there does not seem to be a way to reload the dhclient.conf
+# config file, or a convenient way to disable the modifications to
+# /etc/resolv.conf. So the following makes the functions involved noops and
+# ships a script to kill and restart dhclient. See the debian bugs:
+# #681698, #712796
 class site_config::dhclient {
 
-  # Unfortunately, there does not seem to be a way to reload the dhclient.conf
-  # config file, or a convenient way to disable the modifications to
-  # /etc/resolv.conf. So the following makes the functions involved noops and
-  # ships a script to kill and restart dhclient. See the debian bugs:
-  # #681698, #712796
 
   include site_config::params
 
@@ -23,10 +23,10 @@ class site_config::dhclient {
   }
 
   file { '/etc/dhcp/dhclient-enter-hooks.d':
-    ensure  => directory,
-    mode    => '0755',
-    owner   => 'root',
-    group   => 'root',
+    ensure => directory,
+    mode   => '0755',
+    owner  => 'root',
+    group  => 'root',
   }
 
   file { '/etc/dhcp/dhclient-enter-hooks.d/disable_resolvconf':

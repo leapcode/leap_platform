@@ -13,6 +13,7 @@ require 'logger'
 require 'socket'
 require 'fileutils'
 
+DEBIAN_VERSION    = /^(jessie|8\.)/
 PUPPET_BIN        = '/usr/bin/puppet'
 PUPPET_DIRECTORY  = '/srv/leap'
 PUPPET_PARAMETERS = '--color=false --detailed-exitcodes --libdir=puppet/lib --confdir=puppet'
@@ -28,7 +29,12 @@ SUMMARY_LOG_1     = '/var/log/leap/deploy-summary.log.1'
 APPLY_START_STR   = "STARTING APPLY"
 APPLY_FINISH_STR  = "APPLY COMPLETE"
 
+
 def main
+  if File.read('/etc/debian_version') !~ DEBIAN_VERSION
+    log "ERROR: This operating system is not supported. The file /etc/debian_version must match #{DEBIAN_VERSION}."
+    exit 1
+  end
   process_command_line_arguments
   with_lockfile do
     @commands.each do |command|
@@ -58,9 +64,11 @@ def log(str, *args)
   str = str.strip
   $stdout.puts str
   $stdout.flush
-  $logger.info(str)
-  if args.include? :summary
-    $summary_logger.info(str)
+  if $logger
+    $logger.info(str)
+    if args.include? :summary
+      $summary_logger.info(str)
+    end
   end
 end
 

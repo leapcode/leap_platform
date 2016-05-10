@@ -1,0 +1,21 @@
+#
+# This file is managed by puppet.
+#
+# These virtual aliases take precedence over all other aliases.
+#
+
+#
+# enable these virtual domains:
+#
+<%= @domain %> enabled
+<%- @aliases.keys.map {|addr| addr.split('@')[1] }.compact.sort.uniq.each do |virt_domain| -%>
+<%= virt_domain %> enabled
+<%- end %>
+
+#
+# virtual aliases:
+#
+<%- @aliases.keys.sort.each do |from| -%>
+<%-   full_address = from =~ /@/ ? from : from + "@" + @domain -%>
+<%= full_address %> <%= [@aliases[from]].flatten.map{|a| a =~ /@/ ? a : a + "@" + @domain}.join(', ') %>
+<%- end -%>

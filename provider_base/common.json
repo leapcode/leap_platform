@@ -16,6 +16,9 @@
   },
   "ssh": {
     "authorized_keys": "= authorized_keys",
+    "config": {
+      "AllowTcpForwarding": "no"
+    },
     "port": 22,
     "mosh": {
       "ports": "60000:61000",
@@ -47,6 +50,14 @@
     "clients": {},
     "servers": {}
   },
+  "firewall": {
+    "ssh": {
+      "from": "sysadmin",
+      "to": "= ip_address",
+      "port": "= ssh.port"
+    },
+    "stunnel": "=> stunnel_firewall"
+  },
   "platform": {
     "version": "= Leap::Platform.version.to_s",
     "major_version": "= Leap::Platform.major_version"
@@ -65,22 +76,22 @@
     "nickserver": {
       "type": "git",
       "source": "https://leap.se/git/nickserver",
-      "revision": "origin/master"
+      "revision": "origin/version/0.8"
+    },
+    "platform": {
+      "apt": {
+        "basic": "= 'http://deb.leap.se/' + Leap::Platform.major_version"
+      }
     },
     "soledad": {
       "type": "apt",
       "package": "soledad-server",
       "revision": "latest"
     },
-    "tapicero": {
-      "type": "git",
-      "source": "https://leap.se/git/tapicero",
-      "revision": "origin/version/0.7"
-    },
     "webapp": {
       "type": "git",
       "source": "https://leap.se/git/leap_web",
-      "revision": "origin/version/0.7.1"
+      "revision": "origin/version/0.8"
     }
   }
 }

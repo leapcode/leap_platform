@@ -1,4 +1,5 @@
 require 'socket'
+require 'openssl'
 
 raise SkipTest if $node["dummy"]
 
@@ -28,11 +29,18 @@ class Network < LeapTest
   def test_02_Is_stunnel_running?
     ignore unless $node['stunnel']
     good_stunnel_pids = []
+    release = `facter lsbmajdistrelease`
+    if release.to_i > 7
+      # on jessie, there is only one stunnel proc running instead of 6
+      expected = 1
+    else
+      expected = 6
+    end
     $node['stunnel']['clients'].each do |stunnel_type, stunnel_configs|
       stunnel_configs.each do |stunnel_name, stunnel_conf|
         config_file_name = "/etc/stunnel/#{stunnel_name}.conf"
         processes = pgrep(config_file_name)
-        assert_equal 6, processes.length, "There should be six stunnel processes running for `#{config_file_name}`"
+        assert_equal expected, processes.length, "There should be #{expected} stunnel processes running for `#{config_file_name}`"
         good_stunnel_pids += processes.map{|ps| ps[:pid]}
         assert port = stunnel_conf['accept_port'], 'Field `accept_port` must be present in `stunnel` property.'
         assert_tcp_socket('localhost', port)
@@ -41,7 +49,7 @@ class Network < LeapTest
     $node['stunnel']['servers'].each do |stunnel_name, stunnel_conf|
       config_file_name = "/etc/stunnel/#{stunnel_name}.conf"
       processes = pgrep(config_file_name)
-      assert_equal 6, processes.length, "There should be six stunnel processes running for `#{config_file_name}`"
+      assert_equal expected, processes.length, "There should be #{expected} stunnel processes running for `#{config_file_name}`"
       good_stunnel_pids += processes.map{|ps| ps[:pid]}
       assert accept_port = stunnel_conf['accept_port'], "Field `accept` must be present in property `stunnel.servers.#{stunnel_name}`"
       assert_tcp_socket('localhost', accept_port)
@@ -59,6 +67,23 @@ class Network < LeapTest
   def test_03_Is_shorewall_running?
     ignore unless File.exists?('/sbin/shorewall')
     assert_run('/sbin/shorewall status')
+    pass
+  end
+
+  THIRTY_DAYS = 60*60*24*30
+
+  def test_04_Are_server_certificates_valid?
+    cert_paths = ["/etc/x509/certs/leap_commercial.crt", "/etc/x509/certs/leap.crt"]
+    cert_paths.each do |cert_path|
+      if File.exists?(cert_path)
+        cert = OpenSSL::X509::Certificate.new(File.read(cert_path))
+        if Time.now > cert.not_after
+          fail "The certificate #{cert_path} expired on #{cert.not_after}"
+        elsif Time.now + THIRTY_DAYS > cert.not_after
+          fail "The certificate #{cert_path} will expire soon, on #{cert.not_after}"
+        end
+      end
+    end
     pass
   end
 
