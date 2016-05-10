@@ -4,7 +4,7 @@
 Working with SSH
 ================================
 
-Whenever the `leap` command nees to push changes to a node or gather information from a node, it tunnels this command over SSH. Another way to put this: the security of your servers rests entirely on SSH. Because of this, it is important that you understand how `leap` uses SSH.
+Whenever the `leap` command needs to push changes to a node or gather information from a node, it tunnels this command over SSH. Another way to put this: the security of your servers rests entirely on SSH. Because of this, it is important that you understand how `leap` uses SSH.
 
 SSH related files
 -------------------------------
@@ -21,7 +21,7 @@ All of these files should be committed to source control.
 If you rename, remove, or add a node with `leap node [mv|add|rm]` the SSH key files and the `known_hosts` file will get properly updated.
 
 SSH and local nodes
------------------------------
+-------------------
 
 Local nodes are run as Vagrant virtual machines. The `leap` command handles SSH slightly differently for these nodes.
 
@@ -32,6 +32,15 @@ Specifically, for local nodes:
 1. `known_hosts` is never updated with local node keys, since the SSH public key of a local node is different for each user.
 2. `leap` entirely skips the checking of host keys when connecting with a local node.
 3. `leap` adds the public Vagrant SSH key to the list of SSH keys for a user. The public Vagrant SSH key is a shared and insecure key that has root access to most Vagrant virtual machines.
+
+To upgrade a SSH host key
+-------------------------------
+
+Most servers will have more than one SSH host key. Sometimes, the server will have a better SSH host key than the one you have on file. In order to upgrade to the better SSH host key, simply re-run the init command:
+
+    workstation$ leap node init NODE_NAME
+
+This will prompt you if you want to upgrade the SSH host key, but only if `leap` thinks that an upgrade is advisable.
 
 When SSH host key changes
 -------------------------------
@@ -78,7 +87,7 @@ All keys matching 'userx/*_ssh.pub' will be usable.
 Removing sysadmin access
 --------------------------------
 
-Suppose you want to remove `userx` from having any further ssh access to the servers. Do this:
+Suppose you want to remove `userx` from having any further SSH access to the servers. Do this:
 
     rm -r users/userx
     leap deploy
@@ -192,3 +201,72 @@ If you want to add additional fields to the CSR, like country, city, or locality
       }
 
 If they are not present, the CSR will be created without them.
+
+Examine Certs
+-----------------
+
+To see details about the keys and certs you can use `leap inspect` like so:
+
+    $ leap inspect files/ca/ca.crt
+
+
+Let's Encrypt certificate
+=========================
+
+LEAP plans to integrate [Let's Encrypt](https://letsencrypt.org/) support, so it will be even easier to receive X.509 certificates that are accepted by all browsers.
+Until we achieve this, here's a guide how to do this manually.
+
+Install the official acme client
+--------------------------------
+
+Log in to your webapp node
+
+    server$ git clone https://github.com/letsencrypt/letsencrypt
+    server$ cd letsencrypt
+    server$ ./letsencrypt-auto --help
+
+Fetch cert
+----------
+
+Stop apache so the letsencrypt client can bind to port 80:
+
+    server$ systemctl stop apache2
+
+Fetch the certs
+
+    server$ ./letsencrypt-auto certonly --standalone --email admin@$(hostname -d) -d $(hostname -d) -d api.$(hostname -d) -d $(hostname -f) -d nicknym.$(hostname -d)
+
+This will put the certs and keys into `/etc/letsencrypt/live/DOMAIN/`.
+
+Now, go to your workstation's provider configuration directory and copy the newly created files from the server to your local config. You will override existing files so please make a backup before proceeding, or use a version control system to track changes.
+
+    workstation$ cd PATH_TO_PROVIDER_CONFIG
+
+Copy the Certificate
+
+    workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/cert.pem files/cert/dev.pixelated-project.org.crt
+
+Copy the private key
+
+    workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/privkey.pem files/cert/DOMAIN.key
+
+Copy the CA chain cert
+
+    workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/fullchain.pem files/cert/DOMAIN.key
+
+Deploy the certs
+----------------
+
+Now you only need to deploy the certs
+
+    workstation$ leap deploy
+
+This will put them into the right locations which are:
+
+- `/etc/x509/certs/leap_commercial.crt` for the certificate
+- `/etc/x509/./keys/leap_commercial.key` for the private key
+- `/usr/local/share/ca-certificates/leap_commercial_ca.crt` for the CA chain cert.
+
+Start apache2 again
+
+    server$ systemctl start apache2
