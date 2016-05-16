@@ -32,7 +32,7 @@ class LeapTest
   # runs the specified command, failing on a non-zero exit status.
   #
   def assert_run(command)
-    output = `#{command}`
+    output = `#{command} 2>&1`
     if $?.exitstatus != 0
       fail "Error running `#{command}`:\n#{output}"
     end

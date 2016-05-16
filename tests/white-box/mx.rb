@@ -1,5 +1,6 @@
 raise SkipTest unless service?(:mx)
 
+require 'date'
 require 'json'
 require 'net/smtp'
 
@@ -38,38 +39,15 @@ class Mx < LeapTest
   # using the by_address view for that same document again.
   #
   def test_03_Can_query_identities_db?
-    assert_get(couchdb_url("/identities", couch_url_options)) do |body|
+    ident = pick_random_identity
+    address = ident['address']
+    url_base = %(/identities/_design/Identity/_view/by_address)
+    params = %(?include_docs=true&reduce=false&startkey="#{address}"&endkey="#{address}")
+    assert_get(couchdb_url(url_base+params, couch_url_options)) do |body|
       assert response = JSON.parse(body)
-      doc_count = response['doc_count'].to_i
-      if doc_count <= 1
-        # the design document counts as one document.
-        skip "There are no identity documents yet."
-      else
-        # try five times to get a valid doc
-        for i in 1..5
-          offset    = rand(doc_count) # pick a random document
-          count_url = couchdb_url("/identities/_all_docs?include_docs=true&limit=1&skip=#{offset}", couch_url_options)
-          assert_get(count_url) do |body|
-            assert response = JSON.parse(body)
-            record = response['rows'].first
-            if record['id'] =~ /_design/
-              next
-            else
-              address = record['doc']['address']
-              assert address, "Identity document #{record['id']} is missing an address field. #{record['doc'].inspect}"
-              url_base = %(/identities/_design/Identity/_view/by_address)
-              params = %(?include_docs=true&reduce=false&startkey="#{address}"&endkey="#{address}")
-              assert_get(couchdb_url(url_base+params, couch_url_options)) do |body|
-                assert response = JSON.parse(body)
-                assert record = response['rows'].first
-                assert_equal address, record['doc']['address']
-                pass
-              end
-              break
-            end
-          end
-        end
-      end
+      assert record = response['rows'].first
+      assert_equal address, record['doc']['address']
+      pass
     end
   end
 
@@ -92,12 +70,62 @@ class Mx < LeapTest
   end
 
   #
+  # TODO: test to make sure postmap returned the right result
+  #
+  def test_05_Can_postfix_query_leapmx?
+    ident = pick_random_identity(10, :with_public_key => true)
+    address = ident["address"]
+
+    #
+    # virtual alias map:
+    #
+    #   user@domain => 41c29a80a44f4775513c64ac9cab91b9@deliver.local
+    #
+    assert_run("postmap -v -q \"#{address}\" tcp:localhost:4242")
+
+    #
+    # recipient access map:
+    #
+    #   user@domain => [OK|REJECT|TEMP_FAIL]
+    #
+    # This map is queried by the mail server before delivery to the mail spool
+    # directory, and should check if the address is able to receive messages.
+    # Examples of reasons for denying delivery would be that the user is out of
+    # quota, is user, or have no pgp public key in the server.
+    #
+    # NOTE: in the future, when we support quota, we need to make sure that
+    # we don't randomly pick a user for this test that happens to be over quota.
+    #
+    assert_run("postmap -v -q \"#{address}\" tcp:localhost:2244")
+
+    #
+    # certificate validity map:
+    #
+    #  fa:2a:70:1f:d8:16:4e:1a:3b:15:c1:67:00:f0 => [200|500]
+    #
+    # Determines whether a particular SMTP client cert is authorized
+    # to relay mail, based on the fingerprint.
+    #
+    if ident["cert_fingerprints"]
+      not_expired = ident["cert_fingerprints"].select {|key, value|
+        Time.now.utc < DateTime.strptime("2016-01-03", "%F").to_time.utc
+      }
+      if not_expired.any?
+        fingerprint = not_expired.first
+        assert_run("postmap -v -q #{fingerprint} tcp:localhost:2424")
+      end
+    end
+
+    pass
+  end
+
+  #
   # The email sent by this test might get bounced back.
   # In this case, the test will pass, but the bounce message will
   # get sent to root, so the sysadmin will still figure out pretty
   # quickly that something is wrong.
   #
-  def test_05_Can_deliver_email?
+  def test_06_Can_deliver_email?
     addr = [TEST_EMAIL_USER, property('domain.full_suffix')].join('@')
     bad_addr = [TEST_BAD_USER, property('domain.full_suffix')].join('@')
 
@@ -121,6 +149,59 @@ class Mx < LeapTest
       :username => property('couchdb_leap_mx_user.username'),
       :password => property('couchdb_leap_mx_user.password')
     }
+  end
+
+  #
+  # returns a random identity record that also has valid address
+  # and destination fields.
+  #
+  # options:
+  #
+  # * :with_public_key -- searches only for identities with public keys
+  #
+  # note to self: for debugging, here is the curl you want:
+  # curl --netrc "127.0.0.1:5984/identities/_design/Identity/_view/by_address?startkey=\"xxxx@leap.se\"&endkey=\"xxxx@leap.se\"&reduce=false&include_docs=true"
+  #
+  def pick_random_identity(tries=5, options={})
+    assert_get(couchdb_url("/identities", couch_url_options)) do |body|
+      assert response = JSON.parse(body)
+      doc_count = response['doc_count'].to_i
+      if doc_count <= 1
+        # the design document counts as one document.
+        skip "There are no identity documents yet."
+      else
+        # try repeatedly to get a valid doc
+        for i in 1..tries
+          offset    = rand(doc_count) # pick a random document
+          url = couchdb_url("/identities/_all_docs?include_docs=true&limit=1&skip=#{offset}", couch_url_options)
+          assert_get(url) do |body|
+            assert response = JSON.parse(body)
+            record = response['rows'].first
+            if record['id'] =~ /_design/
+              next
+            elsif record['doc'] && record['doc']['address']
+              next if record['doc']['destination'].nil? || record['doc']['destination'].empty?
+              next if options[:with_public_key] && !record_has_key?(record)
+              return record['doc']
+            else
+              fail "Identity document #{record['id']} is missing an address field. #{record['doc'].inspect}"
+            end
+          end
+        end
+        if options[:with_public_key]
+          skip "Could not find an Identity document with a public key for testing."
+        else
+          fail "Failed to find a valid Identity document (with address and destination)."
+        end
+      end
+    end
+  end
+
+  def record_has_key?(record)
+    !record['doc']['keys'].nil? &&
+    !record['doc']['keys'].empty? &&
+    !record['doc']['keys']['pgp'].nil? &&
+    !record['doc']['keys']['pgp'].empty?
   end
 
   TEST_EMAIL_PUBLIC_KEY=<<HERE
