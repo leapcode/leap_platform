@@ -1,2 +1,3 @@
 /.vagrant
 /puppet/modules/site_custom
+Gemfile.lock
