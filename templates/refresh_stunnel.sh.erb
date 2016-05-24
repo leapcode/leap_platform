@@ -1,0 +1,22 @@
+#!/bin/sh -x
+
+for difference in `diff -q /etc/stunnel <%= @stunnel_staging %>/configs | grep differ | awk '{print $2}'`
+do 
+    old_config=`basename $difference`
+    /etc/init.d/stunnel4 stop $(basename $old_config .conf)
+    rm $difference
+done
+
+for only in `diff -q /etc/stunnel <%= @stunnel_staging %>/configs | grep 'Only in /etc/stunnel:' | awk '{print $4}'`
+do
+    old_config=`basename $only`
+    /etc/init.d/stunnel4 stop $(basename $only .conf)
+    rm /etc/stunnel/${only}
+done
+
+cp <%= @stunnel_staging %>/configs/*.conf /etc/stunnel
+
+/etc/init.d/stunnel4 start
+
+
+

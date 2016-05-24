@@ -1,0 +1,47 @@
+; templated stunnel configuration file to be used by puppet stunnel module
+; NOTE: any changes you make to this file will be overwritten the next time 
+; puppet runs, please make configuration changes to this service in puppet
+
+; Global configuration options
+<%= 'debug = ' + @debuglevel %>
+<%= 'pid = ' + @real_pid %>
+<%- %w{chroot setuid setgid service compression}.each do |v|
+    if has_variable?(v) and instance_variable_get("@#{v}").to_s != "false" -%>
+<%= v + " = " + instance_variable_get("@#{v}").to_s %>
+<%-
+	end
+end -%>
+
+; Some performance tunings
+<% if @socket.is_a? String -%>
+<%= 'socket = ' + @socket %>
+<% elsif @socket.is_a? Array -%>
+<%= @socket.map { |i| "socket = #{i}" }. join("\n") %>
+<% end -%>
+
+<%- %w{output syslog}.each do |v|
+    if has_variable?(v) and instance_variable_get("@#{v}").to_s != "false" -%>
+<%= v + " = " + instance_variable_get("@#{v}").to_s %>
+<%-
+	end
+end -%>
+
+<%- %w{egd engine enginectrl rndbytes rndfile rndoverwrite}.each do |v|
+    if has_variable?(v) and instance_variable_get("@#{v}").to_s != "false" -%>
+<%= v + " = " + instance_variable_get("@#{v}").to_s %>
+<%-
+	end
+end -%>
+
+; Service-level configuration
+<%= '[' + @name + ']' %>
+<%- %w{accept connect capath cafile cert ciphers crlpath crlfile delay enginenum exec 
+       execargs failover ident key local oscp ocspflag options protocol protocolauthentication
+       protocolhost protocolpassword protocolusername pty retry session sslversion stack 
+       timeoutbusy timeoutclose timeoutconnect timeoutidle transparent verify}.each do |v|
+    if has_variable?(v) and instance_variable_get("@#{v}").to_s != "false" -%>
+<%= v + ' = ' + instance_variable_get("@#{v}").to_s %>
+<%-
+    end
+end -%>
+client = <%= @client ? 'yes' : 'no' %>
