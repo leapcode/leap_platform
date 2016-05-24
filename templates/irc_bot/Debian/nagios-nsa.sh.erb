@@ -1,0 +1,72 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:		nagios-nsa
+# Required-Start:	$remote_fs $syslog nagios3
+# Required-Stop:	$remote_fs $syslog nagios3
+# Default-Start:	2 3 4 5
+# Default-Stop:		1 6 0
+# Short-Description:	Nagios Simple IRC Agent
+### END INIT INFO
+
+PIDFILE=<%= scope.lookupvar('nagios::irc_bot::real_nsa_pidfile') %>
+SOCKFILE=<%= scope.lookupvar('nagios::irc_bot::real_nsa_socket') %>
+
+. /lib/lsb/init-functions
+
+start() {
+	log_daemon_msg "Starting nagios IRC bot" "nagios-nsa"
+        if start-stop-daemon --start --quiet --oknodo --pidfile $PIDFILE --user nagios --chuid nagios --exec /usr/local/bin/riseup-nagios-server.pl; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+}
+
+stop () {
+	log_daemon_msg "Stopping nagios IRC bot" "nagios-nsa"
+        if start-stop-daemon --stop --quiet --pidfile $PIDFILE; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+}
+
+remove_socket() {
+	[ -e $SOCKFILE ] && rm $SOCKFILE
+}
+
+cleanup() {
+        if [ -r $PIDFILE ]; then
+                ps -p `cat $PIDFILE` | grep -v 'PID' || {
+			echo "not running"
+			remove_socket
+		}
+        else
+                echo "no pid file"
+		remove_socket
+        fi
+}
+
+case $1
+in
+        start)
+		cleanup
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                stop
+		cleanup
+                start
+                ;;
+        status)
+                status_of_proc -p $PIDFILE /usr/local/bin/riseup-nagios-server.pl && exit 0 || exit $?
+                ;;
+        *)
+                log_action_msg "Usage: /etc/init.d/nagios-nsa {start|stop|restart|status}"
+                exit 1
+esac
+
