@@ -1,0 +1,20 @@
+Explanation: Debian <%= codename=scope.lookupvar('::debian_codename') %>
+Package: *
+Pin: release o=Debian,n=<%= codename %>
+Pin-Priority: 990
+
+Explanation: Debian <%= codename %>-updates
+Package: *
+Pin: release o=Debian,n=<%= codename %>-updates
+Pin-Priority: 990
+
+Explanation: Debian sid
+Package: *
+Pin: release o=Debian,n=sid
+Pin-Priority: 1
+
+Explanation: Debian fallback
+Package: *
+Pin: release o=Debian
+Pin-Priority: -10
+

@@ -1,0 +1,22 @@
+# This file is managed by puppet
+# all local modifications will be overwritten
+
+# basic <%= codename=scope.lookupvar('::ubuntu_codename') %>
+deb <%= ubuntu_url=scope.lookupvar('apt::ubuntu_url') %> <%= codename %> <%= lrepos=scope.lookupvar('apt::real_repos') %>
+<% if include_src=scope.lookupvar('apt::include_src') -%>
+deb-src <%= ubuntu_url %> <%= codename %> <%= lrepos %>
+<% end -%>
+
+<% if use_volatile=scope.lookupvar('apt::use_volatile') -%>
+# updates
+deb <%= ubuntu_url %> <%= codename %>-updates <%= lrepos %>
+<%   if include_src -%>
+deb-src <%= ubuntu_url %> <%= codename %>-updates <%= lrepos %>
+<%   end
+   end -%>
+
+# security suppport
+deb <%= ubuntu_url %> <%= codename %>-security <%= lrepos %>
+<% if include_src -%>
+deb-src <%= ubuntu_url %> <%= codename %>-security <%= lrepos %>
+<% end -%>
