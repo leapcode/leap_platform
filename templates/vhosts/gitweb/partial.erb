@@ -1,0 +1,16 @@
+  SetEnv GITWEB_CONFIG <%= @gitweb_config %>
+  DirectoryIndex gitweb.cgi
+  <Directory "<%= @documentroot %>/">
+<% if @options.to_s != 'absent' || @do_includes.to_s == 'true'-%>
+    Options <% unless @options.to_s == 'absent' -%><%= @options %><% end -%><% if @do_includes.to_s == 'true' && !@options.include?('+Includes') -%> +Includes<% end -%><% unless @options.include?('+ExecCGI') -%> +ExecCGI<% end -%>
+<% end -%>
+    AddHandler cgi-script .cgi
+    <Files gitweb.cgi>
+      Options ExecCGI FollowSymLinks
+      SetHandler cgi-script
+    </Files>
+    RewriteEngine on
+    RewriteRule ^[a-zA-Z0-9_-]+.git/?(\?.)?$ /gitweb.cgi%{REQUESTURI} [L,PT]
+
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+  </Directory>

@@ -1,0 +1,12 @@
+  # silverstripe
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule /(Security|admin)(.*) https://%{HTTP_HOST}/admin$1$2 [L,R,NE]
+
+  <Directory "<%= @documentroot %>/">
+<%= scope.function_template(['apache/vhosts/partials/std_override_options.erb']) %>
+<%= scope.function_template(['apache/vhosts/partials/php_settings.erb']) %>
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+    Include include.d/silverstripe.inc
+  </Directory>

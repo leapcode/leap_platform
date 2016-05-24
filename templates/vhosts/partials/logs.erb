@@ -1,0 +1,18 @@
+<% case @logmode.to_s
+      when 'nologs' -%>
+  ErrorLog /dev/null
+  CustomLog /dev/null %%
+<% when 'noaccess' -%>
+  ErrorLog <%= @logdir %>/<%= @logprefix %>error_log
+  CustomLog /dev/null noip
+<% when 'semianonym' -%>
+  ErrorLog <%= @logdir %>/<%= @logprefix %>error_log
+  CustomLog <%= @logdir %>/<%= @logprefix %>access_log noip
+<% when 'anonym' -%>
+  ErrorLog /dev/null
+  CustomLog <%= @logdir %>/<%= @logprefix %>access_log noip
+<% else -%>
+  ErrorLog <%= @logdir %>/<%= @logprefix %>error_log
+  CustomLog <%= @logdir %>/<%= @logprefix %>access_log combined
+<% end -%>
+

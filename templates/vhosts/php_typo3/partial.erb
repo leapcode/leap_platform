@@ -1,0 +1,10 @@
+<%= scope.function_template(['apache/vhosts/php/partial.erb']) %>
+  <Directory "<%= @documentroot %>/typo3/">
+    RewriteEngine on
+
+    # Rewrite URLs to https that go for the admin area
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{REQUEST_URI} (.*/typo3/.*)
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R,NE]
+  </Directory>
