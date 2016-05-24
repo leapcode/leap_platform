@@ -1,0 +1,21 @@
+  DAVLockDB <%= @real_dav_db_dir %>/DAVLock
+  <Directory "<%= @documentroot %>/">
+    Dav on
+    AllowOverride None
+<% if @options.to_s != 'absent' || @do_includes.to_s == 'true' -%>
+    Options <% unless @options.to_s == 'absent' -%><%= @options %><% end -%><% unless @options.include?('Indexes') -%> Indexes<%- end -%>
+
+<% else -%>
+    Options Indexes
+
+<% end -%>
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+<% if @ldap_auth.to_s == 'true' then -%>
+    Include include.d/ldap_auth.inc
+<%   unless ldap_user.to_s == 'any' -%>
+    Require ldap-user <%= ldap_user.to_s %>
+<%   else -%>
+    Require valid-user
+<%   end
+   end -%>
+  </Directory>

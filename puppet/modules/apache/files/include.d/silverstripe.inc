@@ -1,0 +1,17 @@
+# silverstripe .htaccess
+<Files *.ss>
+  Order deny,allow
+  Deny from all
+  #Allow from 127.0.0.1
+</Files>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  #RewriteBase /
+
+  RewriteCond %{REQUEST_URI} !(\.gif$)|(\.jpg$)|(\.png$)|(\.css$)|(\.js$)
+
+  RewriteCond %{REQUEST_URI} ^(.*)$
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule .* sapphire/main.php?url=%1&%{QUERY_STRING} [L]
+</IfModule>

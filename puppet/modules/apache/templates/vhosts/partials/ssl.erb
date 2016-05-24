@@ -1,0 +1,8 @@
+  SSLCertificateFile <%= configuration['ssl_certificate_file'] || scope.lookupvar('apache::default_ssl_certificate_file') %>
+  SSLCertificateKeyFile <%= configuration['ssl_certificate_key_file'] || scope.lookupvar('apache::default_ssl_certificate_key_file') %>
+<% if configuration['ssl_certificate_chain_file'] || scope.lookupvar('apache::default_ssl_certificate_chain_file') != 'absent' -%>
+  SSLCertificateChainFile <%= configuration['ssl_certificate_chain_file'] || scope.lookupvar('apache::default_ssl_certificate_chain_file') %>
+<% end -%>
+<% if configuration['hsts'] -%>
+  Header add Strict-Transport-Security "max-age=<%= (configuration['hsts']['age'] || 15768000) rescue 15768000 %>"
+<% end -%>

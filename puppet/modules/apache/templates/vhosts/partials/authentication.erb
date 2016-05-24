@@ -1,0 +1,6 @@
+<% unless @htpasswd_file.to_s == 'absent' -%>
+    AuthType Basic
+    AuthName "Access fuer <%= @servername %>"
+    AuthUserFile <%= @real_htpasswd_path %>
+    require valid-user
+<% end -%>
