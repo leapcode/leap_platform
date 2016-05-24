@@ -1,0 +1,9 @@
+<%- require 'digest' -%>
+[admins]
+admin = <%= @admin_hash %>
+
+[couchdb]
+<%- # uuid uniquely identifies this couchdb instance. if not set, couchdb will set a random one
+    # but we want a stable one so that this config file doesn't change all the time.
+    # Md5 of hostname and ipaddress seems reasonable, but it could be based on anything. -%>
+uuid = <%= Digest::MD5.hexdigest(Facter.value("hostname") + Facter.value("ipaddress")) %>

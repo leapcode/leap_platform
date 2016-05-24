@@ -1,0 +1,6 @@
+fixtures:
+  symlinks:
+    couchdb: "#{source_dir}"
+  repositories:
+    stdlib:    " https://leap.se/git/puppet_stdlib"
+
