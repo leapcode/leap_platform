@@ -1,0 +1,5 @@
+Use nagios_hostgroup type rather than clumsily creating our own.
+Add support for ignored_services to eliminate false alerts.
+Implement support for choosing either upstream install or distro supplied
+  packages. If using distro packages, detect distro and set package names
+  to reasonable default (currently requires overriding).
