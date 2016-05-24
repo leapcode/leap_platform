@@ -1,0 +1,22 @@
+# Defaults for the git-daemon initscript
+
+# Set to yes to start git-daemon
+RUN=yes
+
+# Set to the user and group git-daemon should run as
+USER=nobody
+GROUP=nogroup
+
+# Set the base path and the directory where the repositories are.
+REPOSITORIES="/srv/git"
+
+# Provide a way to have custom setup.
+#
+# Note, when ADVANCED_OPTS is defined the REPOSITORIES setting is ignored,
+# so take good care to specify exactly what git-daemon have to do.
+#
+# Here is an example from the man page:
+#ADVANCED_OPTS="--verbose --export-all \
+#               --interpolated-path=/pub/%IP/%D \
+#               /pub/192.168.1.200/software \
+#               /pub/10.10.220.23/software"
