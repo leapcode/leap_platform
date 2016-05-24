@@ -1,0 +1,8 @@
+# Default settings for the NPCD init script.
+
+# Should NPCD be started? ("yes" to enable)
+RUN="yes"
+
+# Additional options that are passed to the daemon.
+DAEMON_OPTS="-d -f /etc/pnp4nagios/npcd.cfg"
+

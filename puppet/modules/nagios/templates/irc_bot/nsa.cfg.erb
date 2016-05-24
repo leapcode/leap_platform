@@ -1,0 +1,15 @@
+%Nsa = (
+        'socket'      => '<%= scope.lookupvar('nagios::irc_bot::real_nsa_socket') %>',
+        'server'      => '<%= scope.lookupvar('nagios::irc_bot::nsa_server') %>',
+        'port'        => '<%= scope.lookupvar('nagios::irc_bot::nsa_port') %>',
+        'nickname'    => '<%= scope.lookupvar('nagios::irc_bot::nsa_nickname') %>',
+        'password'    => '<%= scope.lookupvar('nagios::irc_bot::nsa_password') %>',
+	# this needs libio-socket-ssl-perl
+	# doesn't actually works because Net::IRC is braindead and tries to use IO::Socket::SSL->read/write instead of the builtin print, see http://search.cpan.org/dist/IO-Socket-SSL/SSL.pm
+	#'SSL'        => 0,
+        'channel'     => '<%= scope.lookupvar('nagios::irc_bot::nsa_channel') %>',
+        'pidfile'     => '<%= scope.lookupvar('nagios::irc_bot::real_nsa_pidfile') %>', # set to undef to disable
+        'realname'    => '<%= scope.lookupvar('nagios::irc_bot::nsa_realname') %>',
+        'usenotices'  => '<%= scope.lookupvar('nagios::irc_bot::nsa_usenotices') %>',
+        'commandfile' => '<%= scope.lookupvar('nagios::irc_bot::real_nsa_commandfile') %>',
+);
