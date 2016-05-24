@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+PASSENGER_STATUS = ENV['passenger_status'] || '/usr/local/bin/passenger-status'
+
+def output_config
+  puts <<-END
+graph_category Passenger
+graph_title passenger status
+graph_vlabel count
+
+sessions.label sessions
+max.label max processes
+running.label running processes
+active.label active processes
+inactive.label inactive processes
+END
+  exit 0
+end
+
+def output_values
+  status = `#{PASSENGER_STATUS}`
+  unless $?.success?
+    $stderr.puts "failed executing passenger-status"
+    exit 1
+  end
+  status =~ /max\s+=\s+(\d+)/
+  puts "max.value #{$1}"
+
+  status =~ /count\s+=\s+(\d+)/
+  puts "running.value #{$1}"
+
+  status =~ /active\s+=\s+(\d+)/
+  puts "active.value #{$1}"
+
+  status =~ /inactive\s+=\s+(\d+)/
+  puts "inactive.value #{$1}"
+
+  total_sessions = 0
+  status.scan(/Sessions: (\d+)/).flatten.each { |count| total_sessions += count.to_i }
+  puts "sessions.value #{total_sessions}"
+end
+
+if ARGV[0] == "config"
+  output_config
+else
+  output_values
+end
