@@ -1,0 +1,10 @@
+#
+# Shorewall version 3.4 - Interfaces File
+#
+# For information about entries in this file, type "man shorewall-interfaces"
+#
+# For additional information, see
+# http://shorewall.net/Documentation.htm#Interfaces
+#
+###############################################################################
+#ZONE   INTERFACE       BROADCAST       OPTIONS

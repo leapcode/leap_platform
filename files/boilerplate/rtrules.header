@@ -1,0 +1,8 @@
+#
+# Shorewall version 4 - route rules File
+#
+# For information about entries in this file, type "man shorewall-rtrules"
+#
+# For additional information, see http://www.shorewall.net/MultiISP.html
+####################################################################################
+# SOURCE DEST PROVIDER PRIORITY MASK 

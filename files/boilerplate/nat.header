@@ -1,0 +1,9 @@
+#
+# Shorewall version 3.4 - Nat File
+#
+# For information about entries in this file, type "man shorewall-nat"
+#
+# For additional information, see http://shorewall.net/NAT.htm
+#
+###############################################################################
+#EXTERNAL       INTERFACE       INTERNAL        ALL             LOCAL

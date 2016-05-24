@@ -1,0 +1,14 @@
+#
+# Shorewall version 4 - Maclog File (Added in Shorewall version 3.2.5)
+#
+# /etc/shorewall/start
+#
+#	Add commands below that you want executed while mac filtering rules are
+#	being created. These will be executed once for each interface having
+#	'maclist' speciied and it is invoked just before the logging rule is 
+#	added to the current chain (the name of that chain will be in $CHAIN)
+#
+# See http://shorewall.net/shorewall_extension_scripts.htm for additional
+# information.
+#
+###############################################################################
