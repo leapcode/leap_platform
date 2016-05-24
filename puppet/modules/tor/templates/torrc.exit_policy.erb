@@ -1,0 +1,11 @@
+# exit policies: <%= @name %>
+<% if @reject_private != '1' -%>
+ExitPolicyRejectPrivate <%= @reject_private %>
+<% end -%>
+<% @accept.each do |policy| -%>
+ExitPolicy accept <%= policy %>
+<% end -%>
+<% @reject.each do |policy| -%>
+ExitPolicy reject <%= policy %>
+<% end -%>
+
