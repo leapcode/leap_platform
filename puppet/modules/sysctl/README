@@ -1,0 +1,20 @@
+sysctl module
+-------------
+
+This puppet module handles the setting of variables in sysctl.conf, its
+a simple module that utilizes the puppet augeas built-in type and the
+sysctl binary. You must have the augeas ruby libraries installed to 
+use this type.
+
+You can set a value and a comment for that value using this module,
+some examples:
+
+sysctl::config { "vm.mmap_min_addr":
+    value => 32768,
+    comment => "Never mmap into the first 32k of memory",
+} 
+
+sysctl::config { "fs.file-max":
+    value => 65536,
+    comment => "Maximum number of filehandles",
+} 
