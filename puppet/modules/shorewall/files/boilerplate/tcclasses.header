@@ -1,0 +1,9 @@
+#
+# Shorewall version 4 - Tcclasses File
+#
+# For information about entries in this file, type "man shorewall-tcclasses"
+#
+# See http://shorewall.net/traffic_shaping.htm for additional information.
+#
+###############################################################################
+#INTERFACE:CLASS        MARK    RATE    CEIL    PRIORITY        OPTIONS

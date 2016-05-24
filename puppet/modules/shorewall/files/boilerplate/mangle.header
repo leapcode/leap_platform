@@ -1,0 +1,7 @@
+#
+# Shorewall - Mangle File
+#
+# For additional information, see http://shorewall.net/manpages/shorewall-mangle.html
+#
+#######################################################################################
+#ACTION SOURCE DESTINATION PROTO DSTPORT SRCPORT USER TEST LENGTH TOS CONNBYTES HELPER HEADERS

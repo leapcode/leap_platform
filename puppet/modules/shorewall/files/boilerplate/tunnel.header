@@ -1,0 +1,11 @@
+#
+# Shorewall version 4 - Tunnels File
+#
+# For information about entries in this file, type "man shorewall-tunnels"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-tunnels.html
+#
+###############################################################################
+#TYPE			ZONE	GATEWAY		GATEWAY
+#						ZONE

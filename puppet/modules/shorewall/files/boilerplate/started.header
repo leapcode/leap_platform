@@ -1,0 +1,20 @@
+#
+# Shorewall version 4 - Started File
+#
+# /etc/shorewall/started
+#
+#	Add commands below that you want to be executed after shorewall has
+#	been completely started or restarted. The difference between this
+#	extension script and /etc/shorewall/start is that this one is invoked
+#	after delayed loading of the blacklist (DELAYBLACKLISTLOAD=Yes) and
+#	after the 'shorewall' chain has been created (thus signaling that the
+#	firewall is completely up).
+#
+#	This script should not change the firewall configuration directly but
+#	may do so indirectly by running /sbin/shorewall with the 'nolock'
+#	option.
+#
+# See http://shorewall.net/shorewall_extension_scripts.htm for additional
+# information.
+#
+###############################################################################

@@ -1,0 +1,11 @@
+#
+# Shorewall version 3.4 - Zones File
+#
+# For information about this file, type "man shorewall-zones"
+#
+# For more information, see http://www.shorewall.net/Documentation.htm#Zones
+#
+###############################################################################
+#ZONE   TYPE            OPTIONS         IN                      OUT
+#                                       OPTIONS                 OPTIONS
+fw      firewall
