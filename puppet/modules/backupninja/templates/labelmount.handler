@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Mount a block device with the specified label ('label') onto the given
+# directory ('dest').
+
+getconf label
+getconf dest
+
+if [ ! -b "/dev/disk/by-label/$label" ]; then
+	halt "No partition labelled '$label' is available"
+fi
+
+if [ ! -d "$dest" ]; then
+	halt "Destination directory does not exist"
+fi
+
+mount -t auto /dev/disk/by-label/$label $dest || halt "Mount failed"
