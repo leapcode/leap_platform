@@ -1,0 +1,76 @@
+# This file is managed by puppet
+# all local modifications will be overwritten
+
+### Debian current: <%= codename=scope.lookupvar('::debian_codename') %>
+
+# basic
+deb <%= debian_url=scope.lookupvar('apt::debian_url') %> <%= codename %> <%= lrepos=scope.lookupvar('apt::real_repos') %>
+<% if include_src=scope.lookupvar('apt::include_src')  -%>
+deb-src <%= debian_url %> <%= codename %> <%= lrepos %>
+<% end -%>
+
+# security
+<% if ((release=scope.lookupvar('::debian_release')) == "stable" || release == "oldstable") -%>
+deb <%= security_url=scope.lookupvar('apt::security_url') %> <%= codename %>/updates <%= lrepos %>
+<%   if include_src -%>
+deb-src <%= security_url %> <%= codename %>/updates <%= lrepos %>
+<% end -%>
+<% else -%>
+# There is no security support for <%= release %>
+<% end -%>
+
+<% if use_volatile=scope.lookupvar('apt::use_volatile') -%>
+# volatile
+<%   if (release == "testing" || release == "unstable" || release == "experimental") -%>
+# There is no volatile archive for <%= release %>
+<%   else -%>
+deb <%= debian_url %> <%= codename %>-updates <%= lrepos %>
+<%     if include_src -%>
+deb-src <%= debian_url %> <%= codename %>-updates <%= lrepos %>
+<%     end
+     end
+   end -%>
+
+<% if use_lts=scope.lookupvar('apt::use_lts') -%>
+# LTS
+<% if release_lts=scope.lookupvar('::debian_lts') == "false" -%>
+# There is no LTS archive for <%= release %>
+<% else -%>
+deb <%= debian_url %> <%= codename %>-lts <%= lrepos %>
+<% if include_src -%>
+deb-src <%= debian_url %> <%= codename %>-lts <%= lrepos %>
+<% end -%>
+<% end -%>
+<% end -%>
+
+<% if next_release=scope.lookupvar('apt::use_next_release') -%>
+### Debian next: <%= next_release=scope.lookupvar('::debian_nextrelease') ; next_codename=scope.lookupvar('::debian_nextcodename') %>
+
+# basic
+deb <%= debian_url %> <%= next_codename %> <%= lrepos %>
+<%   if include_src -%>
+deb-src <%= debian_url %> <%= next_codename %> <%= lrepos %>
+<%   end -%>
+
+# security
+<%   if (next_release == "unstable" || next_release == "experimental") -%>
+# There is no security support for <%= next_release %>
+<%   else -%>
+deb <%= security_url %> <%= next_codename %>/updates <%= lrepos %>
+<%     if include_src then -%>
+deb-src <%= security_url %> <%= next_codename %>/updates <%= lrepos %>
+<%     end
+     end -%>
+
+<%   if use_volatile -%>
+# volatile
+<%     if (next_release == "testing" || next_release == "unstable" || next_release == "experimental") -%>
+# There is no volatile archive for <%= next_release %>
+<%     else -%>
+deb <%= debian_url %> <%= next_codename %>-updates <%= lrepos %>
+<%       if include_src -%>
+deb-src <%= debian_url %> <%= next_codename %>-updates <%= lrepos %>
+<%       end
+       end
+     end
+   end -%>

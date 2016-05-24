@@ -1,0 +1,12 @@
+before_script:
+  - ruby -v
+  - gem install bundler --no-ri --no-rdoc
+  - bundle install --jobs $(nproc)  "${FLAGS[@]}"
+
+# don't fail on lint warnings
+rspec:
+  script:
+    - bundle exec rake lint || /bin/true
+    - bundle exec rake syntax
+    - bundle exec rake validate
+    - bundle exec rake spec
