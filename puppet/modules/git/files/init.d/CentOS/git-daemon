@@ -1,0 +1,75 @@
+#!/bin/bash
+# puppet        Init script for running the git-daemon
+#
+# Author:       Marcel Haerry <mh+rpms(at)immerda.ch>
+#
+# chkconfig: - 98 02
+#
+# description: Enables the git-daemon to serve various directories. By default it serves /srv/git
+# processname: git-daemon
+# config: /etc/sysconfig/git-daemon
+
+PATH=/usr/bin:/sbin:/bin:/usr/sbin
+export PATH
+
+[ -f /etc/sysconfig/git-daemon ] && . /etc/sysconfig/git-daemon
+lockfile=${LOCKFILE-/var/lock/subsys/git-daemon}
+gitdir=${GITDIR-/srv/git}
+gitvhost=${GITVHOST-no}
+user=${GITUSER-nobody}
+options=${OPTIONS-"--reuseaddr --verbose --detach"}
+gitdaemon=${GITDAEMON-/usr/bin/git-daemon}
+RETVAL=0
+
+gitoptions="--user=${user} ${options}"
+if [ $gitvhost = yes ]; then
+	gitoptions="${gitoptions} --interpolated-path=${gitdir}/%H/%D"
+else
+	gitoptions="${gitoptions} --base-path=${gitdir}"
+fi
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+start() {
+    echo -n $"Starting git-daemon: "
+    daemon $gitdaemon $gitoptions
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && touch ${lockfile}
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping git-daemon: "
+    killproc $gitdaemon
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${lockfile}
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop) 
+    stop
+    ;;
+  restart)
+    restart
+    ;;
+  status)
+    status $gitdaemon
+    RETVAL=$?
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 1
+esac
+
+exit $RETVAL
