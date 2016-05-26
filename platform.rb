@@ -45,7 +45,7 @@ Leap::Platform.define do
     :node_config      => 'nodes/#{arg}.json',
 
     # input config files, environmentally scoped
-    :common_env_config    => 'commmon.#{arg}.json',
+    :common_env_config    => 'common.#{arg}.json',
     :provider_env_config  => 'provider.#{arg}.json',
     :service_env_config   => 'services/#{arg[0]}.#{arg[1]}.json',
     :tag_env_config       => 'tags/#{arg[0]}.#{arg[1]}.json',
