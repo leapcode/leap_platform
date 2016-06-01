@@ -7,8 +7,9 @@ class site_config::default {
   include site_config::params
   include site_config::setup
 
-  # default class, used by all hosts
+  service { 'puppet': ensure => stopped }
 
+  # default class, used by all hosts
   include lsb, git
 
   # configure sysctl parameters
