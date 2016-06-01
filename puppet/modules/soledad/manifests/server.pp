@@ -17,6 +17,7 @@ class soledad::server {
 
   $sources      = hiera('sources')
 
+  include x509::variables
   include site_config::x509::cert
   include site_config::x509::key
   include site_config::x509::ca
