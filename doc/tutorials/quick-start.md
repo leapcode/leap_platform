@@ -1,385 +1,230 @@
 @title = 'Quick Start Tutorial'
 @nav_title = 'Quick Start Tutorial'
-@summary = 'This tutorial walks you through the initial process of creating and deploying a minimal service provider running the LEAP Platform. This Quick Start guide will guide you through building a three node OpenVPN provider.'
+@summary = 'This tutorial walks you through the initial process of creating and deploying a minimal service provider running the LEAP Platform.'
 
+Introduction
+====================================
 
-Our goal
-------------------
+### Our goal
 
-We are going to create a minimal LEAP provider offering OpenVPN service. This basic setup can be expanded by adding more OpenVPN nodes to increase capacity or geographical diversity, or more webapp nodes to increase availability (at the moment, a single couchdb and single webapp server are all that is supported, and performance wise, are more than enough for most usage, since they are only lightly used). At the moment, we strongly advise only have one couchdb server for stability purposes. 
+We are going to create a minimal LEAP provider, but one that does not offer any actual services. Check out the other tutorials for adding VPN or email services.
 
 Our goal is something like this:
 
     $ leap list
-         NODES   SERVICES    TAGS
-       cheetah   couchdb     production
-    wildebeest   webapp      production
-       ostrich   openvpn     production
+            NODES   SERVICES          TAGS
+       wildebeest   couchdb, webapp
 
 NOTE: You won't be able to run that `leap list` command yet, not until we actually create the node configurations.
 
-Requirements
-------------
+### Requirements
 
-In order to complete this Quick Start, you will need a few things:
+1. A workstation: This is your local machine that you will run commands on.
+1. A server: This is the machine that you will deploy to. The server can be either:
+   1. A local Vagrant virtual machine: a Vagrant machine can only be useful for testing.
+   1. A real or paravirtualized server: The server must have Debian Jessie installed, and you must be able to SSH into the machine as root. Paravirtualization includes KVM, Xen, OpenStack, Amazon, but not VirtualBox or OpenVZ.
 
-* You will need three real or paravirtualized virtual machines (KVM, Xen, Openstack, Amazon, but not Vagrant - sorry) that have a basic Debian Stable installed. If you allocate 20G of disk space to each node for the system, after this process is completed, you will have used less than 10% of that disk space. If you allocate 2 CPUs and 8G of memory to each node, that should be more than enough to begin with.
-* You should be able to SSH into them remotely, and know their root password, IP addresses and their SSH host keys
-* You will need four different IPs. Each node gets a primary IP, and the OpenVPN gateway additionally needs a gateway IP.
+Other things to keep in mind:
+
 * The ability to create/modify DNS entries for your domain is preferable, but not needed. If you don't have access to DNS, you can workaround this by modifying your local resolver, i.e. editing `/etc/hosts`.
-* You need to be aware that this process will make changes to your systems, so please be sure that these machines are a basic install with nothing configured or running for other purposes
-* Your machines will need to be connected to the internet, and not behind a restrictive firewall.
-* You should work locally on your laptop/workstation (one that you trust and that is ideally full-disk encrypted) while going through this guide. This is important because the provider configurations you are creating contain sensitive data that should not reside on a remote machine. The `leap` command will login to your servers and configure the services.
-* You should do everything described below as an unprivileged user, and only run those commands as root that are noted with *sudo* in front of them. Other than those commands, there is no need for privileged access to your machine, and in fact things may not work correctly.
+* You need to be aware that this process will make changes to your servers, so please be sure that these machines are a basic install with nothing configured or running for other purposes.
+* Your servers will need to be connected to the internet, and not behind a restrictive firewall.
 
-All the commands in this tutorial are run on your sysadmin machine. In order to complete the tutorial, the sysadmin will do the following:
-
-* Install pre-requisites
-* Install the LEAP command-line utility
-* Check out the LEAP platform
-* Create a provider and its certificates
-* Setup the provider's nodes and the services that will reside on those nodes
-* Initialize the nodes
-* Deploy the LEAP platform to the nodes
-* Test that things worked correctly
-* Some additional commands
-
-We will walk you through each of these steps.
-
-
-Prepare your environment
+Prepare your workstation
 ========================
 
-There are a few things you need to setup before you can get going. Just some packages, the LEAP cli and the platform.
+In order to be able to manage your servers, you need to install the `leap` command on your workstation:
 
-Install pre-requisites
---------------------------------
+### Install pre-requisites
+
+Install core prerequisites on your workstation.
 
 *Debian & Ubuntu*
 
-Install core prerequisites:
+    workstation$ sudo apt-get install git ruby ruby-dev rsync openssh-client openssl rake make bzip2
 
-    $ sudo apt-get install git ruby ruby-dev rsync openssh-client openssl rake make bzip2
-
-<!--
 *Mac OS*
 
-1. Install rubygems from https://rubygems.org/pages/download (unless the `gem` command is already installed).
--->
+    workstation$ brew install ruby-install
+    workstation$ ruby-install ruby
 
-NOTE: leap_cli requires ruby 1.9 or later.
-
-
-Install the LEAP command-line utility
--------------------------------------------------
+### Install the LEAP command-line utility
 
 Install the `leap` command from rubygems.org:
 
-    $ sudo gem install leap_cli
+    workstation$ gem install leap_cli --install-dir ~/leap
+    workstation$ export PATH=$PATH:~/leap/bin
 
-Alternately, you can install `leap` from source:
+Alternately, you can install `leap` system wide:
 
-    $ git clone https://leap.se/git/leap_cli
-    $ cd leap_cli
-    $ rake build
-    $ sudo rake install
+    workstation$ sudo gem install leap_cli
 
-You can also install from source as an unprivileged user, if you want. For example, instead of `sudo rake install` you can do something like this:
+To confirm that you installed `leap` correctly, try running `leap help`.
 
-    $ rake install
-    # watch out for the directory leap is installed to, then i.e.
-    $ sudo ln -s ~/.gem/ruby/1.9.1/bin/leap /usr/local/bin/leap
+Create a provider instance
+=============================================
 
-With either `rake install` or `sudo rake install`, you can use now /usr/local/bin/leap, which in most cases will be in your $PATH.
+A provider instance is a directory tree, residing on your workstation, that contains everything you need to manage an infrastructure for a service provider.
 
-If you have successfully installed the `leap` command, then you should be able to do the following:
+In this case, we create one for example.org and call the instance directory 'example'.
 
-    $ leap --help
-
-This will list the command-line help options. If you receive an error when doing this, please read through the README.md in the `leap_cli` source to try and resolve any problems before going forwards.
-
-Check out the platform
---------------------------
-
-The LEAP Platform is a series of puppet recipes and modules that will be used to configure your provider. You will need a local copy of the platform that will be used to setup your nodes and manage your services. To begin with, you will not need to modify the LEAP Platform.
-
-First we'll create a directory for LEAP things, and then we'll check out the platform code and initalize the modules:
-
-    $ mkdir ~/leap
-    $ cd ~/leap
-    $ git clone https://leap.se/git/leap_platform.git
-    $ cd leap_platform
-    $ git submodule sync; git submodule update --init
-
-
-Provider Setup
-==============
-
-A provider instance is a directory tree, usually stored in git, that contains everything you need to manage an infrastructure for a service provider. In this case, we create one for example.org and call the instance directory 'example'.
-
-    $ mkdir -p ~/leap/example
-
-Bootstrap the provider
------------------------
-
-Now, we will initialize this directory to make it a provider instance. Your provider instance will need to know where it can find the local copy of the git repository leap_platform, which we setup in the previous step.
-
-    $ cd ~/leap/example
-    $ leap new .
-
-NOTES:
- . make sure you include that trailing dot!
+    workstation$ leap new ~/example
 
 The `leap new` command will ask you for several required values:
 
 * domain: The primary domain name of your service provider. In this tutorial, we will be using "example.org".
 * name: The name of your service provider (we use "Example").
 * contact emails: A comma separated list of email addresses that should be used for important service provider contacts (for things like postmaster aliases, Tor contact emails, etc).
-* platform: The directory where you have a copy of the `leap_platform` git repository checked out.
+* platform: The directory where you have a copy of the `leap_platform` git repository checked out. If the platform directory does not yet exist, the `leap_platform` will be downloaded and placed in that directory.
 
 You could also have passed these configuration options on the command-line, like so:
 
-    $ leap new --contacts your@email.here --domain leap.example.org --name Example --platform=~/leap/leap_platform .
+    workstation$ leap new --contacts your@email.here --domain example.org --name Example --platform=~/leap/leap_platform .
 
-You may want to poke around and see what is in the files we just created. For example:
+You should now have the following files:
 
-    $ cat provider.json
-
-Optionally, commit your provider directory using the version control software you fancy. For example:
-
-    $ git init
-    $ git add .
-    $ git commit -m "initial provider commit"
+    workstation$ tree example
+    example
+    ├── common.json
+    ├── Leapfile
+    ├── nodes/
+    ├── provider.json
+    ├── services/
+    └── tags/
 
 Now add yourself as a privileged sysadmin who will have access to deploy to servers:
 
-    $ leap add-user --self
+    workstation$ cd example
+    workstation$ leap add-user louise --self
 
-NOTE: in most cases, `leap` must be run from within a provider instance directory tree (e.g. ~/leap/example).
+Replace "louise" with whatever you want your sysadmin username to be.
 
-Create provider certificates
-----------------------------
+NOTE: Make sure you change directories so that the `leap` command is run from within the provider instance directory. Most `leap` commands only work when run from a provider instance.
 
-Create two certificate authorities, one for server certs and one for client
-certs (note: you only need to run this one command to get both):
+Now create the necessary keys and certificates:
 
-    $ leap cert ca
+    workstation$ leap cert ca
+    workstation$ leap cert csr
 
-Create a temporary cert for your main domain (you should replace with a real commercial cert at some point)
+What do these commands do? The first command will create two Certificate Authorities, one that clients will use to authenticate with the servers and one for backend servers to authenticate with each other. The second command creates a Certificate Signing Request suitable for submission to a commercial CA. It also creates two "dummy" files for you to use temporarily:
 
-    $ leap cert csr
+* `files/cert/example.org.crt` -- This is a "dummy" certificate for your domain that can be used temporarily for testing. Once you get a real certificate from a CA, you should replace this file.
+* `files/cert/commercial_ca.crt` -- This is "dummy" CA cert the corresponds to the dummy domain certificate. Once you replace the domain certificate, also replace this file with the CA cert from the real Certificate Authority.
 
-To see details about the keys and certs that the prior two commands created, you can use `leap inspect` like so:
+If you plan to run a real service provider, see important information on [[managing keys and certificates => keys-and-certificates]].
 
-    $ leap inspect files/ca/ca.crt
+Add a node to the provider
+==================================================
 
-Create the Diffie-Hellman parameters file, needed for forward secret OpenVPN ciphers:
+A "node" is a server that is part of your infrastructure. Every node can have one or more services associated with it. We will now add a single node with two services, "webapp" and "couchdb".
 
-    $ leap cert dh
+You have two choices for node type: a real node or a local node.
 
-NOTE: the files `files/ca/*.key` are extremely sensitive and must be carefully protected. The other key files are much less sensitive and can simply be regenerated if needed.
+* Real Node: A real node is any physical or paravirtualized server, including KVM, Xen, OpenStack Compute, Amazon EC2, but not VirtualBox or OpenVZ (VirtualBox and OpenVZ use a more limited form of virtualization). The server must be running Debian Jessie.
+* Local Node: A local node is a virtual machine created by Vagrant, useful for local testing on your workstation.
 
+Getting Vagrant working can be a pain and is [[covered in other tutorials => vagrant]]. If you have a real server available, we suggest you try this tutorial with a real node first.
 
-Edit provider.json configuration
---------------------------------------
+### Option A: Add a real node
 
-There are a few required settings in provider.json. At a minimum, you must have:
+Note: Installing LEAP Platform on this server will potentially destroy anything you have previously installed on this machine.
 
-    {
-      "domain": "example.org",
-      "name": "Example",
-      "contacts": {
-        "default": "email1@example.org"
-      }
-    }
+Create a node, with the services "webapp" and "couchdb":
 
-For a full list of possible settings, you can use `leap inspect` to see how provider.json is evaluated after including the inherited defaults:
+    workstation$ leap node add wildebeest ip_address:x.x.x.w services:webapp,couchdb
 
-    $ leap inspect provider.json
+NOTE: replace x.x.x.x with the actual IP address of this server.
 
+### Option B: Add a local node
 
-Setup the provider's nodes and services
----------------------------------------
+Create a node, with the services "webapp" and "couchdb", and then start the local virtual machine:
 
-A "node" is a server that is part of your infrastructure. Every node can have one or more services associated with it. Some nodes are "local" and used only for testing, see [Development](development) for more information.
+    workstation$ leap node add --local wildebeest services:webapp,couchdb
+    workstation$ leap local start wildebeest
 
-Create a node, with the service "webapp":
+It will take a while to download the Virtualbox base box and create the virtual machine.
 
-    $ leap node add wildebeest ip_address:x.x.x.w services:webapp tags:production
+Deploy your provider
+=========================================
 
-NOTE: replace x.x.x.w with the actual IP address of this node
-
-This created a node configuration file in `nodes/wildebeest.json`, but it did not do anything else. It also added the 'tag' called 'production' to this node. Tags allow us to conveniently group nodes together. When creating nodes, you should give them the tag 'production' if the node is to be used in your production infrastructure.
-
-The web application and the VPN nodes require a database, so lets create the database server node:
-
-    $ leap node add cheetah ip_address:x.x.x.x services:couchdb tags:production
-
-NOTE: replace x.x.x.x with the actual IP address of this node
-
-Now we need the OpenVPN gateway, so lets create that node:
-
-    $ leap node add ostrich ip_address:x.x.x.y openvpn.gateway_address:x.x.x.z services:openvpn tags:production
-
-NOTE: replace x.x.x.y with the IP address of the machine, and x.x.x.z with the second IP. openvpn gateways must be assigned two IP addresses, one for the host itself and one for the openvpn gateway. We do this to prevent incoming and outgoing VPN traffic on the same IP. Without this, the client might send some traffic to other VPN users in the clear, bypassing the VPN.
-
-
-Setup DNS
----------
-
-Now that you have the nodes configured, you should create the DNS entries for these nodes.
-
-Set up your DNS with these hostnames:
-
-    $ leap list --print ip_address,domain.full,dns.aliases
-       cheetah  x.x.x.w, cheetah.example.org, null
-    wildebeest  x.x.x.x, wildebeest.example.org, api.example.org
-       ostrich  x.x.x.y, ostrich.example.org, null
-
-Alternately, you can adapt this zone file snippet:
-
-    $ leap compile zone
-
-If you cannot edit your DNS zone file, you can still test your provider by adding entries to your local resolver hosts file (`/etc/hosts` for linux):
-
-    x.x.x.w cheetah.example.org
-    x.x.x.x wildebeest.example.org api.example.org example.org
-    x.x.x.y ostrich.example.org
-
-Please don't forget about these entries, they will override DNS queries if you setup your DNS later.
-
-
-Initialize the nodes
---------------------
+### Initialize the node
 
 Node initialization only needs to be done once, but there is no harm in doing it multiple times:
 
-    $ leap node init production
+    workstation$ leap node init wildebeest
 
-This will initialize all nodes with the tag "production". When `leap node init` is run, you will be prompted to verify the fingerprint of the SSH host key and to provide the root password of the server(s). You should only need to do this once.
+This will initialize the node `wildebeest`.
 
-If you prefer, you can initalize each node, one at a time:
+For non-local nodes, when `leap node init` is run, you will be prompted to verify the fingerprint of the SSH host key and to provide the root password of the server(s). You should only need to do this once.
 
-    $ leap node init wildebeest
-    $ leap node init cheetah
-    $ leap node init ostrich
+### Deploy to the node
 
-Deploy the LEAP platform to the nodes
---------------------
+The next step is to deploy the LEAP platform to your node. [Deployment can take a while to run](https://xkcd.com/303/), especially on the first run, as it needs to update the packages on the new machine.
 
-Now you should deploy the platform recipes to the nodes. [Deployment can take a while to run](http://xkcd.com/303/), especially on the first run, as it needs to update the packages on the new machine.
-
-*Important notes:* currently nodes must be deployed in a certain order. The underlying couch database node(s) must be deployed first, and then all other nodes.
-
-    $ leap deploy cheetah
+    workstation$ leap deploy wildebeest
 
 Watch the output for any errors (in red), if everything worked fine, you should now have your first running node. If you do have errors, try doing the deploy again.
 
-However, to deploy our three-node openvpn setup, we need the database and LEAP web application requires a database to run, so let's deploy to the couchdb and openvpn nodes:
+### Setup DNS
 
-    $ leap deploy wildebeest
-    $ leap deploy ostrich
+The next step is to configure the DNS for your provider. For testing purposes, you can just modify your `/etc/hosts` file. Please don't forget about these entries, they will override DNS queries if you setup your DNS later. For a list of what entries to add to `/etc/hosts`, run this command:
 
+    workstation$ leap compile hosts
 
-What is going on here?
---------------------------------------------
+Alternately, if you have access to modify the DNS zone entries for your domain:
 
-First, some background terminology:
+    workstation$ leap compile zone
 
-* **puppet**: Puppet is a system for automating deployment and management of servers (called nodes).
-* **hiera files**: In puppet, you can use something called a 'hiera file' to seed a node with a few configuration values. In LEAP, we go all out and put *every* configuration value needed for a node in the hiera file, and automatically compile a custom hiera file for each node.
+NOTE: The resulting zone file is incomplete because it is missing a serial number. Use the output of `leap compile zone` as a guide, but do not just copy and paste the output. Also, the `compile zone` output will always exclude mention of local nodes.
 
-When you run `leap deploy`, a bunch of things happen, in this order:
-
-1. **Compile hiera files**: The hiera configuration file for each node is compiled in YAML format and saved in the directory `hiera`. The source material for this hiera file consists of all the JSON configuration files imported or inherited by the node's JSON config file.
-* **Copy required files to node**: All the files needed for puppet to run are rsync'ed to each node. This includes the entire leap_platform directory, as well as the node's hiera file and other files needed by puppet to set up the node (keys, binary files, etc).
-* **Puppet is run**: Once the node is ready, leap connects to the node via ssh and runs `puppet apply`. Puppet is applied locally on the node, without a daemon or puppetmaster.
-
-You can run `leap -v2 deploy` to see exactly what commands are being executed.
-
+The DNS method will not work for local nodes created with Vagrant.
 
 Test that things worked correctly
 =================================
 
-You should now have three machines with the LEAP platform deployed to them, one for the web application, one for the database and one for the OpenVPN gateway.
-
 To run troubleshooting tests:
 
-    leap test
+    workstation$ leap test
 
-If you want to confirm for yourself that things are working, you can perform the following manual tests.
+Alternately, you can run these same tests from the server itself:
 
-### Access the web application
+    workstation$ leap ssh wildebeest
+    wildebeest# run_tests
 
-In order to connect to the web application in your browser, you need to point your domain at the IP address of the web application node (named wildebeest in this example).
+Create an administrator
+===============================
 
-There are a lot of different ways to do this, but one easy way is to modify your `/etc/hosts` file. First, find the IP address of the webapp node:
+Assuming that you set up your DNS or `/etc/hosts` file, you should be able to load `https://example.org` in your web browser (where example.org is whatever domain name you actually used).
 
-    $ leap list webapp --print ip_address
+Your browser will complain about an untrusted cert, but for now just bypass this. From there, you should be able to register a new user and login.
 
-Then modify `/etc/hosts` like so:
+Once you have created a user, you can now make this user an administrator. For example, if you created a user `kangaroo`, you would create the file `services/webapp.json` with the following content:
 
-    x.x.x.w   leap.example.org
+    {
+        "webapp": {
+            "admins": ["kangaroo"]
+        }
+    }
 
-Replacing 'leap.example.org' with whatever you specified as the `domain` in the `leap new` command.
+Save that file and run `leap deploy` again. When you next log on to the web application, the user kangaroo will now be an admin.
 
-Next, you can connect to the web application either using a web browser or via the API using the LEAP client. To use a browser, connect to https://leap.example.org (replacing that with your domain). Your browser will complain about an untrusted cert, but for now just bypass this. From there, you should be able to register a new user and login.
+If you want to restrict who can register a new user, see [[webapp]] for configuration options.
 
-### Use the VPN
-
-You should be able to simply test that the OpenVPN gateway works properly by doing the following:
-
-    $ leap test init
-    $ sudo openvpn test/openvpn/production_unlimited.ovpn
-
-Or, you can use the LEAP client (called "bitmask") to connect to your new provider, create a user and then connect to the VPN.
-
-
-Additional information
+What is next?
 ======================
 
-It is useful to know a few additional things.
+Add an end-user service
+-------------------------------
 
-Useful commands
+You should now have a minimal service provider with a single node. This service provider is pointless at the moment, because it does not include any end-user services like VPN or email. To add one of these services, continue with one of the following tutorials:
+
+* [[single-node-email]]
+* [[single-node-vpn]]
+
+Learn more
 ---------------
 
-Here are a few useful commands you can run on your new local nodes:
+We have only just scratched the surface of the possible ways to configure and deploy your service provider. Your next step should be:
 
-* `leap ssh wildebeest` -- SSH into node wildebeest (requires `leap node init wildebeest` first).
-* `leap list` -- list all nodes.
-* `leap list production` -- list only those nodes with the tag 'production'
-* `leap list --print ip_address` -- list a particular attribute of all nodes.
-* `leap cert update` -- generate new certificates if needed.
-
-See the full command reference for more information.
-
-Node filters
--------------------------------------------
-
-Many of the `leap` commands take a "node filter". You can use a node filter to target a command at one or more nodes.
-
-A node filter consists of one or more keywords, with an optional "+" before each keyword.
-
-* keywords can be a node name, a service type, or a tag.
-* the "+" before the keyword constructs an AND condition
-* otherwise, multiple keywords together construct an OR condition
-
-Examples:
-
-* `leap list openvpn` -- list all nodes with service openvpn.
-* `leap list openvpn +production` -- only nodes of service type openvpn AND tag production.
-* `leap deploy webapp openvpn` -- deploy to all webapp OR openvpn nodes.
-* `leap node init ostrich` -- just init the node named ostrich.
-
-Keep track of your provider configurations
-------------------------------------------
-
-You should commit your provider changes to your favorite VCS whenever things change. This way you can share your configurations with other admins, all they have to do is to pull the changes to stay up to date. Every time you make a change to your provider, such as adding nodes, services, generating certificates, etc. you should add those to your VCS, commit them and push them to where your repository is hosted.
-
-Note that your provider directory contains secrets! Those secrets include passwords for various services. You do not want to have those passwords readable by the world, so make sure that wherever you are hosting your repository, it is not public for the world to read.
-
-What's next
------------------------------------
-
-Read the [LEAP platform guide](guide) to learn about planning and securing your infrastructure.
-
+* Read [[getting-started]] for more details on using the LEAP platform.
+* See [[commands]] for a list of possible commands.

@@ -17,7 +17,13 @@ Puppet
 Where do i find the time a server was last deployed ?
 -----------------------------------------------------
 
-The puppet state file on the node indicates the last puppetrun:
+Run:
+
+    leap history FILTER
+
+This will tail the log file `/var/log/leap/deploy-summary.log`.
+
+If that command fails, you can manually check the puppet state file on the node indicates the last puppetrun:
 
     ls -la /var/lib/puppet/state/state.yaml
 

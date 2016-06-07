@@ -8,15 +8,15 @@ At any time, you can run troubleshooting tests on the nodes of your provider inf
 
 To run tests on FILTER node list:
 
-    leap test run FILTER
+    workstation$ leap test run FILTER
 
 For example, you can also test a single node (`leap test elephant`); test a specific environment (`leap test development`), or any tag (`leap test soledad`).
 
 Alternately, you can run test on all nodes (probably only useful if you have pinned the environment):
 
-    leap test
+    workstation$ leap test
 
-The tests that are performed are located in the platform under the tests directory. 
+The tests that are performed are located in the platform under the tests directory.
 
 ## Testing with the bitmask client
 
@@ -50,16 +50,16 @@ In order to set up a monitoring node, you simply add a `monitor` service tag to 
 
 After deploying, this node will regularly poll every node to ask for the status of various health checks. These health checks include the checks run with `leap test`, plus many others.
 
-We use [Nagios](http://www.nagios.org/) together with [Check MK agent](https://en.wikipedia.org/wiki/Check_MK) for running checks on remote hosts.
+We use [Nagios](https://www.nagios.org/) together with [Check MK agent](https://en.wikipedia.org/wiki/Check_MK) for running checks on remote hosts.
 
 One nagios installation will monitor all nodes in all your environments. You can log into the monitoring web interface via [https://DOMAIN/nagios3/](https://DOMAIN/nagios3/). The username is `nagiosadmin` and the password is found in the secrets.json file in your provider directory.
 Nagios will send out mails to the `contacts` address provided in `provider.json`.
 
 
-## Nagios Frontents
+## Nagios Frontends
 
 There are other ways to check and get notified by Nagios besides regularly checking the Nagios webinterface or reading email notifications. Check out the [Frontends (GUIs and CLIs)](http://exchange.nagios.org/directory/Addons/Frontends-%28GUIs-and-CLIs%29) on the Nagios project website.
-A recommended status tray application is [Nagstamon](https://nagstamon.ifw-dresden.de/), which is available for Linux, MacOS X and Windows. It can not only notify you of hosts/services failures, you can also acknoledge or recheck these with it.
+A recommended status tray application is [Nagstamon](https://nagstamon.ifw-dresden.de/), which is available for Linux, MacOS X and Windows. It can not only notify you of hosts/services failures, you can also acknowledge or recheck them.
 
 ### Log Monitoring
 

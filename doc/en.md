@@ -1,8 +1,16 @@
 @title = 'LEAP Platform for Service Providers'
+@summary = "The LEAP Platform is set of complementary packages and server recipes to automate the maintenance of LEAP services in a hardened Debian environment."
 @nav_title = 'Provider Platform'
-@toc = false
+@this.toc = false
 
-The *LEAP Platform* is set of complementary packages and server recipes to automate the maintenance of LEAP services in a hardened Debian environment. Its goal is to make it as painless as possible for sysadmins to deploy and maintain a service provider's infrastructure for secure communication.
+Its goal is to make it as painless as possible for sysadmins to deploy and maintain a service provider's infrastructure for secure communication.
+
+**REQUIREMENTS** -- Before you begin, make sure you meet these requirements:
+
+* *Debian Servers*: Servers that you deploy to must be running **Debian Jessie**, and no other distribution or version.
+* *Real or Paravirtualized Servers*: Servers must be real machines or paravirtualized VMs (e.g. KVM, Xen, OpenStack, AWS, Google Compute). OS level virtualization is not supported (e.g. OpenVZ, Linux-VServer, etc), nor are system emulators (VirtualBox, QEMU, etc).
+* *Your Workstation*: You must have a Linux or Mac computer to deploy from (this can be a headless machine with no GUI). Windows is not supported (Cygwin would probably work, but is untested).
+* *Your Own Domain*: You must own a domain name. Before your provider can be put into production, you will need to make modifications to the DNS for the provider's domain.
 
 The LEAP Platform consists of three parts, detailed below:
 
@@ -24,7 +32,9 @@ LEAP's platform recipes are distributed as a git repository: `https://leap.se/gi
 The provider instance
 ---------------------
 
-A provider instance is a directory tree (typically tracked in git) containing all the configurations for a service provider's infrastructure. A provider instance primarily consists of:
+A provider instance is a directory tree (typically tracked in git) containing all the configurations for a service provider's infrastructure. A provider instance **lives on your workstation**, not on the server.
+
+A provider instance primarily consists of:
 
 * A pointer to the platform recipes.
 * A global configuration file for the provider.
@@ -41,13 +51,17 @@ A minimal provider instance directory looks like this:
         ├── files/              # keys, certificates, and other files.
         └── users/              # public key information for privileged sysadmins.
 
-
 A provider instance directory contains everything needed to manage all the servers that compose a provider's infrastructure. Because of this, any versioning tool and development work-flow can be used to manage your provider instance.
 
 The `leap` command line tool
 ----------------------------
 
-The `leap` [command line tool](commands) is used by sysadmins to manage everything about a service provider's infrastructure. Except when creating an new provider instance, `leap` is run from within the directory tree of a provider instance.
+The `leap` [command line tool](commands) is used by sysadmins to manage everything about a service provider's infrastructure.
+
+Keep these rules in mind:
+
+* `leap` is run on your workstation: The `leap` command is always run locally on your workstation, never on a server you are deploying to.
+* `leap` is run from within a provider instance: The `leap` command requires that the current working directory is a valid provider instance, except when running `leap new` to create a new provider instance.
 
 The `leap` command line has many capabilities, including:
 
@@ -55,31 +69,14 @@ The `leap` command line has many capabilities, including:
 * Manage keys and certificates.
 * Query information about the node configurations.
 
-Traditional system configuration automation systems, like [Puppet](https://puppetlabs.com/puppet/puppet-open-source/) or [Chef](http://www.opscode.com/chef/), deploy changes to servers using a pull method. Each server pulls a manifest from a central master server and uses this to alter the state of the server.
+Everything about your provider is managed by editing JSON configuration files and running `leap` commands.
 
-Instead, the `leap` tool uses a masterless push method: The sysadmin runs `leap deploy` from the provider instance directory on their desktop machine to push the changes out to every server (or a subset of servers). LEAP still uses Puppet, but there is no central master server that each node must pull from.
-
-One other significant difference between LEAP and typical system automation is how interactions among servers are handled. Rather than store a central database of information about each server that can be queried when a recipe is applied, the `leap` command compiles static representation of all the information a particular server will need in order to apply the recipes. In compiling this static representation, `leap` can use arbitrary programming logic to query and manipulate information about other servers.
-
-These two approaches, masterless push and pre-compiled static configuration, allow the sysadmin to manage a set of LEAP servers using traditional software development techniques of branching and merging, to more easily create local testing environments using virtual servers, and to deploy without the added complexity and failure potential of a master server.
-
-The `leap` command line tool is distributed as a git repository: `https://leap.se/git/leap_cli`. It can be installed with `sudo gem install leap_cli`.
-
-Tip: With rubygems, you can always specify the gem version as the first argument to any executable installed by rubygems. For example:
-
-    sudo gem install leap_cli --version 1.6.2
-    sudo gem install leap_cli --version 1.7.2
-    leap _1.6.2_ --version
-    => leap 1.6.2, ruby 2.1.2
-    leap _1.7.2_ --version
-    => leap 1.7.2, ruby 2.1.2
-
-Getting started
+What is next?
 ----------------------------------
 
 We recommend reading the platform documentation in the following order:
 
-1. [Quick start tutorial](tutorials/quick-start).
-2. [Platform Guide](platform/guide).
-3. [Configuration format](platform/config).
-4. The `leap` [command reference](platform/commands).
+1. [[quick-start]]
+2. [[getting-started]]
+3. [[platform/guide]]
+
