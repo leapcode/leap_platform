@@ -69,10 +69,10 @@ class site_postfix::mx {
       value => '$alias_maps';
     # setup clamav and opendkim on smtpd
     'smtpd_milters':
-      value => 'unix:/run/clamav/milter.ctl,inet:localhost:8891';
+      value => 'unix:/run/clamav/milter.ctl,unix:/run/opendkim/opendkim.sock';
     # setup opendkim for smtp (non-smtpd) outgoing mail
     'non_smtpd_milters':
-      value => 'inet:localhost:8891';
+      value => 'unix:/run/opendkim/opendkim.sock';
     'milter_default_action':
       value => 'accept';
     # Make sure that the right values are set, these could be set to different
