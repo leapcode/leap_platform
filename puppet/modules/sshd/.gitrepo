@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_sshd
+	branch = master
+	commit = 76f4f872f81209a52df2205fd88b5619df58f003
+	parent = d300adc9344dd0b62525159eff0c150de463a673
+	cmdver = 0.3.0
