@@ -1,0 +1,27 @@
+# git-daemon config file
+
+# location of the lockfile
+#LOCKFILE=/var/lock/subsys/git-daemon
+
+# which directory to server
+#GITDIR=/srv/git
+
+# do we serve vhosts?
+# setting this to yes assumes that you 
+# have in $GITDIR per vhost to serve
+# a subdirectory containing their repos.
+# for example:
+# - /srv/git/git.example.com
+# - /srv/git/git.example.org
+#GITVHOST=no
+GITVHOST=yes
+
+# the user git-daemon should run with
+#GITUSER=nobody
+
+# options for the daemon
+#OPTIONS="--reuseaddr --verbose --detach"
+
+# location of the daemon
+#GITDAEMON=/usr/bin/git-daemon
+
