@@ -1,0 +1,5 @@
+// This file is managed by Puppet
+// all local modifications will be overwritten
+
+Acquire::http { Proxy "<%= @proxy %>:<%= @port %>"; };
+Acquire::HTTP::Proxy::bugs.debian.org "DIRECT";
