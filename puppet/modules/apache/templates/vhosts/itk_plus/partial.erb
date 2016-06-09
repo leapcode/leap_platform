@@ -1,0 +1,31 @@
+
+  ProxyPreserveHost On
+  ProxyRequests off
+<% if vhost_part == :ssl -%>
+  SSLProxyEngine On
+<%   if run_mode.to_s == 'static-itk' -%>
+  ProxyPassMatch ^/(.*\.<%= @passing_extension %>/?.*)$ https://127.0.0.1/$1
+<%   else -%>
+  ProxyPass / https://127.0.0.1/
+<%   end -%>
+  ProxyPassReverse / https://127.0.0.1/
+<% else -%>
+<%   if run_mode.to_s == 'static-itk' -%>
+  ProxyPassMatch ^/(.*\.<%= @passing_extension %>/?.*)$ http://127.0.0.1/$1
+<%   else -%>
+  ProxyPass / http://127.0.0.1/
+<%   end -%>
+  ProxyPassReverse / http://127.0.0.1/
+<% end -%>
+
+<% if @run_mode.to_s == 'static-itk' && (@ssl_mode.to_s != 'force' || vhost_part == :ssl) -%>
+  <Directory "<%= @documentroot %>/">
+    AllowOverride <%= @allow_override %>
+<%   if @options.to_s != 'absent' || @do_includes.to_s == 'true' -%>
+    Options <% unless @options.to_s == 'absent' -%><%= @options %><% end -%><% if @do_includes.to_s == 'true' && !@options.include?('+Includes') -%> +Includes<% end -%>
+<%   end -%>
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+  </Directory>
+<% end -%>
+
+

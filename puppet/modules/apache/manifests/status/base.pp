@@ -1,0 +1,1 @@
+class apache::status::base {}

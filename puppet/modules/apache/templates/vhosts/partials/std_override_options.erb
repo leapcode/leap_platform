@@ -1,0 +1,4 @@
+    AllowOverride <%= @allow_override %>
+<% if @options.to_s != 'absent' || @do_includes.to_s == 'true' || @run_mode == 'fcgid' -%>
+    Options <%- unless @options.to_s == 'absent' -%><%= @options %><% end -%><% if @do_includes.to_s == 'true' && !@options.include?('+Includes') -%> +Includes<% end -%><% if @run_mode == 'fcgid' && !@options.include?('+ExecCGI') -%> +ExecCGI<% end -%>
+<% end -%>

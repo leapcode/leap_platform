@@ -1,0 +1,8 @@
+  <Proxy *>
+    Order deny,allow
+    Allow from all
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+  </Proxy>
+  ProxyRequests Off
+  ProxyPass        /   <%= @options %>/
+  ProxyPassReverse /   <%= @options %>/
