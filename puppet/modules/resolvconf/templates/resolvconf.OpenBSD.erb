@@ -1,0 +1,5 @@
+# managed by puppet
+lookup file bind
+<% scope.lookupvar('resolvconf::nameservers').each do |nameserver| -%>
+nameserver <%= nameserver %> 
+<% end -%>
