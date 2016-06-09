@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_openvpn
+	branch = master
+	commit = 26d4edc669853a268a65d2cbbfb42c19f1333de7
+	parent = 1e1b4028c969e41574955a835bbfcdc27a7c621f
+	cmdver = 0.3.0
