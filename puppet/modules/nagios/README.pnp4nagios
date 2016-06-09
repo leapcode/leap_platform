@@ -1,0 +1,65 @@
+PNP4Nagios integration
+======================
+
+As of 2012/01 debian packages for pnp4nagios are availible from lenny-backports on.
+
+See http://docs.pnp4nagios.org/pnp-0.6/start for installation notes.
+
+Integration in the nagios/icinga webinterface is configured by including either
+the nagios::pnp4nagios or the nagios::pnp4nagios::popup class, the later one
+includes fancy popups when you hoover over the extra service action image.  For
+hosts you need to use the host-pnp definition, for services the srv-pnp def.
+i.e.
+
+    @@nagios_service { "ping_example_node":
+        use => "generic-service,srv-pnp",
+        ...
+
+    nagios_host { 'example_node':
+            use => 'generic-host,host-pnp',
+            ...
+
+In the default config files the "Bulk Mode with NPCD" is used
+(see http://docs.pnp4nagios.org/en/pnp-0.6/config for more infos about the different
+modes).
+
+Include the nagios::pnp4nagios::popup class for fancy popups when you hoover over
+the extra service action image.
+
+
+Please include this in your nagios.cfg:
+
+process_performance_data=1
+
+#http://docs.pnp4nagios.org/en/pnp-0.6/config#bulk_mode_mit_npcd 
+#
+# Service Performance-Data
+#
+service_perfdata_file=/var/lib/nagios3/service-perfdata
+service_perfdata_file_template=DATATYPE::SERVICEPERFDATA\tTIMET::$TIMET$\tHOSTNAME::$HOSTNAME$\tSERVICEDESC::$SERVICEDESC$\tSERVICEPERFDATA::$SERVICEPERFDATA$\tSERVICECHECKCOMMAND::$SERVICECHECKCOMMAND$\tHOSTSTATE::$HOSTSTATE$\tHOSTSTATETYPE::$HOSTSTATETYPE$\tSERVICESTATE::$SERVICESTATE$\tSERVICESTATETYPE::$SERVICESTATETYPE$
+service_perfdata_file_mode=a
+service_perfdata_file_processing_interval=15
+service_perfdata_file_processing_command=process-service-perfdata-file-pnp4nagios-bulk-npcd
+
+#
+# Host Performance-Data
+# 
+host_perfdata_file=/var/lib/nagios3/host-perfdata
+host_perfdata_file_template=DATATYPE::HOSTPERFDATA\tTIMET::$TIMET$\tHOSTNAME::$HOSTNAME$\tHOSTPERFDATA::$HOSTPERFDATA$\tHOSTCHECKCOMMAND::$HOSTCHECKCOMMAND$\tHOSTSTATE::$HOSTSTATE$\tHOSTSTATETYPE::$HOSTSTATETYPE$
+host_perfdata_file_mode=a
+host_perfdata_file_processing_interval=15
+host_perfdata_file_processing_command=process-host-perfdata-file-pnp4nagios-bulk-npcd
+
+
+For hosts you need to use the host-pnp definition, for services the srv-pnp def.
+i.e.
+
+    @@nagios_service { "ping_example_node":
+        use => "generic-service,srv-pnp",
+        ...
+
+    nagios_host { 'example_node':
+            use => 'generic-host,host-pnp',
+            ...
+
+
