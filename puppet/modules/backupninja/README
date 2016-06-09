@@ -1,0 +1,202 @@
+Backupninja Module
+-------------------
+
+This module helps you configure all of your backups with puppet, using
+backupninja!
+
+!! UPGRADE NOTICE !!
+
+If you were previously using this module, some pieces have changed,
+and you need to carefully change your use of them, or you will find
+your backups could stop working or get duplicated.
+
+The backupninja::client class has been renamed to backupninja, and is
+now *required* in all node manifests. Make sure the backupninja class
+is now declared in all your node manifests! This new class now defines
+defaults which were previously provided by backupninja::client::defaults,
+and can now be overridden thanks to the brand new technology of class
+parameters. This class also manages the backupninja configuration file,
+replacing the backupninja::config ressource.
+
+The backupninja::server class now takes parameters, replacing several
+global variables such as $backupdir, $backupserver_tag and
+$nagios_server. The $manage_nagios parameter also replaces the
+$use_nagios global.
+
+As for handlers, they don't include the backupninja::client anymore and
+now read several default values from the backupninja base class. The
+$installkey parameter used in several handlers has been renamed to
+$keymanage, to keep in line with the base class parameter.
+
+If you were using the rdiff-backup handler, you need to read the
+following section carefully.
+
+Changes to the rdiff-backup handler
+-----------------------------------
+
+You will need to make sure you change all of your "$directory"
+parameters to be "$home" instead, and on your backupserver you will need
+to move all of your backups into "$home"/rdiff-backup. Previously, they
+were put in "$directory", which doubled as the home for the user that
+was created. This caused problems with rdiff-backup because of dot files
+and other things which were not part of any rdiff-backup.
+
+The rdiff resource name is now used as the subdirectory where rdiff
+backups are sent. This was previously hardcoded to "rdiff-backup", but
+in order to support multiple rdiff backups per host, we now use the
+resource name. So if you were using the following resource:
+
+    backupninja::rdiff { 'main': }
+
+You will want to use the following resource:
+
+    backupninja::rdiff { 'rdiff-backup': }
+    file { '/etc/backup.d/90_main.rdiff': ensure => absent; }
+
+Otherwise your backups may be duplicated!
+
+Changes to nagios integration
+-----------------------------
+
+The default nagios passive service name has changed from "backups" to
+"backups-${name}". If you want it to be automatically created on your
+nagios host, you will need to set $backupninja::manage_nagios to true.
+on the client.
+
+Use the following resource to remove the old "backups" passive service.
+
+    nagios::service { 'backups': ensure => absent }
+
+Getting started
+---------------
+
+This module requires Puppet versions 2.7 and up.
+
+An up-to-date version of the puppet-stdlib module is also required.
+
+Configure your backup server
+----------------------------
+
+Now you will need to configure a backup server by adding the following
+to your node definition for that server:
+
+  include backupninja::server
+
+The default configuration will store backup data in the "/backup"
+directory. To change this you may declare the class with a "backupdir"
+parameter:
+
+  class { 'backupninja::server':
+    backupdir => '/mnt/backupdata'
+  }
+
+By configuring a backupninja::server, this module will automatically
+create sandboxed users on the server for each client for their
+backups.
+
+Configure your backup clients
+-----------------------------
+
+First, you need to include the backupninja class or declare it with
+custom parameters:
+
+  class { 'backupninja':
+	loglvl => 3,
+	usecolors => false,
+	reportsuccess => false,
+	reportwarning => true,
+    ensure_backupninja_version => '1.0.1-1',
+    ensure_rdiffbackup_version => '1.2.8-7'
+  }
+
+In this case, the module will make sure that the backupninja package
+is installed (using puppet's ensure parameter language) and create the
+/etc/backupninja.conf configuration file.
+
+If you need to specify a specific version of either backupninja itself,
+or the specific programs that the handler class installs, you can
+specify the version you need installed by providing a class parameter,
+as shown in the example.
+
+Configuring handlers
+--------------------
+
+Depending on which backup method you want to use on your client, you
+can simply specify some configuration options for that handler that are
+necessary for your client.
+
+Each handler has its own configuration options necessary to make it
+work, each of those are available as puppet parameters. You can see
+the handler documentation, or look at the handler puppet files
+included in this module to see your different options.
+
+Included below are some configuration examples for different handlers.
+
+* An example mysql handler configuration:
+
+backupninja::mysql { 'all_databases':
+	user => root,
+	backupdir => '/var/backups',
+	compress => true,
+	sqldump => true
+}
+
+* An example rdiff-backup handler configuration:
+
+backupninja::rdiff { 'backup_all':
+	directory => '/media/backupdisk',
+	include => ['/var/backups', '/home', '/var/lib/dpkg/status'],
+	exclude => '/home/*/.gnupg'
+}
+
+* A remote rdiff-backup handler:
+
+backupninja::rdiff { 'main':
+    host => 'backup.example.com',
+    type => 'remote',
+    directory => "/backup/${::fqdn}",
+    user => "backup-${::hostname}",
+}
+
+Automatic creation of ssh-keys for duplicity
+--------------------------------------------
+
+backupninja::duplicity can be used to
+
+- create an ssh keypair for a client
+- place the keypair on the puppetmaster in a given location
+- place the keypair in /root/.ssh on the client
+
+i.e.:
+
+  backupninja::duplicity { "duplicity_${::fqdn}":
+    sshoptions        => "-oIdentityFile=/root/.ssh/backupninja_${::hostname}_id_rsa",
+    desthost          => 'HOST',
+    destdir           => "/var/backup/backupninja/${::fqdn}",
+    destuser          => "backupninja_${::hostname}",
+    encryptkey        => 'KEYID',
+    password          => 'PW',
+    backupkeystore    => 'puppet:///keys',
+    backupkeystorefspath => '/etc/puppet/modules/keys/files',
+    backupkeydestname => "backupninja_${::hostname}_id_rsa",
+    createkey         => true,
+    installkey        => true,
+    ...
+  }
+
+
+Nagios alerts about backup freshness
+------------------------------------
+
+If you set the $backupninja::server::nagios_server variable to be the
+name of your nagios server, then a passive nagios service gets setup so
+that the backup server pushes checks, via a cronjob that calls
+/usr/local/bin/checkbackups.pl, to the nagios server to alert about
+relative backup freshness.
+
+To use this feature a few pre-requisites are necessary:
+
+ . configure nsca on your backup server (not done via puppet yet)
+ . configure nsca on your nagios server (not done via puppet yet)
+ . server backup directories are named after their $fqdn
+ . backups must be under $home/dup, $home/rdiff-backup depending on method

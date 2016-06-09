@@ -1,0 +1,6 @@
+# /etc/cron.d/backupninja -- cron tab entry for package backupninja
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# # run backupninja 
+<%= min %> <%= hour %> <%= dom %> <%= month %> <%= dow %> root if [ -x <%= backupninja_test_cmd %> ]; then <%= backupninja_cmd %>; fi

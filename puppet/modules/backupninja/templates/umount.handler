@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Unmount the specified directory ('dir'), forcefully if necessary.
+
+getconf dir
+
+if ! umount $dir; then
+	warning "Simple unmount failed for $dir; being forceful"
+	if ! umount -f $dir; then
+		warning "Forceful unmount failed for $dir; being lazy"
+		if ! umount -l $dir; then
+			warning "Lazy unmount failed for $dir; you're on your own"
+		fi
+	fi
+fi
