@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_haproxy
+	branch = master
+	commit = af322a73c013f80a958ab7d5d31d0c75cf6d0523
+	parent = beb671c884fc50955fb6a90bf295611500f53970
+	cmdver = 0.3.0
