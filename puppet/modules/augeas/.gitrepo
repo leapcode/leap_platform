@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_augeas
+	branch = master
+	commit = 27e33591776f0226f78877df350d6a52995265d8
+	parent = f957eb690e6ed9f86b19831e01b14a71cf99fbe9
+	cmdver = 0.3.0
