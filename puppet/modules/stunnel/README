@@ -1,0 +1,77 @@
+Overview
+========
+
+This module manages stunnel4. It installs and configures the software, makes
+sure it is running, and enables you to create different stunnels.
+
+
+! Upgrade Notice !
+==================
+
+Previous versions of this module were not using parameterized classes. If you
+were using a previous version, you may need to change how you are using the
+module to accomodate for that. If you were previously setting some stunnel
+variables before including the class, you will now need to pass those variables
+to the class as parameters. If you were just simply doing 'include stunnel',
+then you will not need to change anything.
+
+Classes
+=======
+
+stunnel
+-------
+
+This is the main class which brings you stunnel support. You will need to
+instantiate it by doing the following:
+
+class { 'stunnel': }
+
+Class parameters:
+
+* ensure_version - If this parameter is passed, you can force a particular
+  version of stunnel to be installed, if it is available with your packaging
+  system, for example:
+
+  class { 'stunnel': ensure_version = '3:4.53-1' }
+  
+  If you do not pass this parameter, it will default to just be 'present'.
+
+* startboot (Debian) - This parameter controls if stunnel should be started at
+  boot or not, if you do not pass this paramter, by default it will be started
+
+* default_extra (Debian) - This parameter lets you add arbitrary extra text to
+  the bottom of /etc/default/stunnel4, this can be useful to set ulimit for
+  example
+
+
+Defines
+=======
+
+stunnel::service
+----------------
+
+This define lets you setup any number of stunnels, it allows you to pass every
+stunnel configuration variable (see manifests/server.pp) which will be used to
+create the /etc/stunnel/${name}.conf file, and then notify the stunnel service
+so it will restart.
+
+If you pass $manage_nagios to this define, it will create a nagios::service
+entry for stunnel_${name} which will watch for the appropriate number processes
+with that configuration name
+
+Note that if you need to use some specific logic to decide whether or not to
+create a nagios service check, you should set $manage_nagios to false, and
+use stunnel::service::nagios from within your own manifests.
+
+stunnel::service::nagios
+------------------------
+
+This define creates a nagios service check for a specific tunnel. The resource
+name should be the name of the tunnel's configuration file without the '.conf'
+suffix. For example:
+
+    stunnel::service::nagios { 'carpal': }
+
+The above example would verify that the tunnel defined in
+`/etc/stunnel/carpal.conf'.
+
