@@ -1,0 +1,10 @@
+#
+# Shorewall version 3.4 - Rules File
+#
+# For information on the settings in this file, type "man shorewall-rules"
+#
+# See http://shorewall.net/Documentation.htm#Rules for additional information.
+#
+#############################################################################################################
+#ACTION SOURCE          DEST            PROTO   DEST    SOURCE          ORIGINAL        RATE            USER/   MARK
+#                                               PORT    PORT(S)         DEST            LIMIT           GROUP

@@ -1,0 +1,9 @@
+#
+# Shorewall version 3.4 - Policy File
+#
+# For information about entries in this file, type "man shorewall-policy"
+#
+# See http://shorewall.net/Documentation.htm#Policy for additional information.
+#
+###############################################################################
+#SOURCE         DEST            POLICY          LOG             LIMIT:BURST
