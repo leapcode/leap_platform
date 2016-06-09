@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Run a diff between a couch document specified as the first parameter
+# and the second parameter.
+# Diff returns 0 if there is no difference. This way you can tell the data
+# is already on the couch.
+# Both the couch document and the second paramter will be pretty printed
+# before comparison so differences in spaces etc. do not matter.
+# All keys starting with an underscore on the couch such as _id and _rev
+# will be removed before the comparison - we assume we want to compare
+# the real data, not the metadata about the document as we usually do not
+# know or care about what the id and revision will be.
+
+curl -s --netrc-file /etc/couchdb/couchdb.netrc $1 \
+ | python -mjson.tool \
+ | grep -v '^\s*"_' \
+ | diff -w - <(echo $2 | python -mjson.tool)
