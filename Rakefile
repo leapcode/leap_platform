@@ -1,6 +1,7 @@
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
+require 'puppet-catalog-test'
 
 # return list of modules, either
 # submodules, custom or all modules
@@ -50,6 +51,35 @@ desc "Validate erb templates"
 task :templates do
   Dir['**/templates/**/*.erb'].each do |template|
     sh "erb -P -x -T '-' #{template} | ruby -c" unless template =~ /.*vendor.*/
+  end
+end
+
+desc "Compile hiera config for test_provider"
+task :test_provider_compile do
+  sh "cd tests/puppet/provider; bundle exec leap compile"
+end
+
+namespace :catalog do
+  PuppetCatalogTest::RakeTask.new(:all) do |t|
+    Rake::Task["test_provider_compile"].invoke
+    t.module_paths = ["puppet/modules"]
+    t.manifest_path = File.join("puppet","manifests", "site.pp")
+    t.facts = {
+      "operatingsystem"           => "Debian",
+      "osfamily"                  => "Debian",
+      "operatingsystemmajrelease" => "8",
+      "debian_release"            => "stable",
+      "debian_codename"           => "jessie",
+      "lsbdistcodename"           => "jessie",
+      "concat_basedir"            => "/var/lib/puppet/concat",
+      "interfaces"                => "eth0"
+    }
+
+    # crucial option for hiera integration
+    t.config_dir = File.join("tests/puppet") # expects hiera.yaml to be included in directory
+
+    # t.parser = "future"
+    t.verbose = true
   end
 end
 
