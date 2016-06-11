@@ -18,7 +18,7 @@ class site_webapp::apache {
   include apache::module::removeip
   include site_webapp::common_vhost
 
-  class { 'passenger': use_munin => false }
+  class { 'passenger': }
 
   apache::vhost::file {
     'api':
