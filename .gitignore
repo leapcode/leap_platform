@@ -1,3 +1,5 @@
 /.vagrant
 /puppet/modules/site_custom
-Gemfile.lock
+/Gemfile.lock
+/tests/puppet/provider/hiera
+/tests/puppet/provider/test

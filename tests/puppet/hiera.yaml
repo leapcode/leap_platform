@@ -1,0 +1,15 @@
+---
+:backends:
+  - yaml
+  - puppet
+
+:logger: console
+
+:yaml:
+   :datadir: /home/varac/leap/git/leap_platform/tests/puppet/provider/hiera
+
+:hierarchy:
+  - hiera
+
+:puppet:
+   :datasource: data
