@@ -1,0 +1,33 @@
+before_script:
+  - ruby -v
+  - bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
+  - git submodule update --init
+
+stages:
+  - syntax
+  - rspec
+
+lint:
+  stage: syntax
+  script:
+    - bundle exec rake lint
+
+syntax:
+  stage: syntax
+  script:
+    - bundle exec rake syntax
+
+validate:
+  stage: syntax
+  script:
+    - bundle exec rake validate
+
+templates:
+  stage: syntax
+  script:
+    - bundle exec rake templates
+
+rspec:
+  stage: rspec
+  script:
+    - bundle exec rake spec
