@@ -6,10 +6,10 @@
 :logger: console
 
 :yaml:
-   :datadir: /home/varac/leap/git/leap_platform/tests/puppet/provider/hiera
+   :datadir: tests/puppet/provider/hiera
 
 :hierarchy:
-  - hiera
+  - single
 
 :puppet:
    :datasource: data
