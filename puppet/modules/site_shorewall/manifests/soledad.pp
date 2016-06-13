@@ -1,3 +1,4 @@
+# Setup soledad server
 class site_shorewall::soledad {
 
   $soledad      = hiera('soledad')
@@ -8,7 +9,7 @@ class site_shorewall::soledad {
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_soledad':
     content => "PARAM   -       -       tcp    ${soledad_port}",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall']
   }
 

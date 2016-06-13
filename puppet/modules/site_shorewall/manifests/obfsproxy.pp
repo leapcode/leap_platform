@@ -10,7 +10,7 @@ class site_shorewall::obfsproxy {
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_obfsproxy':
     content => "PARAM   -       -       tcp    ${scram_port} ",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall']
   }
 

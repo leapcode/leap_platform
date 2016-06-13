@@ -1,3 +1,4 @@
+# setup mosh on server
 class site_sshd::mosh ( $ensure = present, $ports = '60000-61000' ) {
 
   package { 'mosh':
@@ -7,7 +8,7 @@ class site_sshd::mosh ( $ensure = present, $ports = '60000-61000' ) {
   file { '/etc/shorewall/macro.mosh':
     ensure  => $ensure,
     content => "PARAM   -       -       udp    ${ports}",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall'];
   }
 

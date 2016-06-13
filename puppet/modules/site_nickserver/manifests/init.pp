@@ -149,7 +149,7 @@ class site_nickserver {
 
   file { '/etc/shorewall/macro.nickserver':
     content => "PARAM   -       -       tcp    ${nickserver_port}",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall'];
   }
 

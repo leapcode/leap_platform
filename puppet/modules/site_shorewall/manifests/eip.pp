@@ -1,3 +1,4 @@
+# Configure shorewall on eip/vpn nodes
 class site_shorewall::eip {
 
   include site_shorewall::defaults
@@ -9,7 +10,7 @@ class site_shorewall::eip {
     content => "PARAM   -       -       tcp     1194
     PARAM   -       -       udp     1194
     ",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall']
   }
 

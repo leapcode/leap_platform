@@ -42,7 +42,7 @@ class site_couchdb {
   include site_couchdb::plain
 
   Class['site_config::default']
-    -> Service['shorewall']
+    -> Exec['shorewall_check']
     -> Exec['refresh_stunnel']
     -> Class['couchdb']
     -> Class['site_couchdb::setup']

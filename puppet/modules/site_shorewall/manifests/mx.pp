@@ -1,3 +1,4 @@
+# Configure leap-mx shorewall rules
 class site_shorewall::mx {
 
   include site_shorewall::defaults
@@ -7,7 +8,7 @@ class site_shorewall::mx {
   # define macro for incoming services
   file { '/etc/shorewall/macro.leap_mx':
     content => "PARAM   -       -       tcp    ${smtpd_ports} ",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall']
   }
 
