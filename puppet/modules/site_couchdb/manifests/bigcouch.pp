@@ -20,7 +20,7 @@ class site_couchdb::bigcouch {
   Class['site_config::default']
     -> Class['site_config::resolvconf']
     -> Class['couchdb::bigcouch::package::cloudant']
-    -> Service['shorewall']
+    -> Exec['shorewall_check']
     -> Exec['refresh_stunnel']
     -> Class['site_couchdb::setup']
     -> Class['site_couchdb::bigcouch::add_nodes']
