@@ -4,30 +4,33 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'puppet-catalog-test'
 
 # return list of modules, either
-# submodules, custom or all modules
+# "external" (submodules or subrepos), "custom" (no submodules nor subrepos)
+# or all modules
 # so we can check each array seperately
 def modules_pattern (type)
-  submodules = Array.new
-  custom_modules = Array.new
-  all_modules = Array.new
+  external = Array.new
+  internal = Array.new
+  all = Array.new
 
   Dir['puppet/modules/*'].sort.each do |m|
-    system("grep -q #{m} .gitmodules")
+
+    # submodule or subrepo ?
+    system("grep -q #{m} .gitmodules 2>/dev/null || test -f #{m}/.gitrepo")
     if $?.exitstatus == 0
-      submodules << m + '/**/*.pp'
+      external << m + '/**/*.pp'
     else
-      custom_modules << m + '/**/*.pp'
+      internal << m + '/**/*.pp'
     end
-    all_modules << m + '/**/*.pp'
+    all << m + '/**/*.pp'
   end
 
   case type
-    when 'submodule'
-      submodules
-    when 'custom'
-      custom_modules
+    when 'external'
+      external
+    when 'internal'
+      internal
     when 'all'
-      all_modules
+      all
   end
 end
 
@@ -37,7 +40,7 @@ exclude_paths = ["**/vendor/**/*", "spec/fixtures/**/*", "pkg/**/*" ]
 Rake::Task[:lint].clear
 PuppetLint::RakeTask.new :lint do |config|
   # only check for custom manifests, not submodules for now
-  config.pattern          = modules_pattern('custom')
+  config.pattern          = modules_pattern('internal')
   config.ignore_paths     = exclude_paths
   config.disable_checks   = ['documentation', '80chars']
   config.fail_on_warnings = false
@@ -54,34 +57,50 @@ task :templates do
   end
 end
 
-desc "Compile hiera config for test_provider"
-task :test_provider_compile do
-  sh "cd tests/puppet/provider; bundle exec leap compile"
-end
-
-namespace :catalog do
-  PuppetCatalogTest::RakeTask.new(:all) do |t|
-    Rake::Task["test_provider_compile"].invoke
-    t.module_paths = ["puppet/modules"]
-    t.manifest_path = File.join("puppet","manifests", "site.pp")
-    t.facts = {
-      "operatingsystem"           => "Debian",
-      "osfamily"                  => "Debian",
-      "operatingsystemmajrelease" => "8",
-      "debian_release"            => "stable",
-      "debian_codename"           => "jessie",
-      "lsbdistcodename"           => "jessie",
-      "concat_basedir"            => "/var/lib/puppet/concat",
-      "interfaces"                => "eth0"
-    }
-
-    # crucial option for hiera integration
-    t.config_dir = File.join("tests/puppet") # expects hiera.yaml to be included in directory
-
-    # t.parser = "future"
-    t.verbose = true
+namespace :platform do
+  desc "Compile hiera config for test_provider"
+  task :provider_compile do
+    sh "cd tests/puppet/provider; bundle exec leap compile"
   end
 end
 
-desc "Run all puppet checks required for CI (syntax , validate, spec, lint)"
-task :test => [:syntax , :validate, :templates, :spec, :lint]
+PuppetCatalogTest::RakeTask.new('catalog') do |t|
+  Rake::Task["platform:provider_compile"].invoke
+  t.module_paths = ["puppet/modules"]
+  t.manifest_path = File.join("puppet","manifests", "site.pp")
+  t.facts = {
+    "operatingsystem"           => "Debian",
+    "osfamily"                  => "Debian",
+    "operatingsystemmajrelease" => "8",
+    "debian_release"            => "stable",
+    "debian_codename"           => "jessie",
+    "lsbdistcodename"           => "jessie",
+    "concat_basedir"            => "/var/lib/puppet/concat",
+    "interfaces"                => "eth0"
+  }
+
+  # crucial option for hiera integration
+  t.config_dir = File.join("tests/puppet") # expects hiera.yaml to be included in directory
+
+  # t.parser = "future"
+  #t.verbose = true
+end
+
+
+namespace :test do
+  desc "Run all puppet syntax checks required for CI (syntax , validate, templates, spec, lint)"
+  task :syntax => [:syntax, :validate, :templates, :spec, :lint]
+
+  desc "Tries to compile the catalog"
+  task :catalog => [:catalog]
+
+  #task :all => [:syntax, :catalog]
+end
+
+# unfortunatly, we cannot have one taks to rule them all
+# because :catalog would conflict with :syntax or :validate:
+# rake aborted!
+# Puppet::DevError: Attempting to initialize global default settings more than once!
+# /home/varac/dev/projects/leap/git/leap_platform/vendor/bundle/ruby/2.3.0/gems/puppet-3.8.7/lib/puppet/settings.rb:261:in `initialize_global_settings'
+#desc "Run all platform tests"
+#task :test => 'test:all'
