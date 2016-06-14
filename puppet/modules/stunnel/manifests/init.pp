@@ -48,7 +48,8 @@ class stunnel (
       recurse => true,
       purge   => true,
       force   => true,
-      source  => undef;
+      source  => undef,
+      notify  => Exec['refresh_stunnel'];
 
     "${stunnel_staging}/bin/refresh_stunnel.sh":
       owner   => 0,
@@ -58,6 +59,7 @@ class stunnel (
   }
 
   exec { 'refresh_stunnel':
-    command     => "${stunnel_staging}/bin/refresh_stunnel.sh"
+    command => "${stunnel_staging}/bin/refresh_stunnel.sh",
+    require => [ Package['stunnel4'], File['/etc/default/stunnel4'] ]
   }
 }

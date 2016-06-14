@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://leap.se/git/puppet_stunnel
 	branch = master
-	commit = 008777bd9837c87a8f501f36dbf2bd4f79c8c868
-	parent = 5ce79e95cd966addb6d66aa0bf03203a7a24f086
+	commit = 523612fb6daff51837423619f5014e62dc835559
+	parent = 9be18eb2681eb5c9047782eaf4e0c6b8c03ce6e6
 	cmdver = 0.3.0
