@@ -27,6 +27,11 @@ templates:
   script:
     - bundle exec rake templates
 
+catalog:
+  stage: syntax
+  script:
+    - bundle exec rake catalog
+
 rspec:
   stage: rspec
   script:
