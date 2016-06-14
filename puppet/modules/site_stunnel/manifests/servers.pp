@@ -40,10 +40,9 @@ define site_stunnel::servers (
     sslversion => 'TLSv1',
     syslog     => 'no',
     output     => $logfile,
-    require    => [
-                   Class['Site_config::X509::Key'],
-                   Class['Site_config::X509::Cert'],
-                   Class['Site_config::X509::Ca'] ];
+    require    => [ Class['Site_config::X509::Key'],
+                    Class['Site_config::X509::Cert'],
+                    Class['Site_config::X509::Ca'] ];
   }
 
   # allow incoming connections on $accept_port

@@ -40,10 +40,9 @@ define site_stunnel::client (
     sslversion => 'TLSv1',
     syslog     => 'no',
     output     => $logfile,
-    require    => [
-                   Class['Site_config::X509::Key'],
-                   Class['Site_config::X509::Cert'],
-                   Class['Site_config::X509::Ca'] ];
+    require    => [ Class['Site_config::X509::Key'],
+                    Class['Site_config::X509::Cert'],
+                    Class['Site_config::X509::Ca'] ];
   }
 
   # define the log files so that we can purge the
