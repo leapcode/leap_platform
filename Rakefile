@@ -88,8 +88,10 @@ end
 
 
 namespace :test do
+  # :syntax:templates fails on squirrel, see https://jenkins.leap.se/view/Platform%20Builds/job/platform_citest/115/console
+  # but we have our own synax test
   desc "Run all puppet syntax checks required for CI (syntax , validate, templates, spec, lint)"
-  task :syntax => [:syntax, :validate, :templates, :spec, :lint]
+  task :syntax => [:"syntax:hiera", :"syntax:manifests", :validate, :templates, :spec, :lint]
 
   desc "Tries to compile the catalog"
   task :catalog => [:catalog]
