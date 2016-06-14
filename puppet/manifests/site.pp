@@ -1,3 +1,7 @@
+$services     = hiera('services', [])
+$services_str = join($services, ', ')
+notice("Services for ${fqdn}: ${services_str}")
+
 node default {
   # set a default exec path
   # the logoutput exec parameter defaults to "on_error" in puppet 3,
@@ -10,10 +14,6 @@ node default {
   Package <| provider == 'apt' |>  {
     install_options => ['--no-install-recommends'],
   }
-
-  $services = hiera('services', [])
-  $services_str = join($services, ', ')
-  notice("Services for ${fqdn}: ${services_str}")
 
   # In the default deployment case, we want to run an 'apt-get dist-upgrade'
   # to ensure the latest packages are installed. This is done by including the
