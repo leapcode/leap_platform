@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://leap.se/git/puppet_shorewall
 	branch = master
-	commit = 34fbca68d478c2edd5f13e74245cf675b5b53303
-	parent = 8181b128c4f8b180c6884ac76ba2b2ed7ee0a4ad
+	commit = 06e89ed3486916ae12186e46b8ec59c8c7c79142
+	parent = ed9efc368356bf7ae2330f4f28bc34cc04009b17
 	cmdver = 0.3.0

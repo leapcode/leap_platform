@@ -52,7 +52,8 @@ class shorewall::rules::libvirt::host (
   }
 
   if $accept_dhcp {
-    shorewall::mangle { 'CHECKSUM:T':
+    shorewall::mangle { "CHECKSUM:T_${vmz_iface}":
+      action          => 'CHECKSUM:T',
       source          => '-',
       destination     => $vmz_iface,
       proto           => 'udp',

@@ -8,25 +8,53 @@ class shorewall(
   $tor_user                   = $::operatingsystem ? {
     'Debian' => 'debian-tor',
     default  => 'tor'
-  }
+  },
+  $zones                      = {},
+  $zones_defaults             = {},
+  $interfaces                 = {},
+  $interfaces_defaults        = {},
+  $hosts                      = {},
+  $hosts_defaults             = {},
+  $policy                     = {},
+  $policy_defaults            = {},
+  $rules                      = {},
+  $rules_defaults             = {},
+  $rulesections               = {},
+  $rulesections_defaults      = {},
+  $masq                       = {},
+  $masq_defaults              = {},
+  $proxyarp                   = {},
+  $proxyarp_defaults          = {},
+  $nat                        = {},
+  $nat_defaults               = {},
+  $blacklist                  = {},
+  $blacklist_defaults         = {},
+  $rfc1918                    = {},
+  $rfc1918_defaults           = {},
+  $routestopped               = {},
+  $routestopped_defaults      = {},
+  $params                     = {},
+  $params_defaults            = {},
+  $tcdevices                  = {},
+  $tcdevices_defaults         = {},
+  $tcrules                    = {},
+  $tcrules_defaults           = {},
+  $tcclasses                  = {},
+  $tcclasses_defaults         = {},
+  $tunnels                    = {},
+  $tunnels_defaults           = {},
+  $rtrules                    = {},
+  $rtrules_defaults           = {},
+  $daily_check                = true,
 ) {
 
   case $::operatingsystem {
-    gentoo: { include shorewall::gentoo }
-    debian: {
-      include shorewall::debian
-      $dist_tor_user = 'debian-tor'
-    }
-    centos: { include shorewall::centos }
-    ubuntu: {
-    case $::lsbdistcodename {
-      karmic: { include shorewall::ubuntu::karmic }
-      default: { include shorewall::debian }
-      }
-    }
+    'Gentoo': { include ::shorewall::gentoo }
+    'Debian','Ubuntu': { include ::shorewall::debian }
+    'CentOS': { include ::shorewall::centos }
     default: {
       notice "unknown operatingsystem: ${::operatingsystem}"
-      include shorewall::base
+      include ::shorewall::base
     }
   }
 
@@ -72,4 +100,24 @@ class shorewall(
       'mangle',
     ]:;
   }
+
+  create_resources('shorewall::zone',$zones,$zones_defaults)
+  create_resources('shorewall::interface',$interfaces,$interfaces_defaults)
+  create_resources('shorewall::host',$hosts,$hosts_defaults)
+  create_resources('shorewall::policy',$policy,$policy_defaults)
+  create_resources('shorewall::rule',$rules,$rules_defaults)
+  create_resources('shorewall::rule_section',$rulesections,$rulesections_defaults)
+  create_resources('shorewall::masq',$masq,$masq_defaults)
+  create_resources('shorewall::proxyarp',$proxyarp,$proxyarp_defaults)
+  create_resources('shorewall::nat',$nat,$nat_defaults)
+  create_resources('shorewall::blacklist',$blacklist,$blacklist_defaults)
+  create_resources('shorewall::rfc1918',$rfc1918,$rfc1918_defaults)
+  create_resources('shorewall::routestopped',$routestopped,
+    $routestopped_defaults)
+  create_resources('shorewall::params',$params,$params_defaults)
+  create_resources('shorewall::tcdevices',$tcdevices,$tcdevices_defaults)
+  create_resources('shorewall::tcrules',$tcrules,$tcrules_defaults)
+  create_resources('shorewall::tcclasses',$tcclasses,$tcclasses_defaults)
+  create_resources('shorewall::tunnel',$tunnels,$tunnels_defaults)
+  create_resources('shorewall::rtrules',$rtrules,$rtrules_defaults)
 }
