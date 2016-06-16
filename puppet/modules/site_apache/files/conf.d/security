@@ -45,8 +45,8 @@ ServerSignature Off
 #
 # Set to one of:  On | Off | extended
 #
-#TraceEnable Off
-TraceEnable On
+TraceEnable Off
+#TraceEnable On
 
 # Setting this header will prevent other sites from embedding pages from this
 # site as frames. This defends against clickjacking attacks.
