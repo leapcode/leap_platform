@@ -5,7 +5,8 @@ before_script:
 
 stages:
   - syntax
-  - rspec
+# - rspec
+  - build
 
 lint:
   stage: syntax
@@ -32,7 +33,14 @@ catalog:
   script:
     - bundle exec rake catalog
 
-rspec:
-  stage: rspec
+#rspec:
+#  stage: rspec
+#  script:
+#    - bundle exec rake spec
+
+build:
+  stage: build
   script:
-    - bundle exec rake spec
+    - echo $CI_BUILD_REF_NAME
+    - ssh testbot@greyhound.leap.se -p 4422 "/usr/local/bin/platform_test/buildscripts/build-on-greyhound.sh $CI_BUILD_REF_NAME -x"
+
