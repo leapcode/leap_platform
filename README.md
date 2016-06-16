@@ -1,7 +1,7 @@
 Leap Platform
 =============================
 
-[![Build Status](https://jenkins.leap.se/job/platform_develop/badge/icon)](https://jenkins.leap.se/job/platform_develop/)
+[![Build Status](https://0xacab.org/leap/platform/badges/develop/build.svg)](https://0xacab.org/leap/platform/commits/develop)
 
 The LEAP Platform is set of complementary packages and server recipes to automate the maintenance of LEAP services in a hardened Debian environment. Its goal is to make it as painless as possible for sysadmins to deploy and maintain a service provider's infrastructure for secure communication. These recipes define an abstract service provider. It is a set of Puppet modules designed to work together to provide to sysadmins everything they need to manage a service provider infrastructure that provides secure communication services.
 
