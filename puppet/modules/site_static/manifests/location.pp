@@ -23,6 +23,19 @@ define site_static::location($path, $format, $source) {
     }
   }
 
+  if ($format == 'rack') {
+    # Run bundler if there is a Gemfile
+    exec { 'bundler_update':
+      cwd     => $file_path,
+      command => '/bin/bash -c "/usr/bin/bundle check --path vendor/bundle || /usr/bin/bundle install --path vendor/bundle --without test development debug"',
+      unless  => '/usr/bin/bundle check --path vendor/bundle',
+      onlyif  => 'test -f Gemfile',
+      user    => 'www-data',
+      timeout => 600,
+      require => [Class['bundler::install'], Class['site_config::ruby::dev']];
+    }
+  }
+
   vcsrepo { $file_path:
     ensure   => present,
     force    => true,

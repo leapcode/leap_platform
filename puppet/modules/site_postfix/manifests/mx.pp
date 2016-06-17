@@ -69,10 +69,10 @@ class site_postfix::mx {
       value => '$alias_maps';
     # setup clamav and opendkim on smtpd
     'smtpd_milters':
-      value => 'unix:/run/clamav/milter.ctl,inet:localhost:8891';
+      value => 'unix:/run/clamav/milter.ctl,unix:/run/opendkim/opendkim.sock';
     # setup opendkim for smtp (non-smtpd) outgoing mail
     'non_smtpd_milters':
-      value => 'inet:localhost:8891';
+      value => 'unix:/run/opendkim/opendkim.sock';
     'milter_default_action':
       value => 'accept';
     # Make sure that the right values are set, these could be set to different
@@ -96,7 +96,7 @@ class site_postfix::mx {
   # access the opendkim milter socket (#8020)
   exec { 'unset_cleanup_chroot':
     command => '/usr/sbin/postconf -F "cleanup/unix/chroot=n"',
-    onlyif  => '/usr/sbin/postconf -h -F "cleanup/unix/chroot" | egrep -q ^n',
+    onlyif  => '/usr/sbin/postconf -h -F "cleanup/unix/chroot" | egrep -qv ^n',
     notify  => Service['postfix'],
     require => File['/etc/postfix/master.cf']
   }
