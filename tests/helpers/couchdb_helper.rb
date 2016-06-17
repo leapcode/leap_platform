@@ -124,6 +124,7 @@ class LeapTest
   # returns true if the per-user db created by soledad-server exists.
   #
   def user_db_exists?(user_id, options=nil)
+    options = {:username => 'admin'}.merge(options || {})
     db_name = "user-#{user_id}"
     url = couchdb_url("/#{db_name}", options)
     get(url) do |body, response, error|
