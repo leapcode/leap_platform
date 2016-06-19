@@ -1,0 +1,67 @@
+<%=
+  def underscore(words)
+    words = words.to_s.dup
+    words.downcase!
+    words.gsub! /[^a-z]/, '_'
+    words
+  end
+
+  def add_gateway(node, locations, options={})
+    return nil if options[:ip] == 'REQUIRED'
+    gateway = {}
+    gateway["capabilities"] = node.openvpn.pick(:ports, :protocols, :user_ips, :adblock, :filter_dns)
+    gateway["capabilities"]["transport"] = ["openvpn"]
+    gateway["host"] = node.domain.full
+    gateway["ip_address"] = options[:ip]
+    gateway["capabilities"]["limited"] = options[:limited]
+    if node['location']
+      location_name = underscore(node.location.name)
+      gateway["location"] = location_name
+      locations[location_name] ||= node.location
+    end
+    gateway
+  end
+
+  def add_obfsproxy(node)
+    obfsproxy = {}
+    if node.services.include?("openvpn")
+      obfsproxy["ip_address"] = node.openvpn.gateway_address
+    elsif node.services.include?("obfsproxy")
+      obfsproxy["ip_address"] = node.ip_address
+    end
+    if node['obfsproxy']['scramblesuit']
+      obfsproxy["transport"]  = "scramblesuit"
+      obfsproxy["scramblesuit"] = node.obfsproxy.scramblesuit.pick(:port, :password)
+    end
+    obfsproxy
+  end
+
+  hsh = {}
+  locations = {}
+  gateways = {}
+  obfsproxies = []
+  configuration = nil
+  nodes_like_me[:services => 'openvpn'].each_node do |node|
+    if node.openvpn.allow_limited && node.openvpn.allow_unlimited
+      gateways[node.name + '_unlimited'] =  add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+      gateways[node.name + '_limited'] = add_gateway(node, locations, :ip => node.openvpn.second_gateway_address, :limited => true)
+    elsif node.openvpn.allow_unlimited
+      gateways[node.name + '_unlimited'] = add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => false)
+    elsif node.openvpn.allow_limited
+      gateways[node.name + '_limited'] = add_gateway(node, locations, :ip => node.openvpn.gateway_address, :limited => true)
+    end
+    if configuration && node.openvpn.configuration != configuration
+      log :error, "OpenVPN nodes in the environment `#{node.environment}` have conflicting `openvpn.configuration` values. This will result in bad errors."
+    end
+    configuration = node.openvpn.configuration
+    obfsproxies << add_obfsproxy(node)
+  end
+  nodes_like_me[:services => 'obfsproxy'].each_node do |node|
+    obfsproxies << add_obfsproxy(node)
+  end
+  hsh["gateways"] = gateways
+  hsh["locations"] = locations
+  hsh["openvpn_configuration"] = configuration
+  hsh["obfsproxies"] = obfsproxies.compact
+  JSON.sorted_generate hsh
+%>
