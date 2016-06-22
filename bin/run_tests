@@ -459,7 +459,7 @@ end
 
 def main
   # load node data from hiera file
-  if File.exists?(HIERA_FILE)
+  if File.exist?(HIERA_FILE)
     $node = YAML.load_file(HIERA_FILE)
   else
     $node = {"services" => [], "dummy" => true}

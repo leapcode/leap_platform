@@ -6,14 +6,14 @@
 module LeapCli; module Commands
 
   desc 'Node management'
-  command :node do |node|
-    node.desc 'Bootstraps a node or nodes, setting up SSH keys and installing prerequisite packages'
-    node.long_desc "This command prepares a server to be used with the LEAP Platform by saving the server's SSH host key, " +
+  command :node do |cmd|
+    cmd.desc 'Bootstraps a node or nodes, setting up SSH keys and installing prerequisite packages'
+    cmd.long_desc "This command prepares a server to be used with the LEAP Platform by saving the server's SSH host key, " +
                    "copying the authorized_keys file, installing packages that are required for deploying, and registering important facts. " +
                    "Node init must be run before deploying to a server, and the server must be running and available via the network. " +
                    "This command only needs to be run once, but there is no harm in running it multiple times."
-    node.arg_name 'FILTER'
-    node.command :init do |init|
+    cmd.arg_name 'FILTER'
+    cmd.command :init do |init|
       init.switch 'echo', :desc => 'If set, passwords are visible as you type them (default is hidden)', :negatable => false
       init.flag :port, :desc => 'Override the default SSH port.', :arg_name => 'PORT'
       init.flag :ip,   :desc => 'Override the default SSH IP address.', :arg_name => 'IPADDRESS'

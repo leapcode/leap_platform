@@ -26,7 +26,7 @@ module LeapCli; module Commands
   }
 
   def inspection_method(object)
-    if File.exists?(object)
+    if File.exist?(object)
       ftype = `file #{object}`.split(':').last.strip
       log 2, "file is of type '#{ftype}'"
       if FTYPE_MAP[ftype]

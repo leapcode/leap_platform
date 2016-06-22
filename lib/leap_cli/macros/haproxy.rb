@@ -26,7 +26,7 @@ module LeapCli
 
       # create a simple map for node name -> local stunnel accept port
       accept_ports = stunnel_clients.inject({}) do |hsh, stunnel_entry|
-        name = stunnel_entry.first.sub /_[0-9]+$/, ''
+        name = stunnel_entry.first.sub(/_[0-9]+$/, '')
         hsh[name] = stunnel_entry.last['accept_port']
         hsh
       end

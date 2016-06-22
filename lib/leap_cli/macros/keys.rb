@@ -56,7 +56,7 @@ module LeapCli
       require 'base64'
       require 'openssl'
       path = Path.find_file([path_name, self.name])
-      if path && File.exists?(path)
+      if path && File.exist?(path)
         public_key_str = File.readlines(path).grep(/^[^-]/).join
         public_key     = Base64.decode64(public_key_str)
         public_key     = public_key.slice(22..-1) # Tor ignores the 22 byte SPKI header

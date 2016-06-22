@@ -39,7 +39,7 @@ module LeapCli; module Commands
           if cmd_exists?('certtool')
             log 0, 'Generating DH parameters (takes a long time)...'
             output = assert_run!('certtool --generate-dh-params --sec-param high')
-            output.sub! /.*(-----BEGIN DH PARAMETERS-----.*-----END DH PARAMETERS-----).*/m, '\1'
+            output.sub!(/.*(-----BEGIN DH PARAMETERS-----.*-----END DH PARAMETERS-----).*/m, '\1')
             output << "\n"
             write_file!(:dh_params, output)
           else
@@ -116,7 +116,6 @@ module LeapCli; module Commands
         digest = options[:digest] || server_certificates.digest
         log :generating, "CSR with #{digest} digest and #{print_dn(dn)}" do
           csr = create_csr(dn, keypair, digest)
-          request = csr.to_x509_csr
           write_file! [:commercial_csr, domain], csr.to_pem
         end
 

@@ -43,7 +43,7 @@ module LeapCli; module Commands
           if file_exists? :ca_cert, :ca_key
             generate_cert_for_node(manager.reload_node!(node))
           end
-        rescue LeapCli::ConfigError => exc
+        rescue LeapCli::ConfigError
           remove_node_files(name)
         end
       end

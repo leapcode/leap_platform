@@ -284,7 +284,6 @@ remove this directory if you don't use it.
       # note: we use the default provider for all nodes, because we use it
       # to generate hostnames that are relative to the default domain.
       provider   = manager.env('default').provider
-      hosts_seen = {}
       lines      = []
 
       #

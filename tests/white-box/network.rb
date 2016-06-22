@@ -65,7 +65,7 @@ class Network < LeapTest
   end
 
   def test_03_Is_shorewall_running?
-    ignore unless File.exists?('/sbin/shorewall')
+    ignore unless File.exist?('/sbin/shorewall')
     assert_run('/sbin/shorewall status')
     pass
   end
@@ -75,7 +75,7 @@ class Network < LeapTest
   def test_04_Are_server_certificates_valid?
     cert_paths = ["/etc/x509/certs/leap_commercial.crt", "/etc/x509/certs/leap.crt"]
     cert_paths.each do |cert_path|
-      if File.exists?(cert_path)
+      if File.exist?(cert_path)
         cert = OpenSSL::X509::Certificate.new(File.read(cert_path))
         if Time.now > cert.not_after
           fail "The certificate #{cert_path} expired on #{cert.not_after}"
