@@ -29,57 +29,7 @@ module LeapCli
                     :arg_name => 'IPADDRESS'
 
       c.action do |global,options,args|
-
-        if options[:dev] != true
-          init_submodules
-        end
-
-        nodes = manager.filter!(args, :disabled => false)
-        if nodes.size > 1
-          say "Deploying to these nodes: #{nodes.keys.join(', ')}"
-          if !global[:yes] && !agree("Continue? ")
-            quit! "OK. Bye."
-          end
-        end
-
-        environments = nodes.field('environment').uniq
-        if environments.empty?
-          environments = [nil]
-        end
-        environments.each do |env|
-          check_platform_pinning(env, global)
-        end
-
-        # compile hiera files for all the nodes in every environment that is
-        # being deployed and only those environments.
-        compile_hiera_files(manager.filter(environments), false)
-
-        ssh_connect(nodes, connect_options(options)) do |ssh|
-          ssh.leap.log :checking, 'node' do
-            ssh.leap.check_for_no_deploy
-            ssh.leap.assert_initialized
-          end
-          ssh.leap.log :synching, "configuration files" do
-            sync_hiera_config(ssh)
-            sync_support_files(ssh)
-          end
-          ssh.leap.log :synching, "puppet manifests" do
-            sync_puppet_files(ssh)
-          end
-          unless options[:sync]
-            ssh.leap.log :applying, "puppet" do
-              ssh.puppet.apply(:verbosity => [LeapCli.log_level,5].min,
-                :tags => tags(options),
-                :force => options[:force],
-                :info => deploy_info,
-                :downgrade => options[:downgrade]
-              )
-            end
-          end
-        end
-        if !Util.exit_status.nil? && Util.exit_status != 0
-          log :warning, "puppet did not finish successfully."
-        end
+        run_deploy(global, options, args)
       end
     end
 
@@ -94,19 +44,87 @@ module LeapCli
       c.switch :last, :desc => 'Show last deploy only',
                       :negatable => false
       c.action do |global,options,args|
-        if options[:last] == true
-          lines = 1
-        else
-          lines = 10
-        end
-        nodes = manager.filter!(args)
-        ssh_connect(nodes, connect_options(options)) do |ssh|
-          ssh.leap.history(lines)
-        end
+        run_history(global, options, args)
       end
     end
 
     private
+
+    def run_deploy(global, options, args)
+      require 'leap_cli/ssh'
+
+      if options[:dev] != true
+        init_submodules
+      end
+
+      nodes = manager.filter!(args, :disabled => false)
+      if nodes.size > 1
+        say "Deploying to these nodes: #{nodes.keys.join(', ')}"
+        if !global[:yes] && !agree("Continue? ")
+          quit! "OK. Bye."
+        end
+      end
+
+      environments = nodes.field('environment').uniq
+      if environments.empty?
+        environments = [nil]
+      end
+      environments.each do |env|
+        check_platform_pinning(env, global)
+      end
+
+      # compile hiera files for all the nodes in every environment that is
+      # being deployed and only those environments.
+      compile_hiera_files(manager.filter(environments), false)
+
+      log :checking, 'nodes' do
+        SSH.remote_command(nodes, options) do |ssh, host|
+          begin
+            ssh.scripts.check_for_no_deploy
+            ssh.scripts.assert_initialized
+          rescue SSH::ExecuteError
+            # skip nodes with errors, but run others
+            nodes.delete(host.hostname)
+          end
+        end
+      end
+
+      log :synching, "configuration files" do
+        sync_hiera_config(nodes, options)
+        sync_support_files(nodes, options)
+      end
+      log :synching, "puppet manifests" do
+        sync_puppet_files(nodes, options)
+      end
+
+      unless options[:sync]
+        log :applying, "puppet" do
+          SSH.remote_command(nodes, options) do |ssh, host|
+            ssh.scripts.puppet_apply(
+              :verbosity => [LeapCli.log_level,5].min,
+              :tags => tags(options),
+              :force => options[:force],
+              :info => deploy_info,
+              :downgrade => options[:downgrade]
+            )
+          end
+        end
+      end
+    end
+
+    def run_history(global, options, args)
+      require 'leap_cli/ssh'
+
+      if options[:last] == true
+        lines = 1
+      else
+        lines = 10
+      end
+      nodes = manager.filter!(args)
+      SSH.remote_command(nodes, options) do |ssh, host|
+        ssh.scripts.history(lines)
+      end
+    end
 
     def forcible_prompt(forced, msg, prompt)
       say(msg)
@@ -211,56 +229,51 @@ module LeapCli
       end
     end
 
-    def sync_hiera_config(ssh)
-      ssh.rsync.update do |server|
-        node = manager.node(server.host)
+    def sync_hiera_config(nodes, options)
+      SSH.remote_sync(nodes, options) do |sync, host|
+        node = manager.node(host.hostname)
         hiera_file = Path.relative_path([:hiera, node.name])
-        ssh.leap.log hiera_file + ' -> ' + node.name + ':' + Leap::Platform.hiera_path
-        {
-          :source => hiera_file,
-          :dest => Leap::Platform.hiera_path,
-          :flags => "-rltp --chmod=u+rX,go-rwx"
-        }
+        sync.log hiera_file + ' -> ' + node.name + ':' + Leap::Platform.hiera_path
+        sync.source = hiera_file
+        sync.dest = Leap::Platform.hiera_path
+        sync.flags = "-rltp --chmod=u+rX,go-rwx"
+        sync.exec
       end
     end
 
     #
     # sync various support files.
     #
-    def sync_support_files(ssh)
-      dest_dir = Leap::Platform.files_dir
+    def sync_support_files(nodes, options)
+      dest_dir     = Leap::Platform.files_dir
       custom_files = build_custom_file_list
-      ssh.rsync.update do |server|
-        node = manager.node(server.host)
+      SSH.remote_sync(nodes, options) do |sync, host|
+        node = manager.node(host.hostname)
         files_to_sync = node.file_paths.collect {|path| Path.relative_path(path, Path.provider) }
         files_to_sync += custom_files
         if files_to_sync.any?
-          ssh.leap.log(files_to_sync.join(', ') + ' -> ' + node.name + ':' + dest_dir)
-          {
-            :chdir => Path.named_path(:files_dir),
-            :source => ".",
-            :dest => dest_dir,
-            :excludes => "*",
-            :includes => calculate_includes_from_files(files_to_sync, '/files'),
-            :flags => "-rltp --chmod=u+rX,go-rwx --relative --delete --delete-excluded --copy-links"
-          }
-        else
-          nil
+          sync.log(files_to_sync.join(', ') + ' -> ' + node.name + ':' + dest_dir)
+          sync.chdir = Path.named_path(:files_dir)
+          sync.source = "."
+          sync.dest = dest_dir
+          sync.excludes = "*"
+          sync.includes = calculate_includes_from_files(files_to_sync, '/files')
+          sync.flags = "-rltp --chmod=u+rX,go-rwx --relative --delete --delete-excluded --copy-links"
+          sync.exec
         end
       end
     end
 
-    def sync_puppet_files(ssh)
-      ssh.rsync.update do |server|
-        ssh.leap.log(Path.platform + '/[bin,tests,puppet] -> ' + server.host + ':' + Leap::Platform.leap_dir)
-        {
-          :dest => Leap::Platform.leap_dir,
-          :source => '.',
-          :chdir => Path.platform,
-          :excludes => '*',
-          :includes => ['/bin', '/bin/**', '/puppet', '/puppet/**', '/tests', '/tests/**'],
-          :flags => "-rlt --relative --delete --copy-links"
-        }
+    def sync_puppet_files(nodes, options)
+      SSH.remote_sync(nodes, options) do |sync, host|
+        sync.log(Path.platform + '/[bin,tests,puppet] -> ' + host.hostname + ':' + Leap::Platform.leap_dir)
+        sync.dest = Leap::Platform.leap_dir
+        sync.source = '.'
+        sync.chdir = Path.platform
+        sync.excludes = '*'
+        sync.includes = ['/bin', '/bin/**', '/puppet', '/puppet/**', '/tests', '/tests/**']
+        sync.flags = "-rlt --relative --delete --copy-links"
+        sync.exec
       end
     end
 

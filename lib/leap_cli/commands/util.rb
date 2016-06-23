@@ -2,7 +2,6 @@ module LeapCli; module Commands
 
   extend self
   extend LeapCli::Util
-  extend LeapCli::Util::RemoteCommand
 
   def path(name)
     Path.named_path(name)

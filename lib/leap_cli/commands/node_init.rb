@@ -14,49 +14,54 @@ module LeapCli; module Commands
                    "This command only needs to be run once, but there is no harm in running it multiple times."
     cmd.arg_name 'FILTER'
     cmd.command :init do |init|
-      init.switch 'echo', :desc => 'If set, passwords are visible as you type them (default is hidden)', :negatable => false
+      #init.switch 'echo', :desc => 'If set, passwords are visible as you type them (default is hidden)', :negatable => false
+      # ^^ i am not sure how to get this working with sshkit
       init.flag :port, :desc => 'Override the default SSH port.', :arg_name => 'PORT'
       init.flag :ip,   :desc => 'Override the default SSH IP address.', :arg_name => 'IPADDRESS'
 
       init.action do |global,options,args|
-        assert! args.any?, 'You must specify a FILTER'
-        finished = []
-        manager.filter!(args).each_node do |node|
-          is_node_alive(node, options)
-          save_public_host_key(node, global, options) unless node.vagrant?
-          update_compiled_ssh_configs
-          ssh_connect_options = connect_options(options).merge({:bootstrap => true, :echo => options[:echo]})
-          ssh_connect(node, ssh_connect_options) do |ssh|
-            if node.vagrant?
-              ssh.install_insecure_vagrant_key
-            end
-            ssh.install_authorized_keys
-            ssh.install_prerequisites
-            unless node.vagrant?
-              ssh.leap.log(:checking, "SSH host keys") do
-                ssh.leap.capture(get_ssh_keys_cmd) do |response|
-                  update_local_ssh_host_keys(node, response[:data]) if response[:exitcode] == 0
-                end
-              end
-            end
-            ssh.leap.log(:updating, "facts") do
-              ssh.leap.capture(facter_cmd) do |response|
-                if response[:exitcode] == 0
-                  update_node_facts(node.name, response[:data])
-                else
-                  log :failed, "to run facter on #{node.name}"
-                end
-              end
-            end
-          end
-          finished << node.name
-        end
-        log :completed, "initialization of nodes #{finished.join(', ')}"
+        run_node_init(global, options, args)
       end
     end
   end
 
   private
+
+  def run_node_init(global, options, args)
+    require 'leap_cli/ssh'
+    assert! args.any?, 'You must specify a FILTER'
+    finished = []
+    manager.filter!(args).each_node do |node|
+      is_node_alive(node, options)
+      save_public_host_key(node, global, options) unless node.vagrant?
+      update_compiled_ssh_configs
+      # allow password auth for new nodes:
+      options[:auth_methods] = ["publickey", "password"]
+      SSH.remote_command(node, options) do |ssh, host|
+        if node.vagrant?
+          ssh.scripts.install_insecure_vagrant_key
+        end
+        ssh.scripts.install_authorized_keys
+        ssh.scripts.install_prerequisites
+        unless node.vagrant?
+          ssh.log(:checking, "SSH host keys") do
+            response = ssh.capture(get_ssh_keys_cmd, :log_output => false)
+            if response
+              update_local_ssh_host_keys(node, response)
+            end
+          end
+        end
+        ssh.log(:updating, "facts") do
+          response = ssh.capture(facter_cmd)
+          if response
+            update_node_facts(node.name, response)
+          end
+        end
+      end
+      finished << node.name
+    end
+    log :completed, "initialization of nodes #{finished.join(', ')}"
+  end
 
   ##
   ## PRIVATE HELPERS
@@ -83,7 +88,7 @@ module LeapCli; module Commands
     pub_key_path = Path.named_path([:node_ssh_pub_key, node.name])
 
     if Path.exists?(pub_key_path)
-      if host_keys.include? SshKey.load(pub_key_path)
+      if host_keys.include? SSH::Key.load(pub_key_path)
         log :trusted, "- Public SSH host key for #{node.name} matches previously saved key", :indent => 1
       else
         bail! do
@@ -96,7 +101,7 @@ module LeapCli; module Commands
       if known_key
         log :trusted, "- Public SSH host key for #{node.name} is trusted (key found in your ~/.ssh/known_hosts)"
       else
-        public_key = SshKey.pick_best_key(host_keys)
+        public_key = SSH::Key.pick_best_key(host_keys)
         if public_key.nil?
           bail!("We got back #{host_keys.size} host keys from #{node.name}, but we can't support any of them.")
         else
@@ -118,7 +123,7 @@ module LeapCli; module Commands
 
   #
   # Get the public host keys for a host using ssh-keyscan.
-  # Return an array of SshKey objects, one for each key.
+  # Return an array of SSH::Key objects, one for each key.
   #
   def get_public_keys_for_ip(address, port=22)
     assert_bin!('ssh-keyscan')
@@ -130,7 +135,7 @@ module LeapCli; module Commands
     if output =~ /No route to host/
       bail! :failed, 'ssh-keyscan: no route to %s' % address
     else
-      keys = SshKey.parse_keys(output)
+      keys = SSH::Key.parse_keys(output)
       if keys.empty?
         bail! "ssh-keyscan got zero host keys back (that we understand)! Output was: #{output}"
       else
@@ -139,7 +144,7 @@ module LeapCli; module Commands
     end
   end
 
-  # run on the server to generate a string suitable for passing to SshKey.parse_keys()
+  # run on the server to generate a string suitable for passing to SSH::Key.parse_keys()
   def get_ssh_keys_cmd
     "/bin/grep ^HostKey /etc/ssh/sshd_config | /usr/bin/awk '{print $2 \".pub\"}' | /usr/bin/xargs /bin/cat"
   end
@@ -149,10 +154,10 @@ module LeapCli; module Commands
   # stored locally. In these cases, ask the user if they want to upgrade.
   #
   def update_local_ssh_host_keys(node, remote_keys_string)
-    remote_keys = SshKey.parse_keys(remote_keys_string)
+    remote_keys = SSH::Key.parse_keys(remote_keys_string)
     return unless remote_keys.any?
-    current_key = SshKey.load(Path.named_path([:node_ssh_pub_key, node.name]))
-    best_key = SshKey.pick_best_key(remote_keys)
+    current_key = SSH::Key.load(Path.named_path([:node_ssh_pub_key, node.name]))
+    best_key = SSH::Key.pick_best_key(remote_keys)
     return unless best_key && current_key
     if current_key != best_key
       say("   One of the SSH host keys for node '#{node.name}' is better than what you currently have trusted.")

@@ -22,58 +22,67 @@ module LeapCli
       c.flag 'pgp-pub-key', :desc => 'OpenPGP public key file for this new user'
 
       c.action do |global_options,options,args|
-        username = args.first
-        if !username.any?
-          if options[:self]
-            username ||= `whoami`.strip
-          else
-            help! "Either USERNAME argument or --self flag is required."
-          end
-        end
-        if Leap::Platform.reserved_usernames.include? username
-          bail! %(The username "#{username}" is reserved. Sorry, pick another.)
-        end
-
-        ssh_pub_key = nil
-        pgp_pub_key = nil
-
-        if options['ssh-pub-key']
-          ssh_pub_key = read_file!(options['ssh-pub-key'])
-        end
-        if options['pgp-pub-key']
-          pgp_pub_key = read_file!(options['pgp-pub-key'])
-        end
-
-        if options[:self]
-          ssh_pub_key ||= pick_ssh_key.to_s
-          pgp_pub_key ||= pick_pgp_key
-        end
-
-        assert!(ssh_pub_key, 'Sorry, could not find SSH public key.')
-
-        if ssh_pub_key
-          write_file!([:user_ssh, username], ssh_pub_key)
-        end
-        if pgp_pub_key
-          write_file!([:user_pgp, username], pgp_pub_key)
-        end
-
-        update_authorized_keys
+        do_add_user(global_options, optinos, args)
       end
     end
 
+    private
+
+    def do_add_user(global, options, args)
+      require 'leap_cli/ssh'
+
+      username = args.first
+      if !username.any?
+        if options[:self]
+          username ||= `whoami`.strip
+        else
+          help! "Either USERNAME argument or --self flag is required."
+        end
+      end
+      if Leap::Platform.reserved_usernames.include? username
+        bail! %(The username "#{username}" is reserved. Sorry, pick another.)
+      end
+
+      ssh_pub_key = nil
+      pgp_pub_key = nil
+
+      if options['ssh-pub-key']
+        ssh_pub_key = read_file!(options['ssh-pub-key'])
+      end
+      if options['pgp-pub-key']
+        pgp_pub_key = read_file!(options['pgp-pub-key'])
+      end
+
+      if options[:self]
+        ssh_pub_key ||= pick_ssh_key.to_s
+        pgp_pub_key ||= pick_pgp_key
+      end
+
+      assert!(ssh_pub_key, 'Sorry, could not find SSH public key.')
+
+      if ssh_pub_key
+        write_file!([:user_ssh, username], ssh_pub_key)
+      end
+      if pgp_pub_key
+        write_file!([:user_pgp, username], pgp_pub_key)
+      end
+
+      update_authorized_keys
+    end
+
     #
-    # let the the user choose among the ssh public keys that we encounter, or just pick the key if there is only one.
+    # let the the user choose among the ssh public keys that we encounter, or
+    # just pick the key if there is only one.
     #
     def pick_ssh_key
       ssh_keys = []
       Dir.glob("#{ENV['HOME']}/.ssh/*.pub").each do |keyfile|
-        ssh_keys << SshKey.load(keyfile)
+        ssh_keys << SSH::Key.load(keyfile)
       end
 
       if `which ssh-add`.strip.any?
         `ssh-add -L 2> /dev/null`.split("\n").compact.each do |line|
-          key = SshKey.load(line)
+          key = SSH::Key.load(line)
           if key
             key.comment = 'ssh-agent'
             ssh_keys << key unless ssh_keys.include?(key)
