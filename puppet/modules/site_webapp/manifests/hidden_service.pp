@@ -25,14 +25,16 @@ class site_webapp::hidden_service {
       source  => "/srv/leap/files/nodes/${::hostname}/tor.key",
       owner   => 'debian-tor',
       group   => 'debian-tor',
-      mode    => '0600';
+      mode    => '0600',
+      notify  => Service['tor'];
 
     '/var/lib/tor/webapp/hostname':
       ensure  => present,
       content => $tor_domain,
       owner   => 'debian-tor',
       group   => 'debian-tor',
-      mode    => '0600';
+      mode    => '0600',
+      notify  => Service['tor'];
   }
 
   # it is necessary to zero out the config of the status module
