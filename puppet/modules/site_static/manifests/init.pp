@@ -7,11 +7,14 @@ class site_static {
   include site_config::x509::key
   include site_config::x509::ca_bundle
 
-  $static        = hiera('static')
-  $domains       = $static['domains']
-  $formats       = $static['formats']
-  $bootstrap     = $static['bootstrap_files']
-  $tor           = hiera('tor', false)
+  $static         = hiera('static')
+  $domains        = $static['domains']
+  $formats        = $static['formats']
+  $bootstrap      = $static['bootstrap_files']
+
+  $tor            = hiera('tor', false)
+  $hidden_service = $tor['hidden_service']
+  $tor_domain     = "${hidden_service['address']}.onion"
 
   file {
     '/srv/static/':
@@ -71,14 +74,13 @@ class site_static {
     }
   }
 
-  create_resources(site_static::domain, $domains)
-
   if $tor {
-    $hidden_service = $tor['hidden_service']
     if $hidden_service['active'] {
-      include site_webapp::hidden_service
+      include site_static::hidden_service
     }
   }
+
+  create_resources(site_static::domain, $domains)
 
   include site_shorewall::defaults
   include site_shorewall::service::http
