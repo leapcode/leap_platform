@@ -7,10 +7,7 @@ class site_config::caching_resolver {
   # and then start it, so unbound will never get properly started. So this will
   # make sure bind9 is removed before.
   package { 'bind9':
-    ensure => absent
-  }
-  file { [ '/etc/default/bind9', '/etc/bind/named.conf.options' ]:
-    ensure => absent
+    ensure => purged
   }
 
   class { 'unbound':
