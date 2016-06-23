@@ -29,7 +29,7 @@ class site_webapp::hidden_service {
 
     '/var/lib/tor/webapp/hostname':
       ensure  => present,
-      content => $tor_domain,
+      content => "${tor_domain}\n",
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600',
