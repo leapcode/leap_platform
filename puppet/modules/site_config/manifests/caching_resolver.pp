@@ -2,10 +2,22 @@
 class site_config::caching_resolver {
   tag 'leap_base'
 
+  # We need to make sure Package['bind9'] isn't installed because when it is, it
+  # keeps unbound from running. Some base debian installs will install bind9,
+  # and then start it, so unbound will never get properly started. So this will
+  # make sure bind9 is removed before.
+  package { 'bind9':
+    ensure => absent
+  }
+  file { [ '/etc/default/bind9', '/etc/bind/named.conf.options' ]:
+    ensure => absent
+  }
+
   class { 'unbound':
     root_hints => false,
     anchor     => false,
     ssl        => false,
+    require    => Package['bind9'],
     settings   => {
       server => {
         verbosity      => '1',
