@@ -23,7 +23,8 @@ class site_config::caching_resolver {
         hide-identity  => 'yes',
         hide-version   => 'yes',
         harden-glue    => 'yes',
-        access-control => [ '127.0.0.0/8 allow', '::1 allow' ]
+        access-control => [ '127.0.0.0/8 allow', '::1 allow' ],
+        module-config  => '"validator iterator"'
       }
     }
   }
