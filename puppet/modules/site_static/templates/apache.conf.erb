@@ -23,6 +23,10 @@
   bootstrap_client = scope.lookupvar('site_static::bootstrap_client')
 -%>
 
+<Directory "/srv/static/public/">
+  Require all granted
+</Directory>
+
 <VirtualHost *:80>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
@@ -46,7 +50,7 @@
   #RewriteLogLevel 3
 
   Include include.d/ssl_common.inc
-  
+
 <%- if @tls_only -%>
   Header always set Strict-Transport-Security: "max-age=15768000;includeSubdomains"
 <%- end -%>
@@ -63,7 +67,7 @@
   AccessFileName .htaccess
 
 <%- if ([@aliases]+[@domain]).flatten.include?(bootstrap_domain) -%>
-  Alias /provider.json /srv/leap/provider.json
+  Alias /provider.json /srv/static/public/provider.json
   <Location /provider.json>
     Header set X-Minimum-Client-Version <%= bootstrap_client['min'] %>
   </Location>

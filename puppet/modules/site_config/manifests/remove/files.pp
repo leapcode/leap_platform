@@ -11,7 +11,18 @@
 
 class site_config::remove::files {
 
+  #
+  # Platform X removals
+  #
+
+  tidy {
+    '/srv/leap/provider.json':;
+  }
+
+  #
   # Platform 0.8 removals
+  #
+
   tidy {
     '/etc/default/leap_mx':;
     '/etc/logrotate.d/mx':;
