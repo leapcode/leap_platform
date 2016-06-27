@@ -11,5 +11,5 @@ group :test do
   gem "rspec-puppet-facts"
   gem "mocha"
   gem "puppet-catalog-test"
-  gem "leap_cli"
+  gem "leap_cli", :git => 'https://leap.se/git/leap_cli.git', :ref => 'develop'
 end
