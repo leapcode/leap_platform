@@ -42,7 +42,7 @@ PuppetLint::RakeTask.new :lint do |config|
   # only check for custom manifests, not submodules for now
   config.pattern          = modules_pattern('internal')
   config.ignore_paths     = exclude_paths
-  config.disable_checks   = ['documentation', '80chars']
+  config.disable_checks   = ['documentation', '140chars', 'arrow_alignment']
   config.fail_on_warnings = false
 end
 
