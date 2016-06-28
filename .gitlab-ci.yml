@@ -43,6 +43,7 @@ catalog:
 
 build:
   stage: build
-  script:
+  before_script:
     - echo $CI_BUILD_REF_NAME
+  script:
     - ssh testbot@greyhound.leap.se -p 4422 "/usr/local/bin/platform_test/buildscripts/build-on-greyhound.sh $CI_BUILD_REF_NAME -x"
