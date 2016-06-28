@@ -6,8 +6,6 @@ class site_couchdb::plain {
     chttpd_bind_address => '127.0.0.1'
   }
 
-  include site_check_mk::agent::couchdb::plain
-
   # remove bigcouch leftovers from previous installations
   include ::site_config::remove::bigcouch
 

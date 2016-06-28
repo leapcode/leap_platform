@@ -1,6 +1,0 @@
-#!/bin/bash
-exec 2>&1
-export HOME=/home/bigcouch
-ulimit -H -n 32768
-ulimit -S -n 32768
-exec chpst -u bigcouch /opt/bigcouch/bin/bigcouch

@@ -1,4 +1,4 @@
-# entry class for configuring couchdb/bigcouch node
+# entry class for configuring couchdb node
 # couchdb node
 class site_couchdb {
   tag 'leap_service'
@@ -39,12 +39,6 @@ class site_couchdb {
   $couchdb_backup           = $couchdb_config['backup']
   $couchdb_mode             = $couchdb_config['mode']
 
-  # ensure bigcouch has been purged from the system:
-  # TODO: remove this check in 0.9 release
-  if file('/opt/bigcouch/bin/bigcouch', '/dev/null') != '' {
-    fail 'ERROR: BigCouch appears to be installed. Make sure you have migrated to CouchDB before proceeding. See https://leap.se/upgrade-0-8'
-  }
-
   include site_couchdb::plain
 
   Class['site_config::default']
@@ -60,7 +54,6 @@ class site_couchdb {
   include site_couchdb::create_dbs
   include site_couchdb::add_users
   include site_couchdb::designs
-  include site_couchdb::logrotate
 
   if $couchdb_backup   { include site_couchdb::backup }
 

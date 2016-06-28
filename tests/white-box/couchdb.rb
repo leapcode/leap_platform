@@ -27,23 +27,6 @@ class CouchDB < LeapTest
   end
 
   #
-  # compare the configured nodes to the nodes that are actually listed in bigcouch
-  #
-  def test_02_Is_cluster_membership_ok?
-    return unless multimaster?
-    url = couchdb_backend_url("/nodes/_all_docs")
-    neighbors = assert_property('couch.bigcouch.neighbors')
-    neighbors << assert_property('domain.full')
-    neighbors.sort!
-    assert_get(url) do |body|
-      response = JSON.parse(body)
-      nodes_in_db = response['rows'].collect{|row| row['id'].sub(/^bigcouch@/, '')}.sort
-      assert_equal neighbors, nodes_in_db, "The couchdb replication node list is wrong (/nodes/_all_docs)"
-    end
-    pass
-  end
-
-  #
   # all configured nodes are in 'cluster_nodes'
   # all nodes online and communicating are in 'all_nodes'
   #
