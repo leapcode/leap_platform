@@ -74,6 +74,7 @@ module LeapCli; module Commands
   def inspect_x509_cert(file_path, options)
     assert_bin! 'openssl'
     puts assert_run! 'openssl x509 -in %s -text -noout' % file_path
+    log 0, :"SHA1 fingerprint", X509.fingerprint("SHA1", file_path)
     log 0, :"SHA256 fingerprint", X509.fingerprint("SHA256", file_path)
   end
 
