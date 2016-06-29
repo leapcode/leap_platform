@@ -11,10 +11,7 @@ class site_static {
   $domains        = $static['domains']
   $formats        = $static['formats']
   $bootstrap      = $static['bootstrap_files']
-
   $tor            = hiera('tor', false)
-  $hidden_service = $tor['hidden_service']
-  $tor_domain     = "${hidden_service['address']}.onion"
 
   if $bootstrap['enabled'] {
     $bootstrap_domain  = $bootstrap['domain']
@@ -61,6 +58,8 @@ class site_static {
   }
 
   if $tor {
+    $hidden_service = $tor['hidden_service']
+    $tor_domain     = "${hidden_service['address']}.onion"
     if $hidden_service['active'] {
       include site_static::hidden_service
     }
