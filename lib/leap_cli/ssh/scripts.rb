@@ -15,7 +15,7 @@ module LeapCli
       REQUIRED_PACKAGES = "puppet rsync lsb-release locales"
 
       attr_reader :ssh, :host
-      def initialize(backend, host)
+      def initialize(backend, hostname)
         @ssh = backend
         @host = host
       end
@@ -48,6 +48,8 @@ module LeapCli
       def check_for_no_deploy
         begin
           ssh.stream "test ! -f /etc/leap/no-deploy", :raise_error => true, :log_output => false
+        rescue SSH::TimeoutError
+          raise
         rescue SSH::ExecuteError
           ssh.log :warning, "can't continue because file /etc/leap/no-deploy exists", :host => host
           raise # will skip further action on this node
@@ -59,7 +61,7 @@ module LeapCli
       #
       def debug
         output = ssh.capture "#{Leap::Platform.leap_dir}/bin/debug.sh"
-        ssh.log(output, :wrap => true, :host => host.hostname, :color => :cyan)
+        ssh.log(output, :wrap => true, :host => host, :color => :cyan)
       end
 
       #
@@ -69,7 +71,7 @@ module LeapCli
         cmd = "(test -s /var/log/leap/deploy-summary.log && tail -n #{lines} /var/log/leap/deploy-summary.log) || (test -s /var/log/leap/deploy-summary.log.1 && tail -n #{lines} /var/log/leap/deploy-summary.log.1) || (echo 'no history')"
         history = ssh.capture(cmd, :log_output => false)
         if history
-          ssh.log host.hostname, :color => :cyan, :style => :bold do
+          ssh.log host, :color => :cyan, :style => :bold do
             ssh.log history, :wrap => true
           end
         end

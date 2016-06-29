@@ -94,7 +94,7 @@ module LeapCli
 
       # some prewritten servers-side scripts
       def scripts
-        @scripts ||= LeapCli::SSH::Scripts.new(self, @host)
+        @scripts ||= LeapCli::SSH::Scripts.new(self, @host.hostname)
       end
 
       private
@@ -138,6 +138,9 @@ module LeapCli
         elsif exc.is_a?(Timeout::Error) || exc.is_a?(Net::SSH::ConnectionTimeout)
           @logger.log(:failed, args.join(' '), host: @host.hostname) do
             @logger.log("Connection timed out")
+          end
+          if @options[:raise_error]
+            raise LeapCli::SSH::TimeoutError, exc.to_s
           end
         else
           raise

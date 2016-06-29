@@ -21,6 +21,9 @@ module LeapCli
     class ExecuteError < StandardError
     end
 
+    class TimeoutError < ExecuteError
+    end
+
     # override default runner mode
     class CustomCoordinator < SSHKit::Coordinator
       private

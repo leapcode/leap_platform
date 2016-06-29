@@ -89,6 +89,10 @@ module LeapCli
         end
       end
 
+      if nodes.empty?
+        return
+      end
+
       log :synching, "configuration files" do
         sync_hiera_config(nodes, options)
         sync_support_files(nodes, options)
