@@ -4,6 +4,7 @@
 # common exceptions.
 #
 
+require 'timeout'
 require 'sshkit'
 require 'leap_cli/ssh/formatter'
 require 'leap_cli/ssh/scripts'
@@ -134,12 +135,12 @@ module LeapCli
               @logger.log(exc.to_s.strip, wrap: true)
             end
           end
-        elsif exc.is_a?(Timeout::Error)
+        elsif exc.is_a?(Timeout::Error) || exc.is_a?(Net::SSH::ConnectionTimeout)
           @logger.log(:failed, args.join(' '), host: @host.hostname) do
             @logger.log("Connection timed out")
           end
         else
-          @logger.log(:error, "unknown exception: " + exc.to_s)
+          raise
         end
         return nil
       end
