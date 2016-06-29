@@ -22,25 +22,20 @@ module LeapCli
       end
 
       def write(obj)
-        @logger.log(obj.to_s, :host => @host)
+        @logger.log(obj.to_s, :host => @host.hostname)
       end
 
       def log_command_start(command)
         if @options[:log_cmd]
-          @logger.log(:running, "`" + command.to_s + "`", :host => @host)
+          @logger.log(:running, "`" + command.to_s + "`", :host => @host.hostname)
         end
       end
 
       def log_command_data(command, stream_type, stream_data)
         if @options[:log_output]
-          color = \
-            case stream_type
-            when :stdout then :cyan
-            when :stderr then :red
-            else raise "Unrecognised stream_type #{stream_type}, expected :stdout or :stderr"
-            end
+          color = stream_type == :stderr ? :red : nil
           @logger.log(stream_data.to_s.chomp,
-            :color => color, :host => @host, :wrap => options[:log_wrap])
+            :color => color, :host => @host.hostname, :wrap => options[:log_wrap])
         end
       end
 
@@ -49,10 +44,10 @@ module LeapCli
           runtime = sprintf('%5.3fs', command.runtime)
           if command.failure?
             message = "in #{runtime} with status #{command.exit_status}."
-            @logger.log(:failed, message, :host => @host)
+            @logger.log(:failed, message, :host => @host.hostname)
           else
             message = "in #{runtime}."
-            @logger.log(:completed, message, :host => @host)
+            @logger.log(:completed, message, :host => @host.hostname)
           end
         end
       end
