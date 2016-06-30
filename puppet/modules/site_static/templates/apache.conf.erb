@@ -11,6 +11,9 @@
     end
   end
 
+  #
+  # document root
+  #
   @document_root = begin
     root = '/var/www'
     @locations && @locations.each do |name, location|
@@ -19,8 +22,52 @@
     root.gsub(%r{^/|/$}, '')
   end
 
+  #
+  # provider.json
+  #
+  # if the domain is a bootstrap domain, we need to expose
+  # a /provider.json file.
+  #
   bootstrap_domain = scope.lookupvar('site_static::bootstrap_domain')
   bootstrap_client = scope.lookupvar('site_static::bootstrap_client')
+  if ([@aliases]+[@domain]).flatten.include?(bootstrap_domain)
+    provider_json = \
+%(
+  Alias /provider.json /srv/static/public/provider.json
+  <Location /provider.json>
+    Header set X-Minimum-Client-Version #{bootstrap_client['min']}
+  </Location>
+)
+  else
+    provider_json = ""
+  end
+
+  #
+  # locations
+  #
+  locations = ""
+  @locations && @locations.each do |name, location|
+    location_path = location['path'].gsub(%r{^/|/$}, '')
+    directory = location_directory(name, location)
+    local_vars = {'location_path'=>location_path, 'directory'=>directory, 'location'=>location, 'name'=>name}
+    template_path = File.join(File.dirname(__FILE__), location['format']) + '.erb'
+    break unless File.exists?(template_path)
+    locations += \
+%(
+  #
+  # #{name} (#{location['format']})
+  #
+#{scope.function_templatewlv([template_path, local_vars])}
+)
+  end
+
+  #
+  # allow custom apache config
+  #
+  custom_apache_config = if @apache_config
+    @apache_config.gsub(':percent:','%')
+  end
+
 -%>
 
 <Directory "/srv/static/public/">
@@ -28,6 +75,9 @@
 </Directory>
 
 <%- if @tor -%>
+##
+## Tor
+##
 <VirtualHost 127.0.0.1:80>
   ServerName <%= @tor_domain %>
   ServerAlias www.<%= @tor_domain %>
@@ -41,31 +91,15 @@
   DocumentRoot "/<%= @document_root %>/"
   AccessFileName .htaccess
 
-<%- if ([@aliases]+[@domain]).flatten.include?(bootstrap_domain) -%>
-  Alias /provider.json /srv/leap/provider.json
-  <Location /provider.json>
-    Header set X-Minimum-Client-Version <%= bootstrap_client['min'] %>
-  </Location>
-<%- end -%>
-
-<%- if @apache_config -%>
-<%=   @apache_config.gsub(':percent:','%') %>
-<%- end -%>
-
-<%- @locations && @locations.each do |name, location| -%>
-<%-   location_path = location['path'].gsub(%r{^/|/$}, '') -%>
-<%-   directory = location_directory(name, location) -%>
-<%-   local_vars = {'location_path'=>location_path, 'directory'=>directory, 'location'=>location, 'name'=>name} -%>
-<%-   template_path = File.join(File.dirname(__FILE__), location['format']) + '.erb' -%>
-<%-   break unless File.exists?(template_path) -%>
-  ##
-  ## <%= name %> (<%= location['format'] %>)
-  ##
-<%=   scope.function_templatewlv([template_path, local_vars]) %>
-<%- end -%>
-<%- end -%>
+<%= provider_json %>
+<%= custom_apache_config %>
+<%= locations %>
 </VirtualHost>
+<%- end -%>
 
+##
+## HTTP
+##
 <VirtualHost *:80>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
@@ -76,9 +110,16 @@
 <%- if @tls_only -%>
   RewriteEngine On
   RewriteRule ^.*$ https://<%= @domain -%>%{REQUEST_URI} [R=permanent,L]
+<%- else -%>
+<%= provider_json %>
+<%= custom_apache_config %>
+<%= locations %>
 <%- end -%>
 </VirtualHost>
 
+##
+## HTTPS
+##
 <VirtualHost *:443>
   ServerName <%= @domain %>
   ServerAlias www.<%= @domain %>
@@ -90,14 +131,14 @@
   #RewriteLogLevel 3
 
   Include include.d/ssl_common.inc
-  
+
   <IfModule mod_headers.c>
 <%- if @tls_only -%>
-  Header always set Strict-Transport-Security: "max-age=15768000;includeSubdomains"
+    Header always set Strict-Transport-Security: "max-age=15768000;includeSubdomains"
 <%- end -%>
-  Header set X-Frame-Options "deny"
-  Header always unset X-Powered-By
-  Header always unset X-Runtime
+    Header set X-Frame-Options "deny"
+    Header always unset X-Powered-By
+    Header always unset X-Runtime
   </IfModule>
 
   SSLCertificateKeyFile    /etc/x509/keys/<%= @domain %>.key
@@ -108,26 +149,7 @@
   DocumentRoot "/<%= @document_root %>/"
   AccessFileName .htaccess
 
-<%- if ([@aliases]+[@domain]).flatten.include?(bootstrap_domain) -%>
-  Alias /provider.json /srv/static/public/provider.json
-  <Location /provider.json>
-    Header set X-Minimum-Client-Version <%= bootstrap_client['min'] %>
-  </Location>
-<%- end -%>
-
-<%- if @apache_config -%>
-<%=   @apache_config.gsub(':percent:','%') %>
-<%- end -%>
-
-<%- @locations && @locations.each do |name, location| -%>
-<%-   location_path = location['path'].gsub(%r{^/|/$}, '') -%>
-<%-   directory = location_directory(name, location) -%>
-<%-   local_vars = {'location_path'=>location_path, 'directory'=>directory, 'location'=>location, 'name'=>name} -%>
-<%-   template_path = File.join(File.dirname(__FILE__), location['format']) + '.erb' -%>
-<%-   break unless File.exists?(template_path) -%>
-  ##
-  ## <%= name %> (<%= location['format'] %>)
-  ##
-<%=   scope.function_templatewlv([template_path, local_vars]) %>
-<%- end -%>
+<%= provider_json %>
+<%= custom_apache_config %>
+<%= locations %>
 </VirtualHost>

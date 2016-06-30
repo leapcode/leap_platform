@@ -10,10 +10,10 @@
 <%- end -%>
   <Directory "<%=@directory%>">
     Options -MultiViews
-<% if scope.function_guess_apache_version([]) == '2.4' %>
+<%- if scope.function_guess_apache_version([]) == '2.4' -%>
     Require all granted
-<% else %>
+<%- else -%>
     Order deny,allow
     Allow from all
-<% end %>
+<%- end -%>
   </Directory>
