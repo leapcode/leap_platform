@@ -22,7 +22,7 @@ module LeapCli
       c.flag 'pgp-pub-key', :desc => 'OpenPGP public key file for this new user'
 
       c.action do |global_options,options,args|
-        do_add_user(global_options, optinos, args)
+        do_add_user(global_options, options, args)
       end
     end
 
