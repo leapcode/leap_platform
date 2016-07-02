@@ -2,4 +2,9 @@
 /puppet/modules/site_custom
 /Gemfile.lock
 /tests/puppet/provider/hiera
+/tests/puppet/provider/secrets.json
+/tests/puppet/provider/files/ssh/authorized_keys
+/tests/puppet/provider/files/nodes/
 /tests/puppet/provider/test
+/tests/puppet/provider/users/gitlab-runner/
+/builds
