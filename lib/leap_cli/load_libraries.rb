@@ -18,3 +18,4 @@ require 'leap_cli/config/manager'
 
 require 'leap_cli/util/secret'
 require 'leap_cli/util/x509'
+require 'leap_cli/util/vagrant'

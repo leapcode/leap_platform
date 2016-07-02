@@ -179,7 +179,8 @@ module LeapCli; module Commands
       "-o 'UserKnownHostsFile=/dev/null'"
     ]
     if node.vagrant?
-      options << "-i #{vagrant_ssh_key_file}"    # use the universal vagrant insecure key
+      # use the universal vagrant insecure key:
+      options << "-i #{LeapCli::Util::Vagrant.vagrant_ssh_key_file}"
       options << "-o IdentitiesOnly=yes"         # force the use of the insecure vagrant key
       options << "-o 'StrictHostKeyChecking=no'" # blindly accept host key and don't save it
                                                  # (since userknownhostsfile is /dev/null)
