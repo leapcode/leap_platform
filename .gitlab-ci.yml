@@ -1,7 +1,8 @@
-before_script:
-  - ruby -v
-  - bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
-  - git submodule update --init
+#before_script:
+  #- echo 'Running global before_script'
+  #- ruby -v
+  #- bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
+  #- git submodule update --init
 
 stages:
   - syntax
@@ -46,4 +47,10 @@ build:
   before_script:
     - echo $CI_BUILD_REF_NAME
   script:
-    - /usr/local/bin/platform_test/buildscripts/build-platform.sh $CI_BUILD_REF_NAME -x
+    - cd ${CI_BUILD_REPO}/tests/puppet/provider
+    # use simple_deploy to speed up local development
+    #- leap-platform-test simple_deploy
+    - leap-platform-test reset_deploy
+    - leap-platform-test test
+    - leap info
+    - leap local stop
