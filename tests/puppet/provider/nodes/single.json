@@ -1,12 +1,9 @@
 {
-  "ip_address": "1.1.1.1",
+  "ip_address": "10.5.5.101",
   "services": [
     "couchdb",
-    "soledad",
-    "webapp",
     "mx",
-    //"static"
-    "monitor"
-  ],
-  "tags": ["single"]
+    "soledad",
+    "webapp"
+  ]
 }
