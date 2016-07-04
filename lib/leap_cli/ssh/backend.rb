@@ -4,6 +4,7 @@
 # common exceptions.
 #
 
+require 'stringio'
 require 'timeout'
 require 'sshkit'
 require 'leap_cli/ssh/formatter'
@@ -95,6 +96,28 @@ module LeapCli
       # some prewritten servers-side scripts
       def scripts
         @scripts ||= LeapCli::SSH::Scripts.new(self, @host.hostname)
+      end
+
+      #
+      # sshkit just passes upload! and download! to Net::SCP, but Net::SCP
+      # make it impossible to set the file permissions. Here is how the mode
+      # is determined, from upload.rb:
+      #
+      #    mode = channel[:stat] ? channel[:stat].mode & 07777 : channel[:options][:mode]
+      #
+      # The stat info from the file always overrides the mode you pass in options.
+      # However, the channel[:options][:mode] will be applied for pure in-memory
+      # uploads. So, if the mode is set, we convert the upload to be a memory
+      # upload instead of a file upload.
+      #
+      # Stupid, but blame Net::SCP.
+      #
+      def upload!(src, dest, options={})
+        if options[:mode]
+          super(StringIO.new(File.read(src)), dest, options)
+        else
+          super(src, dest, options)
+        end
       end
 
       private

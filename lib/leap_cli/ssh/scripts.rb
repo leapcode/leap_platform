@@ -88,7 +88,7 @@ module LeapCli
       def install_authorized_keys
         ssh.log :updating, "authorized_keys" do
           mkdirs '/root/.ssh'
-          ssh.upload! LeapCli::Path.named_path(:authorized_keys), '/root/.ssh/authorized_keys', :mode => '600'
+          ssh.upload! LeapCli::Path.named_path(:authorized_keys), '/root/.ssh/authorized_keys', :mode => 0600
         end
       end
 
@@ -105,7 +105,7 @@ module LeapCli
       def install_insecure_vagrant_key
         ssh.log :installing, "insecure vagrant key" do
           mkdirs '/root/.ssh'
-          ssh.upload! LeapCli::Path.vagrant_ssh_pub_key_file, '/root/.ssh/authorized_keys2', :mode => '600'
+          ssh.upload! LeapCli::Path.vagrant_ssh_pub_key_file, '/root/.ssh/authorized_keys2', :mode => 0600
         end
       end
 
@@ -114,8 +114,8 @@ module LeapCli
         node_init_path = File.join(bin_dir, 'node_init')
         ssh.log :running, "node_init script" do
           mkdirs bin_dir
-          ssh.upload! LeapCli::Path.node_init_script, node_init_path, :mode => '500'
-          ssh.stream node_init_path
+          ssh.upload! LeapCli::Path.node_init_script, node_init_path, :mode => 0700
+          ssh.stream node_init_path, :log_wrap => true
         end
       end
 
