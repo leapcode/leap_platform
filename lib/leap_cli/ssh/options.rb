@@ -6,6 +6,11 @@ module LeapCli
   module SSH
     module Options
 
+      #
+      # options passed to net-ssh. See
+      # https://net-ssh.github.io/net-ssh/Net/SSH.html#method-c-start
+      # for the available options.
+      #
       def self.global_options
         {
           #:keys_only => true,
@@ -78,13 +83,12 @@ module LeapCli
       def self.net_ssh_log_level
         if DEBUG
           case LeapCli.logger.log_level
-            when 1 then 3
-            when 2 then 2
-            when 3 then 1
-            else 0
+            when 1 then :error
+            when 2 then :info
+            else :debug
           end
         else
-          nil
+          :fatal
         end
       end
 
