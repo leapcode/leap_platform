@@ -1,8 +1,8 @@
-#before_script:
-  #- echo 'Running global before_script'
-  #- ruby -v
-  #- bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
-  #- git submodule update --init
+before_script:
+  - echo 'Running global before_script'
+  - ruby -v
+  - bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
+  - git submodule update --init
 
 stages:
   - syntax
