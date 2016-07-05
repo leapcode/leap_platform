@@ -387,6 +387,11 @@ module LeapCli
                 env('_all_').tags[node_tag].node_list.add(node.name, node)
               end
             end
+            if node.name == 'default' || environment_names.include?(node.name)
+              LeapCli::Util.bail! do
+                LeapCli.log :error, "The node name '#{node.name}' is invalid, because there is an environment with that same name."
+              end
+            end
           elsif !options[:include_disabled]
             LeapCli.log 2, :skipping, "disabled node #{name}."
             env.nodes.delete(name)
