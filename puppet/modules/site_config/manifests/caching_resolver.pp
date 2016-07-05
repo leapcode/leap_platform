@@ -1,6 +1,8 @@
 # deploy local caching resolver
 class site_config::caching_resolver {
   tag 'leap_base'
+  $domain          = hiera('domain')
+  $internal_domain = $domain['internal_suffix']
 
   # We need to make sure Package['bind9'] isn't installed because when it is, it
   # keeps unbound from running. Some base debian installs will install bind9,
@@ -17,14 +19,15 @@ class site_config::caching_resolver {
     require    => Package['bind9'],
     settings   => {
       server => {
-        verbosity      => '1',
-        interface      => [ '127.0.0.1', '::1' ],
-        port           => '53',
-        hide-identity  => 'yes',
-        hide-version   => 'yes',
-        harden-glue    => 'yes',
-        access-control => [ '127.0.0.0/8 allow', '::1 allow' ],
-        module-config  => '"validator iterator"'
+        verbosity       => '1',
+        interface       => [ '127.0.0.1', '::1' ],
+        port            => '53',
+        hide-identity   => 'yes',
+        hide-version    => 'yes',
+        harden-glue     => 'yes',
+        access-control  => [ '127.0.0.0/8 allow', '::1 allow' ],
+        module-config   => '"validator iterator"',
+        domain-insecure => $internal_domain
       }
     }
   }
