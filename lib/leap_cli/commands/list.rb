@@ -13,33 +13,38 @@ module LeapCli; module Commands
     c.flag 'print', :desc => 'What attributes to print (optional)'
     c.switch 'disabled', :desc => 'Include disabled nodes in the list.', :negatable => false
     c.action do |global_options,options,args|
-      # don't rely on default manager(), because we want to pass custom options to load()
-      manager = LeapCli::Config::Manager.new
-      if global_options[:color]
-        colors = [:cyan, nil]
-      else
-        colors = [nil, nil]
-      end
-      puts
-      manager.load(:include_disabled => options['disabled'], :continue_on_error => true)
-      if options['print']
-        print_node_properties(manager.filter(args), options['print'])
-      else
-        if args.any?
-          NodeTable.new(manager.filter(args), colors).run
-        else
-          environment = LeapCli.leapfile.environment || '_all_'
-          TagTable.new('SERVICES', manager.env(environment).services, colors).run
-          TagTable.new('TAGS', manager.env(environment).tags, colors).run
-          NodeTable.new(manager.filter(), colors).run
-        end
-      end
+      do_list(global_options, options, args)
     end
   end
 
   private
 
-  def self.print_node_properties(nodes, properties)
+  def do_list(global, options, args)
+    require 'leap_cli/util/console_table'
+    # don't rely on default manager(), because we want to pass custom options to load()
+    manager = LeapCli::Config::Manager.new
+    if global[:color]
+      colors = [:cyan, nil]
+    else
+      colors = [nil, nil]
+    end
+    puts
+    manager.load(:include_disabled => options['disabled'], :continue_on_error => true)
+    if options['print']
+      print_node_properties(manager.filter(args), options['print'])
+    else
+      if args.any?
+        NodeTable.new(manager.filter(args), colors).run
+      else
+        environment = LeapCli.leapfile.environment || '_all_'
+        TagTable.new('SERVICES', manager.env(environment).services, colors).run
+        TagTable.new('TAGS', manager.env(environment).tags, colors).run
+        NodeTable.new(manager.filter(), colors).run
+      end
+    end
+  end
+
+  def print_node_properties(nodes, properties)
     properties = properties.split(',')
     max_width = nodes.keys.inject(0) {|max,i| [i.size,max].max}
     nodes.each_node do |node|
@@ -60,58 +65,7 @@ module LeapCli; module Commands
     puts
   end
 
-  class Table
-    def table
-      @rows = []
-      @row_options = []
-      @column_widths = [20] # first column at least 20
-      @column_options = []
-      @current_row = 0
-      @current_column = 0
-      yield
-    end
-
-    def row(options=nil)
-      @current_column = 0
-      @row_options[@current_row] ||= options
-      yield
-      @current_row += 1
-    end
-
-    def column(str, options=nil)
-      @rows[@current_row] ||= []
-      @rows[@current_row][@current_column] = str
-      @column_widths[@current_column] = [str.length, @column_widths[@current_column]||0].max
-      @column_options[@current_column] ||= options
-      @current_column += 1
-    end
-
-    def draw_table
-      @rows.each_with_index do |row, i|
-        color = (@row_options[i]||{})[:color]
-        row.each_with_index do |column, j|
-          align = (@column_options[j]||{})[:align] || "left"
-          width = @column_widths[j]
-          if color
-            str = LeapCli.logger.colorize(column, color)
-            extra_width = str.length - column.length
-          else
-            str = column
-            extra_width = 0
-          end
-          if align == "right"
-            printf "  %#{width+extra_width}s" % str
-          else
-            printf "  %-#{width+extra_width}s" % str
-          end
-        end
-        puts
-      end
-      puts
-    end
-  end
-
-  class TagTable < Table
+  class TagTable < LeapCli::Util::ConsoleTable
     def initialize(heading, tag_list, colors)
       @heading = heading
       @tag_list = tag_list
@@ -121,7 +75,7 @@ module LeapCli; module Commands
       tags = @tag_list.keys.select{|tag| tag !~ /^_/}.sort # sorted list of tags, excluding _partials
       table do
         row(color: @colors[0]) do
-          column @heading, align: 'right'
+          column @heading, align: 'right', min_width: 20
           column "NODES"
         end
         tags.each do |tag|
@@ -136,7 +90,7 @@ module LeapCli; module Commands
     end
   end
 
-  class NodeTable < Table
+  class NodeTable < LeapCli::Util::ConsoleTable
     def initialize(node_list, colors)
       @node_list = node_list
       @colors = colors
@@ -152,7 +106,7 @@ module LeapCli; module Commands
       end
       table do
         row(color: @colors[0]) do
-          column "NODES", align: 'right'
+          column "NODES", align: 'right', min_width: 20
           column "SERVICES"
           column "TAGS"
         end
