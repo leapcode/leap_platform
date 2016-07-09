@@ -3,8 +3,6 @@
 #      but all other `node x` commands live here.
 #
 
-autoload :IPAddr, 'ipaddr'
-
 module LeapCli; module Commands
 
   ##
@@ -23,29 +21,7 @@ module LeapCli; module Commands
     node.command :add do |add|
       add.switch :local, :desc => 'Make a local testing node (by automatically assigning the next available local IP address). Local nodes are run as virtual machines on your computer.', :negatable => false
       add.action do |global_options,options,args|
-        # argument sanity checks
-        name = args.first
-        assert_valid_node_name!(name, options[:local])
-        assert_files_missing! [:node_config, name]
-
-        # create and seed new node
-        node = Config::Node.new(manager.env)
-        if options[:local]
-          node['ip_address'] = pick_next_vagrant_ip_address
-        end
-        seed_node_data_from_cmd_line(node, args[1..-1])
-        seed_node_data_from_template(node)
-        validate_ip_address(node)
-        begin
-          node['name'] = name
-          json = node.dump_json(:exclude => ['name'])
-          write_file!([:node_config, name], json + "\n")
-          if file_exists? :ca_cert, :ca_key
-            generate_cert_for_node(manager.reload_node!(node))
-          end
-        rescue LeapCli::ConfigError
-          remove_node_files(name)
-        end
+        add_node(global_options, options, args)
       end
     end
 
@@ -53,15 +29,7 @@ module LeapCli; module Commands
     node.arg_name 'OLD_NAME NEW_NAME'
     node.command :mv do |mv|
       mv.action do |global_options,options,args|
-        node = get_node_from_args(args, include_disabled: true)
-        new_name = args.last
-        assert_valid_node_name!(new_name, node.vagrant?)
-        ensure_dir [:node_files_dir, new_name]
-        Leap::Platform.node_files.each do |path|
-          rename_file! [path, node.name], [path, new_name]
-        end
-        remove_directory! [:node_files_dir, node.name]
-        rename_node_facts(node.name, new_name)
+        move_node(global_options, options, args)
       end
     end
 
@@ -69,12 +37,7 @@ module LeapCli; module Commands
     node.arg_name 'NAME' #:optional => false #, :multiple => false
     node.command :rm do |rm|
       rm.action do |global_options,options,args|
-        node = get_node_from_args(args, include_disabled: true)
-        remove_node_files(node.name)
-        if node.vagrant?
-          vagrant_command("destroy --force", [node.name])
-        end
-        remove_node_facts(node.name)
+        rm_node(global_options, options, args)
       end
     end
   end
@@ -93,96 +56,50 @@ module LeapCli; module Commands
     node
   end
 
-  def seed_node_data_from_cmd_line(node, args)
-    args.each do |seed|
-      key, value = seed.split(':', 2)
-      value = format_seed_value(value)
-      assert! key =~ /^[0-9a-z\._]+$/, "illegal characters used in property '#{key}'"
-      if key =~ /\./
-        key_parts = key.split('.')
-        final_key = key_parts.pop
-        current_object = node
-        key_parts.each do |key_part|
-          current_object[key_part] ||= Config::Object.new
-          current_object = current_object[key_part]
-        end
-        current_object[final_key] = value
-      else
-        node[key] = value
-      end
+  protected
+
+  def add_node(global, options, args)
+    name = args.first
+    unless global[:force]
+      assert_files_missing! [:node_config, name]
     end
+    node = Config::Node.new(manager.env)
+    node['name'] = name
+    if options[:ip_address]
+      node['ip_address'] = options[:ip_address]
+    elsif options[:local]
+      node['ip_address'] = pick_next_vagrant_ip_address
+    end
+    node.seed_from_args(args[1..-1])
+    node.seed_from_template
+    node.validate!
+    node.write_configs
+    # reapply inheritance, since tags/services might have changed:
+    node = manager.reload_node!(node)
+    node.generate_cert
   end
 
-  #
-  # load "new node template" information into the `node`, modifying `node`.
-  # values in the template will not override existing node values.
-  #
-  def seed_node_data_from_template(node)
-    node.inherit_from!(manager.template('common'))
-    [node['services']].flatten.each do |service|
-      if service
-        template = manager.template(service)
-        if template
-          node.inherit_from!(template)
-        end
-      end
+  private
+
+  def move_node(global, options, args)
+    node = get_node_from_args(args, include_disabled: true)
+    new_name = args.last
+    Config::Node.validate_name!(new_name, node.vagrant?)
+    ensure_dir [:node_files_dir, new_name]
+    Leap::Platform.node_files.each do |path|
+      rename_file! [path, node.name], [path, new_name]
     end
+    remove_directory! [:node_files_dir, node.name]
+    rename_node_facts(node.name, new_name)
   end
 
-  def remove_node_files(node_name)
-    (Leap::Platform.node_files + [:node_files_dir]).each do |path|
-      remove_file! [path, node_name]
+  def rm_node(global, options, args)
+    node = get_node_from_args(args, include_disabled: true)
+    node.remove_files
+    if node.vagrant?
+      vagrant_command("destroy --force", [node.name])
     end
-  end
-
-  #
-  # conversions:
-  #
-  #   "x,y,z" => ["x","y","z"]
-  #
-  #   "22" => 22
-  #
-  #   "5.1" => 5.1
-  #
-  def format_seed_value(v)
-    if v =~ /,/
-      v = v.split(',')
-      v.map! do |i|
-        i = i.to_i if i.to_i.to_s == i
-        i = i.to_f if i.to_f.to_s == i
-        i
-      end
-    else
-      v = v.to_i if v.to_i.to_s == v
-      v = v.to_f if v.to_f.to_s == v
-    end
-    return v
-  end
-
-  def validate_ip_address(node)
-    if node['ip_address'] == "REQUIRED"
-      bail! do
-        log :error, "ip_address is not set. Specify with `leap node add NAME ip_address:ADDRESS`."
-      end
-    end
-    IPAddr.new(node['ip_address'])
-  rescue ArgumentError
-    bail! do
-      if node['ip_address']
-        log :invalid, "ip_address #{node['ip_address'].inspect}"
-      else
-        log :missing, "ip_address"
-      end
-    end
-  end
-
-  def assert_valid_node_name!(name, local=false)
-    assert! name, 'No <node-name> specified.'
-    if local
-      assert! name =~ /^[0-9a-z]+$/, "illegal characters used in node name '#{name}' (note: Vagrant does not allow hyphens or underscores)"
-    else
-      assert! name =~ /^[0-9a-z-]+$/, "illegal characters used in node name '#{name}' (note: Linux does not allow underscores)"
-    end
+    remove_node_facts(node.name)
   end
 
 end; end
