@@ -1,0 +1,24 @@
+# runtime
+RunAsDaemon 1
+<%  if (v=scope.lookupvar('tor::daemon::data_dir')) != '/var/lib/tor' -%>
+DataDirectory <%= v %>
+<% end -%>
+
+# log
+<% if (rules=scope.lookupvar('tor::daemon::log_rules')).empty? -%>
+Log notice syslog
+<%  else -%>
+<%   rules.each do |log_rule| -%>
+Log <%= log_rule %>
+<%    end -%>
+<%  end -%>
+<%- if @safe_logging != 1 then -%>
+SafeLogging <%= @safe_logging %>
+<%-   end -%>
+
+<%  if (v=scope.lookupvar('tor::daemon::automap_hosts_on_resolve')) != '0' -%>
+AutomapHostsOnResolve <%= v %>
+<%  end -%>
+<%  if (v=scope.lookupvar('tor::daemon::use_bridges')) != '0' -%>
+UseBridges <%= v %>
+<%- end -%>

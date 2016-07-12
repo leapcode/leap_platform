@@ -1,0 +1,9 @@
+# socks
+SocksPort <%= @port %>
+<% @listen_addresses.each do |listen_address| -%>
+SocksListenAddress <%= listen_address %>
+<% end -%>
+<% @policies.each do |policy| -%>
+SocksPolicy <%= policy %>
+<% end -%>
+
