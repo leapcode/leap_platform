@@ -1,0 +1,6 @@
+.tmp_*~
+.librarian
+.tmp
+spec/fixtures/modules
+spec/fixtures/manifests
+*.lock

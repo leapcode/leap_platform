@@ -1,0 +1,19 @@
+<%= scope.function_template(['apache/vhosts/php/partial.erb']) %>
+
+  # fixes: http://git.zx2c4.com/w3-total-fail/tree/w3-total-fail.sh
+  <Directory "<%= @documentroot %>/wp-content/w3tc/dbcache">
+    Deny From All
+  </Directory>
+
+  # simple wp-login brute force protection
+  # http://www.frameloss.org/2013/04/26/even-easier-brute-force-login-protection-for-wordpress/
+  RewriteEngine On
+  RewriteCond %{HTTP_COOKIE} !<%= cookie = scope.function_sha1([scope.function_fqdn_rand([9999999999999,@name]).to_s + "cookie"]) %>
+  RewriteRule ^/wp-login.php /wordpress-login-<%= tmpuri = scope.function_sha1([scope.function_fqdn_rand([9999999999999,@name]).to_s + "wp-login"]) %>.php [R,L]
+  <Location /wordpress-login-<%= tmpuri %>.php>
+    CookieTracking on
+    CookieExpires 30
+    CookieName <%= cookie %>
+  </Location>
+  RewriteRule ^/wordpress-login-<%= tmpuri %>.php /wp-login.php [NE]
+

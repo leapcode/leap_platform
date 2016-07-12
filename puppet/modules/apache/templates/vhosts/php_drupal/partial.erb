@@ -1,0 +1,22 @@
+  <Directory "<%= @documentroot %>/">
+<%= scope.function_template(['apache/vhosts/partials/std_override_options.erb']) %>
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+<%= scope.function_template(['apache/vhosts/partials/php_settings.erb']) %>
+    # Protect files and directories from prying eyes.
+    <FilesMatch "\.(engine|inc|info|install|module|profile|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)$|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template)$">
+      Order allow,deny
+    </FilesMatch>
+
+    # Customized error messages.
+    ErrorDocument 404 /index.php
+
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
+  </Directory>
+  <Directory "<%= @documentroot %>/files/">
+    SetHandler Drupal_Security_Do_Not_Remove_See_SA_2006_006
+    Options None
+    Options +FollowSymLinks
+  </Directory>

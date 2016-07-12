@@ -1,0 +1,21 @@
+############################################################
+### This file is managed by PUPPET!                     ####
+### Only modify in repo or you will loose the changes!  ####
+############################################################
+
+<VirtualHost *:443>
+    Include include.d/defaults.inc
+    Include include.d/ssl_defaults.inc
+    DocumentRoot /var/www/html
+
+    # Use separate log files for the SSL virtual host; note that LogLevel
+    # is not inherited from httpd.conf.
+    ErrorLog logs/ssl_error_log
+    TransferLog logs/ssl_access_log
+    LogLevel warn
+
+<%= scope.function_templatewlv(['apache/vhosts/partials/ssl.erb',
+                                {'configuration' => {}}]) %>
+</VirtualHost>
+
+# vim: ts=4 filetype=apache

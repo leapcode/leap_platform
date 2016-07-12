@@ -1,0 +1,7 @@
+<% if @run_mode == 'fcgid' -%>
+  RewriteEngine On
+  RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-d
+  RewriteRule ^/?index.php/(.*)$ /index.php?title=$1 [PT,L,QSA]
+<% end -%>
+<%= scope.function_template(['apache/vhosts/php/partial.erb']) %>

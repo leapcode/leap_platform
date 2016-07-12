@@ -1,0 +1,6 @@
+<IfDefine HttpdLocal>
+Listen 127.0.0.1:443
+</IfDefine>
+<IfDefine !HttpdLocal>
+Listen <%= scope.lookupvar('::ipaddress') %>:443
+</IfDefine>

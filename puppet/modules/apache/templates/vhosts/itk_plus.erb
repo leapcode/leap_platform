@@ -1,0 +1,6 @@
+<IfDefine HttpdLocal>
+<%= scope.function_template(['apache/vhost/default.erb']) %>
+</IfDefine>
+<IfDefine !HttpdLocal>
+<%= scope.function_templatewlv(['apache/vhost/default.erb', {'template_partial' => 'apache/vhosts/itk_plus/partial.erb' }]) %>
+</IfDefine>

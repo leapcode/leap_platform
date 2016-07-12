@@ -1,0 +1,30 @@
+  <Directory "<%= @documentroot %>/">
+<%= scope.function_template(['apache/vhosts/partials/std_override_options.erb']) %>
+<%= scope.function_template(['apache/vhosts/partials/php_settings.erb']) %> 
+<%= scope.function_template(['apache/vhosts/partials/authentication.erb']) %>
+
+    Include include.d/joomla.inc
+  </Directory>
+
+  <Directory "<%= @documentroot %>/administrator/">
+    RewriteEngine on
+
+    # Rewrite URLs to https that go for the admin area
+    RewriteCond %{REMOTE_ADDR} !^127\.[0-9]+\.[0-9]+\.[0-9]+$
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{REQUEST_URI} (.*/administrator/.*)
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R]
+  </Directory>
+
+  # Deny various directories that
+  # shouldn't be webaccessible
+  <Directory "<%= @documentroot %>/tmp/">
+    Deny From All
+  </Directory>
+  <Directory "<%= @documentroot %>/logs/">
+    Deny From All
+  </Directory>
+  <Directory "<%= @documentroot %>/cli/">
+    Deny From All
+  </Directory>
+

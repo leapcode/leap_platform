@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--#if expr="$SERVER_NAME = /([^.]*\.[^.]*)$/" -->
+    <!--#set var="DOMAIN" value="$1" -->
+<!--#endif -->
+
+<clientConfig version="1.1">
+  <emailProvider id="<%= @provider %>">
+    <domain><!--#echo var="DOMAIN" --></domain>
+    <displayName><%= @display_name || @provider %> Mail (<!--#echo var="DOMAIN" -->)</displayName>
+    <displayShortName><%= @shortname || @provider.split('.').first %></displayShortName>
+    <incomingServer type="imap">
+      <hostname><%= @imap_server || "imap.#{@provider}" %></hostname>
+      <port>143</port>
+      <socketType>STARTTLS</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </incomingServer>
+    <incomingServer type="imap">
+      <hostname><%= @imap_server || "imap.#{@provider}" %></hostname>
+      <port>993</port>
+      <socketType>SSL</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </incomingServer>
+    <incomingServer type="pop3">
+      <hostname><%= @pop_server || "pop.#{@provider}" %></hostname>
+      <port>110</port>
+      <socketType>STARTTLS</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </incomingServer>
+    <incomingServer type="pop3">
+      <hostname><%= @pop_server  || "pop.#{@provider}" %></hostname>
+      <port>995</port>
+      <socketType>SSL</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </incomingServer>
+    <outgoingServer type="smtp">
+      <hostname><%= @smtp_server || "smtp.#{@provider}" %></hostname>
+      <port>587</port>
+      <socketType>STARTTLS</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </outgoingServer>
+    <outgoingServer type="smtp">
+      <hostname><%= @smtp_server  || "smtp.#{@provider}"%></hostname>
+      <port>465</port>
+      <socketType>SSL</socketType>
+      <authentication>password-cleartext</authentication>
+      <username>%EMAILADDRESS%</username>
+    </outgoingServer>
+    <documentation url="<%= @documentation_url || "http://#{@provider}" %>">
+      <descr lang="de">Allgemeine Beschreibung der Einstellungen</descr>
+      <descr lang="en">Generic settings page</descr>
+    </documentation>
+  </emailProvider>
+</clientConfig>
