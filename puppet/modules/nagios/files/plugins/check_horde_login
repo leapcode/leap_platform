@@ -1,0 +1,94 @@
+#!/bin/env python
+# vi:si:et:sw=4:sts=4:ts=4
+# -*- coding: UTF-8 -*-
+# -*- Mode: Python -*-
+#
+# Copyright (C) 2015 mh <mh@immerda.ch>
+
+# This file may be distributed and/or modified under the terms of
+# the GNU General Public License version 2 as published by
+# the Free Software Foundation.
+# This file is distributed without any warranty; without even the implied
+# warranty of merchantability or fitness for a particular purpose.
+#
+
+import sys, os, requests, getopt
+from time import time
+
+def usage():
+    print sys.argv[0] + " -u username "+ \
+                          "-p password " + \
+                          "-s server path" + \
+                          "[-w warning_in_s] " + \
+                          "[-c critical_in_s]"
+    sys.exit(1)
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "u:p:s:h:w:c")
+    except getopt.GetoptError:
+        usage()
+        return 3
+
+    user = url = password = None
+    warning = 5
+    critical = 10
+
+    for o, a in opts:
+        if o == "-u":
+            user = a
+        elif o == "-p":
+            password = a
+        elif o == "-w":
+            warning = a
+        elif o == "-c":
+            critical = a
+        elif o == "-s":
+            url = a + "/login.php"
+        elif o == '-h':
+            usage()
+
+    if user == None or password == None or url == None:
+        usage()
+
+    params = { 'horde_user':         user,
+               'horde_pass':         password,
+               'horde_select_view':  'auto',
+               'anchor_string':      '',
+               'app':                '',
+               'login_post':         1,
+               'new_lang':           'en_US',
+               'url':                '',
+             }
+
+
+    timestamp = time()
+    try:
+      r = requests.post(url, data=params, allow_redirects=False)
+    except Exception, e:
+      print "CRITICAL Horde Login Failed: %s" % e
+      sys.exit(2)
+
+    timestamp = time() - timestamp
+    if r.status_code == 302:
+        if timestamp < warning:
+          status = "OK"
+          exitcode = 0
+        if timestamp >= warning:
+          status = "WARNING"
+          exitcode = 1
+        if timestamp >= critical:
+          status = "CRITICAL"
+          exitcode = 2
+    else:
+        status   = "ERROR"
+        exitcode = 2
+    # on a successfully login we are redirected to the mailbox
+    print '%s Horde Login | response_time=%.3fs;%.3f;%.3f' % (status, timestamp, warning, critical)
+    sys.exit(exitcode)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+

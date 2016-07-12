@@ -1,0 +1,83 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# -*- Mode: Python -*-
+#
+# Copyright (C) 2006 Bertera Pietro <pietro@bertera.it>
+# Copyright (C) 2015 mh <mh@immerda.ch>
+# Response time monitoring with perfdata modification by Ivan Savcic <isavcic@gmail.com> and Milos Buncic, 2012.
+# Derived from: https://github.com/isavcic/check_imap_login
+
+# This file may be distributed and/or modified under the terms of
+# the GNU General Public License version 2 as published by
+# the Free Software Foundation.
+# This file is distributed without any warranty; without even the implied
+# warranty of merchantability or fitness for a particular purpose.
+
+import sys, os, poplib, getopt
+from time import time
+
+def usage():
+  print sys.argv[0] + " -u <user> -p <password> -H <host> [-s] -w <warning threshold (sec)> -c <critical threshold (sec)>\n -s is for using POP3s"
+
+def main():
+  try:
+    opts, args = getopt.getopt(sys.argv[1:], "u:p:sH:w:c:")
+  except getopt.GetoptError:
+    usage()
+    return 3
+
+  user = host = password = use_ssl = warning = critical = None
+
+  for o, a in opts:
+    if o == "-u":
+      user = a
+    elif o == "-p":
+      password = a
+    elif o == "-s":
+      use_ssl = True
+    elif o == "-H":
+      host = a
+    elif o == "-w":
+      warning = float(a)
+    elif o == "-c":
+      critical = float(a)
+
+  if user == None or password == None or host == None or warning == None or critical == None:
+    usage()
+    return 1
+
+  if use_ssl:
+    M = poplib.POP3_SSL(host=host)
+  else:
+    M = poplib.POP3(host)
+
+  timestamp = time()
+
+  try:
+    M.getwelcome()
+    M.user(user)
+    M.pass_(password)
+  except Exception, e:
+    print "CRITICAL POP3 Login Failed: %s" % e
+    return 2
+
+  M.quit()
+
+  timestamp = time() - timestamp
+
+  if timestamp < warning:
+    status = "OK"
+    exitcode = 0
+  if timestamp >= warning:
+    status = "WARNING"
+    exitcode = 1
+  if timestamp >= critical:
+    status = "CRITICAL"
+    exitcode = 2
+
+  print '%s POP3 Login | response_time=%.3fs;%.3f;%.3f' % (status, timestamp, warning, critical)
+
+  return exitcode
+
+if __name__ == "__main__":
+  sys.exit(main())
