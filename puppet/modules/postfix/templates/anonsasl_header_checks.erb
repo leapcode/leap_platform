@@ -1,0 +1,2 @@
+/^Received: from (.* \([-._[:alnum:]]+ \[[.[:digit:]]{7,15}\]\)).*?([[:space:]]+).*\(Authenticated sender: ([^)]+)\).*by (<%= fqdn.gsub(/\./, '\.') %>) \(([^)]+)\) with (E?SMTPS?A?) id ([A-F[:digit:]]+).*/
+  REPLACE Received: from [127.0.0.1] (localhost [127.0.0.1])$2(Authenticated sender: $3)${2}with $6 id $7   
