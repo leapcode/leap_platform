@@ -1,3 +1,4 @@
+# management of specific MTA checks
 class site_postfix::mx::checks {
 
   file {
@@ -13,6 +14,12 @@ class site_postfix::mx::checks {
       mode    => '0644',
       owner   => root,
       group   => root;
+
+    '/etc/postfix/checks/helo_checks.pcre':
+      source => 'puppet:///modules/site_postfix/checks/helo_access.pcre',
+      mode   => '0644',
+      owner  => root,
+      group  => root;
   }
 
   exec {
