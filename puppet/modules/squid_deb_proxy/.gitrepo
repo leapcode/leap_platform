@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_squid_deb_proxy
+	branch = master
+	commit = 08bfaccaea01fd2d334946428504e71a51748e3d
+	parent = a658f5c30ada5e03468257f90d08f6cd2ba25488
+	cmdver = 0.3.0
