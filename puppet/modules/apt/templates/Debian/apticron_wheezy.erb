@@ -1,0 +1,80 @@
+# apticron.conf
+#
+# set EMAIL to a space separated list of addresses which will be notified of
+# impending updates
+#
+EMAIL="<%= scope.lookupvar('apt::apticron::email') %>"
+
+#
+# Set DIFF_ONLY to "1" to only output the difference of the current run
+# compared to the last run (ie. only new upgrades since the last run). If there
+# are no differences, no output/email will be generated. By default, apticron
+# will output everything that needs to be upgraded.
+#
+DIFF_ONLY="<%= scope.lookupvar('apt::apticron::diff_only') %>"
+
+#
+# Set LISTCHANGES_PROFILE if you would like apticron to invoke apt-listchanges
+# with the --profile option. You should add a corresponding profile to
+# /etc/apt/listchanges.conf
+#
+LISTCHANGES_PROFILE="<%= scope.lookupvar('apt::apticron::listchanges_profile') %>"
+
+#
+# Set SYSTEM if you would like apticron to use something other than the output
+# of "hostname -f" for the system name in the mails it generates
+#
+# SYSTEM="foobar.example.com"
+<% unless (v=scope.lookupvar('apt::apticron::system')).to_s == "false" -%>
+SYSTEM="<%= v %>"
+<% end -%>
+
+#
+# Set IPADDRESSNUM if you would like to configure the maximal number of IP
+# addresses apticron displays. The default is to display 1 address of each
+# family type (inet, inet6), if available.
+#
+# IPADDRESSNUM="1"
+<% unless (v=scope.lookupvar('apt::apticron::ipaddressnum')).to_s == "false" -%>
+IPADDRESSNUM="<%= v %>"
+<% end -%>
+
+#
+# Set IPADDRESSES to a whitespace separated list of reachable addresses for
+# this system. By default, apticron will try to work these out using the
+# "ip" command
+#
+# IPADDRESSES="192.0.2.1 2001:db8:1:2:3::1"
+<% unless (v=scope.lookupvar('apt::apticron::ipaddresses')).to_s == "false" -%>
+IPADDRESSES=<%= v %>"
+<% end -%>
+
+#
+# Set NOTIFY_HOLDS="0" if you don't want to be notified about new versions of
+# packages on hold in your system. The default behavior is downloading and
+# listing them as any other package.
+#
+# NOTIFY_HOLDS="0"
+NOTIFY_HOLDS="<%= scope.lookupvar('apt::apticron::notifyholds') %>"
+
+#
+# Set NOTIFY_NEW="0" if you don't want to be notified about packages which
+# are not installed in your system. Yes, it's possible! There are some issues
+# related to systems which have mixed stable/unstable sources. In these cases
+# apt-get will consider for example that packages with "Priority:
+# required"/"Essential: yes" in unstable but not in stable should be installed,
+# so they will be listed in dist-upgrade output. Please take a look at
+# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=531002#44
+#
+# NOTIFY_NEW="0"
+NOTIFY_NEW="<%= scope.lookupvar('apt::apticron::notifynew') %>"
+
+
+#
+# Set CUSTOM_SUBJECT if you want to replace the default subject used in
+# the notification e-mails. This may help filtering/sorting client-side e-mail.
+# If you want to use internal vars please use single quotes here. Ex:
+# ='[apticron] :  package update(s)'
+#
+# CUSTOM_SUBJECT=""
+CUSTOM_SUBJECT="<%= scope.lookupvar('apt::apticron::customsubject') %>"

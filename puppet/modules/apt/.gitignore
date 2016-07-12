@@ -1,0 +1,12 @@
+/pkg/
+/Gemfile.lock
+/vendor/
+/spec/fixtures/manifests/*
+/spec/fixtures/modules/*
+!/spec/fixtures/modules/apt
+!/spec/fixtures/modules/apt/*
+/.vagrant/
+/.bundle/
+/coverage/
+/.idea/
+*.iml

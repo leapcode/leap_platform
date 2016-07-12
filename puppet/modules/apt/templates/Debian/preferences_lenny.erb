@@ -1,0 +1,25 @@
+Explanation: Debian <%= codename=scope.lookupvar('::debian_codename') %>
+Package: *
+Pin: release o=Debian,a=<%= scope.lookupvar('::debian_release') %>,v=5*
+Pin-Priority: 990
+
+Explanation: Debian backports
+Package: *
+Pin: origin backports.debian.org
+Pin-Priority: 200
+
+Explanation: Debian <%= next_release=scope.lookupvar('::debian_nextrelease') %>
+Package: *
+Pin: release o=Debian,a=<%= next_release %>
+Pin-Priority: 2
+
+Explanation: Debian sid
+Package: *
+Pin: release o=Debian,a=unstable
+Pin-Priority: 1
+
+Explanation: Debian fallback
+Package: *
+Pin: release o=Debian
+Pin-Priority: -10
+

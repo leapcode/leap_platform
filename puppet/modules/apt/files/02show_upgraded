@@ -1,0 +1,4 @@
+// This file is managed by Puppet
+// all local modifications will be overwritten
+
+APT::Get::Show-Upgraded true;
