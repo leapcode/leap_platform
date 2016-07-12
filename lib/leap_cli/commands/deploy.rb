@@ -286,7 +286,7 @@ module LeapCli
     # repository.
     #
     def init_submodules
-      return unless is_git_directory?(Path.platform)
+      return unless is_git_directory?(Path.platform) && !is_git_subrepo?(Path.platform)
       Dir.chdir Path.platform do
         assert_run! "git submodule sync"
         statuses = assert_run! "git submodule status"
