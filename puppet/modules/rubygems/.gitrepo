@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_rubygems
+	branch = master
+	commit = 510a3693eab5dc78ed27d3728ee4d3b12334ea12
+	parent = b5c3c14ae094bff896d19ee37f967e8fc8c34017
+	cmdver = 0.3.0
