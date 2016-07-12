@@ -1,0 +1,7 @@
+# managed by puppet
+domain <%= scope.lookupvar('resolvconf::domain') %>
+search <%= scope.lookupvar('resolvconf::search') %>
+
+<% scope.lookupvar('resolvconf::nameservers').each do |nameserver| -%>
+nameserver <%= nameserver %>
+<% end -%>
