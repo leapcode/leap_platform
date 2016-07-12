@@ -1,0 +1,9 @@
+#
+# Shorewall version 4 - Providers File
+#
+# For information about entries in this file, type "man shorewall-providers"
+#
+# For additional information, see http://shorewall.net/MultiISP.html
+#
+############################################################################################
+#NAME	NUMBER	MARK	DUPLICATE	INTERFACE	GATEWAY		OPTIONS		COPY

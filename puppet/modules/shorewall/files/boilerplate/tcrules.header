@@ -1,0 +1,15 @@
+#
+# Shorewall version 4 - Tcrules File
+#
+# For information about entries in this file, type "man shorewall-tcrules"
+#
+# See http://shorewall.net/traffic_shaping.htm for additional information.
+# For usage in selecting among multiple ISPs, see
+# http://shorewall.net/MultiISP.html
+#
+# See http://shorewall.net/PacketMarking.html for a detailed description of
+# the Netfilter/Shorewall packet marking mechanism.
+######################################################################################################################
+#MARK   SOURCE          DEST            PROTO   DEST    SOURCE  USER    TEST    LENGTH  TOS   CONNBYTES         HELPER
+#                                               PORT(S) PORT(S)
+
