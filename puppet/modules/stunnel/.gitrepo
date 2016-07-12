@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_stunnel
+	branch = master
+	commit = 523612fb6daff51837423619f5014e62dc835559
+	parent = 297fadc8e6ad4729589d4ec21683f05a1e50bdf9
+	cmdver = 0.3.0
