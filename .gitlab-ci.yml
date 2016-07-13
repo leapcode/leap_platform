@@ -4,7 +4,6 @@ before_script:
 
 stages:
   - syntax
-# - rspec
   - build
 
 # doesn't work in docker atm
@@ -42,12 +41,10 @@ catalog:
 
 build:
   stage: build
-  before_script:
-    - env
   script:
     # use simple_deploy to speed up local development
     #- leap-platform-test simple_deploy
-    - leap-platform-test -v reset_deploy
+    - leap-platform-test -v init_deploy
     - leap-platform-test -v test
-    - leap info
-    - leap local stop
+    - bundle exec leap info
+    - bundle exec leap local stop
