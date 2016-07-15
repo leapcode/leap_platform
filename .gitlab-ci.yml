@@ -42,10 +42,4 @@ catalog:
 build:
   stage: build
   script:
-    # use simple_deploy to speed up local development
-    #- leap-platform-test simple_deploy
-    - leap-platform-test -v init_deploy
-    - leap-platform-test -v test
-    - cd tests/puppet/provider
-    - bundle exec leap info
-    - bundle exec leap local destroy
+    - ./bin/ci-build.sh
