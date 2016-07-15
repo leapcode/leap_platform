@@ -46,5 +46,6 @@ build:
     #- leap-platform-test simple_deploy
     - leap-platform-test -v init_deploy
     - leap-platform-test -v test
+    - cd tests/puppet/provider
     - bundle exec leap info
-    - bundle exec leap local stop
+    - bundle exec leap local destroy
