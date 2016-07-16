@@ -5,6 +5,10 @@
 /tests/puppet/provider/secrets.json
 /tests/puppet/provider/files/ssh/authorized_keys
 /tests/puppet/provider/files/nodes/
+/tests/puppet/provider/nodes/*
+!/tests/puppet/provider/nodes/catalogtest.json
+/tests/puppet/provider/tags/*
+!/tests/puppet/provider/tags/catalogtest.json
 /tests/puppet/provider/users/*
 !/tests/puppet/provider/users/gitlab-runner
 !/tests/puppet/provider/users/gitlab-runner/*

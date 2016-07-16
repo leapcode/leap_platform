@@ -1,9 +1,10 @@
 {
-  "ip_address": "10.5.5.101",
+  "ip_address": "1.1.1.1",
   "services": [
     "couchdb",
     "mx",
     "soledad",
     "webapp"
-  ]
+  ],
+  "tags": ["catalogtest"]
 }

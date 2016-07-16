@@ -9,7 +9,7 @@
    :datadir: tests/puppet/provider/hiera
 
 :hierarchy:
-  - single
+  - catalogtest
 
 :puppet:
    :datasource: data
