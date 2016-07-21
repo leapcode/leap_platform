@@ -16,7 +16,7 @@ module LeapCli; module Commands
                     "The format is property_name:value.",
                     "For example: `leap node add web1 ip_address:1.2.3.4 services:webapp`.",
                     "To set nested properties, property name can contain '.', like so: `leap node add web1 ssh.port:44`",
-                    "Separeate multiple values for a single property with a comma, like so: `leap node add mynode services:webapp,dns`"].join("\n\n")
+                    "Separate multiple values for a single property with a comma, like so: `leap node add mynode services:webapp,dns`"].join("\n\n")
     node.arg_name 'NAME [SEED]' # , :optional => false, :multiple => false
     node.command :add do |add|
       add.switch :local, :desc => 'Make a local testing node (by automatically assigning the next available local IP address). Local nodes are run as virtual machines on your computer.', :negatable => false
