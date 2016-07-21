@@ -17,7 +17,7 @@ module LeapCli
       attr_reader :ssh, :host
       def initialize(backend, hostname)
         @ssh = backend
-        @host = host
+        @host = hostname
       end
 
       #
