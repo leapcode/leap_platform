@@ -46,6 +46,12 @@ module LeapCli
         Thread.current["sshkit_backend"] = nil
       end
 
+      # if set, all the commands will begin with:
+      # sudo -u #{@user} -- sh -c '<command>'
+      def set_user(user='root')
+        @user = user
+      end
+
       #
       # like default capture, but gracefully logs failures for us
       # last argument can be an options hash.

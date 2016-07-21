@@ -29,6 +29,7 @@ module LeapCli
       # options -- hash, possible keys include
       #   :nopin -- disregard environment pinning
       #   :local -- if false, disallow local nodes
+      #   :warning -- if false, don't print a warning when no nodes are found.
       #
       # A nil value in the filters array indicates
       # the default environment. This is in order to support
@@ -139,8 +140,10 @@ module LeapCli
             return @manager.env('_all_').services[name].node_list
           elsif @manager.tags[name]
             return @manager.env('_all_').tags[name].node_list
-          else
+          elsif @options[:warning] != false
             LeapCli.log :warning, "filter '#{name}' does not match any node names, tags, services, or environments."
+            return Config::ObjectList.new
+          else
             return Config::ObjectList.new
           end
         else
@@ -153,7 +156,7 @@ module LeapCli
             @environments.each do |env|
               node_list.merge!(@manager.env(env).tags[name].node_list)
             end
-          else
+          elsif @options[:warning] != false
             LeapCli.log :warning, "filter '#{name}' does not match any node names, tags, services, or environments."
           end
           return node_list

@@ -99,11 +99,15 @@ module LeapCli
     #
     TITLE_FORMATTERS = [
       # red
-      { :match => /error/, :color => :red, :style => :bold },
       { :match => /fatal_error/, :replace => 'fatal error:', :color => :red, :style => :bold },
+      { :match => /error/, :color => :red, :style => :bold },
       { :match => /removed/, :color => :red, :style => :bold },
+      { :match => /removing/, :color => :red, :style => :bold },
+      { :match => /destroyed/, :color => :red, :style => :bold },
+      { :match => /destroying/, :color => :red, :style => :bold },
+      { :match => /terminated/, :color => :red, :style => :bold },
       { :match => /failed/, :replace => 'FAILED', :color => :red, :style => :bold },
-      { :match => /bail/, :replace => 'bailing out', :color => :red, :style => :bold },
+      { :match => /bailing/, :replace => 'bailing', :color => :red, :style => :bold },
       { :match => /invalid/, :color => :red, :style => :bold },
 
       # yellow
@@ -115,6 +119,7 @@ module LeapCli
       { :match => /created/, :color => :green, :style => :bold },
       { :match => /completed/, :color => :green, :style => :bold },
       { :match => /ran/, :color => :green, :style => :bold },
+      { :match => /registered/, :color => :green, :style => :bold },
 
       # cyan
       { :match => /note/, :replace => 'NOTE:', :color => :cyan, :style => :bold },

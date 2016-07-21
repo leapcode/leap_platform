@@ -9,11 +9,8 @@ module LeapCli; module Config
   class Node < Object
     attr_accessor :file_paths
 
-    def initialize(environment=nil) #, name=nil)
+    def initialize(environment=nil)
       super(environment)
-      #if name
-      #  self['name'] = name
-      #end
       @node = self
       @file_paths = []
     end
@@ -36,6 +33,14 @@ module LeapCli; module Config
         Util::log :warning, "invalid ip address '#{ip}' for node '#{@node.name}'"
       end
       return vagrant_range.include?(ip_addr)
+    end
+
+    def vm?
+      self['vm']
+    end
+
+    def vm_id?
+      self['vm.id'] && !self['vm.id'].empty?
     end
 
     #

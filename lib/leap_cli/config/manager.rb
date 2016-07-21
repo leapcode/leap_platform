@@ -315,19 +315,20 @@ module LeapCli
         end
 
         # inherit from tags
+        node['tags'] = (node['tags'] || []).to_a
         if node.vagrant?
-          node['tags'] = (node['tags'] || []).to_a + ['local']
+          node['tags'] << 'local'
+        elsif node['vm']
+          node['tags'] << 'vm'
         end
-        if node['tags']
-          node['tags'].to_a.each do |node_tag|
-            tag = node_env.tags[node_tag]
-            if tag.nil?
-              msg = 'in node "%s": the tag "%s" does not exist.' % [node['name'], node_tag]
-              log 0, :error, msg
-              raise LeapCli::ConfigError.new(node, "error " + msg) if throw_exceptions
-            else
-              new_node.deep_merge!(tag)
-            end
+        node['tags'].each do |node_tag|
+          tag = node_env.tags[node_tag]
+          if tag.nil?
+            msg = 'in node "%s": the tag "%s" does not exist.' % [node['name'], node_tag]
+            log 0, :error, msg
+            raise LeapCli::ConfigError.new(node, "error " + msg) if throw_exceptions
+          else
+            new_node.deep_merge!(tag)
           end
         end
 

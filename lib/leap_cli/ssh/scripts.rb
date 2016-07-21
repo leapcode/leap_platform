@@ -119,6 +119,21 @@ module LeapCli
         end
       end
 
+      #
+      # AWS debian images only allow you to login as admin. This is done with a
+      # custom command in /root/.ssh/authorized_keys, instead of by modifying
+      # /etc/ssh/sshd_config.
+      #
+      # We need to be able to ssh as root for scp and rsync to work.
+      #
+      # This command is run as 'admin', with a sudo wrapper. In order for the
+      # sudo to work, the command must be specified as separate arguments with
+      # no spaces (that is how ssh-kit works).
+      #
+      def allow_root_ssh
+        ssh.execute 'cp', '/home/admin/.ssh/authorized_keys', '/root/.ssh/authorized_keys'
+      end
+
       private
 
       def flagize(hsh)

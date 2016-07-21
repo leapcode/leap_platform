@@ -38,6 +38,7 @@ module LeapCli
     #  :port -- ssh port
     #  :ip   -- ssh ip
     #  :auth_methods -- e.g. ["pubkey", "password"]
+    #  :user -- default 'root'
     #
     def self.remote_command(nodes, options={}, &block)
       CustomCoordinator.new(
@@ -47,6 +48,11 @@ module LeapCli
         )
       ).each do |ssh, host|
         LeapCli.log 2, "ssh options for #{host.hostname}: #{host.ssh_options.inspect}"
+        if host.user != 'root'
+          # if the ssh user is not root, we want to make the ssh commands
+          # switch to root before they are run:
+          ssh.set_user('root')
+        end
         yield ssh, host
       end
     end

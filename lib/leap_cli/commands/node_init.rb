@@ -37,6 +37,13 @@ module LeapCli; module Commands
       update_compiled_ssh_configs
       # allow password auth for new nodes:
       options[:auth_methods] = ["publickey", "password"]
+      if node.vm?
+        # new AWS virtual machines will only allow login as 'admin'
+        # before we continue, we must enable root access.
+        SSH.remote_command(node, options.merge(:user => 'admin')) do |ssh, host|
+          ssh.scripts.allow_root_ssh
+        end
+      end
       SSH.remote_command(node, options) do |ssh, host|
         if node.vagrant?
           ssh.scripts.install_insecure_vagrant_key

@@ -30,10 +30,12 @@ module LeapCli; module Config
     # shared, non-inheritable
     def nodes; @@nodes; end
     def secrets; @@secrets; end
+    def cloud; @@cloud; end
 
     def initialize(manager, name, search_dir, parent, options={})
       @@nodes ||= nil
       @@secrets ||= nil
+      @@cloud ||= nil
 
       @manager = manager
       @name    = name
@@ -64,6 +66,7 @@ module LeapCli; module Config
         @partials = Config::ObjectList.new
         @provider = Config::Provider.new
         @common   = Config::Object.new
+        @cloud    = Config::Cloud.new
         return
       end
 
@@ -89,7 +92,9 @@ module LeapCli; module Config
       @partials.values.each {|partial| partial.delete('name'); }
 
       #
-      # shared: currently non-inheritable
+      # shared
+      #
+      # shared configs are also non-inheritable
       # load the first ones we find, and only those.
       #
       if @@nodes.nil? || @@nodes.empty?
@@ -97,6 +102,9 @@ module LeapCli; module Config
       end
       if @@secrets.nil? || @@secrets.empty?
         @@secrets = load_json(Path.named_path(:secrets_config, search_dir), Config::Secrets, options)
+      end
+      if @@cloud.nil? || @@cloud.empty?
+        @@cloud = load_json(Path.named_path(:cloud_config, search_dir), Config::Cloud)
       end
     end
 

@@ -46,6 +46,9 @@ module LeapCli
         if args[:auth_methods]
           ssh_options[:auth_methods] = args[:auth_methods]
         end
+        if args[:user]
+          ssh_options[:user] = args[:user]
+        end
         return ssh_options
       end
 

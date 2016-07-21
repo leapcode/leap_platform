@@ -42,6 +42,7 @@ Leap::Platform.define do
     :tag_config       => 'tags/#{arg}.json',
     :template_config  => 'templates/#{arg}.json',
     :secrets_config   => 'secrets.json',
+    :cloud_config     => 'cloud.json',
     :node_config      => 'nodes/#{arg}.json',
 
     # input config files, environmentally scoped
