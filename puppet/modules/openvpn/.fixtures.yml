@@ -1,6 +1,0 @@
-fixtures:
-  repositories:
-    concat: git://github.com/ripienaar/puppet-concat.git
-  symlinks:
-    openvpn: "#{source_dir}"
-
