@@ -42,7 +42,7 @@ class site_static {
   if (member($formats, 'rack')) {
     include site_apt::preferences::passenger
     class { 'passenger':
-      use_munin => false,
+      manage_munin => false,
       require   => Class['site_apt::preferences::passenger']
     }
   }
