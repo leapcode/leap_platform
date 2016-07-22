@@ -1,8 +1,8 @@
 class site_couchdb::backup {
 
   # general backupninja config
-  backupninja::config { 'backupninja_config':
-    usecolors     => false,
+  class { 'backupninja':
+    usecolors => false
   }
 
   # dump all DBs locally to /var/backups/couchdb once a day
