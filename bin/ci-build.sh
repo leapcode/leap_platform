@@ -15,5 +15,5 @@ leap-platform-test add_nodes "$NODES"
 leap-platform-test -v init_deploy
 leap-platform-test -v test
 cd tests/puppet/provider
-bundle exec leap info
-bundle exec leap local destroy
+bundle exec leap info "${TAG}"
+bundle exec leap local destroy "${TAG}"
