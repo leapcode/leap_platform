@@ -118,6 +118,121 @@ class site_shorewall::eip {
       source          => 'eip',
       destination     => 'eip',
       order           => 306;
+    # Strict egress filtering:
+    # SMTP (TCP 25)
+    # Trivial File Transfer Protocol - TFTP (UDP 69)
+    # MS RPC (TCP & UDP 135)
+    # NetBIOS/IP (TCP/UDP 139 & UDP 137, UDP 138)
+    # Simple Network Management Protocol – SNMP (UDP/TCP 161-162)
+    # SMB/IP (TCP/UDP 445)
+    # Syslog (UDP 514)
+    # Gamqowi trojan: TCP 4661
+    # Mneah trojan: TCP 4666
+    'reject_outgoing_smtp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => 'smtp',
+      order           => 401;
+    'reject_outgoing_tftp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => 'tftp',
+      order           => 402;
+    'reject_outgoing_ms_rpc_tcp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => '135',
+      order           => 403;
+    'reject_outgoing_ms_rpc_udp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => '135',
+      order           => 404;
+    'reject_outgoing_netbios_tcp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => '139',
+      order           => 405;
+    'reject_outgoing_netbios_udp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => '139',
+      order           => 406;
+    'reject_outgoing_netbios_2':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => '137',
+      order           => 407;
+    'reject_outgoing_netbios_3':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => '138',
+      order           => 408;
+    'reject_outgoing_snmp_udp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => 'snmp',
+      order           => 409;
+    'reject_outgoing_snmp_tcp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => 'snmp',
+      order           => 410;
+    'reject_outgoing_smb_udp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => '445',
+      order           => 411;
+    'reject_outgoing_smb_tcp':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => '445',
+      order           => 412;
+    'reject_outgoing_syslog':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'udp',
+      destinationport => 'syslog',
+      order           => 413;
+    'reject_outgoing_gamqowi':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => '4661',
+      order           => 414;
+    'reject_outgoing_mneah':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'net',
+      proto           => 'tcp',
+      destinationport => '4666',
+      order           => 415;
   }
 
   # create dnat rule for each port
