@@ -85,6 +85,40 @@ class site_shorewall::eip {
       proto           => 'tcp',
       destinationport => 'domain',
       order           => 301;
+
+    'accept_all_eip_to_eip_gateway_udp_unlimited':
+      action          => 'ACCEPT',
+      source          => 'eip',
+      destination     => 'eip:10.41.0.1',
+      proto           => 'all',
+      order           => 302;
+
+    'accept_all_eip_to_eip_gateway_tcp_unlimited':
+      action          => 'ACCEPT',
+      source          => 'eip',
+      destination     => 'eip:10.42.0.1',
+      proto           => 'all',
+      order           => 303;
+
+    'accept_all_eip_to_eip_gateway_udp_limited':
+      action          => 'ACCEPT',
+      source          => 'eip',
+      destination     => 'eip:10.43.0.1',
+      proto           => 'all',
+      order           => 302;
+
+    'accept_all_eip_to_eip_gateway_tcp_limited':
+      action          => 'ACCEPT',
+      source          => 'eip',
+      destination     => 'eip:10.44.0.1',
+      proto           => 'all',
+      order           => 303;
+
+    'reject_all_other_eip_to_eip':
+      action          => 'REJECT',
+      source          => 'eip',
+      destination     => 'eip',
+      order           => 304;
   }
 
   # create dnat rule for each port
