@@ -96,10 +96,18 @@ module LeapCli
         raise ArgumentError, "I don't understand the type of argument `nodes`"
       end
       list.collect do |node|
+        options = SSH::Options.node_options(node, ssh_options_override)
+        user    = options.delete(:user) || 'root'
+        #
+        # note: whatever hostname is specified here will be what is used
+        # when loading options from .ssh/config. However, this value
+        # has no impact on the actual ip address that is connected to,
+        # which is determined by the :host_name value in ssh_options.
+        #
         SSHKit::Host.new(
-          :hostname => node.name,
-          :user => 'root',
-          :ssh_options => SSH::Options.node_options(node, ssh_options_override)
+          :hostname => node.domain.full,
+          :user => user,
+          :ssh_options => options
         )
       end
     end
