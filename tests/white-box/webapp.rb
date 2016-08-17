@@ -61,7 +61,7 @@ class Webapp < LeapTest
           soledad_url = "https://#{soledad_server}/user-#{user.id}"
           soledad_cert = "/usr/local/share/ca-certificates/leap_ca.crt"
           assert_run "#{command} #{user.id} #{user.session_token} #{soledad_url} #{soledad_cert} #{user.password}"
-          assert_user_db_exists(user)
+          assert_user_db_privileges(user)
           pass
         end
       end
@@ -96,36 +96,19 @@ class Webapp < LeapTest
   end
 
   #
-  # returns true if the per-user db created by soledad-server exists.
-  # we try three times, and give up after that.
+  # checks if user db exists and is properly protected
   #
-  def assert_user_db_exists(user)
-    db_name = "user-#{user.id}"
-    repeatedly_try("/#{db_name}") do |body, response, error|
-      assert false, "Could not find user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
+  def assert_user_db_privileges(user)
+    db_name = "/user-#{user.id}"
+    get(couchdb_url(db_name)) do |body, response, error|
+      code = response.code.to_i
+      assert code != 404, "Could not find user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
+      # After moving to couchdb, webapp user is not allowed to Read user dbs,
+      # but the return code for non-existent databases is 404. See #7674
+      # 401 should come as we aren't supposed to have read privileges on it.
+      assert code != 200, "Incorrect security settings (design doc) on user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
+      assert code == 401, "Unknown error on user db on user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
     end
-  end
-
-  #
-  # tries the URL repeatedly, giving up and yield the last response if
-  # no try returned a 200 http status code.
-  #
-  def repeatedly_try(url, &block)
-    last_body, last_response, last_error = nil
-    3.times do
-      sleep 0.2
-      get(couchdb_url(url)) do |body, response, error|
-        last_body, last_response, last_error = body, response, error
-        # After moving to couchdb, webapp user is not allowed to Read user dbs,
-        # but the return code for non-existent databases is 404. See #7674
-        if response.code.to_i == 401
-          return
-        end
-      end
-      sleep 1
-    end
-    yield last_body, last_response, last_error
-    return
   end
 
 end
