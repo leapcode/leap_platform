@@ -104,9 +104,6 @@ class Webapp < LeapTest
     repeatedly_try("/#{db_name}") do |body, response, error|
       assert false, "Could not find user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
     end
-    repeatedly_try("/#{db_name}/_design/docs") do |body, response, error|
-      assert false, "Could not find design docs for user db `#{db_name}` for test user `#{user.username}`\nuuid=#{user.id}\nHTTP #{response.code} #{error} #{body}"
-    end
   end
 
   #
