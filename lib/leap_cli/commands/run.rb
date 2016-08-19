@@ -1,9 +1,10 @@
 module LeapCli; module Commands
 
-  desc 'runs the specified command on each node.'
-  arg_name 'FILTER'
+  desc 'Run a shell command remotely'
+  long_desc "Runs the specified command COMMAND on each node in the FILTER set. " +
+            "For example, `leap run 'uname -a' webapp`"
+  arg_name 'COMMAND FILTER'
   command :run do |c|
-    c.flag 'cmd', :arg_name => 'COMMAND', :desc => 'The command to run.'
     c.switch 'stream', :default => false, :desc => 'If set, stream the output as it arrives. (default: --no-stream)'
     c.flag 'port', :arg_name => 'SSH_PORT', :desc => 'Override default SSH port used when trying to connect to the server.'
     c.action do |global, options, args|
@@ -15,8 +16,10 @@ module LeapCli; module Commands
 
   def run_shell_command(global, options, args)
     require 'leap_cli/ssh'
-    cmd = global[:force] ? options[:cmd] : LeapCli::SSH::Options.sanitize_command(options[:cmd])
-    nodes = manager.filter!(args)
+    cmd    = args[0]
+    filter = args[1..-1]
+    cmd    = global[:force] ? cmd : LeapCli::SSH::Options.sanitize_command(cmd)
+    nodes  = manager.filter!(filter)
     if options[:stream]
       stream_command(nodes, cmd, options)
     else
