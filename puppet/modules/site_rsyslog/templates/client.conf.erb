@@ -106,10 +106,6 @@ user.*                         -/var/log/user.log
 *.=debug;\
        auth,authpriv.none;\
        news.none;mail.none     -/var/log/debug
-*.=info;*.=notice;*.=warn;\
-       auth,authpriv.none;\
-       cron,daemon.none;\
-       mail,news.none          -/var/log/messages
 
 # Log anything (except mail) of level info or higher.
 # Don't log private authentication messages!
