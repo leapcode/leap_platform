@@ -28,7 +28,7 @@ SUMMARY_LOG       = '/var/log/leap/deploy-summary.log'
 SUMMARY_LOG_1     = '/var/log/leap/deploy-summary.log.1'
 APPLY_START_STR   = "STARTING APPLY"
 APPLY_FINISH_STR  = "APPLY COMPLETE"
-
+LANG              = "en_US.UTF-8"
 
 def main
   if File.read('/etc/debian_version') !~ DEBIAN_VERSION
@@ -144,7 +144,7 @@ def puppet_apply(options={}, &block)
   fqdn = hiera_file['domain']['full']
   domain = hiera_file['domain']['full_suffix']
   Dir.chdir(PUPPET_DIRECTORY) do
-    return run("FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} --modulepath='#{modulepath}' #{PUPPET_PARAMETERS} #{manifest}", &block)
+    return run("LANG='#{LANG}' FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} --modulepath='#{modulepath}' #{PUPPET_PARAMETERS} #{manifest}", &block)
   end
 end
 
