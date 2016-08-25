@@ -126,9 +126,9 @@ module LeapCli
       unless @node
         raise ArgumentError, 'no node'
       end
-      unless server.state == 'running'
+      if server.public_ip_address.nil?
         bail! do
-          log 'The virtual machine `%s` must be running in order to bind it to the configuration `%s`.' % [
+          log 'The virtual machine `%s` must have an IP address in order to bind it to the configuration `%s`.' % [
             server.id, Path.relative_path(Path.named_path([:node_config, @node.name]))]
           log 'To fix, run `leap vm start %s`' % server.id
         end
