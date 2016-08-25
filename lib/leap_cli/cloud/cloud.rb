@@ -103,7 +103,7 @@ module LeapCli
             bail! "There are multiple VMs with the same node name tag! Manually remove one before continuing."
           elsif instances.size == 1
             instance_id = instances.first["instanceId"]
-            server = cloud.compute.servers.get(instance_id)
+            server = @compute.servers.get(instance_id)
           end
         end
       end
@@ -123,7 +123,16 @@ module LeapCli
     # associates a node with a vm
     #
     def bind_server_to_node(server)
-      raise ArgumentError, 'no node' unless @node
+      unless @node
+        raise ArgumentError, 'no node'
+      end
+      unless server.state == 'running'
+        bail! do
+          log 'The virtual machine `%s` must be running in order to bind it to the configuration `%s`.' % [
+            server.id, Path.relative_path(Path.named_path([:node_config, @node.name]))]
+          log 'To fix, run `leap vm start %s`' % server.id
+        end
+      end
 
       # assign tag
       @compute.create_tags(server.id, {'node_name' => @node.name})

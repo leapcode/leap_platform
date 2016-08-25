@@ -121,6 +121,18 @@ module LeapCli; module Config
       end
     end
 
+    #
+    # Alters the node's json config file. Unfortunately, doing this will
+    # strip out all the comments.
+    #
+    def update_node_json(node, new_values)
+      node_json_path = Path.named_path([:node_config, node.name])
+      old_data       = load_json(node_json_path, Config::Node)
+      new_data       = old_data.merge(new_values)
+      new_contents   = JSON.sorted_generate(new_data) + "\n"
+      Util::write_file! node_json_path, new_contents
+    end
+
     private
 
     def load_all_json(pattern, object_class, options={})

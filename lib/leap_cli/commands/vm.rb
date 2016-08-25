@@ -18,10 +18,6 @@ module LeapCli; module Commands
             "in order to update the node's `vm.id` property."
     vm.arg_name 'NODE_NAME [SEED]'
     vm.command :add do |cmd|
-      #cmd.flag(:image,
-      #  :desc => "The image to use to create this virtual machine.",
-      #  :arg_name => 'IMAGE'
-      #)
       cmd.action do |global, options, args|
         do_vm_add(global, options, args)
       end
@@ -160,6 +156,10 @@ module LeapCli; module Commands
   def do_vm_status(global, options, args)
     cloud = new_cloud_handle(nil, options)
     servers = cloud.compute.servers
+
+    #
+    # PRETTY TABLE
+    #
     t = LeapCli::Util::ConsoleTable.new
     t.table do
       t.row(color: :cyan) do
@@ -183,6 +183,63 @@ module LeapCli; module Commands
     end
     puts
     t.draw_table
+
+    #
+    # SANITY CHECKS
+    #
+    servers.each do |server|
+      name = server.tags["node_name"]
+      if name
+        node = manager.nodes[name]
+        if node.nil?
+          log :warning, 'A virtual machine has the name `%s`, but there is no corresponding node definition in `%s`.' % [
+            name, relative_path(path([:node_config, name]))]
+          next
+        end
+        if node['vm'].nil?
+          log :warning, 'Node `%s` is not configured as a virtual machine' % name do
+            log 'You should fix this with `leap vm bind %s %s`' % [name, server.id]
+          end
+          next
+        end
+        if node['vm.id'] != server.id
+          message = 'Node `%s` is configured with virtual machine id `%s`' % [name, node['vm.id']]
+          log :warning, message do
+            log 'But the virtual machine with that name really has id `%s`' % server.id
+            log 'You should fix this with `leap vm bind %s %s`' % [name, server.id]
+          end
+        end
+        if server.state == 'running'
+          if node.ip_address != server.public_ip_address
+            message = 'The configuration file for node `%s` has IP address `%s`' % [name, node.ip_address]
+            log(:warning, message) do
+              log 'But the virtual machine actually has IP address `%s`' % server.public_ip_address
+              log 'You should fix this with `leap vm add %s`' % name
+            end
+          end
+        end
+      end
+    end
+    manager.filter(['vm']).each_node do |node|
+      if node['vm.id'].nil?
+        log :warning, 'The node `%s` is missing a server id' % node.name
+        next
+      end
+      if !servers.detect {|s| s.id == node.vm.id }
+        message = "The configuration file for node `%s` has virtual machine id of `%s`" % [node.name, node.vm.id]
+        log :warning, message do
+          log "But that does not match any actual virtual machines!"
+        end
+      end
+      if !servers.detect {|s| s.tags["node_name"] == node.name }
+        log :warning, "The node `%s` has no virtual machines with a matching name." % node.name do
+          server = servers.detect {|s| s.id == node.vm.id }
+          if server
+            log 'Run `leap bind %s %s` to fix this' % [node.name, server.id]
+          end
+        end
+      end
+    end
   end
 
   def do_vm_add(global, options, args)
@@ -329,13 +386,14 @@ module LeapCli; module Commands
   #
   # * the set of nodes specified by the filter, for this environment
   #   even if the result includes nodes that are not previously tagged with 'vm'
+  #
   # * the list of all vm nodes for this environment, if filter is empty
   #
   def filter_vm_nodes(filter)
     if filter.nil? || filter.empty?
       return manager.filter(['vm'], :warning => false)
     elsif filter.is_a? Array
-      return manager.filter(filter + ['+vm'], :warning => false)
+      return manager.filter(filter, :warning => false)
     else
       raise ArgumentError, 'could not understand filter'
     end
