@@ -275,7 +275,7 @@ module LeapCli
         sync.source = '.'
         sync.chdir = Path.platform
         sync.excludes = '*'
-        sync.includes = ['/bin', '/bin/**', '/puppet', '/puppet/**', '/tests', '/tests/**']
+        sync.includes = ['/bin', '/bin/**', '/puppet', '/puppet/**', '/tests', '/tests/server-tests', '/tests/server-tests/**']
         sync.flags = "-rlt --relative --delete --copy-links"
         sync.exec
       end
