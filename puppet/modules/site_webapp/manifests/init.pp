@@ -16,21 +16,22 @@ class site_webapp {
 
   Class['site_config::default'] -> Class['site_webapp']
 
-  include site_config::ruby::dev
-  include site_webapp::apache
-  include site_webapp::couchdb
-  include site_haproxy
-  include site_webapp::cron
-  include site_config::default
-  include site_config::x509::cert
-  include site_config::x509::key
-  include site_config::x509::ca
-  include site_config::x509::client_ca::ca
-  include site_config::x509::client_ca::key
-  include site_nickserver
+  include ::site_config::ruby::dev
+  include ::site_webapp::apache
+  include ::site_webapp::couchdb
+  include ::site_haproxy
+  include ::site_webapp::cron
+  include ::site_config::default
+  include ::site_config::x509::cert
+  include ::site_config::x509::key
+  include ::site_config::x509::ca
+  include ::site_config::x509::client_ca::ca
+  include ::site_config::x509::client_ca::key
+  include ::site_nickserver
+  include ::site_apt::preferences::twisted
 
   # remove leftovers from previous installations on webapp nodes
-  include site_config::remove::webapp
+  include ::site_config::remove::webapp
 
   group { 'leap-webapp':
     ensure    => present,
@@ -163,17 +164,17 @@ class site_webapp {
   if $tor {
     $hidden_service = $tor['hidden_service']
     if $hidden_service['active'] {
-      include site_webapp::hidden_service
+      include ::site_webapp::hidden_service
     }
   }
 
 
   # needed for the soledad-sync check which is run on the
   # webapp node
-  include soledad::client
+  include ::soledad::client
 
   leap::logfile { 'webapp': }
 
-  include site_shorewall::webapp
-  include site_check_mk::agent::webapp
+  include ::site_shorewall::webapp
+  include ::site_check_mk::agent::webapp
 }
