@@ -49,7 +49,7 @@ module LeapCli; module Commands
 
     vm.desc 'Print the status of virtual machine(s)'
     vm.arg_name 'FILTER', :optional => true
-    vm.command :status do |status|
+    vm.command [:status, :ls] do |status|
       status.action do |global, options, args|
         do_vm_status(global, options, args)
       end
