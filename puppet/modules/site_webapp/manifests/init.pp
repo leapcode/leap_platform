@@ -92,12 +92,16 @@ class site_webapp {
     '/srv/leap/webapp/config/provider':
       ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0755';
 
     '/srv/leap/webapp/config/provider/provider.json':
       content => $provider,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0644';
 
     '/srv/leap/webapp/public/ca.crt':
       ensure  => link,
@@ -107,27 +111,37 @@ class site_webapp {
     "/srv/leap/webapp/public/${api_version}":
       ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0755';
 
     "/srv/leap/webapp/public/${api_version}/config/":
       ensure  => directory,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0755';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0755';
 
     "/srv/leap/webapp/public/${api_version}/config/eip-service.json":
       content => $eip_service,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0644';
 
     "/srv/leap/webapp/public/${api_version}/config/soledad-service.json":
       content => $soledad_service,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0644';
 
     "/srv/leap/webapp/public/${api_version}/config/smtp-service.json":
       content => $smtp_service,
       require => Vcsrepo['/srv/leap/webapp'],
-      owner   => leap-webapp, group => leap-webapp, mode => '0644';
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
+      mode    => '0644';
   }
 
   try::file {
@@ -136,8 +150,8 @@ class site_webapp {
       recurse => true,
       purge   => true,
       force   => true,
-      owner   => leap-webapp,
-      group   => leap-webapp,
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
       mode    => 'u=rwX,go=rX',
       require => Vcsrepo['/srv/leap/webapp'],
       notify  => Exec['compile_assets'],
@@ -154,8 +168,8 @@ class site_webapp {
   file {
     '/srv/leap/webapp/config/config.yml':
       content => template('site_webapp/config.yml.erb'),
-      owner   => leap-webapp,
-      group   => leap-webapp,
+      owner   => 'leap-webapp',
+      group   => 'leap-webapp',
       mode    => '0600',
       require => Vcsrepo['/srv/leap/webapp'],
       notify  => Service['apache'];
