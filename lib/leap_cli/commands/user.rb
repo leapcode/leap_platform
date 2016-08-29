@@ -13,17 +13,47 @@
 module LeapCli
   module Commands
 
-    desc 'Adds a new trusted sysadmin by adding public keys to the "users" directory.'
-    arg_name 'USERNAME' #, :optional => false, :multiple => false
-    command :'add-user' do |c|
-
+    desc 'Manage trusted sysadmins (DEPRECATED)'
+    long_desc "Use `leap user add` instead"
+    command :'user-add' do |c|
       c.switch 'self', :desc => 'Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.', :negatable => false
       c.flag 'ssh-pub-key', :desc => 'SSH public key file for this new user'
       c.flag 'pgp-pub-key', :desc => 'OpenPGP public key file for this new user'
-
       c.action do |global_options,options,args|
         do_add_user(global_options, options, args)
       end
+    end
+
+    desc 'Manage trusted sysadmins'
+    long_desc "Manage the trusted sysadmins that are configured in the 'users' directory."
+    command :user do |user|
+
+      user.desc 'Adds a new trusted sysadmin'
+      user.arg_name 'USERNAME'
+      user.command :add do |c|
+        c.switch 'self', :desc => 'Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.', :negatable => false
+        c.flag 'ssh-pub-key', :desc => 'SSH public key file for this new user'
+        c.flag 'pgp-pub-key', :desc => 'OpenPGP public key file for this new user'
+        c.action do |global_options,options,args|
+          do_add_user(global_options, options, args)
+        end
+      end
+
+      user.desc 'Removes a trusted sysadmin'
+      user.arg_name 'USERNAME'
+      user.command :rm do |c|
+        c.action do |global_options,options,args|
+          do_rm_user(global_options, options, args)
+        end
+      end
+
+      user.desc 'Lists the configured sysadmins'
+      user.command :ls do |c|
+        c.action do |global_options,options,args|
+          do_list_users(global_options, options, args)
+        end
+      end
+
     end
 
     private
@@ -68,6 +98,31 @@ module LeapCli
       end
 
       update_authorized_keys
+    end
+
+    def do_rm_user(global, options, args)
+      dir = [:user_dir, args.first]
+      if Util.dir_exists?(dir)
+        Util.remove_file!(dir)
+        update_authorized_keys
+      else
+        bail! :error, 'There is no directory `%s`' % Path.named_path(dir)
+      end
+    end
+
+    def do_list_users(global, options, args)
+      require 'leap_cli/ssh'
+
+      Dir.glob(path([:user_ssh, '*'])).each do |keyfile|
+        username = File.basename(File.dirname(keyfile))
+        log username, :color => :cyan do
+          log Path.relative_path(keyfile)
+          key = SSH::Key.load(keyfile)
+          log 'SSH MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :ssh, :encoding => :hex)
+          log 'SSH SHA256 fingerprint: ' + key.fingerprint(:digest => :sha256, :type => :ssh, :encoding => :base64)
+          log 'DER MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :der, :encoding => :hex)
+        end
+      end
     end
 
     #

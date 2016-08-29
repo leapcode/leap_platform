@@ -35,7 +35,7 @@ module LeapCli; module Commands
 
     local.desc 'Destroys the virtual machine(s), reclaiming the disk space'
     local.arg_name 'FILTER', :optional => true #, :multiple => false
-    local.command :destroy do |destroy|
+    local.command [:rm, :destroy] do |destroy|
       destroy.action do |global_options,options,args|
         if global_options[:yes]
           vagrant_command("destroy --force", args)
@@ -47,7 +47,7 @@ module LeapCli; module Commands
 
     local.desc 'Print the status of local virtual machine(s)'
     local.arg_name 'FILTER', :optional => true #, :multiple => false
-    local.command :status do |status|
+    local.command [:ls, :status] do |status|
       status.action do |global_options,options,args|
         vagrant_command("status", args)
       end

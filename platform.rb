@@ -66,6 +66,7 @@ Leap::Platform.define do
 
     # output files
     :facts            => 'facts.json',
+    :user_dir         => 'users/#{arg}',
     :user_ssh         => 'users/#{arg}/#{arg}_ssh.pub',
     :user_pgp         => 'users/#{arg}/#{arg}_pgp.pub',
     :known_hosts      => 'files/ssh/known_hosts',

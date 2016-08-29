@@ -1,6 +1,6 @@
 module LeapCli; module Commands
 
-  desc "Manage virtual machines."
+  desc "Manage remote virtual machines (VMs)."
   long_desc "This command provides a convenient way to manage virtual machines. " +
             "FILTER may be a node filter or the ID of a virtual machine."
 
@@ -11,8 +11,8 @@ module LeapCli; module Commands
       :desc => "Choose which authentication credentials to use from the file cloud.json. "+
                "If omitted, will default to the node's `vm.auth` property, or the first credentials in cloud.json"
 
-    vm.desc "Allocates a new virtual machine and/or associates it with node NAME. "+
-            "If node configuration file does not yet exist, "+
+    vm.desc "Allocates a new VM and/or associates it with node NAME."
+    vm.long_desc "If node configuration file does not yet exist, "+
             "it is created with the optional SEED values. "+
             "You can run this command when the virtual machine already exists "+
             "in order to update the node's `vm.id` property."
@@ -23,7 +23,7 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc 'Starts the virtual machine(s)'
+    vm.desc 'Starts one or more VMs'
     vm.arg_name 'FILTER', :optional => true
     vm.command :start do |start|
       start.action do |global, options, args|
@@ -31,7 +31,8 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc 'Shuts down the virtual machine(s), but keeps the storage allocated (to save resources, run `leap vm rm` instead).'
+    vm.desc 'Shuts down one or more VMs'
+    vm.long_desc 'This keeps the storage allocated. To save resources, run `leap vm rm` instead.'
     vm.arg_name 'FILTER', :optional => true
     vm.command :stop do |stop|
       stop.action do |global, options, args|
@@ -39,7 +40,7 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc 'Destroys the virtual machine(s)'
+    vm.desc 'Destroys one or more VMs'
     vm.arg_name 'FILTER', :optional => true
     vm.command :rm do |rm|
       rm.action do |global, options, args|
@@ -47,7 +48,7 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc 'Print the status of virtual machine(s)'
+    vm.desc 'Print the status of all VMs'
     vm.arg_name 'FILTER', :optional => true
     vm.command [:status, :ls] do |status|
       status.action do |global, options, args|
@@ -55,8 +56,8 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc "Binds a running virtual machine instance to a node configuration. "+
-            "Afterwards, the VM will be assigned a label matching the node name, "+
+    vm.desc "Binds a running VM instance to a node configuration."
+    vm.long_desc "Afterwards, the VM will be assigned a label matching the node name, "+
             "and the node config will be updated with the instance ID."
     vm.arg_name 'NODE_NAME INSTANCE_ID'
     vm.command 'bind' do |cmd|
@@ -65,8 +66,8 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc "Registers a SSH public key for use when creating new virtual machines. "+
-            "Note that only people who are creating new VM instances need to "+
+    vm.desc "Registers a SSH public key for use when creating new VMs."
+    vm.long_desc "Note that only people who are creating new VM instances need to "+
             "have their key registered."
     vm.command 'key-register' do |cmd|
       cmd.action do |global, options, args|
@@ -74,8 +75,7 @@ module LeapCli; module Commands
       end
     end
 
-    vm.desc "Lists the registered SSH public keys for a particular virtual "+
-            "machine provider."
+    vm.desc "Lists the registered SSH public keys for a particular VM provider."
     vm.command 'key-list' do |cmd|
       cmd.action do |global, options, args|
         do_vm_key_list(global, options, args)
