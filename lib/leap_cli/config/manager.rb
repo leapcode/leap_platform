@@ -324,8 +324,8 @@ module LeapCli
         node['tags'].each do |node_tag|
           tag = node_env.tags[node_tag]
           if tag.nil?
-            msg = 'in node "%s": the tag "%s" does not exist.' % [node['name'], node_tag]
-            log 0, :error, msg
+            msg = 'in node `%s`: the tag "%s" does not exist!' % [node['name'], node_tag]
+            LeapCli.log 0, :error, msg
             raise LeapCli::ConfigError.new(node, "error " + msg) if throw_exceptions
           else
             new_node.deep_merge!(tag)
@@ -384,8 +384,11 @@ module LeapCli
             end
             if node['tags']
               node['tags'].to_a.each do |node_tag|
-                env(node.environment).tags[node_tag].node_list.add(node.name, node)
-                env('_all_').tags[node_tag].node_list.add(node.name, node)
+                if env(node.environment).tags[node_tag]
+                  # if tag exists
+                  env(node.environment).tags[node_tag].node_list.add(node.name, node)
+                  env('_all_').tags[node_tag].node_list.add(node.name, node)
+                end
               end
             end
             if node.name == 'default' || environment_names.include?(node.name)
