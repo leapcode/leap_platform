@@ -1,4 +1,4 @@
-/.vagrant
+/tests/example-provider/.vagrant
 /puppet/modules/site_custom
 /Gemfile.lock
 /tests/puppet/provider/hiera

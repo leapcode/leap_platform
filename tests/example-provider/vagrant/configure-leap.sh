@@ -14,7 +14,7 @@ mkdir -p $PROVIDERDIR
 chown ${USER}:${USER} ${PROVIDERDIR}
 cd $PROVIDERDIR
 
-$LEAP $OPTS new --contacts "$contacts" --domain "$provider_domain" --name "$provider_name" --platform=/vagrant .
+$LEAP $OPTS new --contacts "$contacts" --domain "$provider_domain" --name "$provider_name" --platform="$PLATFORMDIR" .
 echo -e '\n@log = "./deploy.log"' >> Leapfile
 
 if [ ! -e /home/${USER}/.ssh/id_rsa ]; then
