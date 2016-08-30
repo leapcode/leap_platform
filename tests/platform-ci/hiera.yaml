@@ -6,10 +6,11 @@
 :logger: console
 
 :yaml:
-   :datadir: tests/puppet/provider/hiera
+   :datadir: provider/hiera
 
 :hierarchy:
   - catalogtest
 
 :puppet:
    :datasource: data
+

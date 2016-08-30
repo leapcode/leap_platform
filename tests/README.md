@@ -14,13 +14,8 @@ These tests are to confirm that a provider's infrasture is working and to troubl
 
 **example-provider/**
 
-Files to support the command:
-
-   cd leap_platform/tests/example-provider
-   vagrant up
-
-For quick booting a pre-configured sample provider, running in a single virtual
-machine.
+Allows you to generate a pre-configured provider using Vagrant virtual
+machines.
 
 **platform-ci/**
 
