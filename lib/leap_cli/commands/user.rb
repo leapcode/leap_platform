@@ -15,7 +15,7 @@ module LeapCli
 
     desc 'Manage trusted sysadmins (DEPRECATED)'
     long_desc "Use `leap user add` instead"
-    command :'user-add' do |c|
+    command :'add-user' do |c|
       c.switch 'self', :desc => 'Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.', :negatable => false
       c.flag 'ssh-pub-key', :desc => 'SSH public key file for this new user'
       c.flag 'pgp-pub-key', :desc => 'OpenPGP public key file for this new user'
