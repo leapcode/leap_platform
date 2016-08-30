@@ -1,1 +1,1 @@
-@platform_directory_path = "../../.."
+@platform_directory_path = File.expand_path("../../../..", __FILE__)

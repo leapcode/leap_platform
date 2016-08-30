@@ -1,6 +1,7 @@
 before_script:
   - echo 'Running global before_script'
-  - bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
+  - cd tests/platform-ci
+  - ./setup.sh
 
 stages:
   - syntax
@@ -42,4 +43,4 @@ catalog:
 build:
   stage: build
   script:
-    - ./bin/ci-build.sh
+    - ./ci-build.sh
