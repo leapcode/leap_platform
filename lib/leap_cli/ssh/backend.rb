@@ -153,6 +153,23 @@ module LeapCli
       #
       def rescue_ssh_errors(*args, &block)
         yield
+      rescue Net::SSH::HostKeyMismatch => exc
+        @logger.log(:fatal_error, "Host key mismatch!") do
+          @logger.log(exc.to_s)
+          @logger.log("The ssh host key for the server does not match what is on "+
+            " file in `%s`." % Path.named_path(:known_hosts))
+          @logger.log("One of these is happening:") do
+            @logger.log("There is an active Man in The Middle attack against you.")
+            @logger.log("Or, someone has generated new host keys for the server " +
+               "and your provider files are out of date.")
+            @logger.log("Or, a new server is using this IP address " +
+               "and your provider files are out of date.")
+            @logger.log("Or, the server configuration has changed to use a different host key.")
+          end
+          @logger.log("You can pin a different host key using `leap node init NODE`, " +
+            "but you must verify the fingerprint of the new host key!")
+        end
+        exit(1)
       rescue StandardError => exc
         if exc.is_a?(SSHKit::Command::Failed) || exc.is_a?(SSHKit::Runner::ExecuteError)
           if @options[:raise_error]
