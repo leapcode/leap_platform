@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Getting Started - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class='active level1'>
+<a class='' href='../getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='../config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='../nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='../keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='../domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='../provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='../environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='../virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='../miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='../commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Getting Started</h1>
+
+<div id='summary'>An overview of the LEAP Platform</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#sensitive-files">Sensitive files</a>
+  </li>
+  <li>
+    <a href="index.html#useful-commands">Useful commands</a>
+  </li>
+  <li>
+    <a href="index.html#node-filters">Node filters</a>
+  </li>
+  <li>
+    <a href="index.html#tracking-the-provider-directory-in-git">Tracking the provider directory in git</a>
+  </li>
+  <li>
+    <a href="index.html#editing-json-configuration-files">Editing JSON configuration files</a>
+  </li>
+  <li>
+    <a href="index.html#how-does-it-work-under-the-hood">How does it work under the hood?</a>
+  </li>
+</ol></div>
+
+<h2><a name="sensitive-files"></a>Sensitive files</h2>
+
+<p>Some files in your provider directory are very sensitive. Leaking these files will compromise your provider.</p>
+
+<p>Super sensitive and irreplaceable:</p>
+
+<ul>
+<li><code>files/ca/*.key</code> &ndash; the private keys for the client and server CAs.</li>
+<li><code>files/cert/*.key</code> &ndash; the private key(s) for the commercial certificate for your domain(s).</li>
+</ul>
+
+
+<p>Sensitive, but can be erased and regenerated automatically:</p>
+
+<ul>
+<li><code>secrets.json</code> &ndash; various random secrets, such as passwords for databases.</li>
+<li><code>files/nodes/*/*.key</code> &ndash; the private key for each node.</li>
+<li><code>hiera/*.yaml</code> &ndash; hiera file contains a copy of the private key of the node.</li>
+</ul>
+
+
+<p>Also, each sysadmin has one or more public ssh keys in <code>users/*/*_ssh.pub</code>. Typically, you will want to keep these public keys secure as well.</p>
+
+<p>See <a href="../keys-and-certificates.html">Keys and Certificates</a> for more information.</p>
+
+<h2><a name="useful-commands"></a>Useful commands</h2>
+
+<p>Here are a few useful <code>leap</code> commands:</p>
+
+<ul>
+<li><code>leap help [COMMAND]</code> &ndash; get help on COMMAND.</li>
+<li><code>leap history [FILTER]</code> &ndash; show the recent deployment history for the selected nodes.</li>
+<li><code>leap ssh web1</code> &ndash; SSH into node web1 (requires <code>leap node init web1</code> first).</li>
+<li><code>leap list [FILTER]</code> &ndash; list the selected nodes.
+
+<ul>
+<li><code>leap list production</code> &ndash; list only those nodes with the tag &lsquo;production&rsquo;</li>
+<li><code>leap list --print ip_address</code> &ndash; list a particular attribute of all nodes.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>See the full <a href="../commands.html">Command Line Reference</a> for more information.</p>
+
+<h2><a name="node-filters"></a>Node filters</h2>
+
+<p>Many of the <code>leap</code> commands take a &ldquo;node filter&rdquo;. You can use a node filter to target a command at one or more nodes.</p>
+
+<p>A node filter consists of one or more keywords, with an optional &ldquo;+&rdquo; before each keyword.</p>
+
+<ul>
+<li>keywords can be a node name, a service type, or a tag.</li>
+<li>the &ldquo;+&rdquo; before the keyword constructs an AND condition</li>
+<li>otherwise, multiple keywords together construct an OR condition</li>
+</ul>
+
+
+<p>Examples:</p>
+
+<ul>
+<li><code>leap list openvpn</code> &ndash; list all nodes with service openvpn.</li>
+<li><code>leap list openvpn +production</code> &ndash; only nodes of service type openvpn AND tag production.</li>
+<li><code>leap deploy webapp openvpn</code> &ndash; deploy to all webapp OR openvpn nodes.</li>
+<li><code>leap node init ostrich</code> &ndash; just init the node named ostrich.</li>
+</ul>
+
+
+<p>See the full <a href="../commands.html">Command Line Reference</a> for more information.</p>
+
+<h2><a name="tracking-the-provider-directory-in-git"></a>Tracking the provider directory in git</h2>
+
+<p>You should commit your provider changes to your favorite VCS whenever things change. This way you can share your configurations with other admins, all they have to do is to pull the changes to stay up to date. Every time you make a change to your provider, such as adding nodes, services, generating certificates, etc. you should add those to your VCS, commit them and push them to where your repository is hosted.</p>
+
+<p>Note that your provider directory contains secrets, such as private key material and passwords. You do not want to have those passwords readable by the world, so make sure that wherever you are hosting your repository, it is not public for the world to read.</p>
+
+<p>If you have a post-commit hook that emails the changes to contributors, you may want to exclude diffs for files that might have sensitive secrets. For example, create a <code>.gitattributes</code> file with:</p>
+
+<pre><code># No diff, no email for key files
+*.key -diff
+*.pem -diff
+
+# Discard diff for secrets.json
+secrets.json -diff
+
+# No diff for hiera files, they contain passwords
+hiera/* -diff
+</code></pre>
+
+<h2><a name="editing-json-configuration-files"></a>Editing JSON configuration files</h2>
+
+<p>All the settings that compose your provider are stored in JSON files.</p>
+
+<p>At a minimum, you will need at least two configuration files:</p>
+
+<ul>
+<li><code>provider.json</code> &ndash; general settings for you provider.</li>
+<li><code>nodes/NAME.json</code> &ndash; configuration file for node called &ldquo;NAME&rdquo;.</li>
+</ul>
+
+
+<p>There are a few required properties in provider.json:</p>
+
+<pre><code>{
+  "domain": "example.org",
+  "name": "Example",
+  "contacts": {
+    "default": "email1@example.org"
+  }
+}
+</code></pre>
+
+<p>See <a href="../provider-configuration.html">Provider Configuration</a> for more details.</p>
+
+<p>For node configuration files, there are two required properties:</p>
+
+<pre><code>{
+  "ip_address": "1.1.1.1",
+  "services": ["openvpn"]
+}
+</code></pre>
+
+<p>See <a href="../../services.html">Services</a> for details on what servers are available, and see <a href="../config.html">Configuration Files</a> details on how configuration files work.</p>
+
+<h2><a name="how-does-it-work-under-the-hood"></a>How does it work under the hood?</h2>
+
+<p>You don&rsquo;t need to know any of the details of what happens &ldquo;under the hood&rdquo; in order to use the LEAP platform. However, if you are curious as to what is going on, here is a quick primer.</p>
+
+<p>First, some background terminology:</p>
+
+<ul>
+<li><strong>puppet</strong>: Puppet is a system for automating deployment and management of servers (called nodes).</li>
+<li><strong>hiera files</strong>: In puppet, you can use something called a &lsquo;hiera file&rsquo; to seed a node with a few configuration values. In LEAP, we go all out and put <em>every</em> configuration value needed for a node in the hiera file, and automatically compile a custom hiera file for each node.</li>
+</ul>
+
+
+<p>When you run <code>leap deploy</code>, a bunch of things happen, in this order:</p>
+
+<ol>
+<li><strong>Compile hiera files</strong>: The hiera configuration file for each node is compiled in YAML format and saved in the directory <code>hiera</code>. The source material for this hiera file consists of all the JSON configuration files imported or inherited by the node&rsquo;s JSON config file.</li>
+<li><strong>Copy required files to node</strong>: All the files needed for puppet to run are rsync'ed to each node. This includes the entire leap_platform directory, as well as the node&rsquo;s hiera file and other files needed by puppet to set up the node (keys, binary files, etc).</li>
+<li><strong>Puppet is run</strong>: Once the node is ready, leap connects to the node via ssh and runs <code>puppet apply</code>. Puppet is applied locally on the node, without a daemon or puppetmaster.</li>
+</ol>
+
+
+<p>You can run <code>leap -v2 deploy</code> to see exactly what commands are being executed.</p>
+
+<p>This mode of operation is fundamentally different from how puppet is normally used:</p>
+
+<ul>
+<li>There is no puppetmaster that all the servers take orders from, and there is no puppetd running in the background.</li>
+<li>Servers cannot dynamically query the puppetmaster for information about the other servers.</li>
+<li>There is a static representation for the state of every server that can be committed to git.</li>
+</ul>
+
+
+<p>There are advantages and disadvantages to the model that LEAP uses. We have found it very useful for our goal of having a common LEAP platform that many different providers can all use while still allowing providers to configure their unique infrastructure.</p>
+
+<p>We also find it very beneficial to be able to track the state of your infrastructure in git.</p>
+
+<p>Traditional system configuration automation systems, like <a href="https://puppetlabs.com/puppet/puppet-open-source/">Puppet</a> or <a href="http://www.opscode.com/chef/">Chef</a>, deploy changes to servers using a pull method. Each server pulls a manifest from a central master server and uses this to alter the state of the server.</p>
+
+<p>Instead, the <code>leap</code> tool uses a masterless push method: The sysadmin runs <code>leap deploy</code> from the provider instance directory on their desktop machine to push the changes out to every server (or a subset of servers). LEAP still uses Puppet, but there is no central master server that each node must pull from.</p>
+
+<p>One other significant difference between LEAP and typical system automation is how interactions among servers are handled. Rather than store a central database of information about each server that can be queried when a recipe is applied, the <code>leap</code> command compiles static representation of all the information a particular server will need in order to apply the recipes. In compiling this static representation, <code>leap</code> can use arbitrary programming logic to query and manipulate information about other servers.</p>
+
+<p>These two approaches, masterless push and pre-compiled static configuration, allow the sysadmin to manage a set of LEAP servers using traditional software development techniques of branching and merging, to more easily create local testing environments using virtual servers, and to deploy without the added complexity and failure potential of a master server.</p>
+
+</div>
+</div>
+</body>
+</html>

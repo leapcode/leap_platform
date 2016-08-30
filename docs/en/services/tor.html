@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+tor - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level1'>
+<a class='' href='couchdb.html'>couchdb</a>
+</li>
+<li class=' level1'>
+<a class='' href='openvpn.html'>openvpn</a>
+</li>
+<li class=' level1'>
+<a class='' href='monitor.html'>monitor</a>
+</li>
+<li class=' level1'>
+<a class='' href='mx.html'>mx</a>
+</li>
+<li class=' level1'>
+<a class='' href='soledad.html'>soledad</a>
+</li>
+<li class='active level1'>
+<a class='' href='tor.html'>tor</a>
+</li>
+<li class=' level1'>
+<a class='' href='webapp.html'>webapp</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>tor</h1>
+
+<div id='summary'>Tor exit node or hidden service</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="tor/index.html#topology">Topology</a>
+  </li>
+  <li>
+    <a href="tor/index.html#configuration">Configuration</a>
+  </li>
+</ol></div>
+
+<h2><a name="topology"></a>Topology</h2>
+
+<p>Nodes with <code>tor</code> service will run a Tor exit or hidden service, depending on what other service it is paired with:</p>
+
+<ul>
+<li><code>tor</code> + <code>openvpn</code>: when combined with <code>openvpn</code> nodes, <code>tor</code> will create a Tor exit node to provide extra cover traffic for the VPN. This can be especially useful if there are VPN gateways without much traffic.</li>
+<li><code>tor</code> + <code>webapp</code>: when combined with a <code>webapp</code> node, the <code>tor</code> service will make the webapp and the API available via .onion hidden service.</li>
+<li><code>tor</code> stand alone: a regular Tor exit node.</li>
+</ul>
+
+
+<p>If activated, you can list the hidden service .onion addresses this way:</p>
+
+<p>   leap ls &ndash;print tor.hidden_service.address tor</p>
+
+<p>Then just add &lsquo;.onion&rsquo; to the end of the printed addresses.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<ul>
+<li><code>tor.bandwidth_rate</code>: the max bandwidth allocated to Tor, in KB per second, when used as an exit node.</li>
+</ul>
+
+
+<p>For example:</p>
+
+<pre><code>{
+  "tor": {
+    "bandwidth_rate": 6550
+  }
+}
+</code></pre>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Development - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+<li class=' level1'>
+<a class='' href='faq.html'>FAQ</a>
+</li>
+<li class='active level1'>
+<a class='' href='development.html'>Development</a>
+</li>
+<li class=' level1'>
+<a class='' href='ports.html'>Ports</a>
+</li>
+<li class=' level1'>
+<a class='' href='under-the-hood.html'>Under the hood</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Development</h1>
+
+<div id='summary'>Getting started with making changes to the LEAP platform</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="development/index.html#installing-leap_cli">Installing leap_cli</a>
+    <ol>
+      <li>
+        <a href="development/index.html#from-gem-for-a-single-user">From gem, for a single user</a>
+      </li>
+      <li>
+        <a href="development/index.html#from-gem-system-wide">From gem, system wide</a>
+      </li>
+      <li>
+        <a href="development/index.html#as-a-gem-built-from-source">As a gem, built from source</a>
+      </li>
+      <li>
+        <a href="development/index.html#the-develop-branch-from-source-for-a-single-user">The “develop” branch from source, for a single user</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="development/index.html#running-different-leap_cli-versions">Running different leap_cli versions</a>
+    <ol>
+      <li>
+        <a href="development/index.html#if-installed-as-a-gem">If installed as a gem</a>
+      </li>
+      <li>
+        <a href="development/index.html#if-running-from-source">If running from source</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h2><a name="installing-leap_cli"></a>Installing leap_cli</h2>
+
+<h3><a name="from-gem-for-a-single-user"></a>From gem, for a single user</h3>
+
+<p>Install the latest:</p>
+
+<pre><code>gem install --user-install leap_cli
+</code></pre>
+
+<p>Or install a particular version:</p>
+
+<pre><code>gem install --version 1.8 --user-install leap_cli
+</code></pre>
+
+<p>Add the &ndash;user-install directory to your path:</p>
+
+<pre><code>[ $(which ruby) ] &amp;&amp; PATH="$PATH:$(ruby -e 'puts Gem.user_dir')/bin"
+</code></pre>
+
+<h3><a name="from-gem-system-wide"></a>From gem, system wide</h3>
+
+<p>Install the latest:</p>
+
+<pre><code>sudo gem install leap_cli
+</code></pre>
+
+<p>Install a particular version:</p>
+
+<pre><code>sudo gem install leap_cli --version 1.8
+</code></pre>
+
+<h3><a name="as-a-gem-built-from-source"></a>As a gem, built from source</h3>
+
+<pre><code>sudo apt-get install ruby ruby-dev rake
+git clone https://leap.se/git/leap_cli.git
+cd leap_cli
+git checkout develop
+rake build
+sudo rake install
+</code></pre>
+
+<h3><a name="the-develop-branch-from-source-for-a-single-user"></a>The “develop” branch from source, for a single user</h3>
+
+<pre><code>sudo apt-get install ruby ruby-dev rake
+git clone https://leap.se/git/leap_cli.git
+cd leap_cli
+git checkout develop
+</code></pre>
+
+<p>Then do one of the following to be able to run <code>leap</code> command:</p>
+
+<pre><code>cd leap_cli
+PATH=$PATH:`pwd`/bin
+alias leap="`pwd`/bin/leap"
+ln -s `pwd`/bin/leap ~/bin/leap
+</code></pre>
+
+<p>In practice, of course, you would put aliases or PATH modifications in a shell startup file.</p>
+
+<p>You can also clone from <a href="https://github.com/leap/leap_cli">https://github.com/leap/leap_cli</a></p>
+
+<h2><a name="running-different-leap_cli-versions"></a>Running different leap_cli versions</h2>
+
+<h3><a name="if-installed-as-a-gem"></a>If installed as a gem</h3>
+
+<p>With rubygems, you can always specify the gem version as the first argument to any executable installed by rubygems. For example:</p>
+
+<pre><code>sudo gem install leap_cli --version 1.7.2
+sudo gem install leap_cli --version 1.8
+leap _1.7.2_ --version
+=&gt; leap 1.7.2, ruby 2.1.2
+leap _1.8_ --version
+=&gt; leap 1.8, ruby 2.1.2
+</code></pre>
+
+<h3><a name="if-running-from-source"></a>If running from source</h3>
+
+<p>Alternately, if you are running from source, you can alias different commands:</p>
+
+<pre><code>git clone https://leap.se/git/leap_cli.git
+cd leap_cli
+git checkout develop
+alias leap_develop="`pwd`/bin/leap`
+</code></pre>
+
+</div>
+</div>
+</body>
+</html>

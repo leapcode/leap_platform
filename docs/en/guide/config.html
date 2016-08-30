@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Configuration Files - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='getting-started.html'>Getting Started</a>
+</li>
+<li class='active level1'>
+<a class='' href='config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Configuration Files</h1>
+
+<div id='summary'>Understanding and editing the configuration files.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="config/index.html#files">Files</a>
+  </li>
+  <li>
+    <a href="config/index.html#leapfile">Leapfile</a>
+  </li>
+  <li>
+    <a href="config/index.html#json-format">JSON format</a>
+  </li>
+  <li>
+    <a href="config/index.html#node-inheritance">Node inheritance</a>
+    <ol>
+      <li>
+        <a href="config/index.html#inheritance-rules">Inheritance rules</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="config/index.html#common-configuration-options">Common configuration options</a>
+  </li>
+  <li>
+    <a href="config/index.html#macros">Macros</a>
+  </li>
+  <li>
+    <a href="config/index.html#hash-tables">Hash tables</a>
+  </li>
+</ol></div>
+
+<h2><a name="files"></a>Files</h2>
+
+<p>Here are a list of some of the common files that make up a provider. Except for <code>Leapfile</code> and <code>provider.json</code>, the files are optional. Unless otherwise specified, all file names are relative to the &lsquo;provider directory&rsquo; root (where the Leapfile is).</p>
+
+<table class="table table-striped">
+<tr>
+  <td><code>Leapfile</code></td>
+  <td>If present, this file tells <code>leap</code> that the directory is a provider directory. This file is usually empty, but can contain global options.</td>
+</tr>
+<tr>
+  <td><code>~/.leaprc</code></td>
+  <td>Evaluated the same as Leapfile, but not committed to source control.</td>
+</tr>
+<tr>
+  <td><code>provider.json</code></td>
+  <td>Global options related to this provider. See <a href="provider-configuration.html">Provider Configuration</a>.</td>
+</tr>
+<tr>
+  <td><code>provider.ENVIRONMENT.json</code></td>
+  <td>Global options for the provider that are applied to only a single environment.</td>
+</tr>
+<tr>
+  <td><code>nodes/NAME.json</code></td>
+  <td>The configuration file for node called NAME.</td>
+</tr>
+<tr>
+  <td><code>common.json</code></td>
+  <td>All nodes inherit from this file. In other words, any options that appear in <code>common.json</code> will be added as default values to each node configuration, value that can be locally overridden.</td>
+</tr>
+<tr>
+  <td><code>services/SERVICE.json</code></td>
+  <td>The properties in this configuration file are applied to any node that includes SERVICE in its <code>services</code> property.</td>
+</tr>
+<tr>
+  <td><code>services/SERVICE.ENVIRONMENT.json</code></td>
+  <td>The properties in this configuration file are applied to any node that includes SERVICE in its services and has environment equal to ENVIRONMENT.</td>
+</tr>
+<tr>
+  <td><code>tags/TAG.json</code></td>
+  <td>The properties in this configuration file are applied to any node that has includes TAG in its <code>tags</code> property.</td>
+</tr>
+<tr>
+  <td><code>tags/TAG.ENVIRONMENT.json</code></td>
+  <td>The properties in this configuration file are applied to any node that has includes TAG in its <code>tags</code> property and has <code>environment</code> property equal to ENVIRONMENT.</td>
+</tr>
+<tr>
+  <td><code>secrets.json </code></td>
+  <td>An automatically generated file that contains any randomly generated strings needed in order to deploy. These strings are often secret and should be protected, although any need for a random string or number that is remembered will produce another entry in this file. This file is automatically generated and refreshed each time you run <code>leap compile</code> or <code>leap deploy</code>. If an entry is no longer needed, it will get removed. If you want to change a secret, you can remove this file and have it regenerated, or remove the particular line item and just those items will be created anew.</td>
+</tr>
+<tr>
+  <td><code>facts.json</code></td>
+  <td>If some of your servers are running on AWS or OpenStack, you will need to discover certain properties about how networking is configured on these machines in order for a full deploy to work. In these cases, make sure to run <code>leap facts update</code> to periodically regenerate the facts.json file.</td>
+</tr>
+<tr>
+  <td><code>files/*</code></td>
+  <td>Various static files used by the platform (e.g. keys, certificates, webapp customization, etc). In general, only generated files and files used to customize the provider (such as images) live in the <code>files</code> directory.</td>
+</tr>
+<tr>
+  <td><code>users/USER/</code></td>
+  <td>A directory that stores the public keys of the sysadmin with name USER. This person will have root access to all the servers.</td>
+</tr>
+</table>
+
+
+<h2><a name="leapfile"></a>Leapfile</h2>
+
+<p>A <code>Leapfile</code> defines options for the <code>leap</code> command and lives at the root of your provider directory. <code>Leapfile</code> is evaluated as ruby, so you can include whatever weird logic you want in this file. In particular, there are several variables you can set that modify the behavior of leap. For example:</p>
+
+<pre><code>@platform_directory_path = '../leap_platform'
+@log = '/var/log/leap.log'
+</code></pre>
+
+<p>Additionally, you can create a <code>~/.leaprc</code> file that is loaded after <code>Leapfile</code> and is evaluated the same way.</p>
+
+<p>Platform options:</p>
+
+<ul>
+<li><code>@platform_directory_path</code> (required). This must be set to the path where <code>leap_platform</code> lives. The path may be relative.</li>
+</ul>
+
+
+<p>Vagrant options:</p>
+
+<ul>
+<li><code>@vagrant_provider</code>. Changes the default vagrant provider (&ldquo;virtualbox&rdquo;). For example, <code>@vagrant_provider = "libvirt"</code>.</li>
+<li><code>@vagrant_network</code>. Allows you to override the default network used for local nodes. It should include a netmask like <code>@vagrant_network = '10.0.0.0/24'</code>.</li>
+<li><code>@custom_vagrant_vm_line</code>. Insert arbitrary text into the auto-generated Vagrantfile. For example, <code>@custom_vagrant_vm_line = "config.vm.boot_mode = :gui"</code>.</li>
+<li><code>@vagrant_basebox</code> allows specifying a different basebox as the default one. For example, <code>@vagrant_basebox = "LEAP/jessie"</code>.</li>
+</ul>
+
+
+<p>Logging options:</p>
+
+<ul>
+<li><code>@log</code>. If set, all command invocation and results are logged to the specified file. This is the same as the switch <code>--log FILE</code>, except that the command line switch will override the value in the Leapfile.</li>
+</ul>
+
+
+<h2><a name="json-format"></a>JSON format</h2>
+
+<p>All configuration files, other than <code>Leapfile</code>, are in the JSON format. For example:</p>
+
+<pre><code>{
+  "key1": "value1",
+  "key2": "value2"
+}
+</code></pre>
+
+<p>Keys should match <code>/[a-z0-9_]/</code> and must be in double quotes.</p>
+
+<p>Unlike traditional JSON, comments are allowed. If the first non-whitespace characters are <code>//</code> then the line is treated as a comment.</p>
+
+<pre><code>// this is a comment
+{
+  // this is a comment
+  "key": "value"  // this is an error
+}
+</code></pre>
+
+<p>Options in the configuration files might be nested hashes, arrays, numbers, strings, or boolean. Numbers and boolean values should <strong>not</strong> be quoted. For example:</p>
+
+<pre><code>{
+  "openvpn": {
+    "ip_address": "1.1.1.1",
+    "protocols": ["tcp", "udp"],
+    "ports": [80, 53],
+    "options": {
+      "public_ip": false,
+      "adblock": true
+    }
+  }
+}
+</code></pre>
+
+<p>If the value string is prefixed with an &lsquo;=&rsquo; character, the result is evaluated as ruby. For example:</p>
+
+<pre><code>{
+  "domain": {
+    "public": "domain.org"
+  }
+  "api_domain": "= 'api.' + domain.public"
+}
+</code></pre>
+
+<p>In this case, the property &ldquo;api_domain&rdquo; will be set to &ldquo;api.domain.org&rdquo;. So long as you do not create unresolvable circular dependencies, you can reference other properties in evaluated ruby that are themselves evaluated ruby.</p>
+
+<p>See &ldquo;Macros&rdquo; below for information on the special macros available to the evaluated ruby.</p>
+
+<p>TIP: In rare cases, you might want to force the evaluation of a value to happen in a later pass after most of the other properties have been evaluated. To do this, prefix the value string with &ldquo;=>&rdquo; instead of &ldquo;=&rdquo;.</p>
+
+<h2><a name="node-inheritance"></a>Node inheritance</h2>
+
+<p>Every node inherits from common.json and also any of the services or tags attached to the node. Additionally, the <code>leap_platform</code> contains a directory <code>provider_base</code> that defines the default values for tags, services and common.json.</p>
+
+<p>Suppose you have a node configuration for <code>bitmask/nodes/willamette.json</code> like so:</p>
+
+<pre><code>{
+   "services": "webapp",
+   "tags": ["production", "northwest-us"],
+   "ip_address": "1.1.1.1"
+}
+</code></pre>
+
+<p>This node will have hostname &ldquo;willamette&rdquo; and it will inherit from the following files (in this order):</p>
+
+<ol>
+<li>common.json
+
+<ul>
+<li>load defaults: <code>provider_base/common.json</code></li>
+<li>load provider: <code>bitmask/common.json</code></li>
+</ul>
+</li>
+<li>service &ldquo;webapp&rdquo;
+
+<ul>
+<li>load defaults: <code>provider_base/services/webapp.json</code></li>
+<li>load provider: <code>bitmask/services/webapp.json</code></li>
+</ul>
+</li>
+<li>tag &ldquo;production&rdquo;
+
+<ul>
+<li>load defaults: <code>provider_base/tags/production.json</code></li>
+<li>load provider: <code>bitmask/tags/production.json</code></li>
+</ul>
+</li>
+<li>tag &ldquo;northwest-us&rdquo;
+
+<ul>
+<li>load: <code>bitmask/tags/northwest-us.json</code></li>
+</ul>
+</li>
+<li>finally, load node &ldquo;willamette&rdquo;
+
+<ul>
+<li>load: <code>bitmask/nodes/willamette.json</code></li>
+</ul>
+</li>
+</ol>
+
+
+<p>The <code>provider_base</code> directory is under the <code>leap_platform</code> specified in the file <code>Leapfile</code>.</p>
+
+<p>To see all the variables a node has inherited, you could run <code>leap inspect willamette</code>.</p>
+
+<h3><a name="inheritance-rules"></a>Inheritance rules</h3>
+
+<p>Suppose you have a node configuration <code>mynode.json</code>:</p>
+
+<pre><code>{
+  "tags": "production",
+  "simple_value": 100,
+  "replaced_array": ["dolphin", "kangaroo"],
+  "+add_array": ["red", "black"],
+  "-subtract_array": ["bitter"],
+  "converted_to_array": "not_array_element",
+  "!override": ["insist on this value"],
+  "hash": {
+    "key1": 1,
+    "key2": 2
+  }
+}
+</code></pre>
+
+<p>And a file <code>tags/production.json</code>:</p>
+
+<pre><code>{
+  "simple_value": 99999,
+  "replaced_array": ["zebra"],
+  "add_array": ["green],
+  "subtract_array": ["bitter", "sweet", "salty"],
+  "converted_to_array": ["array_element"],
+  "override": "this value will be overridden",
+  "hash": {
+    "key1": "one"
+  }
+}
+</code></pre>
+
+<p>In this scenario, <code>mynode.json</code> will inherit from <code>production.json</code>. The output of this inheritance will be:</p>
+
+<pre><code>{
+  "tags": "production",
+  "simple_value": 100,
+  "replaced_array": ["dolphin", "kangaroo"],
+  "add_array": ["red", "black", "green"],
+  "subtract_array": ["sweet", "salty"],
+  "converted_to_array": ["not_array_element", "array_element"],
+  "override": ["insist on this value"],
+  "hash": {
+    "key1": 1,
+    "key2": 2
+  }
+</code></pre>
+
+<p>The rules for inheritance (where &lsquo;old&rsquo; refers to the parent, and &lsquo;new&rsquo; refers to the child):</p>
+
+<ul>
+<li>Simple values (strings, numbers, boolean):
+
+<ul>
+<li>Replace the old value with the new value.</li>
+</ul>
+</li>
+<li>Array values:
+
+<ul>
+<li>Two arrays: replace the old array with the new array.</li>
+<li>One array and one simple value: add the simple value to the array.</li>
+<li>If property name is prefixed with &ldquo;+&rdquo;: merge the old and new arrays.</li>
+<li>If property name is prefixed with &ldquo;-&rdquo;: subtract new array from old array.</li>
+</ul>
+</li>
+<li>Hash values:
+
+<ul>
+<li>Hashes are always merged (the result includes the keys of both hashes). If there is a key in common, the new one overrides the old one.</li>
+</ul>
+</li>
+<li>Mismatch:
+
+<ul>
+<li>Although you can mix arrays and simple values, you cannot mix arrays with hashes or hashes with simple values. If you attempt to do so, it will fail to compile and give you an error message.</li>
+</ul>
+</li>
+<li>Override:
+
+<ul>
+<li>If property name is prefixed with &ldquo;!&rdquo;: then ensure that new value is always used, regardless of old value. In this case, the override takes precedence over type checking, so you will never get a type mismatch.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>NOTE: special property name prefixes, like &ldquo;+&rdquo;, &ldquo;-&rdquo;, or &ldquo;!&rdquo;, are not included in the property name. These prefixes determine the merge strategy, but are stripped out when compiling the resulting JSON file.</p>
+
+<h2><a name="common-configuration-options"></a>Common configuration options</h2>
+
+<p>You can use the command <code>leap inspect</code> to see what options are available for a provider, node, service, or tag configuration. For example:</p>
+
+<ul>
+<li><code>leap inspect common</code> &ndash; show the options inherited by all nodes.</li>
+<li><code>leap inspect --base common</code> &ndash; show the common.json from <code>provider_base</code> without the local <code>common.json</code> inheritance applied.</li>
+<li><code>leap inspect webapp</code> &ndash; show all the options available for the service <code>webapp</code>.</li>
+</ul>
+
+
+<p>Here are some of the more important options you should be aware of:</p>
+
+<ul>
+<li><code>ip_address</code> &ndash; Required for all nodes, no default.</li>
+<li><code>ssh.port</code> &ndash; The SSH port you want the node&rsquo;s OpenSSH server to bind to. This is also the default when trying to connect to a node, but if the node currently has OpenSSH running on a different port then run deploy with <code>--port</code> to override the <code>ssh.port</code> configuration value.</li>
+<li><code>mosh.enabled</code> &ndash; If set to <code>true</code>, then mosh will be installed on the server. The default is <code>false</code>.</li>
+</ul>
+
+
+<h2><a name="macros"></a>Macros</h2>
+
+<p>When using evaluated ruby in a JSON configuration file, there are several special macros that are available. These are evaluated in the context of a node (available as the variable <code>self</code>).</p>
+
+<p>The following methods are available to the evaluated ruby:</p>
+
+<p><code>variable.variable</code></p>
+
+<blockquote><p>Any variable defined or inherited by a particular node configuration is available by just referencing it using either hash notation or object field notation (e.g. <code>['domain']['public']</code> or <code>domain.public</code>). Circular references are not allowed, but otherwise it is OK to nest evaluated values in other evaluated values. If a value has not been defined, the hash notation will return nil but the field notation will raise an exception. Properties of services, tags, and the global provider can all be referenced the same way. For example, <code>global.services['openvpn'].x509.dh</code>.</p></blockquote>
+
+<p><code>nodes</code></p>
+
+<blockquote><p>A hash of all nodes. This list can be filtered.</p></blockquote>
+
+<p><code>nodes_like_me</code></p>
+
+<blockquote><p>A hash of nodes that have the same deployment tags as the current node (e.g. &lsquo;production&rsquo; or &lsquo;local&rsquo;).</p></blockquote>
+
+<p><code>global.services</code></p>
+
+<blockquote><p>A hash of all services, e.g. <code>global.services['openvpn']</code> would return the &ldquo;openvpn&rdquo; service.</p></blockquote>
+
+<p><code>global.tags</code></p>
+
+<blockquote><p>A hash of all tags, e.g. <code>global.tags['production']</code> would return the &ldquo;production&rdquo; tag.</p></blockquote>
+
+<p> <code>global.provider</code></p>
+
+<blockquote><p>Can be used to access variables defined in <code>provider.json</code>, e.g. <code>global.provider.contacts.default</code>.</p></blockquote>
+
+<p><code>file(filename)</code></p>
+
+<blockquote><p>Inserts the full contents of the file. If the file is an erb template, it is rendered. The filename can either be one of the pre-defined file symbols, or it can be a path relative to the &ldquo;files&rdquo; directory in your provider instance. E.g, <code>file :ca_cert</code> or <code>files 'ca/ca.crt'</code>.</p></blockquote>
+
+<p><code>file_path(filename)</code></p>
+
+<blockquote><p> Ensures that the file will get rsynced to the node as an individual file. The value returned by <code>file_path</code> is the full path where this file will ultimately live when deploy to the node. e.g. <code>file_path :ca_cert</code> or <code>file_path 'branding/images/logo.png'</code>.</p></blockquote>
+
+<p><code>secret(:symbol)</code></p>
+
+<blockquote><p>Returns the value of a secret in secrets.json (or creates it if necessary). E.g. <code>secret :couch_admin_password</code></p></blockquote>
+
+<p><code>hosts_file</code></p>
+
+<blockquote><p>Returns a data structure that puppet will use to generate /etc/hosts. Care is taken to use the local IP of other hosts when needed.</p></blockquote>
+
+<p><code>known_hosts_file</code></p>
+
+<blockquote><p>Returns the lines needed in a SSH <code>known_hosts</code> file.</p></blockquote>
+
+<p><code>stunnel_client(node_list, port, options={})</code></p>
+
+<blockquote><p>Returns a stunnel configuration data structure for the client side. Argument <code>node_list</code> is an <code>ObjectList</code> of nodes running stunnel servers. Argument <code>port</code> is the real port of the ultimate service running on the servers that the client wants to connect to.</p></blockquote>
+
+<p><code>stunnel_server(port)</code></p>
+
+<blockquote><p>Generates a stunnel server entry. The <code>port</code> is the real port targeted service.</p></blockquote>
+
+<h2><a name="hash-tables"></a>Hash tables</h2>
+
+<p>The macros <code>nodes</code>, <code>nodes_like_me</code>, <code>global.services</code>, and <code>global.tags</code> all return a hash table of configuration objects (either nodes, services, or tags). There are several ways to filter and process these hash tables:</p>
+
+<p>Access an element by name:</p>
+
+<pre><code>nodes['vpn1']                # returns node named 'vpn1'
+global.services['openvpn']   # returns service named 'openvpn'
+</code></pre>
+
+<p>Create a new hash table by applying filters:</p>
+
+<pre><code>nodes[:public_dns =&gt; true] # all nodes where public_dns == true
+nodes[:services =&gt; 'openvpn', 'location.country_code' =&gt; 'US'] # openvpn service OR in the US.
+nodes[[:services, 'openvpn'], [:services, 'tor']]  # services equal to openvpn OR tor
+nodes[:services =&gt; 'openvpn'][:tags =&gt; 'production']  # openvpn AND production
+nodes[:name =&gt; "!bob"] # all nodes that are NOT named "bob"
+</code></pre>
+
+<p>Create an array of values by selecting a single field:</p>
+
+<pre><code>nodes.field('location.name')
+==&gt; ['seattle', 'istanbul']
+</code></pre>
+
+<p>Create an array of hashes by selecting multiple fields:</p>
+
+<pre><code>nodes.fields('domain.full', 'ip_address')
+==&gt; [
+  {'domain_full' =&gt; 'red.bitmask.net', 'ip_address' =&gt; '1.1.1.1'},
+  {'domain_full' =&gt; 'blue.bitmask.net', 'ip_address' =&gt; '1.1.1.2'},
+]
+</code></pre>
+
+<p>Create a new hash table of hashes, with only certain fields:</p>
+
+<pre><code>nodes.pick_fields('domain.full', 'ip_address')
+==&gt; {
+  "red" =&gt; {'domain_full' =&gt; 'red.bitmask.net', 'ip_address' =&gt; '1.1.1.1'},
+  "blue =&gt; {'domain_full' =&gt; 'blue.bitmask.net', 'ip_address' =&gt; '1.1.1.2'},
+}
+</code></pre>
+
+<p>With <code>pick_fields</code>, if there is only one field, it will generate a simple hash table:</p>
+
+<pre><code>nodes.pick_fields('ip_address')
+==&gt; {
+  "red" =&gt; '1.1.1.1',
+  "blue =&gt; '1.1.1.2',
+}
+</code></pre>
+
+</div>
+</div>
+</body>
+</html>

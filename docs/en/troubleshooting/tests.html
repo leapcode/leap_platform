@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Tests and Monitoring - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class='active level1'>
+<a class='' href='tests.html'>Tests and Monitoring</a>
+</li>
+<li class=' level1'>
+<a class='' href='known-issues.html'>Known issues</a>
+</li>
+<li class=' level1'>
+<a class='' href='where-to-look.html'>Where to look</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Tests and Monitoring</h1>
+
+<div id='summary'>Testing and monitoring your infrastructure.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="tests/index.html#troubleshooting-tests">Troubleshooting Tests</a>
+  </li>
+  <li>
+    <a href="tests/index.html#testing-with-the-bitmask-client">Testing with the bitmask client</a>
+  </li>
+  <li>
+    <a href="tests/index.html#testing-recieving-mail">Testing Recieving Mail</a>
+  </li>
+  <li>
+    <a href="tests/index.html#monitoring">Monitoring</a>
+  </li>
+  <li>
+    <a href="tests/index.html#nagios-frontends">Nagios Frontends</a>
+    <ol>
+      <li>
+        <a href="tests/index.html#log-monitoring">Log Monitoring</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h2><a name="troubleshooting-tests"></a>Troubleshooting Tests</h2>
+
+<p>At any time, you can run troubleshooting tests on the nodes of your provider infrastructure to check to see if things seem to be working correctly. If there is a problem, these tests should help you narrow down precisely where the problem is.</p>
+
+<p>To run tests on FILTER node list:</p>
+
+<pre><code>workstation$ leap test run FILTER
+</code></pre>
+
+<p>For example, you can also test a single node (<code>leap test elephant</code>); test a specific environment (<code>leap test development</code>), or any tag (<code>leap test soledad</code>).</p>
+
+<p>Alternately, you can run test on all nodes (probably only useful if you have pinned the environment):</p>
+
+<pre><code>workstation$ leap test
+</code></pre>
+
+<p>The tests that are performed are located in the platform under the tests directory.</p>
+
+<h2><a name="testing-with-the-bitmask-client"></a>Testing with the bitmask client</h2>
+
+<p>Download the provider ca:</p>
+
+<pre><code>wget --no-check-certificate https://example.org/ca.crt -O /tmp/ca.crt
+</code></pre>
+
+<p>Start bitmask:</p>
+
+<pre><code>bitmask --ca-cert-file /tmp/ca.crt
+</code></pre>
+
+<h2><a name="testing-recieving-mail"></a>Testing Recieving Mail</h2>
+
+<p>Use i.e. swaks to send a testmail</p>
+
+<pre><code>swaks -f noone@example.org -t testuser@example.org -s example.org
+</code></pre>
+
+<p>and use your favorite mail client to examine your inbox.</p>
+
+<p>You can also use <a href="http://offlineimap.org/">offlineimap</a> to fetch mails:</p>
+
+<pre><code> offlineimap -c vagrant/.offlineimaprc.example.org
+</code></pre>
+
+<p>WARNING: Use offlineimap <em>only</em> for testing/debugging,
+because it will save the mails <em>decrypted</em> locally to
+your disk !</p>
+
+<h2><a name="monitoring"></a>Monitoring</h2>
+
+<p>In order to set up a monitoring node, you simply add a <code>monitor</code> service tag to the node configuration file. It could be combined with any other service, but we propose that you add it to the webapp node, as this already is public accessible via HTTPS.</p>
+
+<p>After deploying, this node will regularly poll every node to ask for the status of various health checks. These health checks include the checks run with <code>leap test</code>, plus many others.</p>
+
+<p>We use <a href="https://www.nagios.org/">Nagios</a> together with <a href="https://en.wikipedia.org/wiki/Check_MK">Check MK agent</a> for running checks on remote hosts.</p>
+
+<p>One nagios installation will monitor all nodes in all your environments. You can log into the monitoring web interface via <a href="https://DOMAIN/nagios3/">https://DOMAIN/nagios3/</a>. The username is <code>nagiosadmin</code> and the password is found in the secrets.json file in your provider directory.
+Nagios will send out mails to the <code>contacts</code> address provided in <code>provider.json</code>.</p>
+
+<h2><a name="nagios-frontends"></a>Nagios Frontends</h2>
+
+<p>There are other ways to check and get notified by Nagios besides regularly checking the Nagios webinterface or reading email notifications. Check out the <a href="http://exchange.nagios.org/directory/Addons/Frontends-%28GUIs-and-CLIs%29">Frontends (GUIs and CLIs)</a> on the Nagios project website.
+A recommended status tray application is <a href="https://nagstamon.ifw-dresden.de/">Nagstamon</a>, which is available for Linux, MacOS X and Windows. It can not only notify you of hosts/services failures, you can also acknowledge or recheck them.</p>
+
+<h3><a name="log-monitoring"></a>Log Monitoring</h3>
+
+<p>At the moment, we use <a href="https://mathias-kettner.de/checkmk_check_logwatch.html">check-mk-agent-logwatch</a> for searching logs for irregularities.
+Logs are parsed for patterns using a blacklist, and are stored in <code>/var/lib/check_mk/logwatch/&lt;Nodename&gt;</code>.</p>
+
+<p>In order to &ldquo;acknowledge&rdquo; a log warning, you need to log in to the monitoring server, and delete the corresponding file in <code>/var/lib/check_mk/logwatch/&lt;Nodename&gt;</code>. This should be done via the nagios webinterface in the future.</p>
+
+</div>
+</div>
+</body>
+</html>

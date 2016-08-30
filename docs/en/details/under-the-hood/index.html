@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Under the hood - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+<li class=' level1'>
+<a class='' href='../faq.html'>FAQ</a>
+</li>
+<li class=' level1'>
+<a class='' href='../development.html'>Development</a>
+</li>
+<li class=' level1'>
+<a class='' href='../ports.html'>Ports</a>
+</li>
+<li class='active level1'>
+<a class='' href='../under-the-hood.html'>Under the hood</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Under the hood</h1>
+
+<div id='summary'>Various implementation details.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#puppet-details">Puppet Details</a>
+    <ol>
+      <li>
+        <a href="index.html#tags">Tags</a>
+        <ol>
+          <li>
+            <a href="index.html#doing-faster-partial-deploys">Doing faster partial deploys</a>
+          </li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<p>This page contains various details on the how the platform is implemented. You can safely ignore this page, although it may be useful if you plan to make modifications to the platform.</p>
+
+<h1><a name="puppet-details"></a>Puppet Details</h1>
+
+<h2><a name="tags"></a>Tags</h2>
+
+<p>Tags are beeing used to deploy different classes.</p>
+
+<ul>
+<li>leap_base:    site_config::default (configure hostname + resolver, sshd, )</li>
+<li>leap_slow:    site_config::slow (slow: apt-get update, apt-get dist-upgrade)</li>
+<li>leap_service: cofigure platform service (openvpn, couchdb, etc.)</li>
+</ul>
+
+
+<p>You can pass any combination of tags, i.e. use</p>
+
+<ul>
+<li>&ldquo;&ndash;tags leap_base,leap_slow,leap_service&rdquo; (DEFAULT): Deploy all</li>
+<li>&ldquo;&ndash;tags leap_service&rdquo;: Only deploy service(s) (useful for debugging/development)</li>
+<li>&ldquo;&ndash;tags leap_base&rdquo;: Only deploy basic configuration (again, useful for debugging/development)</li>
+</ul>
+
+
+<h3><a name="doing-faster-partial-deploys"></a>Doing faster partial deploys</h3>
+
+<p>If you only change a tiny bit on the platform puppet recipes, you could achieve a
+<em>much</em> faster deploy specifying the resource tag you changed.
+i.e. you changed the way rsyslog config snippets for LEAP logfiles are created
+in <code>puppet/modules/leap/manifests/logfile.pp</code>. This <code>define</code> resource will get tagged
+automatically with <code>leap::logfile</code> and you can deploy the change with:</p>
+
+<pre><code>leap deploy *NODE* --fast --tags=leap::logfile
+</code></pre>
+
+<p>or, if you just want</p>
+
+<pre><code>leap deploy --tags=dist_upgrade
+</code></pre>
+
+<p>See <a href="http://docs.puppetlabs.com/puppet/2.7/reference/lang_tags.html">http://docs.puppetlabs.com/puppet/2.7/reference/lang_tags.html</a> for puppet tag usage.</p>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Environments - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='../getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='../config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='../nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='../keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='../domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='../provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class='active level1'>
+<a class='' href='../environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='../virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='../miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='../commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Working with environments</h1>
+
+<div id='summary'>How to partition the nodes into separate environments.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#assign-an-environment">Assign an environment</a>
+  </li>
+  <li>
+    <a href="index.html#environment-commands">Environment commands</a>
+  </li>
+  <li>
+    <a href="index.html#environment-specific-json-files">Environment specific JSON files</a>
+  </li>
+  <li>
+    <a href="index.html#bind-an-environment-to-a-platform-version">Bind an environment to a Platform version</a>
+  </li>
+</ol></div>
+
+<p>With environments, you can divide your nodes into different and entirely separate sets. For example, you might have sets of nodes for &lsquo;testing&rsquo;, &lsquo;staging&rsquo; and &lsquo;production&rsquo;.</p>
+
+<p>Typically, the nodes in one environment are totally isolated from the nodes in a different environment. Each environment will have its own separate database, for example.</p>
+
+<p>There are a few exceptions to this rule: backup nodes, for example, will by default attempt to back up data from all the environments (excluding local).</p>
+
+<h2><a name="assign-an-environment"></a>Assign an environment</h2>
+
+<p>To assign an environment to a node, you just set the <code>environment</code> node property. This is typically done with tags, although it is not necessary. For example:</p>
+
+<p><code>tags/production.json</code></p>
+
+<pre><code>{
+  "environment": "production"
+}
+</code></pre>
+
+<p><code>nodes/mynode.json</code></p>
+
+<pre><code>{
+  "tags": ["production"]
+}
+</code></pre>
+
+<p>There are several built-in tags that will apply a value for the environment:</p>
+
+<ul>
+<li><code>production</code>: An environment for nodes that are in use by end users.</li>
+<li><code>development</code>: An environment to be used for nodes that are being used for experiments or staging.</li>
+<li><code>local</code>: This environment gets automatically applied to all nodes that run only on local VMs. Nodes with a <code>local</code> environment are treated special and excluded from certain calculations.</li>
+</ul>
+
+
+<p>You don&rsquo;t need to use these and you can add your own.</p>
+
+<h2><a name="environment-commands"></a>Environment commands</h2>
+
+<ul>
+<li><code>leap env</code> &ndash; List the available environments and disply which one is active.</li>
+<li><code>leap env pin ENV</code> &ndash; Pin the current environment to ENV.</li>
+<li><code>leap env unpin</code> &ndash; Remove the environment pin.</li>
+</ul>
+
+
+<p>The environment pin is only active for your local machine: it is not recorded in the provider directory and not shared with other users.</p>
+
+<h2><a name="environment-specific-json-files"></a>Environment specific JSON files</h2>
+
+<p>You can add JSON configuration files that are only applied when a specific environment is active. For example, if you create a file <code>provider.production.json</code>, these values will only get applied to the <code>provider.json</code> file for the <code>production</code> environment.</p>
+
+<p>This will also work for services and tags. For example:</p>
+
+<pre><code>provider.local.json
+services/webapp.development.json
+tags/seattle.production.json
+</code></pre>
+
+<p>In this example, <code>local</code>, <code>development</code>, and <code>production</code> are the names of environments.</p>
+
+<h2><a name="bind-an-environment-to-a-platform-version"></a>Bind an environment to a Platform version</h2>
+
+<p>If you want to ensure that a particular environment is bound to a particular version of the LEAP Platform, you can add a <code>platform</code> section to the <code>provider.ENV.json</code> file (where ENV is the name of the environment in question).</p>
+
+<p>The available options are <code>platform.version</code>, <code>platform.branch</code>, or <code>platform.commit</code>. For example:</p>
+
+<pre><code>{
+  "platform": {
+    "version": "1.6.1",
+    "branch": "develop",
+    "commit": "5df867fbd3a78ca4160eb54d708d55a7d047bdb2"
+  }
+}
+</code></pre>
+
+<p>You can use any combination of <code>version</code>, <code>branch</code>, and <code>commit</code> to specify the binding. The values for <code>branch</code> and <code>commit</code> only work if the <code>leap_platform</code> directory is a git repository.</p>
+
+<p>The value for <code>commit</code> is passed directly through to <code>git log</code> to query for a list of acceptable commits. See <a href="https://www.kernel.org/pub/software/scm/git/docs/gitrevisions.html#_specifying_ranges">man gitrevisions</a> to see how to specify ranges. For example:</p>
+
+<ul>
+<li><code>HEAD^..HEAD</code> - current commit must be head of the branch.</li>
+<li><code>3172444652af71bd771609d6b80258e70cc82ce9..HEAD</code> - current commit must be after 3172444652af71bd771609d6b80258e70cc82ce9.</li>
+<li><code>refs/tags/0.6.0rc1..refs/tags/0.6.0rc2</code> - current commit must be after tag 0.6.0rc1 and before or including tag 0.6.0rc2.</li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>

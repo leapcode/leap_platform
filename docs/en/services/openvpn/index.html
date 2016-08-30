@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+openvpn - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level1'>
+<a class='' href='../couchdb.html'>couchdb</a>
+</li>
+<li class='active level1'>
+<a class='' href='../openvpn.html'>openvpn</a>
+</li>
+<li class=' level1'>
+<a class='' href='../monitor.html'>monitor</a>
+</li>
+<li class=' level1'>
+<a class='' href='../mx.html'>mx</a>
+</li>
+<li class=' level1'>
+<a class='' href='../soledad.html'>soledad</a>
+</li>
+<li class=' level1'>
+<a class='' href='../tor.html'>tor</a>
+</li>
+<li class=' level1'>
+<a class='' href='../webapp.html'>webapp</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>openvpn</h1>
+
+<div id='summary'>OpenVPN egress gateways</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#topology">Topology</a>
+  </li>
+  <li>
+    <a href="index.html#configuration">Configuration</a>
+  </li>
+</ol></div>
+
+<h2><a name="topology"></a>Topology</h2>
+
+<p>Currently, <code>openvpn</code> service should not be combined with other services on the same node.</p>
+
+<p>Unlike most of the other node types, the <code>openvpn</code> nodes do not need access to the database and does not ever communicate with any other nodes (except for the <code>monitor</code> node, if used). So, <code>openvpn</code> nodes can be placed anywhere without regard to the other nodes.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<p><em>Essential configuration</em></p>
+
+<ul>
+<li><code>openvpn.gateway_address</code>: The address that OpenVPN daemon is bound to and that VPN clients connect to.</li>
+<li><code>ip_address</code>: The main IP of the server, and the egress address for outgoing traffic.</li>
+</ul>
+
+
+<p>For example:</p>
+
+<pre><code>{
+  "ip_address": "1.1.1.1",
+  "openvpn": {
+    "gateway_address": "2.2.2.2"
+  }
+}
+</code></pre>
+
+<p>In this example, VPN clients will connect to 2.2.2.2, but their traffic will appear to come from 1.1.1.1.</p>
+
+<p>Why are two IP addresses needed? Without this, traffic between two VPN users on the same gateway will not get encrypted. This is because the VPN on every client must be configured to allow cleartext traffic for the IP address that is the VPN gateway.</p>
+
+<p><em>Optional configuration</em></p>
+
+<p>Here is the default configuration:</p>
+
+<pre><code>"openvpn": {
+  "configuration": {
+    "auth": "SHA1",
+    "cipher": "AES-128-CBC",
+    "fragment": 1400,
+    "keepalive": "10 30",
+    "tls-cipher": "DHE-RSA-AES128-SHA",
+    "tun-ipv6": true
+  },
+  "ports": ["80", "443", "53", "1194"],
+  "protocols": ["tcp", "udp"]
+}
+</code></pre>
+
+<p>You may want to change the ports so that only 443 or 80 are used. It is probably best to not modify the <code>openvpn.configuration</code> options for now.</p>
+
+</div>
+</div>
+</body>
+</html>

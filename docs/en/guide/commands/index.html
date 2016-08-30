@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Command Line Reference - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='../getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='../config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='../nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='../keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='../domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='../provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='../environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='../virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='../miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class='active level1'>
+<a class='' href='../commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Command Line Reference</h1>
+
+<div id='summary'>A copy of leap --help</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#global-options">Global Options</a>
+  </li>
+  <li>
+    <a href="index.html#leap-add-user-username">leap add-user  USERNAME</a>
+  </li>
+  <li>
+    <a href="index.html#leap-cert">leap cert</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-cert-ca">leap cert ca</a>
+      </li>
+      <li>
+        <a href="index.html#leap-cert-csr">leap cert csr</a>
+      </li>
+      <li>
+        <a href="index.html#leap-cert-dh">leap cert dh</a>
+      </li>
+      <li>
+        <a href="index.html#leap-cert-update-filter">leap cert update  FILTER</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-clean">leap clean</a>
+  </li>
+  <li>
+    <a href="index.html#leap-compile">leap compile</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-compile-all-environment">leap compile all  [ENVIRONMENT]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-compile-firewall">leap compile firewall</a>
+      </li>
+      <li>
+        <a href="index.html#leap-compile-hosts">leap compile hosts</a>
+      </li>
+      <li>
+        <a href="index.html#leap-compile-providerjson">leap compile provider.json</a>
+      </li>
+      <li>
+        <a href="index.html#leap-compile-zone">leap compile zone</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-db">leap db</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-db-destroy-filter">leap db destroy  [FILTER]</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-debug-filter">leap debug  FILTER</a>
+  </li>
+  <li>
+    <a href="index.html#leap-deploy-filter">leap deploy  FILTER</a>
+  </li>
+  <li>
+    <a href="index.html#leap-env">leap env</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-env-ls-environment">leap env ls  [ENVIRONMENT]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-env-pin-environment">leap env pin  ENVIRONMENT</a>
+      </li>
+      <li>
+        <a href="index.html#leap-env-unpin">leap env unpin</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-facts">leap facts</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-facts-update-filter">leap facts update  FILTER</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-help-command">leap help  command</a>
+  </li>
+  <li>
+    <a href="index.html#leap-history-filter">leap history  FILTER</a>
+  </li>
+  <li>
+    <a href="index.html#leap-inspect-file">leap inspect  FILE</a>
+  </li>
+  <li>
+    <a href="index.html#leap-list-filter">leap list  [FILTER]</a>
+  </li>
+  <li>
+    <a href="index.html#leap-local">leap local</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-local-destroy-filter">leap local destroy  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-local-reset-filter">leap local reset  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-local-save-filter">leap local save  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-local-start-filter">leap local start  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-local-status-filter">leap local status  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-local-stop-filter">leap local stop  [FILTER]</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-mosh-name">leap mosh  NAME</a>
+  </li>
+  <li>
+    <a href="index.html#leap-new-directory">leap new  DIRECTORY</a>
+  </li>
+  <li>
+    <a href="index.html#leap-node">leap node</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-node-add-name-seed">leap node add  NAME [SEED]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-node-init-filter">leap node init  FILTER</a>
+      </li>
+      <li>
+        <a href="index.html#leap-node-mv-old_name-new_name">leap node mv  OLD_NAME NEW_NAME</a>
+      </li>
+      <li>
+        <a href="index.html#leap-node-rm-name">leap node rm  NAME</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-scp-file1-file2">leap scp  FILE1 FILE2</a>
+  </li>
+  <li>
+    <a href="index.html#leap-ssh-name">leap ssh  NAME</a>
+  </li>
+  <li>
+    <a href="index.html#leap-test">leap test</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-test-init">leap test init</a>
+      </li>
+      <li>
+        <a href="index.html#leap-test-run-filter">leap test run  [FILTER]</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-tunnel-local_portnameremote_port">leap tunnel  [LOCAL_PORT:]NAME:REMOTE_PORT</a>
+  </li>
+</ol></div>
+
+<p>The command &ldquo;leap&rdquo; can be used to manage a bevy of servers running the LEAP platform from the comfort of your own home.</p>
+
+<h1><a name="global-options"></a>Global Options</h1>
+
+<ul>
+<li><p><code>--log FILE</code>
+Override default log file.
+Default Value: None</p></li>
+<li><p><code>-v|--verbose LEVEL</code>
+Verbosity level 0..5
+Default Value: 1</p></li>
+<li><p><code>--[no-]color</code>
+Disable colors in output.</p></li>
+<li><p><code>-d|--debug</code>
+Print full stack trace for exceptions and load <code>debugger</code> gem if installed.</p></li>
+<li><p><code>--force</code>
+Like &ndash;yes, but also skip prompts that are potentially dangerous to skip.</p></li>
+<li><p><code>--help</code>
+Show this message</p></li>
+<li><p><code>--version</code>
+Display version number and exit.</p></li>
+<li><p><code>--yes</code>
+Skip prompts and assume &ldquo;yes&rdquo;.</p></li>
+</ul>
+
+
+<h1><a name="leap-add-user-username"></a>leap add-user  USERNAME</h1>
+
+<p>Adds a new trusted sysadmin by adding public keys to the &ldquo;users&rdquo; directory.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--pgp-pub-key arg</code>
+OpenPGP public key file for this new user
+Default Value: None</p></li>
+<li><p><code>--ssh-pub-key arg</code>
+SSH public key file for this new user
+Default Value: None</p></li>
+<li><p><code>--self</code>
+Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.</p></li>
+</ul>
+
+
+<h1><a name="leap-cert"></a>leap cert</h1>
+
+<p>Manage X.509 certificates</p>
+
+<h2><a name="leap-cert-ca"></a>leap cert ca</h2>
+
+<p>Creates two Certificate Authorities (one for validating servers and one for validating clients).</p>
+
+<p>See see what values are used in the generation of the certificates (like name and key size), run <code>leap inspect provider</code> and look for the &ldquo;ca&rdquo; property. To see the details of the created certs, run <code>leap inspect &lt;file&gt;</code>.</p>
+
+<h2><a name="leap-cert-csr"></a>leap cert csr</h2>
+
+<p>Creates a CSR for use in buying a commercial X.509 certificate.</p>
+
+<p>Unless specified, the CSR is created for the provider&rsquo;s primary domain. The properties used for this CSR come from <code>provider.ca.server_certificates</code>, but may be overridden here.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--bits BITS</code>
+Override default certificate bit length
+Default Value: None</p></li>
+<li><p><code>--country|-C COUNTRY</code>
+Set C in distinguished name.
+Default Value: None</p></li>
+<li><p><code>--digest DIGEST</code>
+Override default signature digest
+Default Value: None</p></li>
+<li><p><code>--domain DOMAIN</code>
+Specify what domain to create the CSR for.
+Unless specified, the CSR is created for the provider&rsquo;s primary domain. The properties used for this CSR come from <code>provider.ca.server_certificates</code>, but may be overridden here.
+Default Value: None</p></li>
+<li><p><code>--email EMAIL</code>
+Set emailAddress in distinguished name.
+Default Value: None</p></li>
+<li><p><code>--locality|-L LOCALITY</code>
+Set L in distinguished name.
+Default Value: None</p></li>
+<li><p><code>--organization|-O ORGANIZATION</code>
+Override default O in distinguished name.
+Default Value: None</p></li>
+<li><p><code>--state|--ST STATE</code>
+Set ST in distinguished name.
+Default Value: None</p></li>
+<li><p><code>--unit|--OU UNIT</code>
+Set OU in distinguished name.
+Default Value: None</p></li>
+</ul>
+
+
+<h2><a name="leap-cert-dh"></a>leap cert dh</h2>
+
+<p>Creates a Diffie-Hellman parameter file, needed for forward secret OpenVPN ciphers.</p>
+
+<h2><a name="leap-cert-update-filter"></a>leap cert update  FILTER</h2>
+
+<p>Creates or renews a X.509 certificate/key pair for a single node or all nodes, but only if needed.</p>
+
+<p>This command will a generate new certificate for a node if some value in the node has changed that is included in the certificate (like hostname or IP address), or if the old certificate will be expiring soon. Sometimes, you might want to force the generation of a new certificate, such as in the cases where you have changed a CA parameter for server certificates, like bit size or digest hash. In this case, use &ndash;force. If <node-filter> is empty, this command will apply to all nodes.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>--force</code>
+Always generate new certificates</li>
+</ul>
+
+
+<h1><a name="leap-clean"></a>leap clean</h1>
+
+<p>Removes all files generated with the &ldquo;compile&rdquo; command.</p>
+
+<h1><a name="leap-compile"></a>leap compile</h1>
+
+<p>Compile generated files.</p>
+
+<h2><a name="leap-compile-all-environment"></a>leap compile all  [ENVIRONMENT]</h2>
+
+<p>Compiles node configuration files into hiera files used for deployment.</p>
+
+<h2><a name="leap-compile-firewall"></a>leap compile firewall</h2>
+
+<p>Prints a list of firewall rules. These rules are already implemented on each node, but you might want the list of all rules in case you also have a restrictive network firewall.</p>
+
+<h2><a name="leap-compile-hosts"></a>leap compile hosts</h2>
+
+<p>Print entries suitable for an /etc/hosts file, useful for testing your provider.</p>
+
+<h2><a name="leap-compile-providerjson"></a>leap compile provider.json</h2>
+
+<p>Compile provider.json bootstrap files for your provider.</p>
+
+<h2><a name="leap-compile-zone"></a>leap compile zone</h2>
+
+<p>Prints a DNS zone file for your provider.</p>
+
+<p>Default Command: all</p>
+
+<h1><a name="leap-db"></a>leap db</h1>
+
+<p>Database commands.</p>
+
+<h2><a name="leap-db-destroy-filter"></a>leap db destroy  [FILTER]</h2>
+
+<p>Destroy one or more databases. If present, limit to FILTER nodes. For example <code>leap db destroy --db sessions,tokens testing</code>.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--db DATABASES</code>
+Comma separated list of databases to destroy (no space). Use &ldquo;&ndash;db all&rdquo; to destroy all databases.
+Default Value: None</p></li>
+<li><p><code>--user USERS</code>
+Comma separated list of usernames. The storage databases for these user(s) will be destroyed.
+Default Value: None</p></li>
+</ul>
+
+
+<h1><a name="leap-debug-filter"></a>leap debug  FILTER</h1>
+
+<p>Output debug information.</p>
+
+<p>The FILTER can be the name of a node, service, or tag.</p>
+
+<h1><a name="leap-deploy-filter"></a>leap deploy  FILTER</h1>
+
+<p>Apply recipes to a node or set of nodes.</p>
+
+<p>The FILTER can be the name of a node, service, or tag.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--ip IPADDRESS</code>
+Override the default SSH IP address.
+Default Value: None</p></li>
+<li><p><code>--port PORT</code>
+Override the default SSH port.
+Default Value: None</p></li>
+<li><p><code>--tags TAG[,TAG]</code>
+Specify tags to pass through to puppet (overriding the default).
+Default Value: None</p></li>
+<li><p><code>--dev</code>
+Development mode: don&rsquo;t run &lsquo;git submodule update&rsquo; before deploy.</p></li>
+<li><p><code>--downgrade</code>
+Allows deploy to run with an older platform version.</p></li>
+<li><p><code>--fast</code>
+Makes the deploy command faster by skipping some slow steps. A &ldquo;fast&rdquo; deploy can be used safely if you recently completed a normal deploy.</p></li>
+<li><p><code>--force</code>
+Deploy even if there is a lockfile.</p></li>
+<li><p><code>--sync</code>
+Sync files, but don&rsquo;t actually apply recipes.</p></li>
+</ul>
+
+
+<h1><a name="leap-env"></a>leap env</h1>
+
+<p>Manipulate and query environment information.</p>
+
+<p>The &lsquo;environment&rsquo; node property can be used to isolate sets of nodes into entirely separate environments. A node in one environment will never interact with a node from another environment. Environment pinning works by modifying your ~/.leaprc file and is dependent on the absolute file path of your provider directory (pins don&rsquo;t apply if you move the directory)</p>
+
+<h2><a name="leap-env-ls-environment"></a>leap env ls  [ENVIRONMENT]</h2>
+
+<p>List the available environments. The pinned environment, if any, will be marked with &lsquo;*&rsquo;. Will also set the pin if run with an environment argument.</p>
+
+<h2><a name="leap-env-pin-environment"></a>leap env pin  ENVIRONMENT</h2>
+
+<p>Pin the environment to ENVIRONMENT. All subsequent commands will only apply to nodes in this environment.</p>
+
+<h2><a name="leap-env-unpin"></a>leap env unpin</h2>
+
+<p>Unpin the environment. All subsequent commands will apply to all nodes.</p>
+
+<p>Default Command: ls</p>
+
+<h1><a name="leap-facts"></a>leap facts</h1>
+
+<p>Gather information on nodes.</p>
+
+<h2><a name="leap-facts-update-filter"></a>leap facts update  FILTER</h2>
+
+<p>Query servers to update facts.json.</p>
+
+<p>Queries every node included in FILTER and saves the important information to facts.json</p>
+
+<h1><a name="leap-help-command"></a>leap help  command</h1>
+
+<p>Shows a list of commands or help for one command</p>
+
+<p>Gets help for the application or its commands. Can also list the commands in a way helpful to creating a bash-style completion function</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>-c</code>
+List commands one per line, to assist with shell completion</li>
+</ul>
+
+
+<h1><a name="leap-history-filter"></a>leap history  FILTER</h1>
+
+<p>Display recent deployment history for a set of nodes.</p>
+
+<p>The FILTER can be the name of a node, service, or tag.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--ip IPADDRESS</code>
+Override the default SSH IP address.
+Default Value: None</p></li>
+<li><p><code>--port PORT</code>
+Override the default SSH port.
+Default Value: None</p></li>
+<li><p><code>--last</code>
+Show last deploy only</p></li>
+</ul>
+
+
+<h1><a name="leap-inspect-file"></a>leap inspect  FILE</h1>
+
+<p>Prints details about a file. Alternately, the argument FILE can be the name of a node, service or tag.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>--base</code>
+Inspect the FILE from the provider_base (i.e. without local inheritance).</li>
+</ul>
+
+
+<h1><a name="leap-list-filter"></a>leap list  [FILTER]</h1>
+
+<p>List nodes and their classifications</p>
+
+<p>Prints out a listing of nodes, services, or tags. If present, the FILTER can be a list of names of nodes, services, or tags. If the name is prefixed with +, this acts like an AND condition. For example:</p>
+
+<p><code>leap list node1 node2</code> matches all nodes named &ldquo;node1&rdquo; OR &ldquo;node2&rdquo;</p>
+
+<p><code>leap list openvpn +local</code> matches all nodes with service &ldquo;openvpn&rdquo; AND tag &ldquo;local&rdquo;</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--print arg</code>
+What attributes to print (optional)
+Default Value: None</p></li>
+<li><p><code>--disabled</code>
+Include disabled nodes in the list.</p></li>
+</ul>
+
+
+<h1><a name="leap-local"></a>leap local</h1>
+
+<p>Manage local virtual machines.</p>
+
+<p>This command provides a convient way to manage Vagrant-based virtual machines. If FILTER argument is missing, the command runs on all local virtual machines. The Vagrantfile is automatically generated in &lsquo;test/Vagrantfile&rsquo;. If you want to run vagrant commands manually, cd to &lsquo;test&rsquo;.</p>
+
+<h2><a name="leap-local-destroy-filter"></a>leap local destroy  [FILTER]</h2>
+
+<p>Destroys the virtual machine(s), reclaiming the disk space</p>
+
+<h2><a name="leap-local-reset-filter"></a>leap local reset  [FILTER]</h2>
+
+<p>Resets virtual machine(s) to the last saved snapshot</p>
+
+<h2><a name="leap-local-save-filter"></a>leap local save  [FILTER]</h2>
+
+<p>Saves the current state of the virtual machine as a new snapshot</p>
+
+<h2><a name="leap-local-start-filter"></a>leap local start  [FILTER]</h2>
+
+<p>Starts up the virtual machine(s)</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>--basebox BASEBOX</code>
+The basebox to use. This value is passed to vagrant as the <code>config.vm.box</code> option. The value here should be the name of an installed box or a shorthand name of a box in HashiCorp&rsquo;s Atlas.
+Default Value: LEAP/jessie</li>
+</ul>
+
+
+<h2><a name="leap-local-status-filter"></a>leap local status  [FILTER]</h2>
+
+<p>Print the status of local virtual machine(s)</p>
+
+<h2><a name="leap-local-stop-filter"></a>leap local stop  [FILTER]</h2>
+
+<p>Shuts down the virtual machine(s)</p>
+
+<h1><a name="leap-mosh-name"></a>leap mosh  NAME</h1>
+
+<p>Log in to the specified node with an interactive shell using mosh (requires node to have mosh.enabled set to true).</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--port SSH_PORT</code>
+Override default SSH port used when trying to connect to the server. Same as <code>--ssh "-p SSH_PORT"</code>.
+Default Value: None</p></li>
+<li><p><code>--ssh arg</code>
+Pass through raw options to ssh (e.g. <code>--ssh '-F ~/sshconfig'</code>).
+Default Value: None</p></li>
+</ul>
+
+
+<h1><a name="leap-new-directory"></a>leap new  DIRECTORY</h1>
+
+<p>Creates a new provider instance in the specified directory, creating it if necessary.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--contacts arg</code>
+Default email address contacts.
+Default Value: None</p></li>
+<li><p><code>--domain arg</code>
+The primary domain of the provider.
+Default Value: None</p></li>
+<li><p><code>--name arg</code>
+The name of the provider.
+Default Value: None</p></li>
+<li><p><code>--platform arg</code>
+File path of the leap_platform directory.
+Default Value: None</p></li>
+</ul>
+
+
+<h1><a name="leap-node"></a>leap node</h1>
+
+<p>Node management</p>
+
+<h2><a name="leap-node-add-name-seed"></a>leap node add  NAME [SEED]</h2>
+
+<p>Create a new configuration file for a node named NAME.</p>
+
+<p>If specified, the optional argument SEED can be used to seed values in the node configuration file.</p>
+
+<p>The format is property_name:value.</p>
+
+<p>For example: <code>leap node add web1 ip_address:1.2.3.4 services:webapp</code>.</p>
+
+<p>To set nested properties, property name can contain &lsquo;.&rsquo;, like so: <code>leap node add web1 ssh.port:44</code></p>
+
+<p>Separeate multiple values for a single property with a comma, like so: <code>leap node add mynode services:webapp,dns</code></p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>--local</code>
+Make a local testing node (by automatically assigning the next available local IP address). Local nodes are run as virtual machines on your computer.</li>
+</ul>
+
+
+<h2><a name="leap-node-init-filter"></a>leap node init  FILTER</h2>
+
+<p>Bootstraps a node or nodes, setting up SSH keys and installing prerequisite packages</p>
+
+<p>This command prepares a server to be used with the LEAP Platform by saving the server&rsquo;s SSH host key, copying the authorized_keys file, installing packages that are required for deploying, and registering important facts. Node init must be run before deploying to a server, and the server must be running and available via the network. This command only needs to be run once, but there is no harm in running it multiple times.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--ip IPADDRESS</code>
+Override the default SSH IP address.
+Default Value: None</p></li>
+<li><p><code>--port PORT</code>
+Override the default SSH port.
+Default Value: None</p></li>
+<li><p><code>--echo</code>
+If set, passwords are visible as you type them (default is hidden)</p></li>
+</ul>
+
+
+<h2><a name="leap-node-mv-old_name-new_name"></a>leap node mv  OLD_NAME NEW_NAME</h2>
+
+<p>Renames a node file, and all its related files.</p>
+
+<h2><a name="leap-node-rm-name"></a>leap node rm  NAME</h2>
+
+<p>Removes all the files related to the node named NAME.</p>
+
+<h1><a name="leap-scp-file1-file2"></a>leap scp  FILE1 FILE2</h1>
+
+<p>Secure copy from FILE1 to FILE2. Files are specified as NODE_NAME:FILE_PATH. For local paths, omit &ldquo;NODE_NAME:&rdquo;.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>-r</code>
+Copy recursively</li>
+</ul>
+
+
+<h1><a name="leap-ssh-name"></a>leap ssh  NAME</h1>
+
+<p>Log in to the specified node with an interactive shell.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--port SSH_PORT</code>
+Override default SSH port used when trying to connect to the server. Same as <code>--ssh "-p SSH_PORT"</code>.
+Default Value: None</p></li>
+<li><p><code>--ssh arg</code>
+Pass through raw options to ssh (e.g. <code>--ssh '-F ~/sshconfig'</code>).
+Default Value: None</p></li>
+</ul>
+
+
+<h1><a name="leap-test"></a>leap test</h1>
+
+<p>Run tests.</p>
+
+<h2><a name="leap-test-init"></a>leap test init</h2>
+
+<p>Creates files needed to run tests.</p>
+
+<h2><a name="leap-test-run-filter"></a>leap test run  [FILTER]</h2>
+
+<p>Run the test suit on FILTER nodes.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><code>--[no-]continue</code>
+Continue over errors and failures (default is &ndash;no-continue).</li>
+</ul>
+
+
+<p>Default Command: run</p>
+
+<h1><a name="leap-tunnel-local_portnameremote_port"></a>leap tunnel  [LOCAL_PORT:]NAME:REMOTE_PORT</h1>
+
+<p>Creates an SSH port forward (tunnel) to the node NAME. REMOTE_PORT is the port on the remote node that the tunnel will connect to. LOCAL_PORT is the optional port on your local machine. For example: <code>leap tunnel couch1:5984</code>.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--port SSH_PORT</code>
+Override default SSH port used when trying to connect to the server. Same as <code>--ssh "-p SSH_PORT"</code>.
+Default Value: None</p></li>
+<li><p><code>--ssh arg</code>
+Pass through raw options to ssh (e.g. &ndash;ssh &lsquo;-F ~/sshconfig&rsquo;).
+Default Value: None</p></li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>

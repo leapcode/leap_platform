@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+FAQ - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+<li class='active level1'>
+<a class='' href='../faq.html'>FAQ</a>
+</li>
+<li class=' level1'>
+<a class='' href='../development.html'>Development</a>
+</li>
+<li class=' level1'>
+<a class='' href='../ports.html'>Ports</a>
+</li>
+<li class=' level1'>
+<a class='' href='../under-the-hood.html'>Under the hood</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Frequently asked questions</h1>
+
+<div id='summary'>Frequently Asked Questions</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#apt">APT</a>
+    <ol>
+      <li>
+        <a href="index.html#what-do-i-do-when-unattended-upgrades-fail">What do I do when unattended upgrades fail?</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#puppet">Puppet</a>
+    <ol>
+      <li>
+        <a href="index.html#where-do-i-find-the-time-a-server-was-last-deployed">Where do i find the time a server was last deployed ?</a>
+      </li>
+      <li>
+        <a href="index.html#what-resources-are-touched-by-puppetleap_platform-servicespackagesfiles-etc">What resources are touched by puppet/leap_platform (services/packages/files etc.) ?</a>
+      </li>
+      <li>
+        <a href="index.html#how-can-i-customize-the-leap_platform-puppet-manifests">How can i customize the leap_platform puppet manifests ?</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#facter">Facter</a>
+    <ol>
+      <li>
+        <a href="index.html#how-can-i-see-custom-facts-distributed-by-leap_platform-on-a-node">How can i see custom facts distributed by leap_platform on a node ?</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#etc">Etc</a>
+    <ol>
+      <li>
+        <a href="index.html#how-do-i-change-the-domain-of-my-provider">How do i change the domain of my provider ?</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h1><a name="apt"></a>APT</h1>
+
+<h2><a name="what-do-i-do-when-unattended-upgrades-fail"></a>What do I do when unattended upgrades fail?</h2>
+
+<p>When you receive notification e-mails with a subject of &lsquo;unattended-upgrades result for $machinename&rsquo;, that means that some package couldn&rsquo;t be automatically upgraded and needs manual interaction. The reasons vary, so you have to be careful. Most often you can simply login to the affected machine and run <code>apt-get dist-upgrade</code>.</p>
+
+<h1><a name="puppet"></a>Puppet</h1>
+
+<h2><a name="where-do-i-find-the-time-a-server-was-last-deployed"></a>Where do i find the time a server was last deployed ?</h2>
+
+<p>Run:</p>
+
+<pre><code>leap history FILTER
+</code></pre>
+
+<p>This will tail the log file <code>/var/log/leap/deploy-summary.log</code>.</p>
+
+<p>If that command fails, you can manually check the puppet state file on the node indicates the last puppetrun:</p>
+
+<pre><code>ls -la /var/lib/puppet/state/state.yaml
+</code></pre>
+
+<h2><a name="what-resources-are-touched-by-puppetleap_platform-servicespackagesfiles-etc"></a>What resources are touched by puppet/leap_platform (services/packages/files etc.) ?</h2>
+
+<p>Log into your server and issue:</p>
+
+<pre><code>grep -v '!ruby/sym' /var/lib/puppet/state/state.yaml | sed 's/\"//' | sort
+</code></pre>
+
+<h2><a name="how-can-i-customize-the-leap_platform-puppet-manifests"></a>How can i customize the leap_platform puppet manifests ?</h2>
+
+<p>You can create custom puppet modules under <code>files/puppet</code>.
+The custom puppet entry point is in class &lsquo;custom&rsquo; which can be put into
+<code>files/puppet/modules/custom/manifests/init.pp</code>. This class gets automatically included
+by site_config::default, which is applied to all nodes.</p>
+
+<p>Of cause you can also create a different git branch and change whatever you want, if you are
+familiar wit git.</p>
+
+<h1><a name="facter"></a>Facter</h1>
+
+<h2><a name="how-can-i-see-custom-facts-distributed-by-leap_platform-on-a-node"></a>How can i see custom facts distributed by leap_platform on a node ?</h2>
+
+<p>On the server, export the FACTERLIB env. variable to include the path of the custom fact in question:</p>
+
+<pre><code>export FACTERLIB=/var/lib/puppet/lib/facter:/srv/leap/puppet/modules/stdlib/lib/facter/
+facter
+</code></pre>
+
+<h1><a name="etc"></a>Etc</h1>
+
+<h2><a name="how-do-i-change-the-domain-of-my-provider"></a>How do i change the domain of my provider ?</h2>
+
+<ul>
+<li>First of all, you need to have access to the nameserver config of your new domain.</li>
+<li>Update domain in provider.json</li>
+<li>remove all ca and cert files: <code>rm files/cert/* files/ca/*</code></li>
+<li>create ca, csr and certs : <code>leap cert ca; leap cert csr; leap cert dh; leap cert update</code></li>
+<li>deploy</li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>

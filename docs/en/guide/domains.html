@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Domains - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class='active level1'>
+<a class='' href='domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Domains</h1>
+
+<div id='summary'>How to handle domain names and integrating LEAP with existing services.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="domains/index.html#overview">Overview</a>
+    <ol>
+      <li>
+        <a href="domains/index.html#definitions">Definitions</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="domains/index.html#generating-a-zone-file">Generating a zone file</a>
+  </li>
+  <li>
+    <a href="domains/index.html#a-single-domain">A single domain</a>
+  </li>
+  <li>
+    <a href="domains/index.html#a-separate-domain-for-the-webapp">A separate domain for the webapp</a>
+    <ol>
+      <li>
+        <a href="domains/index.html#step-1-configuring-webappdomain">Step 1. Configuring <code>webapp.domain</code></a>
+      </li>
+      <li>
+        <a href="domains/index.html#step-2-putting-the-compiled-providerjson-in-place">Step 2. Putting the compiled <code>provider.json</code> in place</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="domains/index.html#integrating-with-existing-email-system">Integrating with existing email system</a>
+    <ol>
+      <li>
+        <a href="domains/index.html#step-1-modify-leap-webapp">Step 1. Modify LEAP webapp</a>
+      </li>
+      <li>
+        <a href="domains/index.html#step-2-configure-mx-servers">Step 2. Configure MX servers</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h2><a name="overview"></a>Overview</h2>
+
+<p>Deploying LEAP can start to get very tricky when you need to integrate LEAP services with an existing domain that you already use or which already has users. Most of this complexity is unavoidable, although there are a few things we plan to do in the future to make this a little less painful.</p>
+
+<p>Because integration with legacy systems is an advanced topic, we recommend that you begin with a new domain. Once everything works and you are comfortable with your LEAP-powered infrastructure, you can then contemplate integrating with your existing domain.</p>
+
+<h3><a name="definitions"></a>Definitions</h3>
+
+<p><strong>provider domain</strong></p>
+
+<p>This is the main domain used to identify the provider. The <strong>provider domain</strong> is what the user enters in the Bitmask client. e.g. <code>example.org</code>. The full host name of every node in your provider infrastructure will use the <strong>provider domain</strong> (e.g. <code>dbnode.example.org</code>).</p>
+
+<p>In order for the Bitmask client to get configured for use with a provider, it must be able to find the <code>provider.json</code> bootstrap file at the root of the <strong>provider domain</strong>. This is not needed if the Bitmask client is &ldquo;pre-seeded&rdquo; with the provider&rsquo;s information (these providers show up in a the initial list of available providers).</p>
+
+<p><strong>webapp domain</strong></p>
+
+<p>This is the domain that runs the leap_web application that allows users to register accounts, create help tickets, etc. e.g. <code>example.org</code> or <code>user.example.org</code>. The <strong>webapp domain</strong> defaults to the <strong>provider domain</strong> unless it is explicitly configured separately.</p>
+
+<p><strong>API domain</strong></p>
+
+<p>This is the domain that the provider API runs on. Typically, this is set automatically and you never need to configure it. The user should never be aware of this domain. e.g. <code>api.example.org</code>. The Bitmask client discovers this API domain by reading it from the <code>provider.json</code> file it grabs from the <strong>provider domain</strong>.</p>
+
+<p><strong>mail domain</strong></p>
+
+<p>This is the domain used for mail accounts, e.g. <code>username@example.org</code>. Currently, this is always the <strong>provider domain</strong>, but it may be independently configurable in the future.</p>
+
+<h2><a name="generating-a-zone-file"></a>Generating a zone file</h2>
+
+<p>Currently, the platform does not include a dedicated <code>dns</code> service type, so you need to have your own setup for DNS. You can generate the appropriate configuration options with this command:</p>
+
+<pre><code>leap compile zone
+</code></pre>
+
+<h2><a name="a-single-domain"></a>A single domain</h2>
+
+<p>The easy approach is to use a single domain for <strong>provider domain</strong>, <strong>webapp domain</strong>, and <strong>email domain</strong>. This will install the webapp on the <strong>provider domain</strong>, which means that this domain must be a new one that you are not currently using for anything.</p>
+
+<p>To configure a single domain, just set the domain in <code>provider.json</code>:</p>
+
+<pre><code>{
+  "domain": "example.org"
+}
+</code></pre>
+
+<p>If you have multiple environments, you can specify a different <strong>provider domain</strong> for each environment. For example:</p>
+
+<p><code>provider.staging.json</code></p>
+
+<pre><code>{
+  "domain": "staging.example.org"
+}
+</code></pre>
+
+<h2><a name="a-separate-domain-for-the-webapp"></a>A separate domain for the webapp</h2>
+
+<p>It is possible make the <strong>webapp domain</strong> different than the <strong>provider domain</strong>. This is needed if you already have a website running at your <strong>provider domain</strong>.</p>
+
+<p>In order to put webapp on a different domain, you must take two steps:</p>
+
+<ol>
+<li>You must configure <code>webapp.domain</code> for nodes with the <code>webapp</code> service.</li>
+<li>You must make the compiled <code>provider.json</code> available at the root of the <strong>provider domain</strong>.</li>
+</ol>
+
+
+<p>NOTE: This compiled provider.json is different than the provider.json that you edit and lives in the root of the provider directory.</p>
+
+<h3><a name="step-1-configuring-webappdomain"></a>Step 1. Configuring <code>webapp.domain</code></h3>
+
+<p>In <code>services/webapp.json</code>:</p>
+
+<pre><code>{
+  "webapp": {
+    "domain": "user.example.org"
+  }
+}
+</code></pre>
+
+<h3><a name="step-2-putting-the-compiled-providerjson-in-place"></a>Step 2. Putting the compiled <code>provider.json</code> in place</h3>
+
+<p>Generate the compiled <code>provider.json</code>:</p>
+
+<pre><code>leap compile provider.json
+= created files/web/bootstrap/
+= created files/web/bootstrap/README
+= created files/web/bootstrap/production/
+= created files/web/bootstrap/production/provider.json
+= created files/web/bootstrap/production/htaccess
+= created files/web/bootstrap/staging/
+= created files/web/bootstrap/staging/provider.json
+= created files/web/bootstrap/staging/htaccess
+</code></pre>
+
+<p>This command compiles a separate <code>provider.json</code> for each environment, or &ldquo;default&rdquo; if you don&rsquo;t have an environment. In the example above, there is an environment called &ldquo;production&rdquo; and one called &ldquo;staging&rdquo;, but your setup will probably differ.</p>
+
+<p>The resulting <code>provider.json</code> file must then be put at the root URL of your <strong>provider domain</strong> for the appropriate environment.</p>
+
+<p>There is one additional complication: currently, the Bitmask client tests for compatibility using some HTTP headers on the <code>/provider.json</code> response. This is will hopefully change in the future, but for now you need to ensure the right headers are set in the response. The included file <code>htaccess</code> has example directives for Apache, if that is what you use.</p>
+
+<p>This step can be skipped if you happen to use the <code>static</code> service to deploy an <code>amber</code> powered static website to <strong>provider domain</strong>. In this case, the correct <code>provider.json</code> will be automatically put into place.</p>
+
+<h2><a name="integrating-with-existing-email-system"></a>Integrating with existing email system</h2>
+
+<p>If your <strong>mail domain</strong> already has users from a legacy email system, then things get a bit complicated. In order to be able to support both LEAP-powered email and legacy email on the same domain, you need to follow these steps:</p>
+
+<ol>
+<li>Modify the LEAP webapp so that it does not create users with the same name as users in the legacy system.</li>
+<li>Configure your legacy MX servers to forward mail that they cannot handle to the LEAP MX servers, or vice versa.</li>
+</ol>
+
+
+<h3><a name="step-1-modify-leap-webapp"></a>Step 1. Modify LEAP webapp</h3>
+
+<p>In order to modify the webapp to respect the usernames already reserved by your legacy system, you need to modify the LEAP webapp code. The easiest way to do this is to create a custom gem that modifies the behavior of the webapp.</p>
+
+<p>For this example, we will call our custom gem <code>reserve_usernames</code>.</p>
+
+<p>This gem can live in one of two places:</p>
+
+<p>(1) You can fork the project leap_web and put the gem in <code>leap_web/vendor/gems/reserve_usernames</code>. Then, modify <code>Gemfile</code> and add the line <code>gem 'common_languages', :path =&gt; 'vendor/gems/reserve_usernames'</code></p>
+
+<p>(2) Alternately, you can put the gem in the local provider directory <code>files/webapp/gems/reserve_username</code>. This will get synced to the webapp servers when you deploy and put in <code>/srv/leap/webapp/config/customization</code> where it will get automatically loaded by the webapp.</p>
+
+<p>What should the gem <code>reserve_usernames</code> look like? There is an example available here: <a href="https://leap.se/git/reserved_usernames.git">https://leap.se/git/reserved_usernames.git</a></p>
+
+<p>This example gem uses ActiveResource to communicate with a remote REST API for creating and checking username reservations. This ensures that both the legacy system and the LEAP system use the same namespace. Alternately, you could write a gem that checks the legacy database directly.</p>
+
+<h3><a name="step-2-configure-mx-servers"></a>Step 2. Configure MX servers</h3>
+
+<p>To be written.</p>
+
+</div>
+</div>
+</body>
+</html>

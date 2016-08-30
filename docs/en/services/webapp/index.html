@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+webapp - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level1'>
+<a class='' href='../couchdb.html'>couchdb</a>
+</li>
+<li class=' level1'>
+<a class='' href='../openvpn.html'>openvpn</a>
+</li>
+<li class=' level1'>
+<a class='' href='../monitor.html'>monitor</a>
+</li>
+<li class=' level1'>
+<a class='' href='../mx.html'>mx</a>
+</li>
+<li class=' level1'>
+<a class='' href='../soledad.html'>soledad</a>
+</li>
+<li class=' level1'>
+<a class='' href='../tor.html'>tor</a>
+</li>
+<li class='active level1'>
+<a class='' href='../webapp.html'>webapp</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>webapp</h1>
+
+<div id='summary'>leap_web user management application and provider API.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#introduction">Introduction</a>
+  </li>
+  <li>
+    <a href="index.html#topology">Topology</a>
+  </li>
+  <li>
+    <a href="index.html#configuration">Configuration</a>
+  </li>
+  <li>
+    <a href="index.html#invite-codes">Invite codes</a>
+  </li>
+  <li>
+    <a href="index.html#customization">Customization</a>
+  </li>
+  <li>
+    <a href="index.html#customization-tutorial">Customization tutorial</a>
+    <ol>
+      <li>
+        <a href="index.html#override-translations">Override translations</a>
+      </li>
+      <li>
+        <a href="index.html#override-static-pages">Override static pages</a>
+      </li>
+      <li>
+        <a href="index.html#add-a-custom-header">Add a custom header</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#custom-fork">Custom Fork</a>
+  </li>
+  <li>
+    <a href="index.html#maintenance-mode">Maintenance mode</a>
+  </li>
+  <li>
+    <a href="index.html#known-problems">Known problems</a>
+  </li>
+</ol></div>
+
+<h2><a name="introduction"></a>Introduction</h2>
+
+<p>The service <code>webapp</code> will install the web application <a href="https://leap.se/git/leap_web.git">leap_web</a>. It has performs the following functions:</p>
+
+<ul>
+<li>REST API for user registration and authentication via the Bitmask client.</li>
+<li>Admin interface to manage users.</li>
+<li>Client certificate distribution and renewal.</li>
+<li>User support help tickets.</li>
+</ul>
+
+
+<p>Coming soon:</p>
+
+<ul>
+<li>Billing.</li>
+<li>Customizable and localized user documentation.</li>
+</ul>
+
+
+<p>The leap_web application is written in Ruby on Rails 3, using CouchDB as the backend data store.</p>
+
+<h2><a name="topology"></a>Topology</h2>
+
+<p>Currently, the platform only supports a single <code>webapp</code> node, although we hope to change this in the future.</p>
+
+<ul>
+<li><code>webapp</code> nodes communicate heavily with <code>couchdb</code> nodes, but the two can be on separate servers.</li>
+<li>The <code>monitor</code> service, if enabled, must be on the same node as <code>webapp</code>.</li>
+</ul>
+
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<p>Essential options:</p>
+
+<ul>
+<li><code>webapp.admin</code>: An array of usernames that will be blessed with administrative permissions. These admins can delete users, answer help tickets, and so on. These usernames are for users that have registered through the webapp or through the Bitmask client application, NOT the sysadmin usernames lists in the provider directory <code>users</code>.</li>
+</ul>
+
+
+<p>Other options:</p>
+
+<ul>
+<li><code>webapp.engines</code>: A list of the engines you want enabled in leap_web. Currently, only &ldquo;support&rdquo; is available, and it is enabled by default.</li>
+<li><code>webapp.invite_required</code>: If true, registration requires an invite code. Default is <code>false</code>.</li>
+</ul>
+
+
+<p>For example, <code>services/webapp.json</code>:</p>
+
+<pre><code>{
+  "webapp": {
+    "admins": ["joehill", "ali", "mack_the_turtle"]
+  }
+}
+</code></pre>
+
+<p>By putting this in <code>services/webapp.json</code>, all the <code>webapp</code> nodes will inherit the same admin list.</p>
+
+<p>There are many options in <code>provider.json</code> that also control how the webapp behaves. See <a href="../../guide/provider-configuration.html">Provider Configuration</a> for details.</p>
+
+<h2><a name="invite-codes"></a>Invite codes</h2>
+
+<p>Enabling the invite code functionality will require new users to provide a valid invite code while signing up for a new account. This is turned off by default, allowing all new users to create an account.</p>
+
+<p>Set the <code>invite_code</code> option to <code>true</code> in <code>services/webapp.json</code>:</p>
+
+<pre><code>{
+  "webapp": {
+    "invite_required": true
+  }
+}
+</code></pre>
+
+<p>This only works with LEAP platform 0.8 or higher.</p>
+
+<p>Run <code>leap deploy</code> to enable the option.</p>
+
+<p>You can then generate invite codes by logging into the web application with an admin user.</p>
+
+<p>Alternately, you can also generate invite codes with the command line:</p>
+
+<pre><code>workstation$ leap ssh bumblebee
+bumblebee# cd /srv/leap/webapp/
+bumblebee# sudo -u leap-webapp RAILS_ENV=production bundle exec rake "generate_invites[NUM,USES]"
+</code></pre>
+
+<p>Where <code>bumblebee</code> should be replaced with the name of your webapp node.</p>
+
+<p>The <strong>NUM</strong> specifies the amount of codes to generate. The <strong>USES</strong> parameter is optional: By default, all new invite codes can be used once and will then become invalid. If you provide another value for <strong>USES</strong>, you can set a different amount of maximum uses for the codes you generate.</p>
+
+<h2><a name="customization"></a>Customization</h2>
+
+<p>The provider directory <code>files/webapp</code> can be used to customize the appearance of the webapp. All the files in this directory will get sync'ed to the <code>/srv/leap/webapp/config/customization</code> directory of the deployed webapp node.</p>
+
+<p>Files in the <code>files/webapp</code> can override view files, locales, and stylesheets in the leap_web app:</p>
+
+<p>For example:</p>
+
+<pre><code>stylesheets/ -- override files in Rails.root/app/assets/stylesheets
+  tail.scss -- included before all others
+  head.scss -- included after all others
+
+public/ -- overrides files in Rails.root/public
+  favicon.ico -- custom favicon
+  img/ -- customary directory to put images in
+
+views/ -- overrides files Rails.root/app/views
+  home/
+    index.html.haml -- this file is what shows up on
+                       the home page
+  pages/
+    privacy-policy.en.md -- this file will override
+                            the default privacy policy
+    terms-of-service.en.md -- this file will override
+                              the default TOS.
+
+locales/ -- overrides files in Rails.root/config/locales
+  en.yml -- overrides for English
+  de.yml -- overrides for German
+  and so on...
+</code></pre>
+
+<p>To interactively develop your customizations before you deploy them, you have two options:</p>
+
+<ol>
+<li>Edit a <code>webapp</code> node. This approach involves directly modifying the contents of the directory <code>/srv/leap/webapp/config/customization</code> on a deployed <code>webapp</code> node. This can, and probably should be, a &ldquo;local&rdquo; node. When doing this, you may need to restart leap_web in order for changes to take effect (<code>touch /srv/leap/webapp/tmp/restart.txt</code>).</li>
+<li>Alternately, you can install leap_web to run on your computer and edit files in <code>config/customization</code> locally. This approach does not require a provider or a <code>webapp</code> node. For more information, see the <a href="https://github.com/leapcode/leap_web">leap_web README</a>.</li>
+</ol>
+
+
+<p>NOTE: If you add a <code>tails.scss</code> or <code>head.scss</code> file, then you usually need to run <code>rake tmp:clear</code> and restart rails in order for the new stylesheet to get recognized. You should only need to do this once.</p>
+
+<p>Once you have what you want, then copy these files to the local provider directory <code>files/webapp</code> so that they will be installed each time you deploy.</p>
+
+<h2><a name="customization-tutorial"></a>Customization tutorial</h2>
+
+<p>This mini-tutorial will walk you through creating a custom &ldquo;branding&rdquo; of the leap_web application. We will be creating a provider called &ldquo;Prehistoric Computer.&rdquo;</p>
+
+<p>Here are the files we are going to create:</p>
+
+<pre><code>leap_web/config/customization
+├── locales
+│   ├── en.yml
+│   └── es.yml
+├── public
+│   ├── favicon.ico
+│   └── img
+│       └── masthead.png
+├── stylesheets
+│   └── tail.scss
+└── views
+    └── pages
+        ├── privacy-policy.en.md
+        └── privacy-policy.es.md
+</code></pre>
+
+<p>All these files are available in the source code in the <a href="https://github.com/leapcode/leap_web/tree/develop/config/customization.example">customization.example</a> directory.</p>
+
+<p>Remember, these files may live different places:</p>
+
+<ul>
+<li><code>user@localmachine$ leap_web/config/customization</code>: This will be the path if you have checked out a local copy of leap_web.git and are running <code>rails server</code> locally in order to test your customizations.</li>
+<li><code>user@localmachine$ PROVIDER/files/webapp</code>: This is the local provider directory where the files should be put so that they get correctly deployed to webapp nodes.</li>
+<li><code>root@webappnode# /srv/leap/webapp/config/customization</code>: This is where the files in the local provider directory <code>PROVIDER/files/webapp</code> get copied to after a <code>leap deploy</code> to a live webapp nodes.</li>
+</ul>
+
+
+<h3><a name="override-translations"></a>Override translations</h3>
+
+<p>You can add additional locale files in order to change the text used in the existing application and to add translations for string that you added to the application.</p>
+
+<p>In this example, we will be altering the default text for the &ldquo;login_info&rdquo; string. In <code>config/locales/en/home.en.yml</code> there is this entry:</p>
+
+<pre><code>en:
+  login_info: "Log in to change your account settings, create support tickets, and manage payments."
+</code></pre>
+
+<p>We are going to override this with some custom text in English and Spanish:</p>
+
+<p><code>leap_web/config/customization/locale/en.yml</code>:</p>
+
+<pre><code>en:
+  login_info: Authenticate to change your "Prehistoric Computer" settings.
+</code></pre>
+
+<p><code>leap_web/config/customization/locale/es.yml</code>:</p>
+
+<pre><code>es:
+  login_info: Autenticar a cambiar la configuración de "Computer Prehistoria."
+</code></pre>
+
+<p>Now, the home page of leap_web will use these new strings instead of the default. Remember that you must restart rails in order for new locale files to take effect.</p>
+
+<h3><a name="override-static-pages"></a>Override static pages</h3>
+
+<p>You can also override any of the static files included with leap_web, such as the privacy policy or terms of service.</p>
+
+<p>Here is how we would create a custom privacy policy in English and Spanish:</p>
+
+<p><code>leap_web/config/customization/views/pages/privacy-policy.en.md</code>:</p>
+
+<pre><code># Custom Privacy Policy
+This is our privacy policy.
+</code></pre>
+
+<p><code>leap_web/config/customization/views/pages/privacy-policy.es.md</code>:</p>
+
+<pre><code># Custom Política de Privacidad
+Esta es nuestra política de privacidad.
+</code></pre>
+
+<h3><a name="add-a-custom-header"></a>Add a custom header</h3>
+
+<p>Now we will add a custom header to every page. First, we add the images:</p>
+
+<pre><code>leap_web/config/customization
+    ├── public
+        ├── favicon.ico
+        └── img
+            └── masthead.png
+</code></pre>
+
+<p>You can create your own, or use the example files in <a href="https://github.com/leapcode/leap_web/tree/develop/config/customization.example">https://github.com/leapcode/leap_web/tree/develop/config/customization.example</a></p>
+
+<p>Now, we add some custom CSS so that we can style the masthead:</p>
+
+<p><code>leap_web/config/customization/stylesheets/tail.scss</code></p>
+
+<pre><code>$custom-color: #66bbaa;
+
+a {
+  color: $custom-color;
+}
+
+//
+// MASTHEAD
+//
+
+#masthead {
+  background-color: $custom-color;
+  border-bottom: none;
+
+  // make the masthead clickable by replacing the
+  // site name link with the masthead image:
+  .title {
+    padding: 0px;
+    .sitename a {
+      display: block;
+      background: url(/img/masthead.png) 0 0 no-repeat;
+      font-size: 0px;
+      height: 100px;
+      background-size: auto 100px;
+    }
+  }
+}
+
+// make the home page masthead slightly larger
+body.home #masthead {
+  .sitename a {
+    height: 150px;
+    background-size: auto 150px;
+  }
+}
+
+//
+// FOOTER
+//
+
+#footer .links {
+  background-color: $custom-color;
+}
+</code></pre>
+
+<p>NOTE: If you add a <code>tails.scss</code> or <code>head.scss</code> file, then you usually need to run <code>rake tmp:clear</code> and restart rails in order for the new stylesheet to get recognized. You should only need to do this once.</p>
+
+<h2><a name="custom-fork"></a>Custom Fork</h2>
+
+<p>Sometimes it is easier to maintain your own fork of the leap_web app. You can keep your customizations in that fork instead of in the provider <code>files/webapp</code> directory. Or, perhaps you want to add an engine to the application that modifies the app&rsquo;s behavior.</p>
+
+<p>To deploy your own leap_web, modify the provider file <code>common.json</code>:</p>
+
+<pre><code>{
+  "sources": {
+    "webapp": {
+      "revision": "origin/develop",
+      "source": "https://github.com/leapcode/leap_web",
+      "type": "git"
+    }
+  }
+}
+</code></pre>
+
+<p>To target only particular environment, modify instead <code>common.ENV.json</code>, where ENV is the name of the environment.</p>
+
+<p>See <a href="https://github.com/leapcode/leap_web/blob/develop/doc/DEVELOP.md">https://github.com/leapcode/leap_web/blob/develop/doc/DEVELOP.md</a> for notes on getting started hacking on leap_web.</p>
+
+<h2><a name="maintenance-mode"></a>Maintenance mode</h2>
+
+<p>You can put the webapp into maintenance mode by simply dropping a html file to <code>/srv/leap/webapp/public/system/maintenance.html</code>. For example:</p>
+
+<pre><code>workstation$ leap ssh webappnode
+server# echo "Temporarily down for maintenance. We will be back soon." &gt; /srv/leap/webapp/public/system/maintenance.html
+</code></pre>
+
+<h2><a name="known-problems"></a>Known problems</h2>
+
+<ul>
+<li>Client certificates are generated without a CSR. The problem is that this makes the web
+application extremely vulnerable to denial of service attacks. This was not an issue until we
+started to allow the possibility of anonymously fetching a client certificate without
+authenticating first.</li>
+<li>By its very nature, the user database is vulnerable to enumeration attacks. These are
+very hard to prevent, because our protocol is designed to allow query of a user database via
+proxy in order to provide network perspective.</li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>

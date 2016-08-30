@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+couchdb - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class='active level1'>
+<a class='' href='../couchdb.html'>couchdb</a>
+</li>
+<li class=' level1'>
+<a class='' href='../openvpn.html'>openvpn</a>
+</li>
+<li class=' level1'>
+<a class='' href='../monitor.html'>monitor</a>
+</li>
+<li class=' level1'>
+<a class='' href='../mx.html'>mx</a>
+</li>
+<li class=' level1'>
+<a class='' href='../soledad.html'>soledad</a>
+</li>
+<li class=' level1'>
+<a class='' href='../tor.html'>tor</a>
+</li>
+<li class=' level1'>
+<a class='' href='../webapp.html'>webapp</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>couchdb</h1>
+
+<div id='summary'>Data storage for all user data.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#topology">Topology</a>
+  </li>
+  <li>
+    <a href="index.html#configuration">Configuration</a>
+    <ol>
+      <li>
+        <a href="index.html#nighly-dumps">Nighly dumps</a>
+      </li>
+      <li>
+        <a href="index.html#plain-couchdb">Plain CouchDB</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#various-tasks">Various Tasks</a>
+    <ol>
+      <li>
+        <a href="index.html#re-enabling-blocked-account">Re-enabling blocked account</a>
+      </li>
+      <li>
+        <a href="index.html#how-to-find-out-which-userstore-belongs-to-which-identity">How to find out which userstore belongs to which identity?</a>
+      </li>
+      <li>
+        <a href="index.html#how-much-disk-space-is-used-by-a-userstore">How much disk space is used by a userstore</a>
+      </li>
+      <li>
+        <a href="index.html#migrating-from-bigcouch-to-plain-couchdb">Migrating from BigCouch to plain CouchDB</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h2><a name="topology"></a>Topology</h2>
+
+<p>Required:</p>
+
+<ul>
+<li>Nodes with <code>couchdb</code> service must also have <code>soledad</code> service, if email is enabled.</li>
+</ul>
+
+
+<p>Suggested:</p>
+
+<ul>
+<li>Nodes with <code>couchdb</code> service communicate heavily with <code>webapp</code> and <code>mx</code>.</li>
+</ul>
+
+
+<p><code>couchdb</code> nodes do not need to be reachable from the public internet, although the <code>soledad</code> service does require this.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<h3><a name="nighly-dumps"></a>Nighly dumps</h3>
+
+<p>You can do a nightly couchdb data dump by adding this to your node config:</p>
+
+<pre><code>"couch": {
+  "backup": true
+}
+</code></pre>
+
+<p>Data will get dumped to <code>/var/backups/couchdb</code>.</p>
+
+<h3><a name="plain-couchdb"></a>Plain CouchDB</h3>
+
+<p>BigCouch is not supported on Platform version 0.8 and higher: only plain CouchDB is possible. For earlier versions, you must do this in order to use plain CouchDB:</p>
+
+<pre><code>"couch": {
+  "master": true,
+  "pwhash_alg": "pbkdf2"
+}
+</code></pre>
+
+<h2><a name="various-tasks"></a>Various Tasks</h2>
+
+<h3><a name="re-enabling-blocked-account"></a>Re-enabling blocked account</h3>
+
+<p>When a user account gets destroyed from the webapp, there&rsquo;s still a leftover doc in the identities db so other people can&rsquo;t claim that account without an admin&rsquo;s intervention. You can remove this username reservation through the webapp.</p>
+
+<p>However, here is how you could do it manually, if you wanted to:</p>
+
+<p>grep the identities db for the email address:</p>
+
+<pre><code>curl -s --netrc-file /etc/couchdb/couchdb.netrc -X GET http://127.0.0.1:5984/identities/_all_docs?include_docs=true|grep test_127@bitmask.net
+</code></pre>
+
+<p>lookup &ldquo;id&rdquo; and &ldquo;rev&rdquo; to delete the doc:</p>
+
+<pre><code>curl -s --netrc-file /etc/couchdb/couchdb.netrc -X DELETE 'http://127.0.0.1:5984/identities/b25cf10f935b58088f0d547fca823265?rev=2-715a9beba597a2ab01851676f12c3e4a'
+</code></pre>
+
+<h3><a name="how-to-find-out-which-userstore-belongs-to-which-identity"></a>How to find out which userstore belongs to which identity?</h3>
+
+<pre><code>/usr/bin/curl -s --netrc-file /etc/couchdb/couchdb.netrc '127.0.0.1:5984/identities/_all_docs?include_docs=true' | grep testuser
+
+{"id":"665e004870ee17aa4c94331ff3ecb173","key":"665e004870ee17aa4c94331ff3ecb173","value":{"rev":"2-2e335a75c4b79a5c2ef5c9950706fe1b"},"doc":{"_id":"665e004870ee17aa4c94331ff3ecb173","_rev":"2-2e335a75c4b79a5c2ef5c9950706fe1b","user_id":"665e004870ee17aa4c94331ff3cd59eb","address":"testuser@example.org","destination":"testuser@example.org","keys": ...
+</code></pre>
+
+<ul>
+<li>search for the &ldquo;user_id&rdquo; field</li>
+<li>in this example <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#x3a;&#116;&#x65;&#x73;&#116;&#x75;&#x73;&#101;&#x72;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x6f;&#x72;&#103;">&#116;&#x65;&#115;&#x74;&#117;&#115;&#x65;&#x72;&#64;&#101;&#x78;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x6f;&#114;&#103;</a> uses the database user-665e004870ee17aa4c94331ff3cd59eb</li>
+</ul>
+
+
+<h3><a name="how-much-disk-space-is-used-by-a-userstore"></a>How much disk space is used by a userstore</h3>
+
+<p>Beware that this returns the uncompacted disk size (see <a href="http://wiki.apache.org/couchdb/Compaction">http://wiki.apache.org/couchdb/Compaction</a>)</p>
+
+<pre><code>echo "`curl --netrc -s -X GET 'http://127.0.0.1:5984/user-dcd6492d74b90967b6b874100b7dbfcf'|json_pp|grep disk_size|cut -d: -f 2`/1024"|bc
+</code></pre>
+
+<h3><a name="migrating-from-bigcouch-to-plain-couchdb"></a>Migrating from BigCouch to plain CouchDB</h3>
+
+<p><p>At the end of this process, you will have just <em>one</em> node with <code>services</code> property equal to <code>couchdb</code>. If you had a BigCouch cluster before, you will be removing all but one of those machines to consolidate them into one CouchDB machine.</p>
+
+<ol>
+<li><p>if you have multiple nodes with the <code>couchdb</code> service on them, pick one of them to be your CouchDB server, and remove the service from the others. If these machines were only doing BigCouch before, you can remove the nodes completely with <code>leap node rm &lt;nodename&gt;</code> and then you can decommission the servers</p></li>
+<li><p>put the webapp into <a href="../webapp.html#maintenance-mode">maintenance mode</a></p></li>
+<li><p>turn off daemons that access the database. For example:</p>
+
+<pre><code class="`"> workstation$ leap ssh &lt;each soledad-node&gt;
+ server# /etc/init.d/soledad-server stop
+
+ workstation$ leap ssh &lt;mx-node&gt;
+ server# /etc/init.d/postfix stop
+ server# /etc/init.d/leap-mx stop
+
+ workstation$ leap ssh &lt;webapp-node&gt;
+ server# /etc/init.d/nickserver stop
+</code></pre>
+
+<p> Alternately, you can create a temporary firewall rule to block access (run on couchdb server):</p>
+
+<pre><code class="`"> server# iptables -A INPUT -p tcp --dport 5984 --jump REJECT
+</code></pre></li>
+<li><p>remove orphaned databases and do a backup of all remaining, active databases. This can take some time and will place several hundred megabytes of data into /var/backups/couchdb. The size and time depends on how many users there are on your system. For example, 15k users took approximately 25 minutes and 308M of space:</p>
+
+<pre><code class="`"> workstation$ leap ssh &lt;couchdb-node&gt;
+ server# cd /srv/leap/couchdb/scripts
+ server# ./cleanup-user-dbs
+ server# time ./couchdb_dumpall.sh
+</code></pre></li>
+<li><p>stop bigcouch:</p>
+
+<pre><code class="`"> server# /etc/init.d/bigcouch stop
+ server# pkill epmd
+</code></pre></li>
+<li><p>remove bigcouch:</p>
+
+<pre><code class="`"> server# apt-get remove bigcouch
+</code></pre></li>
+<li><p>configure your couch node to use plain couchdb instead of bigcouch, you can do this by editing nodes/<couch-node>.json, look for this section:</p>
+
+<pre><code class="`"> "couch": {
+   "mode": "plain"
+ }
+</code></pre>
+
+<p>change it, so it looks like this instead:</p>
+
+<pre><code class="``">  "couch": {
+    "mode": "plain",
+    "pwhash_alg": "pbkdf2"
+  }
+</code></pre></li>
+</ol>
+
+</p>
+
+<p><ol>
+<li><p>restore the backup, this will take approximately the same amount of time as the backup took above:</p>
+
+<pre><code class="`"> server# cd /srv/leap/couchdb/scripts
+ server# time ./couchdb_restoreall.sh
+</code></pre></li>
+<li><p>start services again that were stopped in the beginning:</p>
+
+<pre><code class="`"> workstation$ leap ssh soledad-nodes
+ server# /etc/init.d/soledad-server start
+
+ workstation$ leap ssh mx-node
+ server# /etc/init.d/postfix start
+ server# /etc/init.d/leap-mx start
+
+ workstation$ leap ssh webapp
+ server# /etc/init.d/nickserver start
+</code></pre>
+
+<p> Or, alternately, if you set up the firewall rule instead, now remove it:</p>
+
+<pre><code class="`"> server# iptables -D INPUT -p tcp --dport 5984 --jump REJECT
+</code></pre></li>
+</ol>
+
+</p>
+
+<p><ol>
+<li><p>check if everything is working, including running the test on your deployment machine:</p>
+
+<pre><code class="`"> workstation$ leap test
+</code></pre></li>
+<li><p>Remove old bigcouch data dir <code>/opt</code> after you double checked everything is in place</p></li>
+<li><p>Relax, enjoy a refreshing beverage.</p></li>
+</ol>
+
+</p>
+
+</div>
+</div>
+</body>
+</html>

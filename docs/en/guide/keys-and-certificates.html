@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Keys and Certificates - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='nodes.html'>Nodes</a>
+</li>
+<li class='active level1'>
+<a class='' href='keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Keys and Certificates</h1>
+
+<div id='summary'>Working with SSH keys, secrets, and X.509 certificates.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="keys-and-certificates/index.html#working-with-ssh">Working with SSH</a>
+    <ol>
+      <li>
+        <a href="keys-and-certificates/index.html#ssh-related-files">SSH related files</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#ssh-and-local-nodes">SSH and local nodes</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#to-upgrade-a-ssh-host-key">To upgrade a SSH host key</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#when-ssh-host-key-changes">When SSH host key changes</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#changing-the-ssh-port">Changing the SSH port</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#sysadmins-with-multiple-ssh-keys">Sysadmins with multiple SSH keys</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#removing-sysadmin-access">Removing sysadmin access</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="keys-and-certificates/index.html#x509-certificates">X.509 Certificates</a>
+    <ol>
+      <li>
+        <a href="keys-and-certificates/index.html#configuration-options">Configuration options</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#certificate-authorities">Certificate Authorities</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#server-certificates">Server certificates</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#client-certificates">Client certificates</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#commercial-certificates">Commercial certificates</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#examine-certs">Examine Certs</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="keys-and-certificates/index.html#lets-encrypt-certificate">Let’s Encrypt certificate</a>
+    <ol>
+      <li>
+        <a href="keys-and-certificates/index.html#install-the-official-acme-client">Install the official acme client</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#fetch-cert">Fetch cert</a>
+      </li>
+      <li>
+        <a href="keys-and-certificates/index.html#deploy-the-certs">Deploy the certs</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h1><a name="working-with-ssh"></a>Working with SSH</h1>
+
+<p>Whenever the <code>leap</code> command needs to push changes to a node or gather information from a node, it tunnels this command over SSH. Another way to put this: the security of your servers rests entirely on SSH. Because of this, it is important that you understand how <code>leap</code> uses SSH.</p>
+
+<h2><a name="ssh-related-files"></a>SSH related files</h2>
+
+<p>Assuming your provider directory is called &lsquo;provider&rsquo;:</p>
+
+<ul>
+<li><code>provider/nodes/crow/crow_ssh.pub</code> &ndash; The public SSH host key for node &lsquo;crow&rsquo;.</li>
+<li><code>provider/users/alice/alice_ssh.pub</code> &ndash; The public SSH user key for user &lsquo;alice&rsquo;. Anyone with the private key that corresponds to this public key will have root access to all nodes.</li>
+<li><code>provider/files/ssh/known_hosts</code> &ndash; An autogenerated known_hosts, built from combining <code>provider/nodes/*/*_ssh.pub</code>. You must not edit this file directly. If you need to change it, remove or change one of the files that is used to generate <code>known_hosts</code> and then run <code>leap compile</code>.</li>
+<li><code>provider/files/ssh/authorized_keys</code> &ndash; An autogenerated list of all the user SSH keys with root access to the notes. It is created from <code>provider/users/*/*_ssh.pub</code>. You must not edit this file directly. If you need to change it, remove or change one of the files that is used to generate <code>authorized_keys</code> and then run <code>leap compile</code>.</li>
+</ul>
+
+
+<p>All of these files should be committed to source control.</p>
+
+<p>If you rename, remove, or add a node with <code>leap node [mv|add|rm]</code> the SSH key files and the <code>known_hosts</code> file will get properly updated.</p>
+
+<h2><a name="ssh-and-local-nodes"></a>SSH and local nodes</h2>
+
+<p>Local nodes are run as Vagrant virtual machines. The <code>leap</code> command handles SSH slightly differently for these nodes.</p>
+
+<p>Basically, all the SSH security is turned off for local nodes. Since local nodes only exist for a short time on your computer and can&rsquo;t be reached from the internet, this is not a problem.</p>
+
+<p>Specifically, for local nodes:</p>
+
+<ol>
+<li><code>known_hosts</code> is never updated with local node keys, since the SSH public key of a local node is different for each user.</li>
+<li><code>leap</code> entirely skips the checking of host keys when connecting with a local node.</li>
+<li><code>leap</code> adds the public Vagrant SSH key to the list of SSH keys for a user. The public Vagrant SSH key is a shared and insecure key that has root access to most Vagrant virtual machines.</li>
+</ol>
+
+
+<h2><a name="to-upgrade-a-ssh-host-key"></a>To upgrade a SSH host key</h2>
+
+<p>Most servers will have more than one SSH host key. Sometimes, the server will have a better SSH host key than the one you have on file. In order to upgrade to the better SSH host key, simply re-run the init command:</p>
+
+<pre><code>workstation$ leap node init NODE_NAME
+</code></pre>
+
+<p>This will prompt you if you want to upgrade the SSH host key, but only if <code>leap</code> thinks that an upgrade is advisable.</p>
+
+<h2><a name="when-ssh-host-key-changes"></a>When SSH host key changes</h2>
+
+<p>If the host key for a node has changed, you will get an error &ldquo;WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED&rdquo;.</p>
+
+<p>To fix this, you need to remove the file <code>files/nodes/stompy/stompy_ssh.pub</code> and run <code>leap node init stompy</code>, where the node&rsquo;s name is &lsquo;stompy&rsquo;. <strong>Only do this if you are ABSOLUTELY CERTAIN that the node&rsquo;s SSH host key has changed</strong>.</p>
+
+<h2><a name="changing-the-ssh-port"></a>Changing the SSH port</h2>
+
+<p>Suppose you have a node <code>blinky</code> that has SSH listening on port 22 and you want to make it port 2200.</p>
+
+<p>First, modify the configuration for <code>blinky</code> to specify the variable <code>ssh.port</code> as 2200. Usually, this is done in <code>common.json</code> or in a tag file.</p>
+
+<p>For example, you could put this in <code>tags/production.json</code>:</p>
+
+<pre><code>{
+  "ssh": {
+    "port": 2200
+  }
+}
+</code></pre>
+
+<p>Run <code>leap compile</code> and open <code>hiera/blinky.yaml</code> to confirm that <code>ssh.port</code> is set to 2200. The port number must be specified as a number, not a string (no quotes).</p>
+
+<p>Then, you need to deploy this change so that SSH will bind to 2200. You cannot simply run <code>leap deploy blinky</code> because this command will default to using the variable <code>ssh.port</code> which is now <code>2200</code> but SSH on the node is still bound to 22.</p>
+
+<p>So, you manually override the port in the deploy command, using the old port:</p>
+
+<pre><code>leap deploy --port 22 blinky
+</code></pre>
+
+<p>Afterwards, SSH on <code>blinky</code> should be listening on port 2200 and you can just run <code>leap deploy blinky</code> from then on.</p>
+
+<h2><a name="sysadmins-with-multiple-ssh-keys"></a>Sysadmins with multiple SSH keys</h2>
+
+<p>The command <code>leap add-user --self</code> allows only one SSH key. If you want to specify more than one key for a user, you can do it manually:</p>
+
+<pre><code>users/userx/userx_ssh.pub
+users/userx/otherkey_ssh.pub
+</code></pre>
+
+<p>All keys matching &lsquo;userx/*_ssh.pub&rsquo; will be usable.</p>
+
+<h2><a name="removing-sysadmin-access"></a>Removing sysadmin access</h2>
+
+<p>Suppose you want to remove <code>userx</code> from having any further SSH access to the servers. Do this:</p>
+
+<pre><code>rm -r users/userx
+leap deploy
+</code></pre>
+
+<h1><a name="x509-certificates"></a>X.509 Certificates</h1>
+
+<h2><a name="configuration-options"></a>Configuration options</h2>
+
+<p>The <code>ca</code> option in provider.json provides settings used when generating CAs and certificates. The defaults are as follows:</p>
+
+<pre><code>{
+  "ca": {
+    "name": "= global.provider.ca.organization + ' Root CA'",
+    "organization": "= global.provider.name[global.provider.default_language]",
+    "organizational_unit": "= 'https://' + global.provider.domain",
+    "bit_size": 4096,
+    "digest": "SHA256",
+    "life_span": "10y",
+    "server_certificates": {
+      "bit_size": 2048,
+      "digest": "SHA256",
+      "life_span": "1y"
+    },
+    "client_certificates": {
+      "bit_size": 2048,
+      "digest": "SHA256",
+      "life_span": "2m",
+      "limited_prefix": "LIMITED",
+      "unlimited_prefix": "UNLIMITED"
+    }
+  }
+}
+</code></pre>
+
+<p>You should not need to override these defaults in your own provider.json, but you can if you want to. To see what values are used for your provider, run <code>leap inspect provider.json</code>.</p>
+
+<p>NOTE: A certificate <code>bit_size</code> greater than 2048 will probably not be recognized by most commercial CAs.</p>
+
+<h2><a name="certificate-authorities"></a>Certificate Authorities</h2>
+
+<p>There are three x.509 certificate authorities (CA) associated with your provider:</p>
+
+<ol>
+<li><strong>Commercial CA:</strong> It is strongly recommended that you purchase a commercial cert for your primary domain. The goal of platform is to not depend on the commercial CA system, but it does increase security and usability if you purchase a certificate. The cert for the commercial CA must live at <code>files/cert/commercial_ca.crt</code>.</li>
+<li><strong>Server CA:</strong> This is a self-signed CA responsible for signing all the <strong>server</strong> certificates. The private key lives at <code>files/ca/ca.key</code> and the public cert lives at <code>files/ca/ca.crt</code>. The key is very sensitive information and must be kept private. The public cert is distributed publicly.</li>
+<li><strong>Client CA:</strong> This is a self-signed CA responsible for signing all the <strong>client</strong> certificates. The private key lives at <code>files/ca/client_ca.key</code> and the public cert lives at <code>files/ca/client_ca.crt</code>. Neither file is distribute publicly. It is not a big deal if the private key for the client CA is compromised, you can just generate a new one and re-deploy.</li>
+</ol>
+
+
+<p>To generate both the Server CA and the Client CA, run the command:</p>
+
+<pre><code>leap cert ca
+</code></pre>
+
+<h2><a name="server-certificates"></a>Server certificates</h2>
+
+<p>Most every server in your service provider will have a x.509 certificate, generated by the <code>leap</code> command using the Server CA. Whenever you modify any settings of a node that might affect it&rsquo;s certificate (like changing the IP address, hostname, or settings in provider.json), you can magically regenerate all the certs that need to be regenerated with this command:</p>
+
+<pre><code>leap cert update
+</code></pre>
+
+<p>Run <code>leap help cert update</code> for notes on usage options.</p>
+
+<p>Because the server certificates are generated locally on your personal machine, the private key for the Server CA need never be put on any server. It is up to you to keep this file secure.</p>
+
+<h2><a name="client-certificates"></a>Client certificates</h2>
+
+<p>Every leap client gets its own time-limited client certificate. This cert is use to connect to the OpenVPN gateway (and probably other things in the future). It is generated on the fly by the webapp using the Client CA.</p>
+
+<p>To make this work, the private key of the Client CA is made available to the webapp. This might seem bad, but compromise of the Client CA simply allows the attacker to use the OpenVPN gateways without paying. In the future, we plan to add a command to automatically regenerate the Client CA periodically.</p>
+
+<p>There are two types of client certificates: limited and unlimited. A client using a limited cert will have its bandwidth limited to the rate specified by <code>provider.service.bandwidth_limit</code> (in Bytes per second). An unlimited cert is given to the user if they authenticate and the user&rsquo;s service level matches one configured in <code>provider.service.levels</code> without bandwidth limits. Otherwise, the user is given a limited client cert.</p>
+
+<h2><a name="commercial-certificates"></a>Commercial certificates</h2>
+
+<p>We strongly recommend that you use a commercial signed server certificate for your primary domain (in other words, a certificate with a common name matching whatever you have configured for <code>provider.domain</code>). This provides several benefits:</p>
+
+<ol>
+<li>When users visit your website, they don&rsquo;t get a scary notice that something is wrong.</li>
+<li>When a user runs the LEAP client, selecting your service provider will not cause a warning message.</li>
+<li>When other providers first discover your provider, they are more likely to trust your provider key if it is fetched over a commercially verified link.</li>
+</ol>
+
+
+<p>The LEAP platform is designed so that it assumes you are using a commercial cert for the primary domain of your provider, but all other servers are assumed to use non-commercial certs signed by the Server CA you create.</p>
+
+<p>To generate a CSR, run:</p>
+
+<pre><code>leap cert csr
+</code></pre>
+
+<p>This command will generate the CSR and private key matching <code>provider.domain</code> (you can change the domain with <code>--domain=DOMAIN</code> switch). It also generates a server certificate signed with the Server CA. You should delete this certificate and replace it with a real one once it is created by your commercial CA.</p>
+
+<p>The related commercial cert files are:</p>
+
+<pre><code>files/
+  cert/
+    domain.org.crt    # Server certificate for domain.org, obtained by commercial CA.
+    domain.org.csr    # Certificate signing request
+    domain.org.key    # Private key for you certificate
+    commercial_ca.crt # The CA cert obtained from the commercial CA.
+</code></pre>
+
+<p>The private key file is extremely sensitive and care should be taken with its provenance.</p>
+
+<p>If your commercial CA has a chained CA cert, you should be OK if you just put the <strong>last</strong> cert in the chain into the <code>commercial_ca.crt</code> file. This only works if the other CAs in the chain have certs in the debian package <code>ca-certificates</code>, which is the case for almost all CAs.</p>
+
+<p>If you want to add additional fields to the CSR, like country, city, or locality, you can configure these values in provider.json like so:</p>
+
+<pre><code>  "ca": {
+    "server_certificates": {
+      "country": "US",
+      "state": "Washington",
+      "locality": "Seattle"
+    }
+  }
+</code></pre>
+
+<p>If they are not present, the CSR will be created without them.</p>
+
+<h2><a name="examine-certs"></a>Examine Certs</h2>
+
+<p>To see details about the keys and certs you can use <code>leap inspect</code> like so:</p>
+
+<pre><code>$ leap inspect files/ca/ca.crt
+</code></pre>
+
+<h1><a name="lets-encrypt-certificate"></a>Let’s Encrypt certificate</h1>
+
+<p>LEAP plans to integrate <a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a> support, so it will be even easier to receive X.509 certificates that are accepted by all browsers.
+Until we achieve this, here&rsquo;s a guide how to do this manually.</p>
+
+<h2><a name="install-the-official-acme-client"></a>Install the official acme client</h2>
+
+<p>Log in to your webapp node</p>
+
+<pre><code>server$ git clone https://github.com/certbot/certbot
+server$ cd certbot
+server$ ./certbot-auto --help
+</code></pre>
+
+<h2><a name="fetch-cert"></a>Fetch cert</h2>
+
+<p>Stop apache so the letsencrypt client can bind to port 80:</p>
+
+<pre><code>server$ systemctl stop apache2
+</code></pre>
+
+<p>Fetch the certs</p>
+
+<pre><code>server$ ./certbot-auto certonly --standalone --email admin@$(hostname -d) -d $(hostname -d) -d api.$(hostname -d) -d $(hostname -f) -d nicknym.$(hostname -d)
+</code></pre>
+
+<p>This will put the certs and keys into <code>/etc/letsencrypt/live/DOMAIN/</code>.</p>
+
+<p>Now, go to your workstation&rsquo;s provider configuration directory and copy the newly created files from the server to your local config. You will override existing files so please make a backup before proceeding, or use a version control system to track changes.</p>
+
+<pre><code>workstation$ cd PATH_TO_PROVIDER_CONFIG
+</code></pre>
+
+<p>Copy the Certificate</p>
+
+<pre><code>workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/cert.pem files/cert/dev.pixelated-project.org.crt
+</code></pre>
+
+<p>Copy the private key</p>
+
+<pre><code>workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/privkey.pem files/cert/DOMAIN.key
+</code></pre>
+
+<p>Copy the CA chain cert</p>
+
+<pre><code>workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/fullchain.pem files/cert/commercial_ca.crt
+</code></pre>
+
+<h2><a name="deploy-the-certs"></a>Deploy the certs</h2>
+
+<p>Now you only need to deploy the certs</p>
+
+<pre><code>workstation$ leap deploy
+</code></pre>
+
+<p>This will put them into the right locations which are:</p>
+
+<ul>
+<li><code>/etc/x509/certs/leap_commercial.crt</code> for the certificate</li>
+<li><code>/etc/x509/./keys/leap_commercial.key</code> for the private key</li>
+<li><code>/usr/local/share/ca-certificates/leap_commercial_ca.crt</code> for the CA chain cert.</li>
+</ul>
+
+
+<p>Start apache2 again</p>
+
+<pre><code>server$ systemctl start apache2
+</code></pre>
+
+</div>
+</div>
+</body>
+</html>

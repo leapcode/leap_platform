@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Upgrade to 0.8 - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class='active level1'>
+<a class='' href='upgrade-0-8.html'>Upgrade to 0.8</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Upgrade to 0.8</h1>
+
+<div id='summary'></div>
+</div>
+<div id='content-box'>
+<p>LEAP Platform release 0.8 introduces several major changes that need do get taken into account while upgrading:</p>
+
+<ul>
+<li>Dropping Debian Wheezy support. You need to upgrade your nodes to jessie before deploying a platform upgrade.</li>
+<li>Dropping BigCouch support. LEAP Platform now requires CouchDB and therefore you need to migrate all your data from BigCouch to CouchDB.</li>
+</ul>
+
+
+<h2><a name="upgrading-to-platform-08"></a>Upgrading to Platform 0.8</h2>
+
+<h3><a name="step-1-get-new-leap_platform-and-leap_cli"></a>Step 1: Get new leap_platform and leap_cli</h3>
+
+<pre><code>workstation$ gem install leap_cli --version 1.8
+workstation$ cd leap_platform
+workstation$ git pull
+workstation$ git checkout 0.8.0
+</code></pre>
+
+<h3><a name="step-2-prepare-to-migrate-from-bigcouch-to-couchdb"></a>Step 2: Prepare to migrate from BigCouch to CouchDB</h3>
+
+<p><p>At the end of this process, you will have just <em>one</em> node with <code>services</code> property equal to <code>couchdb</code>. If you had a BigCouch cluster before, you will be removing all but one of those machines to consolidate them into one CouchDB machine.</p>
+
+<ol>
+<li><p>if you have multiple nodes with the <code>couchdb</code> service on them, pick one of them to be your CouchDB server, and remove the service from the others. If these machines were only doing BigCouch before, you can remove the nodes completely with <code>leap node rm &lt;nodename&gt;</code> and then you can decommission the servers</p></li>
+<li><p>put the webapp into <a href="../services/webapp.html#maintenance-mode">maintenance mode</a></p></li>
+<li><p>turn off daemons that access the database. For example:</p>
+
+<pre><code class="`"> workstation$ leap ssh &lt;each soledad-node&gt;
+ server# /etc/init.d/soledad-server stop
+
+ workstation$ leap ssh &lt;mx-node&gt;
+ server# /etc/init.d/postfix stop
+ server# /etc/init.d/leap-mx stop
+
+ workstation$ leap ssh &lt;webapp-node&gt;
+ server# /etc/init.d/nickserver stop
+</code></pre>
+
+<p> Alternately, you can create a temporary firewall rule to block access (run on couchdb server):</p>
+
+<pre><code class="`"> server# iptables -A INPUT -p tcp --dport 5984 --jump REJECT
+</code></pre></li>
+<li><p>remove orphaned databases and do a backup of all remaining, active databases. This can take some time and will place several hundred megabytes of data into /var/backups/couchdb. The size and time depends on how many users there are on your system. For example, 15k users took approximately 25 minutes and 308M of space:</p>
+
+<pre><code class="`"> workstation$ leap ssh &lt;couchdb-node&gt;
+ server# cd /srv/leap/couchdb/scripts
+ server# ./cleanup-user-dbs
+ server# time ./couchdb_dumpall.sh
+</code></pre></li>
+<li><p>stop bigcouch:</p>
+
+<pre><code class="`"> server# /etc/init.d/bigcouch stop
+ server# pkill epmd
+</code></pre></li>
+<li><p>remove bigcouch:</p>
+
+<pre><code class="`"> server# apt-get remove bigcouch
+</code></pre></li>
+<li><p>configure your couch node to use plain couchdb instead of bigcouch, you can do this by editing nodes/<couch-node>.json, look for this section:</p>
+
+<pre><code class="`"> "couch": {
+   "mode": "plain"
+ }
+</code></pre>
+
+<p>change it, so it looks like this instead:</p>
+
+<pre><code class="``">  "couch": {
+    "mode": "plain",
+    "pwhash_alg": "pbkdf2"
+  }
+</code></pre></li>
+</ol>
+
+</p>
+
+<h3><a name="step-3-upgrade-from-debian-wheezy-to-jessie"></a>Step 3: Upgrade from Debian Wheezy to Jessie</h3>
+
+<p>There are the <a href="https://www.debian.org/releases/stable/amd64/release-notes/ch-upgrading.html">Debian release notes on how to upgrade from wheezy to jessie</a>. Here are the steps that worked for us, but please keep in mind that there is no bullet-proof method that will work in every situation.</p>
+
+<p><strong>USE AT YOUR OWN RISK.</strong></p>
+
+<p>For each one of your nodes, login to it and do the following process:</p>
+
+<pre><code># keep a log of the progress:
+screen
+script -t 2&gt;~/leap_upgrade-jessiestep.time -a ~/upgrade-jessiestep.script
+
+# ensure you have a good wheezy install:
+export DEBIAN_FRONTEND=noninteractive
+apt-get autoremove --yes
+apt-get update
+apt-get -y -o DPkg::Options::=--force-confold dist-upgrade
+
+# if either of these return anything, you will need to resolve them before continuing:
+dpkg --audit
+dpkg --get-selections | grep 'hold$'
+
+# switch sources to jessie
+sed -i 's/wheezy/jessie/g' /etc/apt/sources.list
+rm /etc/apt/sources.list.d/*
+echo "deb http://deb.leap.se/0.8 jessie main" &gt; /etc/apt/sources.list.d/leap.list
+
+# remove pinnings to wheezy
+rm /etc/apt/preferences
+rm /etc/apt/preferences.d/*
+
+# get jessie package lists
+apt-get update
+
+# clean out old package files
+apt-get clean
+
+# test to see if you have enough space to upgrade, the following will alert
+# you if you do not have enough space, it will not do the actual upgrade
+apt-get -o APT::Get::Trivial-Only=true dist-upgrade
+
+# do first stage upgrade
+apt-get -y -o DPkg::Options::=--force-confold upgrade
+
+# repeat the following until it makes no more changes:
+apt-get -y -o DPkg::Options::=--force-confold dist-upgrade
+
+# resolve any apt issues if there are some
+apt-get -y -o DPkg::Options::=--force-confold -f install
+
+# clean up extra packages
+apt-get autoremove --yes
+
+reboot
+</code></pre>
+
+<h2><a name="potential-jessie-upgrade-issues"></a>Potential Jessie Upgrade Issues</h2>
+
+<p><strong>W: Ignoring Provides line with DepCompareOp for package python-cffi-backend-api-max</strong></p>
+
+<p>You can ignore these warnings, they will be resolved on upgrade.</p>
+
+<p><strong>E: Unable to fetch some archives, maybe run apt-get update or try with &ndash;fix-missing?</strong></p>
+
+<p>If you get this error, run <code>apt-get update</code> and then re-run the command.</p>
+
+<p><strong>Unmet dependencies. Try using -f.</strong></p>
+
+<p>Sometimes you might get an error similar to this (although the package names may be different):</p>
+
+<pre><code>You might want to run 'apt-get -f install' to correct these.
+The following packages have unmet dependencies:
+lsof : Depends: libperl4-corelibs-perl but it is not installed or
+             perl (&lt; 5.12.3-7) but 5.20.2-3+deb8u4 is installed
+</code></pre>
+
+<p>If this happens, run <code>apt-get -f install</code> to resolve it, and then re-do the previous upgrade command
+you did when this happened.</p>
+
+<p><strong>Failure restarting some services for OpenSSL upgrade</strong></p>
+
+<p>If you get this warning:</p>
+
+<pre><code>The following services could not be restarted for the OpenSSL library upgrade:
+  postfix
+You will need to start these manually by running '/etc/init.d/&lt;service&gt; start'.
+</code></pre>
+
+<p>Just ignore it, it should be fixed on reboot/deploy.</p>
+
+<h3><a name="step-4-deploy-leap-platform-08-to-the-couch-node"></a>Step 4: Deploy LEAP Platform 0.8 to the Couch node</h3>
+
+<p>You will need to deploy the 0.8 version of LEAP Platform to the couch node before continuing.</p>
+
+<ol>
+<li><p>deploy to the couch node:</p>
+
+<pre><code class="`"> workstation$ leap deploy &lt;couchdb-node&gt;
+</code></pre>
+
+<p> If you used the iptables method of blocking access to couchdb, you need to run it again because the deploy just overwrote all the iptables rules:</p>
+
+<pre><code class="`"> server# iptables -A INPUT -p tcp --dport 5984 --jump REJECT
+</code></pre></li>
+</ol>
+
+
+<h3><a name="step-5-import-data-into-couchdb"></a>Step 5: Import Data into CouchDB</h3>
+
+<p><ol>
+<li><p>restore the backup, this will take approximately the same amount of time as the backup took above:</p>
+
+<pre><code class="`"> server# cd /srv/leap/couchdb/scripts
+ server# time ./couchdb_restoreall.sh
+</code></pre></li>
+<li><p>start services again that were stopped in the beginning:</p>
+
+<pre><code class="`"> workstation$ leap ssh soledad-nodes
+ server# /etc/init.d/soledad-server start
+
+ workstation$ leap ssh mx-node
+ server# /etc/init.d/postfix start
+ server# /etc/init.d/leap-mx start
+
+ workstation$ leap ssh webapp
+ server# /etc/init.d/nickserver start
+</code></pre>
+
+<p> Or, alternately, if you set up the firewall rule instead, now remove it:</p>
+
+<pre><code class="`"> server# iptables -D INPUT -p tcp --dport 5984 --jump REJECT
+</code></pre></li>
+</ol>
+
+</p>
+
+<h3><a name="step-6-deploy-everything"></a>Step 6: Deploy everything</h3>
+
+<p>Now that you&rsquo;ve upgraded all nodes to Jessie, and migrated to CouchDB, you are ready to deploy LEAP Platform 0.8 to the rest of the nodes:</p>
+
+<pre><code>workstation$ cd &lt;provider directory&gt;
+workstation$ leap deploy
+</code></pre>
+
+<h3><a name="step-7-test-and-cleanup"></a>Step 7: Test and cleanup</h3>
+
+<p><ol>
+<li><p>check if everything is working, including running the test on your deployment machine:</p>
+
+<pre><code class="`"> workstation$ leap test
+</code></pre></li>
+<li><p>Remove old bigcouch data dir <code>/opt</code> after you double checked everything is in place</p></li>
+<li><p>Relax, enjoy a refreshing beverage.</p></li>
+</ol>
+
+</p>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Quick Start Tutorial - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class='active level1'>
+<a class='' href='quick-start.html'>Quick Start Tutorial</a>
+</li>
+<li class=' level1'>
+<a class='' href='single-node-vpn.html'>Quick VPN</a>
+</li>
+<li class=' level1'>
+<a class='' href='single-node-email.html'>Quick email</a>
+</li>
+<li class=' level1'>
+<a class='' href='vagrant.html'>Vagrant</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Quick Start Tutorial</h1>
+
+<div id='summary'>This tutorial walks you through the initial process of creating and deploying a minimal service provider running the LEAP Platform.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="quick-start/index.html#introduction">Introduction</a>
+    <ol>
+      <li>
+        <a href="quick-start/index.html#our-goal">Our goal</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#requirements">Requirements</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="quick-start/index.html#prepare-your-workstation">Prepare your workstation</a>
+    <ol>
+      <li>
+        <a href="quick-start/index.html#install-pre-requisites">Install pre-requisites</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#install-the-leap-command-line-utility">Install the LEAP command-line utility</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="quick-start/index.html#create-a-provider-instance">Create a provider instance</a>
+  </li>
+  <li>
+    <a href="quick-start/index.html#add-a-node-to-the-provider">Add a node to the provider</a>
+    <ol>
+      <li>
+        <a href="quick-start/index.html#option-a-add-a-real-node">Option A: Add a real node</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#option-b-add-a-local-node">Option B: Add a local node</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="quick-start/index.html#deploy-your-provider">Deploy your provider</a>
+    <ol>
+      <li>
+        <a href="quick-start/index.html#initialize-the-node">Initialize the node</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#deploy-to-the-node">Deploy to the node</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#setup-dns">Setup DNS</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="quick-start/index.html#test-that-things-worked-correctly">Test that things worked correctly</a>
+  </li>
+  <li>
+    <a href="quick-start/index.html#create-an-administrator">Create an administrator</a>
+  </li>
+  <li>
+    <a href="quick-start/index.html#what-is-next">What is next?</a>
+    <ol>
+      <li>
+        <a href="quick-start/index.html#add-an-end-user-service">Add an end-user service</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#learn-more">Learn more</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h1><a name="introduction"></a>Introduction</h1>
+
+<h3><a name="our-goal"></a>Our goal</h3>
+
+<p>We are going to create a minimal LEAP provider, but one that does not offer any actual services. Check out the other tutorials for adding VPN or email services.</p>
+
+<p>Our goal is something like this:</p>
+
+<pre><code>$ leap list
+        NODES   SERVICES          TAGS
+   wildebeest   couchdb, webapp
+</code></pre>
+
+<p>NOTE: You won&rsquo;t be able to run that <code>leap list</code> command yet, not until we actually create the node configurations.</p>
+
+<h3><a name="requirements"></a>Requirements</h3>
+
+<ol>
+<li>A workstation: This is your local machine that you will run commands on.</li>
+<li>A server: This is the machine that you will deploy to. The server can be either:
+
+<ol>
+<li>A local Vagrant virtual machine: a Vagrant machine can only be useful for testing.</li>
+<li>A real or paravirtualized server: The server must have Debian Jessie installed, and you must be able to SSH into the machine as root. Paravirtualization includes KVM, Xen, OpenStack, Amazon, but not VirtualBox or OpenVZ.</li>
+</ol>
+</li>
+</ol>
+
+
+<p>Other things to keep in mind:</p>
+
+<ul>
+<li>The ability to create/modify DNS entries for your domain is preferable, but not needed. If you don&rsquo;t have access to DNS, you can workaround this by modifying your local resolver, i.e. editing <code>/etc/hosts</code>.</li>
+<li>You need to be aware that this process will make changes to your servers, so please be sure that these machines are a basic install with nothing configured or running for other purposes.</li>
+<li>Your servers will need to be connected to the internet, and not behind a restrictive firewall.</li>
+</ul>
+
+
+<h1><a name="prepare-your-workstation"></a>Prepare your workstation</h1>
+
+<p>In order to be able to manage your servers, you need to install the <code>leap</code> command on your workstation:</p>
+
+<h3><a name="install-pre-requisites"></a>Install pre-requisites</h3>
+
+<p>Install core prerequisites on your workstation.</p>
+
+<p><em>Debian &amp; Ubuntu</em></p>
+
+<pre><code>workstation$ sudo apt-get install git ruby ruby-dev rsync openssh-client openssl rake make bzip2
+</code></pre>
+
+<p><em>Mac OS</em></p>
+
+<pre><code>workstation$ brew install ruby-install
+workstation$ ruby-install ruby
+</code></pre>
+
+<h3><a name="install-the-leap-command-line-utility"></a>Install the LEAP command-line utility</h3>
+
+<p>Install the <code>leap</code> command system-wide:</p>
+
+<pre><code>workstation$ sudo gem install leap_cli
+</code></pre>
+
+<p>Alternately, you can install <code>leap</code> locally without root privileges:</p>
+
+<pre><code>workstation$ gem install --user-install leap_cli
+workstation$ PATH="$PATH:$(ruby -e 'puts Gem.user_dir')/bin"
+</code></pre>
+
+<p>If you choose a local install, you probably want to permanently add the &ndash;user-install directory to your PATH by adding this to your <code>~/.profile</code> file (requires logout):</p>
+
+<pre><code>[ $(which ruby) ] &amp;&amp; PATH="$PATH:$(ruby -e 'puts Gem.user_dir')/bin"
+</code></pre>
+
+<p>To confirm that you installed <code>leap</code> correctly, try running <code>leap --version</code>.</p>
+
+<h1><a name="create-a-provider-instance"></a>Create a provider instance</h1>
+
+<p>A provider instance is a directory tree, residing on your workstation, that contains everything you need to manage an infrastructure for a service provider.</p>
+
+<p>In this case, we create one for example.org and call the instance directory &lsquo;example&rsquo;.</p>
+
+<pre><code>workstation$ leap new ~/example
+</code></pre>
+
+<p>The <code>leap new</code> command will ask you for several required values:</p>
+
+<ul>
+<li>domain: The primary domain name of your service provider. In this tutorial, we will be using &ldquo;example.org&rdquo;.</li>
+<li>name: The name of your service provider (we use &ldquo;Example&rdquo;).</li>
+<li>contact emails: A comma separated list of email addresses that should be used for important service provider contacts (for things like postmaster aliases, Tor contact emails, etc).</li>
+<li>platform: The directory where you have a copy of the <code>leap_platform</code> git repository checked out. If the platform directory does not yet exist, the <code>leap_platform</code> will be downloaded and placed in that directory.</li>
+</ul>
+
+
+<p>You could also have passed these configuration options on the command-line, like so:</p>
+
+<pre><code>workstation$ leap new --contacts your@email.here --domain example.org --name Example --platform=~/leap/leap_platform .
+</code></pre>
+
+<p>You should now have the following files:</p>
+
+<pre><code>workstation$ tree example
+example
+├── common.json
+├── Leapfile
+├── nodes/
+├── provider.json
+├── services/
+└── tags/
+</code></pre>
+
+<p>Now add yourself as a privileged sysadmin who will have access to deploy to servers:</p>
+
+<pre><code>workstation$ cd example
+workstation$ leap add-user louise --self
+</code></pre>
+
+<p>Replace &ldquo;louise&rdquo; with whatever you want your sysadmin username to be.</p>
+
+<p>NOTE: Make sure you change directories so that the <code>leap</code> command is run from within the provider instance directory. Most <code>leap</code> commands only work when run from a provider instance.</p>
+
+<p>Now create the necessary keys and certificates:</p>
+
+<pre><code>workstation$ leap cert ca
+workstation$ leap cert csr
+</code></pre>
+
+<p>What do these commands do? The first command will create two Certificate Authorities, one that clients will use to authenticate with the servers and one for backend servers to authenticate with each other. The second command creates a Certificate Signing Request suitable for submission to a commercial CA. It also creates two &ldquo;dummy&rdquo; files for you to use temporarily:</p>
+
+<ul>
+<li><code>files/cert/example.org.crt</code> &ndash; This is a &ldquo;dummy&rdquo; certificate for your domain that can be used temporarily for testing. Once you get a real certificate from a CA, you should replace this file.</li>
+<li><code>files/cert/commercial_ca.crt</code> &ndash; This is &ldquo;dummy&rdquo; CA cert the corresponds to the dummy domain certificate. Once you replace the domain certificate, also replace this file with the CA cert from the real Certificate Authority.</li>
+</ul>
+
+
+<p>If you plan to run a real service provider, see important information on <a href="../guide/keys-and-certificates.html">managing keys and certificates</a>.</p>
+
+<h1><a name="add-a-node-to-the-provider"></a>Add a node to the provider</h1>
+
+<p>A &ldquo;node&rdquo; is a server that is part of your infrastructure. Every node can have one or more services associated with it. We will now add a single node with two services, &ldquo;webapp&rdquo; and &ldquo;couchdb&rdquo;.</p>
+
+<p>You have two choices for node type: a real node or a local node.</p>
+
+<ul>
+<li>Real Node: A real node is any physical or paravirtualized server, including KVM, Xen, OpenStack Compute, Amazon EC2, but not VirtualBox or OpenVZ (VirtualBox and OpenVZ use a more limited form of virtualization). The server must be running Debian Jessie.</li>
+<li>Local Node: A local node is a virtual machine created by Vagrant, useful for local testing on your workstation.</li>
+</ul>
+
+
+<p>Getting Vagrant working can be a pain and is <a href="vagrant.html">covered in other tutorials</a>. If you have a real server available, we suggest you try this tutorial with a real node first.</p>
+
+<h3><a name="option-a-add-a-real-node"></a>Option A: Add a real node</h3>
+
+<p>Note: Installing LEAP Platform on this server will potentially destroy anything you have previously installed on this machine.</p>
+
+<p>Create a node, with the services &ldquo;webapp&rdquo; and &ldquo;couchdb&rdquo;:</p>
+
+<pre><code>workstation$ leap node add wildebeest ip_address:x.x.x.w services:webapp,couchdb
+</code></pre>
+
+<p>NOTE: replace x.x.x.x with the actual IP address of this server.</p>
+
+<h3><a name="option-b-add-a-local-node"></a>Option B: Add a local node</h3>
+
+<p>Create a node, with the services &ldquo;webapp&rdquo; and &ldquo;couchdb&rdquo;, and then start the local virtual machine:</p>
+
+<pre><code>workstation$ leap node add --local wildebeest services:webapp,couchdb
+workstation$ leap local start wildebeest
+</code></pre>
+
+<p>It will take a while to download the Virtualbox base box and create the virtual machine.</p>
+
+<h1><a name="deploy-your-provider"></a>Deploy your provider</h1>
+
+<h3><a name="initialize-the-node"></a>Initialize the node</h3>
+
+<p>Node initialization only needs to be done once, but there is no harm in doing it multiple times:</p>
+
+<pre><code>workstation$ leap node init wildebeest
+</code></pre>
+
+<p>This will initialize the node <code>wildebeest</code>.</p>
+
+<p>For non-local nodes, when <code>leap node init</code> is run, you will be prompted to verify the fingerprint of the SSH host key and to provide the root password of the server(s). You should only need to do this once.</p>
+
+<h3><a name="deploy-to-the-node"></a>Deploy to the node</h3>
+
+<p>The next step is to deploy the LEAP platform to your node. <a href="https://xkcd.com/303/">Deployment can take a while to run</a>, especially on the first run, as it needs to update the packages on the new machine.</p>
+
+<pre><code>workstation$ leap deploy wildebeest
+</code></pre>
+
+<p>Watch the output for any errors (in red), if everything worked fine, you should now have your first running node. If you do have errors, try doing the deploy again.</p>
+
+<h3><a name="setup-dns"></a>Setup DNS</h3>
+
+<p>The next step is to configure the DNS for your provider. For testing purposes, you can just modify your <code>/etc/hosts</code> file. Please don&rsquo;t forget about these entries, they will override DNS queries if you setup your DNS later. For a list of what entries to add to <code>/etc/hosts</code>, run this command:</p>
+
+<pre><code>workstation$ leap compile hosts
+</code></pre>
+
+<p>Alternately, if you have access to modify the DNS zone entries for your domain:</p>
+
+<pre><code>workstation$ leap compile zone
+</code></pre>
+
+<p>NOTE: The resulting zone file is incomplete because it is missing a serial number. Use the output of <code>leap compile zone</code> as a guide, but do not just copy and paste the output. Also, the <code>compile zone</code> output will always exclude mention of local nodes.</p>
+
+<p>The DNS method will not work for local nodes created with Vagrant.</p>
+
+<h1><a name="test-that-things-worked-correctly"></a>Test that things worked correctly</h1>
+
+<p>To run troubleshooting tests:</p>
+
+<pre><code>workstation$ leap test
+</code></pre>
+
+<p>Alternately, you can run these same tests from the server itself:</p>
+
+<pre><code>workstation$ leap ssh wildebeest
+wildebeest# run_tests
+</code></pre>
+
+<h1><a name="create-an-administrator"></a>Create an administrator</h1>
+
+<p>Assuming that you set up your DNS or <code>/etc/hosts</code> file, you should be able to load <code>https://example.org</code> in your web browser (where example.org is whatever domain name you actually used).</p>
+
+<p>Your browser will complain about an untrusted cert, but for now just bypass this. From there, you should be able to register a new user and login.</p>
+
+<p>Once you have created a user, you can now make this user an administrator. For example, if you created a user <code>kangaroo</code>, you would create the file <code>services/webapp.json</code> with the following content:</p>
+
+<pre><code>{
+    "webapp": {
+        "admins": ["kangaroo"]
+    }
+}
+</code></pre>
+
+<p>Save that file and run <code>leap deploy</code> again. When you next log on to the web application, the user kangaroo will now be an admin.</p>
+
+<p>If you want to restrict who can register a new user, see <a href="../services/webapp.html">webapp</a> for configuration options.</p>
+
+<h1><a name="what-is-next"></a>What is next?</h1>
+
+<h2><a name="add-an-end-user-service"></a>Add an end-user service</h2>
+
+<p>You should now have a minimal service provider with a single node. This service provider is pointless at the moment, because it does not include any end-user services like VPN or email. To add one of these services, continue with one of the following tutorials:</p>
+
+<ul>
+<li><a href="single-node-email.html">Quick email</a></li>
+<li><a href="single-node-vpn.html">Quick VPN</a></li>
+</ul>
+
+
+<h2><a name="learn-more"></a>Learn more</h2>
+
+<p>We have only just scratched the surface of the possible ways to configure and deploy your service provider. Your next step should be:</p>
+
+<ul>
+<li>Read <a href="../guide/getting-started.html">Getting Started</a> for more details on using the LEAP platform.</li>
+<li>See <a href="../guide/commands.html">Command Line Reference</a> for a list of possible commands.</li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>
