@@ -2,6 +2,9 @@
 
 . tests/puppet/provider/.platform-test.conf
 
+# break on every error
+set -e
+
 # create node(s) with unique id so we can run tests in parallel
 export TAG="build${CI_BUILD_ID}"
 [ -d "${PROVIDERDIR}/tags" ] || mkdir "${PROVIDERDIR}/tags"
