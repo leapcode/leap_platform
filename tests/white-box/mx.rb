@@ -63,10 +63,10 @@ class Mx < LeapTest
     if Dir.glob("/var/lib/clamav/main.{c[vl]d,inc}").size > 0 and Dir.glob("/var/lib/clamav/daily.{c[vl]d,inc}").size > 0
       assert_running '^/usr/sbin/clamd'
       assert_running '^/usr/sbin/clamav-milter'
+      pass
     else
-      skip "Downloading the clamav signature files (/var/lib/clamav/{daily,main}.{c[vl]d,inc}) is still in progress, so clamd is not running.\nDon't worry, mail delivery will work without clamav. The download should finish soon."
+      skip "Downloading the clamav signature files (/var/lib/clamav/{daily,main}.{c[vl]d,inc}) is still in progress, so clamd is not running."
     end
-    pass
   end
 
   #
@@ -125,21 +125,25 @@ class Mx < LeapTest
   # get sent to root, so the sysadmin will still figure out pretty
   # quickly that something is wrong.
   #
-  def test_06_Can_deliver_email?
-    addr = [TEST_EMAIL_USER, property('domain.full_suffix')].join('@')
-    bad_addr = [TEST_BAD_USER, property('domain.full_suffix')].join('@')
+  def test_05_Can_deliver_email?
+    if pgrep('^/usr/sbin/clamd').empty? || pgrep('^/usr/sbin/clamav-milter').empty?
+      skip "Mail delivery is being deferred because clamav daemon is not running"
+    else
+      addr = [TEST_EMAIL_USER, property('domain.full_suffix')].join('@')
+      bad_addr = [TEST_BAD_USER, property('domain.full_suffix')].join('@')
 
-    assert !identity_exists?(bad_addr), "the address #{bad_addr} must not exist."
-    if !identity_exists?(addr)
-      user = assert_create_user(TEST_EMAIL_USER, :monitor)
-      upload_public_key(user.id, TEST_EMAIL_PUBLIC_KEY)
+      assert !identity_exists?(bad_addr), "the address #{bad_addr} must not exist."
+      if !identity_exists?(addr)
+        user = assert_create_user(TEST_EMAIL_USER, :monitor)
+        upload_public_key(user.id, TEST_EMAIL_PUBLIC_KEY)
+      end
+      assert identity_exists?(addr), "The identity #{addr} should have been created, but it doesn't exist yet."
+      assert_send_email(addr)
+      assert_raises(Net::SMTPError) do
+        send_email(bad_addr)
+      end
+      pass
     end
-    assert identity_exists?(addr), "The identity #{addr} should have been created, but it doesn't exist yet."
-    assert_send_email(addr)
-    assert_raises(Net::SMTPError) do
-      send_email(bad_addr)
-    end
-    pass
   end
 
   private
