@@ -1,0 +1,10 @@
+{
+  "ip_address": "1.1.1.1",
+  "services": [
+    "couchdb",
+    "mx",
+    "soledad",
+    "webapp"
+  ],
+  "tags": ["catalogtest"]
+}

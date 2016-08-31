@@ -1,0 +1,45 @@
+before_script:
+  - echo 'Running global before_script'
+  - bundle install --path vendor/bundle --jobs $(nproc)  "${FLAGS[@]}"
+
+stages:
+  - syntax
+  - build
+
+# doesn't work in docker atm
+# image: ruby:2.1
+
+lint:
+  stage: syntax
+  script:
+    - bundle exec rake lint
+
+syntax:
+  stage: syntax
+  script:
+    - bundle exec rake syntax
+
+validate:
+  stage: syntax
+  script:
+    - bundle exec rake validate
+
+templates:
+  stage: syntax
+  script:
+    - bundle exec rake templates
+
+catalog:
+  stage: syntax
+  script:
+    - bundle exec rake catalog
+
+#rspec:
+#  stage: rspec
+#  script:
+#    - bundle exec rake spec
+
+build:
+  stage: build
+  script:
+    - ./bin/ci-build.sh
