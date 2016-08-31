@@ -25,27 +25,22 @@ module LeapCli; module Commands
     "PEM certificate request" => :inspect_x509_csr
   }
 
+  SUFFIX_MAP = {
+    ".json" => :inspect_unknown_json,
+    ".key"  => :inspect_x509_key
+  }
+
   def inspection_method(object)
     if File.exist?(object)
       ftype = `file #{object}`.split(':').last.strip
+      suffix = File.extname(object)
       log 2, "file is of type '#{ftype}'"
       if FTYPE_MAP[ftype]
         FTYPE_MAP[ftype]
-      elsif File.extname(object) == ".json"
-        full_path = File.expand_path(object, Dir.pwd)
-        if path_match?(:node_config, full_path)
-          :inspect_node
-        elsif path_match?(:service_config, full_path)
-          :inspect_service
-        elsif path_match?(:tag_config, full_path)
-          :inspect_tag
-        elsif path_match?(:provider_config, full_path) || path_match?(:provider_env_config, full_path)
-          :inspect_provider
-        elsif path_match?(:common_config, full_path)
-          :inspect_common
-        else
-          nil
-        end
+      elsif SUFFIX_MAP[suffix]
+        SUFFIX_MAP[suffix]
+      else
+        nil
       end
     elsif manager.nodes[object]
       :inspect_node
@@ -72,6 +67,7 @@ module LeapCli; module Commands
   end
 
   def inspect_x509_cert(file_path, options)
+    require 'leap_cli/x509'
     assert_bin! 'openssl'
     puts assert_run! 'openssl x509 -in %s -text -noout' % file_path
     log 0, :"SHA1 fingerprint", X509.fingerprint("SHA1", file_path)
@@ -121,6 +117,23 @@ module LeapCli; module Commands
       inspect_json manager.base_common
     else
       inspect_json manager.common
+    end
+  end
+
+  def inspect_unknown_json(arg, options)
+    full_path = File.expand_path(arg, Dir.pwd)
+    if path_match?(:node_config, full_path)
+      inspect_node(arg, options)
+    elsif path_match?(:service_config, full_path)
+      inspect_service(arg, options)
+    elsif path_match?(:tag_config, full_path)
+      inspect_tag(arg, options)
+    elsif path_match?(:provider_config, full_path) || path_match?(:provider_env_config, full_path)
+      inspect_provider(arg, options)
+    elsif path_match?(:common_config, full_path)
+      inspect_common(arg, options)
+    else
+      inspect_json(arg, options)
     end
   end
 
