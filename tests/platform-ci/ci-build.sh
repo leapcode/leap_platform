@@ -35,6 +35,9 @@ echo "CI directory: ${ROOTDIR}"
 echo "Provider directory: ${PROVIDERDIR}"
 echo "Platform directory: ${PLATFORMDIR}"
 
+# exit if any commands returns non-zero status
+set -e
+
 # create node(s) with unique id so we can run tests in parallel
 export TAG="build${CI_BUILD_ID}"
 [ -d "${PROVIDERDIR}/tags" ] || mkdir "${PROVIDERDIR}/tags"
