@@ -1,10 +1,39 @@
 {
   "ip_address": "1.1.1.1",
+  "openvpn": {
+    "gateway_address": "1.1.1.2"
+  },
   "services": [
     "couchdb",
     "mx",
     "soledad",
-    "webapp"
+    "webapp",
+    "monitor",
+    "openvpn",
+    "tor",
+    "obfsproxy",
+    "static"
   ],
-  "tags": ["catalogtest"]
+  "tags": ["catalogtest","development"],
+  "static": {
+    "domains":{
+      "example.org": {
+        "tls_only": true,
+        "locations": {
+          "front": {
+            "path": "/",
+            "format": "amber",
+            "source": {
+              "type": "git",
+              "repo": "https://leap.se/git/bitmask_help",
+              "revision": "origin/master"
+            }
+          }
+        },
+        "cert": "= file('cert/example.org.crt')",
+        "key": "= file('cert/example.org.key')",
+        "ca_cert": "= file('cert/commercial_ca.crt')"
+      }
+    }
+  }
 }
