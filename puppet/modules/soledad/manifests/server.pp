@@ -4,6 +4,7 @@ class soledad::server {
 
   include ::site_config::default
   include ::soledad::common
+  include ::site_config::remove::soledad
 
   $soledad              = hiera('soledad')
   $couchdb_user         = $soledad['couchdb_soledad_user']['username']
