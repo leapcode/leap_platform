@@ -13,16 +13,19 @@ lint:
   stage: syntax
   script:
     - bundle exec rake lint
+  allow_failure: true
 
 syntax:
   stage: syntax
   script:
     - bundle exec rake syntax
+  allow_failure: true
 
 validate:
   stage: syntax
   script:
     - bundle exec rake validate
+  allow_failure: true
 
 templates:
   stage: syntax
@@ -33,11 +36,6 @@ catalog:
   stage: syntax
   script:
     - bundle exec rake catalog
-
-#rspec:
-#  stage: rspec
-#  script:
-#    - bundle exec rake spec
 
 build:
   stage: build
