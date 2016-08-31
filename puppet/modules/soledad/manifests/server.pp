@@ -2,8 +2,8 @@
 class soledad::server {
   tag 'leap_service'
 
-  include site_config::default
-  include soledad::common
+  include ::site_config::default
+  include ::soledad::common
 
   $soledad              = hiera('soledad')
   $couchdb_user         = $soledad['couchdb_soledad_user']['username']
@@ -90,11 +90,11 @@ class soledad::server {
   }
   user {
     'soledad':
-      ensure    => present,
-      system    => true,
-      gid       => 'soledad',
-      home      => '/srv/leap/soledad',
-      require   => Group['soledad'];
+      ensure  => present,
+      system  => true,
+      gid     => 'soledad',
+      home    => '/srv/leap/soledad',
+      require => Group['soledad'];
     'soledad-admin':
       ensure  => present,
       system  => true,
