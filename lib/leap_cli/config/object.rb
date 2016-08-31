@@ -153,6 +153,28 @@ module LeapCli
         end
       end
 
+      #
+      # works like Hash#store(key, value), but supports our nested dot notation,
+      # just like get() does.
+      #
+      def set(key, value)
+        key = key.to_s
+        # for keys with with '.' in them, we pop off the first part
+        # and recursively call ourselves.
+        if key =~ /\./
+          keys = key.split('.')
+          parent_value = self.get!(keys.first)
+          if parent_value.is_a?(Config::Object)
+            parent_value.set(keys[1..-1].join('.'), value)
+          else
+            parent_value.store(keys[1..-1].join('.'), value)
+          end
+        else
+          self.store(key, value)
+        end
+        return nil
+      end
+
       ##
       ## COPYING
       ##
@@ -376,12 +398,16 @@ module LeapCli
       def fetch_value(key, context=@node)
         value = fetch(key, nil)
         if value.is_a?(String) && value =~ /^=/
+          # strings prefix with '=' are evaluated as ruby code.
           if value =~ /^=> (.*)$/
             value = evaluate_later(key, $1)
           elsif value =~ /^= (.*)$/
             value = context.evaluate_ruby(key, $1)
           end
           self[key] = value
+        elsif value.is_a?(Proc)
+          # the value might be a proc, set by a 'control' file
+          self[key] = value.call
         end
         return value
       end

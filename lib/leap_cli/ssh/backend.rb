@@ -120,7 +120,12 @@ module LeapCli
       #
       def upload!(src, dest, options={})
         if options[:mode]
-          super(StringIO.new(File.read(src)), dest, options)
+          if src.is_a?(StringIO)
+            content = src
+          else
+            content = StringIO.new(File.read(src))
+          end
+          super(content, dest, options)
         else
           super(src, dest, options)
         end

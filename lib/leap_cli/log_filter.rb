@@ -119,14 +119,14 @@ module LeapCli
       { :match => /created/, :color => :green, :style => :bold },
       { :match => /completed/, :color => :green, :style => :bold },
       { :match => /ran/, :color => :green, :style => :bold },
-      { :match => /registered/, :color => :green, :style => :bold },
+      { :match => /^registered/, :color => :green, :style => :bold },
 
       # cyan
       { :match => /note/, :replace => 'NOTE:', :color => :cyan, :style => :bold },
 
       # magenta
       { :match => /nochange/, :replace => 'no change', :color => :magenta },
-      { :match => /loading/, :color => :magenta },
+      { :match => /^loading/, :color => :magenta },
     ]
 
     def self.apply_message_filters(message)

@@ -134,6 +134,16 @@ module LeapCli
         ssh.execute 'cp', '/home/admin/.ssh/authorized_keys', '/root/.ssh/authorized_keys'
       end
 
+      #
+      # uploads an acme challenge for renewing certificates using Let's Encrypt CA.
+      #
+      # Filename is returned from acme api, so it must not be trusted.
+      #
+      def upload_acme_challenge(filename, content)
+        path = '/srv/acme/' + filename.gsub(/[^a-zA-Z0-9_-]/, '')
+        ssh.upload! StringIO.new(content), path, :mode => 0444
+      end
+
       private
 
       def flagize(hsh)

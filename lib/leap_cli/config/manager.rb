@@ -405,15 +405,23 @@ module LeapCli
       end
 
       #
-      # returns a list of 'control' files for this node.
-      # a control file is like a service or a tag JSON file, but it contains
-      # raw ruby code that gets evaluated in the context of the node.
-      # Yes, this entirely breaks our functional programming model
-      # for JSON generation.
+      # Returns a list of 'control' files for this node. A control file is like
+      # a service or a tag JSON file, but it contains raw ruby code that gets
+      # evaluated in the context of the node.
+      #
+      # Yes, this entirely breaks our functional programming model for JSON
+      # generation.
+      #
+      # Control files are evaluated last, after everything else has run.
       #
       def control_files(node)
         files = []
         [Path.provider_base, @provider_dir].each do |provider_dir|
+          # add common.rb
+          common = File.join(provider_dir, 'common.rb')
+          files << common if File.exist?(common)
+
+          # add services/*.rb and tags/*.rb, as appropriate for this node
           [['services', :service_config], ['tags', :tag_config]].each do |attribute, path_sym|
             node[attribute].each do |attr_value|
               path = Path.named_path([path_sym, "#{attr_value}.rb"], provider_dir).sub(/\.json$/,'')

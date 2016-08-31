@@ -84,6 +84,12 @@ module LeapCli
               elsif operator == :not_equal && !value.include?(match_value)
                 results[name] = config
               end
+            elsif match_value.is_a? Array
+              if operator == :equal && match_value.include?(value)
+                results[name] = config
+              elsif operator == :not_equal && !match_value.include?(value)
+                results[name] = config
+              end
             else
               if operator == :equal && value == match_value
                 results[name] = config

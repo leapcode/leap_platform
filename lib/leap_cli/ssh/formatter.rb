@@ -16,7 +16,7 @@ module LeapCli
       }
 
       def initialize(logger, host, options={})
-        @logger = logger
+        @logger = logger || LeapCli.new_logger
         @host = host
         @options = DEFAULT_OPTIONS.merge(options)
       end

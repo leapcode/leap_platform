@@ -38,6 +38,7 @@ module LeapCli; module Commands
     cert.long_desc "Unless specified, the CSR is created for the provider's primary domain. "+
       "The properties used for this CSR come from `provider.ca.server_certificates`, "+
       "but may be overridden here."
+    cert.arg_name "DOMAIN"
     cert.command :csr do |csr|
       csr.flag 'domain', :arg_name => 'DOMAIN', :desc => 'Specify what domain to create the CSR for.'
       csr.flag ['organization', 'O'], :arg_name => 'ORGANIZATION', :desc => "Override default O in distinguished name."
@@ -52,6 +53,23 @@ module LeapCli; module Commands
         generate_csr(global_options, options, args)
       end
     end
+
+    cert.desc "Register an authorization key with the CA letsencrypt.org"
+    cert.long_desc "This only needs to be done once."
+    cert.command :register do |register|
+      register.action do |global, options, args|
+        do_register_key(global, options, args)
+      end
+    end
+
+    cert.desc "Renews a certificate using the CA letsencrypt.org"
+    cert.arg_name "DOMAIN"
+    cert.command :renew do |renew|
+      renew.action do |global, options, args|
+        do_renew_cert(global, options, args)
+      end
+    end
+
   end
 
   protected
@@ -150,7 +168,7 @@ module LeapCli; module Commands
     assert_config! 'provider.ca.server_certificates.digest'
 
     server_certificates      = provider.ca.server_certificates
-    options[:domain]       ||= provider.domain
+    options[:domain]       ||= args.first || provider.domain
     options[:organization] ||= provider.name[provider.default_language]
     options[:country]      ||= server_certificates['country']
     options[:state]        ||= server_certificates['state']
@@ -164,6 +182,164 @@ module LeapCli; module Commands
     end
 
     X509.create_csr_and_cert(options)
+  end
+
+  #
+  # letsencrypt.org
+  #
+
+  def do_register_key(global, options, args)
+    require 'leap_cli/acme'
+    assert_config! 'provider.contacts.default'
+    contact = manager.provider.contacts.default.first
+
+    if file_exists?(:acme_key) && !global[:force]
+      bail! do
+        log "the authorization key for letsencrypt.org already exists"
+        log "run with --force if you really want to register a new key."
+      end
+    else
+      private_key = Acme.new_private_key
+      registration = nil
+
+      log(:registering, "letsencrypt.org authorization key using contact `%s`" % contact) do
+        acme = Acme.new(key: private_key)
+        registration = acme.register(contact)
+        if registration
+          log 'success!', :color => :green, :style => :bold
+        else
+          bail! "could not register authorization key."
+        end
+      end
+
+      log :saving, "authorization key for letsencrypt.org" do
+        write_file!(:acme_key, private_key.to_pem)
+        write_file!(:acme_info, JSON.sorted_generate({
+          id: registration.id,
+          contact: registration.contact,
+          key: registration.key,
+          uri: registration.uri
+        }))
+        log :warning, "keep key file private!"
+      end
+    end
+  end
+
+  def do_renew_cert(global, options, args)
+    require 'leap_cli/acme'
+    require 'leap_cli/ssh'
+    require 'socket'
+    require 'net/http'
+
+    #
+    # sanity check the domain
+    #
+    domain = args.first
+    nodes  = nodes_for_domain(domain)
+    domain_ready_for_acme!(domain)
+
+    #
+    # load key material
+    #
+    assert_files_exist!([:commercial_key, domain], [:commercial_csr, domain],
+      :msg => 'Please create the CSR first with `leap cert csr %s`' % domain)
+    csr = Acme.load_csr(read_file!([:commercial_csr, domain]))
+    assert_files_exist!(:acme_key,
+      :msg => "Please run `leap cert register` first. This only needs to be done once.")
+    account_key = Acme.load_private_key(read_file!(:acme_key))
+
+    #
+    # check authorization for this domain
+    #
+    log :checking, "authorization"
+    acme = Acme.new(domain: domain, key: account_key)
+    status, message = acme.authorize do |challenge|
+      log(:uploading, 'challenge to server %s' % domain) do
+        SSH.remote_command(nodes) do |ssh, host|
+          ssh.scripts.upload_acme_challenge(challenge.token, challenge.file_content)
+        end
+      end
+      log :waiting, "for letsencrypt.org to verify challenge"
+    end
+    if status == 'valid'
+      log 'authorized!', color: :green, style: :bold
+    elsif status == 'error'
+      bail! :error, message
+    elsif status == 'unauthorized'
+      bail!(:unauthorized, message, color: :yellow, style: :bold) do
+        log 'You must first run `leap cert register` to register the account key with letsencrypt.org'
+      end
+    end
+
+    log :fetching, "new certificate from letsencrypt.org"
+    cert = acme.get_certificate(csr)
+    write_file!([:commercial_cert, domain], cert.fullchain_to_pem)
+  end
+
+  #
+  # Returns a hash of nodes that match this domain. It also checks:
+  #
+  # * a node configuration has this domain
+  # * the dns for the domain exists
+  #
+  # This method will bail if any checks fail.
+  #
+  def nodes_for_domain(domain)
+    bail! { log 'Argument DOMAIN is required' } if domain.nil? || domain.empty?
+    nodes = manager.nodes['dns.aliases' => domain]
+    if nodes.empty?
+      bail! :error, "There are no nodes configured for domain `%s`" % domain
+    end
+    begin
+      ips = Socket.getaddrinfo(domain, 'http').map {|record| record[2]}.uniq
+      nodes = nodes['ip_address' => ips]
+      if nodes.empty?
+        bail! do
+          log :error, "The domain `%s` resolves to [%s]" % [domain, ips.join(', ')]
+          log :error, "But there no nodes configured for this domain with these adddresses."
+        end
+      end
+    rescue SocketError
+      bail! :error, "Could not resolve the DNS for `#{domain}`. Without a DNS " +
+        "entry for this domain, authorization will not work."
+    end
+    return nodes
+  end
+
+  #
+  # runs the following checks on the domain:
+  #
+  # * we are able to get /.well-known/acme-challenge/ok
+  #
+  # This method will bail if any checks fail.
+  #
+  def domain_ready_for_acme!(domain)
+    begin
+      uri = URI("https://#{domain}/.well-known/acme-challenge/ok")
+      options = {
+        use_ssl: true,
+        open_timeout: 5,
+        verify_mode: OpenSSL::SSL::VERIFY_NONE
+      }
+      Net::HTTP.start(uri.host, uri.port, options) do |http|
+        http.request(Net::HTTP::Get.new(uri)) do |response|
+          if !response.is_a?(Net::HTTPSuccess)
+            bail!(:error, "Could not GET %s" % uri) do
+              log "%s %s" % [response.code, response.message]
+              log "You may need to run `leap deploy`"
+            end
+          end
+        end
+      end
+    rescue Errno::ETIMEDOUT, Net::OpenTimeout
+      bail! :error, "Connection attempt timed out: %s" % uri
+    rescue Interrupt
+      bail!
+    rescue StandardError => exc
+      bail!(:error, "Could not GET %s" % uri) do
+        log exc.to_s
+      end
+    end
   end
 
 end; end

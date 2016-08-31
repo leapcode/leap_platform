@@ -109,10 +109,10 @@ module LeapCli; module Config
           path = Path.relative_path([:commercial_cert, domain])
           if cert.not_after < Time.now.utc
             Util.log :error, "the commercial certificate '#{path}' has EXPIRED! " +
-              "You should renew it with `leap cert csr --domain #{domain}`."
+              "You should renew it with `leap cert renew #{domain}`."
           elsif cert.not_after < Time.now.advance(:months => 2)
             Util.log :warning, "the commercial certificate '#{path}' will expire soon (#{cert.not_after}). "+
-              "You should renew it with `leap cert csr --domain #{domain}`."
+              "You should renew it with `leap cert renew #{domain}`."
           end
         end
       end

@@ -78,6 +78,8 @@ Leap::Platform.define do
     :client_ca_key    => 'files/ca/client_ca.key',
     :client_ca_cert   => 'files/ca/client_ca.crt',
     :dh_params        => 'files/ca/dh.pem',
+    :acme_key         => 'files/ca/lets-encrypt-account.key',
+    :acme_info        => 'files/ca/lets-encrypt-account.json',
     :commercial_key   => 'files/cert/#{arg}.key',
     :commercial_csr   => 'files/cert/#{arg}.csr',
     :commercial_cert  => 'files/cert/#{arg}.crt',
