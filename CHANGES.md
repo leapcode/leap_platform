@@ -1,12 +1,58 @@
+Platform 0.9
+--------------------------------------
+
+The focus for Platform 0.9 was to clean house: we replaced the annoying system
+of puppet submodules, we cleaned up the directory structure, we removed many of
+the gem dependencies, and we fixed a lot of bugs.
+
+New Features:
+
+* `leap vm` -- Support for managing remote virtual servers (AWS only, for now)
+* `leap cert renew` -- Integration with Let's Encrypt
+* improved documentation -- open docs/index.html to see
+
+Notable Changes:
+
+* 58 bugs fixed
+* Fixed security issues with VPN
+* More tests
+* Replaced git submodules with git subrepo
+* Nearly all the leap_cli code has been moved to leap_platform.git
+* Better organization of the leap_platform.git directory structure
+* Removed ugly dependency on Capistrano
+
+Upgrading:
+
+You will need the new version of leap_cli:
+
+    workstation$ sudo gem install leap_cli --version=1.9
+
+Because 0.9 does not use submodules anymore, you must remove them before pulling the latest leap_platform from git:
+
+    cd leap_platform
+    for dir in $(git submodule | awk '{print $2}'); do
+      git submodule deinit $dir
+    done
+    git pull
+
+Alternately, just clone a fresh leap_platform:
+
+    git clone https://leap.se/git/leap_platform
+
+Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.9
+Issues fixed: https://leap.se/code/versions/195
+
+
 Platform 0.8
 --------------------------------------
 
 This release focuses on the email service.
 
 Requirements:
- . You must upgrade to Debian Jessie, see below for details
- . You must migrate all data from BigCouch to CouchDB
- . Soledad and couchdb services must be on the same node
+
+* You must upgrade to Debian Jessie, see below for details
+* You must migrate all data from BigCouch to CouchDB
+* Soledad and couchdb services must be on the same node
 
 WARNING: failure to migrate data from BigCouch to CouchDB will cause all user
 accounts to get destroyed. See UPGRADING below for how to safely do this.
