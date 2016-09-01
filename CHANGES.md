@@ -1,3 +1,22 @@
+Platform 0.8.2
+--------------------------------------
+This is a minor stability release of the 0.8.0 series of the LEAP Platform.
+
+IMPORTANT: Please read the notes below in the following section for *critical*
+information about upgrading from 0.7 releases. If you do not follow those
+steps, this release will not work for you.
+
+This release mainly fixes a potential security issue where VPN clients are able
+to communicate with other connected VPN clients. It also fixes various other
+minor issues that can be seen in the Issues fixed link below.
+
+Because changes in this release are intended to be minor, there are no new
+features included.
+
+Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.8.2
+Issues fixed: https://leap.se/code/versions/210
+
+
 Platform 0.8
 --------------------------------------
 
