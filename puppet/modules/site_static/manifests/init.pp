@@ -77,6 +77,14 @@ class site_static {
     if $hidden_service['active'] {
       include site_static::hidden_service
     }
+    # Currently, we only support a single hidden service address per server.
+    # So if there is more than one domain configured, then we need to make sure
+    # we don't enable the hidden service for every domain.
+    if size(keys($domains)) == 1 {
+      $always_use_hidden_service = true
+    } else {
+      $always_use_hidden_service = false
+    }
   }
 
   create_resources(site_static::domain, $domains)

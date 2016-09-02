@@ -4,6 +4,7 @@ define site_static::domain (
   $key,
   $cert,
   $tls_only=true,
+  $use_hidden_service=false,
   $locations=undef,
   $aliases=undef,
   $apache_config=undef) {

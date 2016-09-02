@@ -74,7 +74,7 @@
   Require all granted
 </Directory>
 
-<%- if @tor -%>
+<%- if @tor && (@always_use_hidden_service || @use_hidden_service) -%>
 ##
 ## Tor
 ##
