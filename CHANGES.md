@@ -39,7 +39,16 @@ Alternately, just clone a fresh leap_platform:
 
     git clone https://leap.se/git/leap_platform
 
+Includes:
+
+* leap_web: 0.8
+* nickserver: 0.8
+* couchdb: 1.6.0
+* leap-mx: 0.8.1
+* soledad-server: 0.8.0
+
 Commits: https://leap.se/git/leap_platform.git/shortlog/refs/tags/0.9
+
 Issues fixed: https://leap.se/code/versions/195
 
 
