@@ -16,14 +16,14 @@ class site_static {
   file {
     '/srv/static/':
       ensure => 'directory',
-      owner => 'root',
-      group => 'root',
-      mode  => '0744';
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0744';
     '/srv/static/public':
       ensure => 'directory',
-      owner => 'root',
-      group => 'root',
-      mode  => '0744';
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0744';
   }
 
   if $bootstrap['enabled'] {
@@ -57,7 +57,7 @@ class site_static {
     include site_apt::preferences::passenger
     class { 'passenger':
       manage_munin => false,
-      require   => Class['site_apt::preferences::passenger']
+      require      => Class['site_apt::preferences::passenger']
     }
   }
 
