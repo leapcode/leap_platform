@@ -225,11 +225,24 @@ module LeapCli; module Commands
     end
   end
 
+  def assert_no_errors!(msg)
+    yield
+  rescue StandardError => exc
+    bail! :error, msg do
+      log exc.to_s
+    end
+  end
+
   def do_renew_cert(global, options, args)
     require 'leap_cli/acme'
     require 'leap_cli/ssh'
     require 'socket'
     require 'net/http'
+
+    csr = nil
+    account_key = nil
+    cert = nil
+    acme = nil
 
     #
     # sanity check the domain
@@ -243,10 +256,14 @@ module LeapCli; module Commands
     #
     assert_files_exist!([:commercial_key, domain], [:commercial_csr, domain],
       :msg => 'Please create the CSR first with `leap cert csr %s`' % domain)
-    csr = Acme.load_csr(read_file!([:commercial_csr, domain]))
+    assert_no_errors!("Could not load #{path([:commercial_csr, domain])}") do
+      csr = Acme.load_csr(read_file!([:commercial_csr, domain]))
+    end
     assert_files_exist!(:acme_key,
       :msg => "Please run `leap cert register` first. This only needs to be done once.")
-    account_key = Acme.load_private_key(read_file!(:acme_key))
+    assert_no_errors!("Could not load #{path(:acme_key)}") do
+      account_key = Acme.load_private_key(read_file!(:acme_key))
+    end
 
     #
     # check authorization for this domain
@@ -272,8 +289,12 @@ module LeapCli; module Commands
     end
 
     log :fetching, "new certificate from letsencrypt.org"
-    cert = acme.get_certificate(csr)
+    assert_no_errors!("could not renew certificate") do
+      cert = acme.get_certificate(csr)
+    end
+    log 'success', color: :green, style: :bold
     write_file!([:commercial_cert, domain], cert.fullchain_to_pem)
+    log 'You should now run `leap deploy` to deploy the new certificate.'
   end
 
   #
