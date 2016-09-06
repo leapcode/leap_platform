@@ -5,7 +5,7 @@ module LeapCli; module Commands
             "For example, `leap run 'uname -a' webapp`"
   arg_name 'COMMAND FILTER'
   command :run do |c|
-    c.switch 'stream', :default => false, :desc => 'If set, stream the output as it arrives. (default: --no-stream)'
+    c.switch 'stream', :default => false, :desc => 'If set, stream the output as it arrives. (default: --stream for a single node, --no-stream for multiple nodes)'
     c.flag 'port', :arg_name => 'SSH_PORT', :desc => 'Override default SSH port used when trying to connect to the server.'
     c.action do |global, options, args|
       run_shell_command(global, options, args)
@@ -20,7 +20,7 @@ module LeapCli; module Commands
     filter = args[1..-1]
     cmd    = global[:force] ? cmd : LeapCli::SSH::Options.sanitize_command(cmd)
     nodes  = manager.filter!(filter)
-    if options[:stream]
+    if nodes.size == 1 || options[:stream]
       stream_command(nodes, cmd, options)
     else
       capture_command(nodes, cmd, options)
