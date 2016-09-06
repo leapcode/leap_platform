@@ -27,7 +27,8 @@ You will need the new version of leap_cli:
 
     workstation$ sudo gem install leap_cli --version=1.9
 
-Because 0.9 does not use submodules anymore, you must remove them before pulling the latest leap_platform from git:
+Because 0.9 does not use submodules anymore, you must remove them before pulling
+the latest leap_platform from git:
 
     cd leap_platform
     for dir in $(git submodule | awk '{print $2}'); do
@@ -38,6 +39,14 @@ Because 0.9 does not use submodules anymore, you must remove them before pulling
 Alternately, just clone a fresh leap_platform:
 
     git clone https://leap.se/git/leap_platform
+
+Known Issues:
+
+* When upgrading, sometimes systemd does not report the correct state of a
+  daemon. The daemon will be not running, but systemd thinks it is. The symptom
+  of this is that a deploy will succeed but `leap test` will fail. To fix, you
+  can run `systemctl stop DAEMON` and then `systemctl start DAEMON` on the
+  affected host (systemctl restart seems to work less reliably).
 
 Includes:
 
