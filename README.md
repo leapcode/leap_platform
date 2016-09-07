@@ -82,6 +82,9 @@ Contributing
 
 In order to validate the syntax and style guide compliance before you commit,
 see https://github.com/pixelated-project/puppet-git-hooks#installation
+Please fork https://0xacab.org/leap/platform to open a merge request,
+and pick the `Platform runner (greyhound)` at https://0xacab.org/YOUR_USERNAME/platform/runners
+in order to run a CI build for your merge request.
 
 Changes
 ================================
