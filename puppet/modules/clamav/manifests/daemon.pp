@@ -16,7 +16,6 @@ class clamav::daemon {
       pattern    => '/usr/sbin/clamd',
       enable     => true,
       hasrestart => true,
-      subscribe  => File['/etc/default/clamav-daemon'],
       require    => Package['clamav-daemon'];
   }
 
@@ -26,19 +25,23 @@ class clamav::daemon {
       mode    => '0750',
       owner   => clamav,
       group   => postfix,
-      require => [Package['postfix'], Package['clamav-daemon']];
+      require => [Package['postfix'], Package['clamav-daemon']],
+      notify  => Service['clamav-daemon'];
 
     '/var/lib/clamav':
       mode    => '0755',
       owner   => clamav,
       group   => clamav,
-      require => Package['clamav-daemon'];
+      require => Package['clamav-daemon'],
+      notify  => Service['clamav-daemon'];
 
     '/etc/default/clamav-daemon':
-      source => 'puppet:///modules/clamav/clamav-daemon_default',
-      mode   => '0644',
-      owner  => root,
-      group  => root;
+      source  => 'puppet:///modules/clamav/clamav-daemon_default',
+      mode    => '0644',
+      owner   => root,
+      group   => root,
+      require => Package['clamav-daemon'],
+      notify  => Service['clamav-daemon'];
 
     # this file contains additional domains that we want the clamav
     # phishing process to look for (our domain)
@@ -47,7 +50,8 @@ class clamav::daemon {
       mode    => '0644',
       owner   => clamav,
       group   => clamav,
-      require => Package['clamav-daemon'];
+      require => Package['clamav-daemon'],
+      notify  => Service['clamav-daemon'];
   }
 
   file_line {
