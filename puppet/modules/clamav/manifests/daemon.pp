@@ -1,5 +1,6 @@
 # deploy clamav daemon
 class clamav::daemon {
+  include clamav::daemon::activation
 
   $domain_hash           = hiera('domain')
   $domain                = $domain_hash['full_suffix']
