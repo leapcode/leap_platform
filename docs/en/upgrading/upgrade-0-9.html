@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Upgrade to 0.9 - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class='active level1'>
+<a class='' href='upgrade-0-9.html'>Upgrade to 0.9</a>
+</li>
+<li class=' level1'>
+<a class='' href='upgrade-0-8.html'>Upgrade to 0.8</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Upgrade to 0.9</h1>
+
+<div id='summary'></div>
+</div>
+<div id='content-box'>
+<h2><a name="upgrading-to-platform-09"></a>Upgrading to Platform 0.9</h2>
+
+<p>You will need the new version of leap_cli:</p>
+
+<pre><code>workstation$ sudo gem install leap_cli --version=1.9
+</code></pre>
+
+<p>If you don&rsquo;t want to install using &lsquo;sudo&rsquo;:</p>
+
+<pre><code>workstation$ gem install --user-install leap_cli --version=1.9
+workstation$ PATH="$PATH:$(ruby -e 'puts Gem.user_dir')/bin"
+</code></pre>
+
+<p>Because 0.9 does not use submodules anymore, you must remove them before pulling
+the latest leap_platform from git:</p>
+
+<pre><code>workstation$ cd leap_platform
+workstation$ for dir in $(git submodule | awk '{print $2}'); do
+workstation$   git submodule deinit $dir
+workstation$ done
+workstation$ git pull
+workstation$ git checkout 0.9.0
+</code></pre>
+
+<p>Alternately, just clone a fresh leap_platform:</p>
+
+<pre><code>workstation$ git clone https://leap.se/git/leap_platform
+workstation$ cd leap_platform
+workstation$ git checkout 0.9.0
+</code></pre>
+
+<p>Then, just deploy</p>
+
+<pre><code>workstation$ cd PROVIDER_DIR
+workstation$ leap deploy
+</code></pre>
+
+<h2><a name="known-issues"></a>Known issues</h2>
+
+<p>When upgrading, sometimes systemd does not report the correct state of a daemon.
+The daemon will be not running, but systemd thinks it is. The symptom of this is
+that a deploy will succeed but <code>leap test</code> will fail. To fix, you can run
+<code>systemctl stop DAEMON</code> and then <code>systemctl start DAEMON</code> on the affected host
+(systemctl restart seems to work less reliably).</p>
+
+</div>
+</div>
+</body>
+</html>

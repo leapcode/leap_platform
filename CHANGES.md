@@ -30,15 +30,23 @@ You will need the new version of leap_cli:
 Because 0.9 does not use submodules anymore, you must remove them before pulling
 the latest leap_platform from git:
 
-    cd leap_platform
-    for dir in $(git submodule | awk '{print $2}'); do
-      git submodule deinit $dir
-    done
-    git pull
+    workstation$ cd leap_platform
+    workstation$ for dir in $(git submodule | awk '{print $2}'); do
+    workstation$   git submodule deinit $dir
+    workstation$ done
+    workstation$ git pull
+    workstation$ git checkout 0.9.0
 
 Alternately, just clone a fresh leap_platform:
 
-    git clone https://leap.se/git/leap_platform
+    workstation$ git clone https://leap.se/git/leap_platform
+    workstation$ cd leap_platform
+    workstation$ git checkout 0.9.0
+
+Then, deploy:
+
+    workstation$ cd PROVIDER_DIR
+    workstation$ leap deploy
 
 Known Issues:
 
