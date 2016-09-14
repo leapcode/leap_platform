@@ -165,7 +165,7 @@ Keys and Certificates - LEAP Platform Documentation
         <a href="keys-and-certificates/index.html#client-certificates">Client certificates</a>
       </li>
       <li>
-        <a href="keys-and-certificates/index.html#commercial-certificates">Commercial certificates</a>
+        <a href="keys-and-certificates/index.html#signed-certificates">Signed certificates</a>
       </li>
       <li>
         <a href="keys-and-certificates/index.html#examine-certs">Examine Certs</a>
@@ -173,16 +173,13 @@ Keys and Certificates - LEAP Platform Documentation
     </ol>
   </li>
   <li>
-    <a href="keys-and-certificates/index.html#lets-encrypt-certificate">Let’s Encrypt certificate</a>
+    <a href="keys-and-certificates/index.html#lets-encrypt">Let’s Encrypt</a>
     <ol>
       <li>
-        <a href="keys-and-certificates/index.html#install-the-official-acme-client">Install the official acme client</a>
+        <a href="keys-and-certificates/index.html#creating-a-certificate">Creating a certificate</a>
       </li>
       <li>
-        <a href="keys-and-certificates/index.html#fetch-cert">Fetch cert</a>
-      </li>
-      <li>
-        <a href="keys-and-certificates/index.html#deploy-the-certs">Deploy the certs</a>
+        <a href="keys-and-certificates/index.html#renewing-a-certificate">Renewing a certificate</a>
       </li>
     </ol>
   </li>
@@ -351,9 +348,9 @@ leap deploy
 
 <p>There are two types of client certificates: limited and unlimited. A client using a limited cert will have its bandwidth limited to the rate specified by <code>provider.service.bandwidth_limit</code> (in Bytes per second). An unlimited cert is given to the user if they authenticate and the user&rsquo;s service level matches one configured in <code>provider.service.levels</code> without bandwidth limits. Otherwise, the user is given a limited client cert.</p>
 
-<h2><a name="commercial-certificates"></a>Commercial certificates</h2>
+<h2><a name="signed-certificates"></a>Signed certificates</h2>
 
-<p>We strongly recommend that you use a commercial signed server certificate for your primary domain (in other words, a certificate with a common name matching whatever you have configured for <code>provider.domain</code>). This provides several benefits:</p>
+<p>We strongly recommend that the primary domain for your provider has a certificate signed by a &ldquo;trusted CA&rdquo; (e.g. A Certificate Authority that is trusted by the web browsers and in the Debian <code>ca-certificates</code> package). This provides several benefits:</p>
 
 <ol>
 <li>When users visit your website, they don&rsquo;t get a scary notice that something is wrong.</li>
@@ -362,28 +359,38 @@ leap deploy
 </ol>
 
 
-<p>The LEAP platform is designed so that it assumes you are using a commercial cert for the primary domain of your provider, but all other servers are assumed to use non-commercial certs signed by the Server CA you create.</p>
+<p>The LEAP platform is designed so that it assumes you are using a certificate signed by a &ldquo;trusted CA&rdquo; for the primary domain of your provider, but all other servers are assumed to use certs signed by the Server CA you create.</p>
 
 <p>To generate a CSR, run:</p>
 
-<pre><code>leap cert csr
+<pre><code>leap cert csr [DOMAIN]
 </code></pre>
 
-<p>This command will generate the CSR and private key matching <code>provider.domain</code> (you can change the domain with <code>--domain=DOMAIN</code> switch). It also generates a server certificate signed with the Server CA. You should delete this certificate and replace it with a real one once it is created by your commercial CA.</p>
+<p>This command will generate the CSR and private key matching <code>provider.domain</code> or use DOMAIN. It also generates a server certificate signed with the Server CA. You should delete this certificate and replace it with a real one you get back from a &ldquo;trusted CA&rdquo;.</p>
 
 <p>The related commercial cert files are:</p>
 
 <pre><code>files/
   cert/
-    domain.org.crt    # Server certificate for domain.org, obtained by commercial CA.
-    domain.org.csr    # Certificate signing request
-    domain.org.key    # Private key for you certificate
-    commercial_ca.crt # The CA cert obtained from the commercial CA.
+    domain.org.crt    # Server certificate for domain.org, obtained from
+                      # the trusted CA (this file is initially signed with
+                      # the Server CA, but you should replace it).
+    domain.org.csr    # Certificate signing request (PEM format)
+    domain.org.key    # Private key for you certificate (PEM format)
+    commercial_ca.crt # DEPRECATED: The certificate chain obtained from
+                      # the trusted CA (PEM format)
 </code></pre>
 
 <p>The private key file is extremely sensitive and care should be taken with its provenance.</p>
 
-<p>If your commercial CA has a chained CA cert, you should be OK if you just put the <strong>last</strong> cert in the chain into the <code>commercial_ca.crt</code> file. This only works if the other CAs in the chain have certs in the debian package <code>ca-certificates</code>, which is the case for almost all CAs.</p>
+<p>A few notes on the certificate chain:</p>
+
+<ul>
+<li>A certificate is basically just a key signed by another key. In x.509, the signing key might be signed by yet another key, and so on, all the way to a &lsquo;root&rsquo; key. It is the root key that a browser trusts or is in the Debian <code>ca-certificates</code> package. The chain is the set of all the keys from the root to the end certificate.</li>
+<li>For TLS, both the server and the client need the full chain from the certificate to the CA&rsquo;s root.</li>
+<li>The full chain should be appended in the file <code>domain.org.crt</code> after the server certificate. The chain can also live in <code>commercial_ca.crt</code>, but this is deprecated.</li>
+</ul>
+
 
 <p>If you want to add additional fields to the CSR, like country, city, or locality, you can configure these values in provider.json like so:</p>
 
@@ -405,74 +412,38 @@ leap deploy
 <pre><code>$ leap inspect files/ca/ca.crt
 </code></pre>
 
-<h1><a name="lets-encrypt-certificate"></a>Let’s Encrypt certificate</h1>
+<h1><a name="lets-encrypt"></a>Let’s Encrypt</h1>
 
-<p>LEAP plans to integrate <a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a> support, so it will be even easier to receive X.509 certificates that are accepted by all browsers.
-Until we achieve this, here&rsquo;s a guide how to do this manually.</p>
+<p>Let&rsquo;s Encrypt is a free &ldquo;trusted CA&rdquo;. You can obtain signed certificates from Let&rsquo;s Encrypt very easily using the LEAP command line, so long as you have first set up DNS correctly.</p>
 
-<h2><a name="install-the-official-acme-client"></a>Install the official acme client</h2>
+<h2><a name="creating-a-certificate"></a>Creating a certificate</h2>
 
-<p>Log in to your webapp node</p>
+<p>For example:</p>
 
-<pre><code>server$ git clone https://github.com/certbot/certbot
-server$ cd certbot
-server$ ./certbot-auto --help
+<pre><code>workstation$ leap cert register
+workstation$ leap cert csr demo.bitmask.net
+workstation$ leap cert renew demo.bitmask.net
+workstation$ leap deploy
 </code></pre>
 
-<h2><a name="fetch-cert"></a>Fetch cert</h2>
+<p>Some notes:</p>
 
-<p>Stop apache so the letsencrypt client can bind to port 80:</p>
+<ol>
+<li>You only need to run <code>leap cert register</code> once. Registering will save the Let&rsquo;s Encrypt account key to <code>files/ca/lets-encrypt-account.key</code>. If you delete this file, just run <code>leap cert register</code> again.</li>
+<li>Let&rsquo;s Encrypt support requires that you have already platform 0.9 or later.</li>
+<li>This requires that the DNS records are correct for the domain.</li>
+</ol>
 
-<pre><code>server$ systemctl stop apache2
+
+<h2><a name="renewing-a-certificate"></a>Renewing a certificate</h2>
+
+<p>Let&rsquo;s Encrypt validations are short lived. You will need to renew the certificate at least once every three months. There is no harm in doing it more regularly, however. You can renew your cert every day if you wanted.</p>
+
+<pre><code>workstation$ leap cert renew demo.bitmask.net
+workstation$ leap deploy
 </code></pre>
 
-<p>Fetch the certs</p>
-
-<pre><code>server$ ./certbot-auto certonly --standalone --email admin@$(hostname -d) -d $(hostname -d) -d api.$(hostname -d) -d $(hostname -f) -d nicknym.$(hostname -d)
-</code></pre>
-
-<p>This will put the certs and keys into <code>/etc/letsencrypt/live/DOMAIN/</code>.</p>
-
-<p>Now, go to your workstation&rsquo;s provider configuration directory and copy the newly created files from the server to your local config. You will override existing files so please make a backup before proceeding, or use a version control system to track changes.</p>
-
-<pre><code>workstation$ cd PATH_TO_PROVIDER_CONFIG
-</code></pre>
-
-<p>Copy the Certificate</p>
-
-<pre><code>workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/cert.pem files/cert/dev.pixelated-project.org.crt
-</code></pre>
-
-<p>Copy the private key</p>
-
-<pre><code>workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/privkey.pem files/cert/DOMAIN.key
-</code></pre>
-
-<p>Copy the CA chain cert</p>
-
-<pre><code>workstation$ scp root@SERVER:/etc/letsencrypt/live/DOMAIN/fullchain.pem files/cert/commercial_ca.crt
-</code></pre>
-
-<h2><a name="deploy-the-certs"></a>Deploy the certs</h2>
-
-<p>Now you only need to deploy the certs</p>
-
-<pre><code>workstation$ leap deploy
-</code></pre>
-
-<p>This will put them into the right locations which are:</p>
-
-<ul>
-<li><code>/etc/x509/certs/leap_commercial.crt</code> for the certificate</li>
-<li><code>/etc/x509/./keys/leap_commercial.key</code> for the private key</li>
-<li><code>/usr/local/share/ca-certificates/leap_commercial_ca.crt</code> for the CA chain cert.</li>
-</ul>
-
-
-<p>Start apache2 again</p>
-
-<pre><code>server$ systemctl start apache2
-</code></pre>
+<p>There is no need to create a new CSR: renewing will reuse the old private key and the old CSR. It is especially important to not create a new CSR if you have advertised public key pins using HPKP.</p>
 
 </div>
 </div>

@@ -127,7 +127,7 @@ Command Line Reference - LEAP Platform Documentation
     <a href="index.html#global-options">Global Options</a>
   </li>
   <li>
-    <a href="index.html#leap-add-user-username">leap add-user  USERNAME</a>
+    <a href="index.html#leap-add-user">leap add-user</a>
   </li>
   <li>
     <a href="index.html#leap-cert">leap cert</a>
@@ -136,10 +136,16 @@ Command Line Reference - LEAP Platform Documentation
         <a href="index.html#leap-cert-ca">leap cert ca</a>
       </li>
       <li>
-        <a href="index.html#leap-cert-csr">leap cert csr</a>
+        <a href="index.html#leap-cert-csr-domain">leap cert csr  DOMAIN</a>
       </li>
       <li>
         <a href="index.html#leap-cert-dh">leap cert dh</a>
+      </li>
+      <li>
+        <a href="index.html#leap-cert-register">leap cert register</a>
+      </li>
+      <li>
+        <a href="index.html#leap-cert-renew-domain">leap cert renew  DOMAIN</a>
       </li>
       <li>
         <a href="index.html#leap-cert-update-filter">leap cert update  FILTER</a>
@@ -178,9 +184,6 @@ Command Line Reference - LEAP Platform Documentation
     </ol>
   </li>
   <li>
-    <a href="index.html#leap-debug-filter">leap debug  FILTER</a>
-  </li>
-  <li>
     <a href="index.html#leap-deploy-filter">leap deploy  FILTER</a>
   </li>
   <li>
@@ -212,6 +215,9 @@ Command Line Reference - LEAP Platform Documentation
     <a href="index.html#leap-history-filter">leap history  FILTER</a>
   </li>
   <li>
+    <a href="index.html#leap-info-filter">leap info  FILTER</a>
+  </li>
+  <li>
     <a href="index.html#leap-inspect-file">leap inspect  FILE</a>
   </li>
   <li>
@@ -221,19 +227,19 @@ Command Line Reference - LEAP Platform Documentation
     <a href="index.html#leap-local">leap local</a>
     <ol>
       <li>
-        <a href="index.html#leap-local-destroy-filter">leap local destroy  [FILTER]</a>
+        <a href="index.html#leap-local-ls-filter">leap local ls  [FILTER]</a>
       </li>
       <li>
         <a href="index.html#leap-local-reset-filter">leap local reset  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-local-rm-filter">leap local rm  [FILTER]</a>
       </li>
       <li>
         <a href="index.html#leap-local-save-filter">leap local save  [FILTER]</a>
       </li>
       <li>
         <a href="index.html#leap-local-start-filter">leap local start  [FILTER]</a>
-      </li>
-      <li>
-        <a href="index.html#leap-local-status-filter">leap local status  [FILTER]</a>
       </li>
       <li>
         <a href="index.html#leap-local-stop-filter">leap local stop  [FILTER]</a>
@@ -264,6 +270,12 @@ Command Line Reference - LEAP Platform Documentation
     </ol>
   </li>
   <li>
+    <a href="index.html#leap-open-name">leap open  NAME</a>
+  </li>
+  <li>
+    <a href="index.html#leap-run-command-filter">leap run  COMMAND FILTER</a>
+  </li>
+  <li>
     <a href="index.html#leap-scp-file1-file2">leap scp  FILE1 FILE2</a>
   </li>
   <li>
@@ -282,6 +294,49 @@ Command Line Reference - LEAP Platform Documentation
   </li>
   <li>
     <a href="index.html#leap-tunnel-local_portnameremote_port">leap tunnel  [LOCAL_PORT:]NAME:REMOTE_PORT</a>
+  </li>
+  <li>
+    <a href="index.html#leap-user">leap user</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-user-add-username">leap user add  USERNAME</a>
+      </li>
+      <li>
+        <a href="index.html#leap-user-ls">leap user ls</a>
+      </li>
+      <li>
+        <a href="index.html#leap-user-rm-username">leap user rm  USERNAME</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#leap-vm">leap vm</a>
+    <ol>
+      <li>
+        <a href="index.html#leap-vm-add-node_name-seed">leap vm add  NODE_NAME [SEED]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-bind-node_name-instance_id">leap vm bind  NODE_NAME INSTANCE_ID</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-key-list">leap vm key-list</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-key-register">leap vm key-register</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-rm-filter">leap vm rm  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-start-filter">leap vm start  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-status-filter">leap vm status  [FILTER]</a>
+      </li>
+      <li>
+        <a href="index.html#leap-vm-stop-filter">leap vm stop  [FILTER]</a>
+      </li>
+    </ol>
   </li>
 </ol></div>
 
@@ -311,9 +366,11 @@ Skip prompts and assume &ldquo;yes&rdquo;.</p></li>
 </ul>
 
 
-<h1><a name="leap-add-user-username"></a>leap add-user  USERNAME</h1>
+<h1><a name="leap-add-user"></a>leap add-user</h1>
 
-<p>Adds a new trusted sysadmin by adding public keys to the &ldquo;users&rdquo; directory.</p>
+<p>Manage trusted sysadmins (DEPRECATED)</p>
+
+<p>Use <code>leap user add</code> instead</p>
 
 <p><strong>Options</strong></p>
 
@@ -339,7 +396,7 @@ Add yourself as a trusted sysadmin by choosing among the public keys available f
 
 <p>See see what values are used in the generation of the certificates (like name and key size), run <code>leap inspect provider</code> and look for the &ldquo;ca&rdquo; property. To see the details of the created certs, run <code>leap inspect &lt;file&gt;</code>.</p>
 
-<h2><a name="leap-cert-csr"></a>leap cert csr</h2>
+<h2><a name="leap-cert-csr-domain"></a>leap cert csr  DOMAIN</h2>
 
 <p>Creates a CSR for use in buying a commercial X.509 certificate.</p>
 
@@ -382,6 +439,16 @@ Default Value: None</p></li>
 <h2><a name="leap-cert-dh"></a>leap cert dh</h2>
 
 <p>Creates a Diffie-Hellman parameter file, needed for forward secret OpenVPN ciphers.</p>
+
+<h2><a name="leap-cert-register"></a>leap cert register</h2>
+
+<p>Register an authorization key with the CA letsencrypt.org</p>
+
+<p>This only needs to be done once.</p>
+
+<h2><a name="leap-cert-renew-domain"></a>leap cert renew  DOMAIN</h2>
+
+<p>Renews a certificate using the CA letsencrypt.org</p>
 
 <h2><a name="leap-cert-update-filter"></a>leap cert update  FILTER</h2>
 
@@ -446,12 +513,6 @@ Comma separated list of usernames. The storage databases for these user(s) will 
 Default Value: None</p></li>
 </ul>
 
-
-<h1><a name="leap-debug-filter"></a>leap debug  FILTER</h1>
-
-<p>Output debug information.</p>
-
-<p>The FILTER can be the name of a node, service, or tag.</p>
 
 <h1><a name="leap-deploy-filter"></a>leap deploy  FILTER</h1>
 
@@ -548,6 +609,12 @@ Show last deploy only</p></li>
 </ul>
 
 
+<h1><a name="leap-info-filter"></a>leap info  FILTER</h1>
+
+<p>Prints information regarding facts, history, and running processes for a node or nodes.</p>
+
+<p>The FILTER can be the name of a node, service, or tag.</p>
+
 <h1><a name="leap-inspect-file"></a>leap inspect  FILE</h1>
 
 <p>Prints details about a file. Alternately, the argument FILE can be the name of a node, service or tag.</p>
@@ -585,15 +652,19 @@ Include disabled nodes in the list.</p></li>
 
 <p>Manage local virtual machines.</p>
 
-<p>This command provides a convient way to manage Vagrant-based virtual machines. If FILTER argument is missing, the command runs on all local virtual machines. The Vagrantfile is automatically generated in &lsquo;test/Vagrantfile&rsquo;. If you want to run vagrant commands manually, cd to &lsquo;test&rsquo;.</p>
+<p>This command provides a convenient way to manage Vagrant-based virtual machines. If FILTER argument is missing, the command runs on all local virtual machines. The Vagrantfile is automatically generated in &lsquo;test/Vagrantfile&rsquo;. If you want to run vagrant commands manually, cd to &lsquo;test&rsquo;.</p>
 
-<h2><a name="leap-local-destroy-filter"></a>leap local destroy  [FILTER]</h2>
+<h2><a name="leap-local-ls-filter"></a>leap local ls  [FILTER]</h2>
 
-<p>Destroys the virtual machine(s), reclaiming the disk space</p>
+<p>Print the status of local virtual machine(s)</p>
 
 <h2><a name="leap-local-reset-filter"></a>leap local reset  [FILTER]</h2>
 
 <p>Resets virtual machine(s) to the last saved snapshot</p>
+
+<h2><a name="leap-local-rm-filter"></a>leap local rm  [FILTER]</h2>
+
+<p>Destroys the virtual machine(s), reclaiming the disk space</p>
 
 <h2><a name="leap-local-save-filter"></a>leap local save  [FILTER]</h2>
 
@@ -611,10 +682,6 @@ The basebox to use. This value is passed to vagrant as the <code>config.vm.box</
 Default Value: LEAP/jessie</li>
 </ul>
 
-
-<h2><a name="leap-local-status-filter"></a>leap local status  [FILTER]</h2>
-
-<p>Print the status of local virtual machine(s)</p>
 
 <h2><a name="leap-local-stop-filter"></a>leap local stop  [FILTER]</h2>
 
@@ -674,13 +741,15 @@ Default Value: None</p></li>
 
 <p>To set nested properties, property name can contain &lsquo;.&rsquo;, like so: <code>leap node add web1 ssh.port:44</code></p>
 
-<p>Separeate multiple values for a single property with a comma, like so: <code>leap node add mynode services:webapp,dns</code></p>
+<p>Separate multiple values for a single property with a comma, like so: <code>leap node add mynode services:webapp,dns</code></p>
 
 <p><strong>Options</strong></p>
 
 <ul>
-<li><code>--local</code>
-Make a local testing node (by automatically assigning the next available local IP address). Local nodes are run as virtual machines on your computer.</li>
+<li><p><code>--local</code>
+Make a local testing node (by assigning the next available local IP address). Local nodes are run as virtual machines on your computer.</p></li>
+<li><p><code>--vm</code>
+Make a remote virtual machine for this node. Requires a valid cloud.json configuration.</p></li>
 </ul>
 
 
@@ -698,9 +767,8 @@ Override the default SSH IP address.
 Default Value: None</p></li>
 <li><p><code>--port PORT</code>
 Override the default SSH port.
+This command prepares a server to be used with the LEAP Platform by saving the server&rsquo;s SSH host key, copying the authorized_keys file, installing packages that are required for deploying, and registering important facts. Node init must be run before deploying to a server, and the server must be running and available via the network. This command only needs to be run once, but there is no harm in running it multiple times.
 Default Value: None</p></li>
-<li><p><code>--echo</code>
-If set, passwords are visible as you type them (default is hidden)</p></li>
 </ul>
 
 
@@ -711,6 +779,40 @@ If set, passwords are visible as you type them (default is hidden)</p></li>
 <h2><a name="leap-node-rm-name"></a>leap node rm  NAME</h2>
 
 <p>Removes all the files related to the node named NAME.</p>
+
+<h1><a name="leap-open-name"></a>leap open  NAME</h1>
+
+<p>Opens useful URLs in a web browser.</p>
+
+<p>NAME can be one or more of: monitor, web, docs, bug</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--env ENVIRONMENT</code>
+Which environment to use (optional).
+Default Value: None</p></li>
+<li><p><code>--[no-]ip</code>
+To get around HSTS or DNS, open the URL using the IP address instead of the domain (optional).</p></li>
+</ul>
+
+
+<h1><a name="leap-run-command-filter"></a>leap run  COMMAND FILTER</h1>
+
+<p>Run a shell command remotely</p>
+
+<p>Runs the specified command COMMAND on each node in the FILTER set. For example, <code>leap run 'uname -a' webapp</code></p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--port SSH_PORT</code>
+Override default SSH port used when trying to connect to the server.
+Default Value: None</p></li>
+<li><p><code>--[no-]stream</code>
+If set, stream the output as it arrives. (default: &ndash;stream for a single node, &ndash;no-stream for multiple nodes)</p></li>
+</ul>
+
 
 <h1><a name="leap-scp-file1-file2"></a>leap scp  FILE1 FILE2</h1>
 
@@ -777,6 +879,97 @@ Pass through raw options to ssh (e.g. &ndash;ssh &lsquo;-F ~/sshconfig&rsquo;).
 Default Value: None</p></li>
 </ul>
 
+
+<h1><a name="leap-user"></a>leap user</h1>
+
+<p>Manage trusted sysadmins</p>
+
+<p>Manage the trusted sysadmins that are configured in the &lsquo;users&rsquo; directory.</p>
+
+<h2><a name="leap-user-add-username"></a>leap user add  USERNAME</h2>
+
+<p>Adds a new trusted sysadmin</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--pgp-pub-key arg</code>
+OpenPGP public key file for this new user
+Default Value: None</p></li>
+<li><p><code>--ssh-pub-key arg</code>
+SSH public key file for this new user
+Default Value: None</p></li>
+<li><p><code>--self</code>
+Add yourself as a trusted sysadmin by choosing among the public keys available for the current user.</p></li>
+</ul>
+
+
+<h2><a name="leap-user-ls"></a>leap user ls</h2>
+
+<p>Lists the configured sysadmins</p>
+
+<h2><a name="leap-user-rm-username"></a>leap user rm  USERNAME</h2>
+
+<p>Removes a trusted sysadmin</p>
+
+<h1><a name="leap-vm"></a>leap vm</h1>
+
+<p>Manage remote virtual machines (VMs).</p>
+
+<p>This command provides a convenient way to manage virtual machines. FILTER may be a node filter or the ID of a virtual machine.</p>
+
+<p><strong>Options</strong></p>
+
+<ul>
+<li><p><code>--auth AUTH</code>
+Choose which authentication credentials to use from the file cloud.json. If omitted, will default to the node&rsquo;s <code>vm.auth</code> property, or the first credentials in cloud.json
+Default Value: None</p></li>
+<li><p><code>--[no-]mock</code>
+Run as simulation, without actually connecting to a cloud provider. If set, &ndash;auth is ignored.</p></li>
+<li><p><code>--[no-]wait</code>
+Wait for servers to start/stop before continuing.</p></li>
+</ul>
+
+
+<h2><a name="leap-vm-add-node_name-seed"></a>leap vm add  NODE_NAME [SEED]</h2>
+
+<p>Allocates a new VM and/or associates it with node NAME.</p>
+
+<p>If node configuration file does not yet exist, it is created with the optional SEED values. You can run this command when the virtual machine already exists in order to update the node&rsquo;s <code>vm.id</code> property.</p>
+
+<h2><a name="leap-vm-bind-node_name-instance_id"></a>leap vm bind  NODE_NAME INSTANCE_ID</h2>
+
+<p>Binds a running VM instance to a node configuration.</p>
+
+<p>Afterwards, the VM will be assigned a label matching the node name, and the node config will be updated with the instance ID.</p>
+
+<h2><a name="leap-vm-key-list"></a>leap vm key-list</h2>
+
+<p>Lists the registered SSH public keys for a particular VM provider.</p>
+
+<h2><a name="leap-vm-key-register"></a>leap vm key-register</h2>
+
+<p>Registers a SSH public key for use when creating new VMs.</p>
+
+<p>Note that only people who are creating new VM instances need to have their key registered.</p>
+
+<h2><a name="leap-vm-rm-filter"></a>leap vm rm  [FILTER]</h2>
+
+<p>Destroys one or more VMs</p>
+
+<h2><a name="leap-vm-start-filter"></a>leap vm start  [FILTER]</h2>
+
+<p>Starts one or more VMs</p>
+
+<h2><a name="leap-vm-status-filter"></a>leap vm status  [FILTER]</h2>
+
+<p>Print the status of all VMs</p>
+
+<h2><a name="leap-vm-stop-filter"></a>leap vm stop  [FILTER]</h2>
+
+<p>Shuts down one or more VMs</p>
+
+<p>This keeps the storage allocated. To save resources, run <code>leap vm rm</code> instead.</p>
 
 </div>
 </div>
