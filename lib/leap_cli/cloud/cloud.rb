@@ -34,6 +34,9 @@
 
 module LeapCli
   class Cloud
+    DEFAULT_INSTANCE_OPTIONS = {
+      "InstanceType" => "t2.nano"
+    }
     LEAP_SG_NAME = 'leap_default'
     LEAP_SG_DESC = 'Default security group for LEAP nodes'
 
@@ -50,7 +53,7 @@ module LeapCli
       @name = name
       @conf = conf
       @compute = nil
-      @options = nil
+      @options = DEFAULT_INSTANCE_OPTIONS
       @image = nil
 
       raise ArgumentError, 'name missing' unless @name
@@ -62,11 +65,20 @@ module LeapCli
       credentials[:provider] = @conf["vendor"]
       @compute = Fog::Compute.new(credentials)
 
-      @options = @conf['default_options'] || {}
-      @image   = @conf['default_image'] || Cloud.aws_image(credentials[:region])
+      if @conf['default_options']
+        @options = @options.merge(@conf['default_options'])
+      end
+      @image = @conf['default_image'] || Cloud.aws_image(credentials[:region])
       if @node
-        @options = node.vm.options if node['vm.options']
+        @options = @options.merge(node.vm.options) if node['vm.options']
         @image   = node.vm.image if node['vm.image']
+      end
+
+      unless @options['InstanceType']
+        raise ArgumentError, 'VM instance type is required. See https://leap.se/virtual-machines for more information.'
+      end
+      unless @image
+        raise ArgumentError, 'VM image is required. See https://leap.se/virtual-machines for more information.'
       end
     end
 
