@@ -63,7 +63,7 @@ module LeapCli
       @compute = Fog::Compute.new(credentials)
 
       @options = @conf['default_options'] || {}
-      @image   = @conf['default_image'] || aws_image(credentials[:region])
+      @image   = @conf['default_image'] || Cloud.aws_image(credentials[:region])
       if @node
         @options = node.vm.options if node['vm.options']
         @image   = node.vm.image if node['vm.image']
