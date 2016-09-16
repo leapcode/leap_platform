@@ -155,7 +155,6 @@ module LeapCli
         "ip_address" => server.public_ip_address,
         "vm"=> {"id"=>server.id}
       })
-      log "done", :color => :green, :style => :bold
     end
 
     #
@@ -188,7 +187,7 @@ module LeapCli
       require 'leap_cli/ssh'
       key_pair, local_key = match_ssh_key(:user_only => true)
       if key_pair
-        log :using, "SSH key #{local_key.filename}" do
+        log :using, "user SSH key #{local_key.filename}" do
           log 'AWS MD5 fingerprint: ' + local_key.fingerprint(:digest => :md5, :type => :der, :encoding => :hex)
           log 'SSH MD5 fingerprint: ' + local_key.fingerprint(:digest => :md5, :type => :ssh, :encoding => :hex)
           log 'SSH SHA256 fingerprint: ' + local_key.fingerprint(:digest => :sha256, :type => :ssh, :encoding => :base64)
@@ -229,6 +228,56 @@ module LeapCli
         return key_pair, local_key
       else
         return nil, nil
+      end
+    end
+
+    def wait_for_ssh_host_key(server)
+      require 'leap_cli/ssh'
+      return nil if Fog.mock?
+      tries = 0
+      host_key = nil
+      cloud = self
+      server.wait_for {
+        if tries > 0
+          LeapCli.log :waiting, "for SSH host key..."
+        elsif tries > 20
+          return nil
+        end
+        tries += 1
+        ssh_host_keys = cloud.ssh_host_keys(server)
+        if ssh_host_keys.nil?
+          false
+        else
+          host_key = SSH::Key.pick_best_key(ssh_host_keys)
+          true
+        end
+      }
+      return host_key
+    end
+
+    #
+    # checks the console of the server for the ssh host keys
+    #
+    # returns nil if they cannot be found.
+    #
+    def ssh_host_keys(server)
+      require 'leap_cli/ssh'
+      return nil if Fog.mock?
+      response = @compute.get_console_output(server.id)
+      output = response.body["output"]
+      if output.nil?
+        return nil
+      end
+      keys = output.match(
+        /-----BEGIN SSH HOST KEY KEYS-----(.*)-----END SSH HOST KEY KEYS-----/m
+      )
+      if keys.nil?
+        return nil
+      else
+        ssh_key_list = keys[1].strip.split("\r\n").map {|key_str|
+          SSH::Key.load(key_str)
+        }
+        return ssh_key_list.compact
       end
     end
 

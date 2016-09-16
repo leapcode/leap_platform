@@ -253,6 +253,16 @@ module LeapCli; module Commands
 
     if server
       cloud.bind_server_to_node(server)
+      ssh_host_key = cloud.wait_for_ssh_host_key(server)
+      if ssh_host_key.nil?
+        log :warning, "We could not get a SSH host key." do
+          log "Try running `leap vm add #{node.name}` again later."
+        end
+      else
+        log :saving, "SSH host key for #{node.name}"
+        write_file! [:node_ssh_pub_key, node.name], ssh_host_key.to_s
+      end
+      log "done", :color => :green, :style => :bold
     end
   end
 
