@@ -18,4 +18,6 @@ class site_mx {
   include ::site_shorewall::service::smtp
   include ::leap_mx
   include ::site_check_mk::agent::mx
+  # install twisted from jessie backports
+  include ::site_apt::preferences::twisted
 }
