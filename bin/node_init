@@ -24,6 +24,7 @@ fi
 mkdir -p $LEAP_DIR
 if ! grep -q -e '^en_US.UTF-8' /etc/locale.gen; then
   echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  /usr/sbin/locale-gen
 fi
 
 #
