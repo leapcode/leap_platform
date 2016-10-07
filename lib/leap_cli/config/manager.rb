@@ -89,27 +89,26 @@ module LeapCli
         else
           parent = nil
         end
-        @environments[args[:name]] = Environment.new(
+        env = Environment.new(
           self,
           args.delete(:name),
           args.delete(:dir),
           parent,
           args
         )
+        @environments[env.name] = env
       end
 
       #
       # load .json configuration files
       #
       def load(options = {})
-        @provider_dir = Path.provider
-
         # load base
         add_environment(name: '_base_', dir: Path.provider_base)
 
         # load provider
-        Util::assert_files_exist!(Path.named_path(:provider_config, @provider_dir))
-        add_environment(name: 'default', dir: @provider_dir,
+        Util::assert_files_exist!(Path.named_path(:provider_config, Path.provider))
+        add_environment(name: 'default', dir: Path.provider,
           inherit: '_base_', no_dots: true)
 
         # create a special '_all_' environment, used for tracking
@@ -120,7 +119,7 @@ module LeapCli
         environment_names.each do |ename|
           if ename
             LeapCli.log 3, :loading, '%s environment...' % ename
-            add_environment(name: ename, dir: @provider_dir,
+            add_environment(name: ename, dir: Path.provider,
               inherit: 'default', scope: ename)
           end
         end
@@ -134,20 +133,8 @@ module LeapCli
         # do some node-list post-processing
         cleanup_node_lists(options)
 
-        # apply control files
-        env.nodes.each do |name, node|
-          control_files(node).each do |file|
-            begin
-              node.eval_file file
-            rescue ConfigError => exc
-              if options[:continue_on_error]
-                exc.log
-              else
-                raise exc
-              end
-            end
-          end
-        end
+        # apply service.rb, common.rb, and provider.rb control files
+        apply_control_files
       end
 
       #
@@ -164,13 +151,13 @@ module LeapCli
 
         unless node_list
           node_list = env.nodes
-          existing_hiera = Dir.glob(Path.named_path([:hiera, '*'], @provider_dir))
-          existing_files = Dir.glob(Path.named_path([:node_files_dir, '*'], @provider_dir))
+          existing_hiera = Dir.glob(Path.named_path([:hiera, '*'], Path.provider))
+          existing_files = Dir.glob(Path.named_path([:node_files_dir, '*'], Path.provider))
         end
 
         node_list.each_node do |node|
-          filepath = Path.named_path([:node_files_dir, node.name], @provider_dir)
-          hierapath = Path.named_path([:hiera, node.name], @provider_dir)
+          filepath = Path.named_path([:node_files_dir, node.name], Path.provider)
+          hierapath = Path.named_path([:hiera, node.name], Path.provider)
           Util::write_file!(hierapath, node.dump_yaml)
           updated_files << filepath
           updated_hiera << hierapath
@@ -179,8 +166,8 @@ module LeapCli
         if @disabled_nodes
           # make disabled nodes appear as if they are still active
           @disabled_nodes.each_node do |node|
-            updated_files << Path.named_path([:node_files_dir, node.name], @provider_dir)
-            updated_hiera << Path.named_path([:hiera, node.name], @provider_dir)
+            updated_files << Path.named_path([:node_files_dir, node.name], Path.provider)
+            updated_hiera << Path.named_path([:hiera, node.name], Path.provider)
           end
         end
 
@@ -199,7 +186,7 @@ module LeapCli
 
       def export_secrets(clean_unused_secrets = false)
         if env.secrets.any?
-          Util.write_file!([:secrets_config, @provider_dir], env.secrets.dump_json(clean_unused_secrets) + "\n")
+          Util.write_file!([:secrets_config, Path.provider], env.secrets.dump_json(clean_unused_secrets) + "\n")
         end
       end
 
@@ -405,18 +392,48 @@ module LeapCli
       end
 
       #
-      # Returns a list of 'control' files for this node. A control file is like
-      # a service or a tag JSON file, but it contains raw ruby code that gets
-      # evaluated in the context of the node.
+      # Applies 'control' files for node .json files and provider.json.
+      #
+      # A control file is like a service or a tag JSON file, but it contains
+      # raw ruby code that gets evaluated in the context of the node.
       #
       # Yes, this entirely breaks our functional programming model for JSON
       # generation.
       #
       # Control files are evaluated last, after everything else has run.
       #
-      def control_files(node)
+      def apply_control_files
+        @environments.values.each do |e|
+          provider_control_files(e.name).each do |provider_rb|
+            begin
+              e.provider.eval_file provider_rb
+            rescue ConfigError => exc
+              if options[:continue_on_error]
+                exc.log
+              else
+                raise exc
+              end
+            end
+          end
+        end
+        env.nodes.each do |name, node|
+          node_control_files(node).each do |file|
+            begin
+              node.eval_file file
+            rescue ConfigError => exc
+              if options[:continue_on_error]
+                exc.log
+              else
+                raise exc
+              end
+            end
+          end
+        end
+      end
+
+      def node_control_files(node)
         files = []
-        [Path.provider_base, @provider_dir].each do |provider_dir|
+        [Path.provider_base, Path.provider].each do |provider_dir|
           # add common.rb
           common = File.join(provider_dir, 'common.rb')
           files << common if File.exist?(common)
@@ -429,6 +446,25 @@ module LeapCli
                 files << path
               end
             end
+          end
+        end
+        return files
+      end
+
+      def provider_control_files(env)
+        # skip envs that start with underscore
+        if env =~ /^_/
+          return []
+        end
+        files = []
+        environments = [nil]
+        environments << env unless env == 'default'
+        environments.each do |environment|
+          [Path.provider_base, Path.provider].each do |provider_dir|
+            provider_rb = File.join(
+              provider_dir, ['provider', environment, 'rb'].compact.join('.')
+            )
+            files << provider_rb if File.exist?(provider_rb)
           end
         end
         return files
