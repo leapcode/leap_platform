@@ -12,13 +12,17 @@
 #
 
 # leap_platform/tests/platform-ci
-export ROOTDIR=$(readlink -f "$(dirname $0)")
+export ROOTDIR
+# shellcheck disable=SC2086
+ROOTDIR=$(readlink -f "$(dirname $0)")
 
 # leap_platform/tests/platform-ci/provider
-export PROVIDERDIR="${ROOTDIR}/provider"
+export PROVIDERDIR
+PROVIDERDIR="${ROOTDIR}/provider"
 
 # leap_platform
-export PLATFORMDIR=$(readlink -f "${ROOTDIR}/../..")
+export PLATFORMDIR
+PLATFORMDIR=$(readlink -f "${ROOTDIR}/../..")
 
 # leap_platform/builds
 export BUILDSDIR="${PLATFORMDIR}/builds"
@@ -49,6 +53,6 @@ leap-platform-test add_nodes "$NODES"
 leap-platform-test -v init_deploy
 leap-platform-test -v test
 
-cd $PROVIDERDIR
+cd "$PROVIDERDIR"
 $LEAP_CMD info "${TAG}"
 $LEAP_CMD local destroy "${TAG}"
