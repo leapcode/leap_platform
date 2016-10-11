@@ -80,6 +80,20 @@ Deploying
 Contributing
 ================================
 
+Run rake tests
+--------------
+
+    cd tests/platform-ci
+    ./setup.sh
+    bundle exec rake lint
+    bundle exec rake syntax
+    bundle exec rake validate
+    bundle exec rake templates
+    bundle exec rake catalog
+
+Merge requests
+--------------
+
 In order to validate the syntax and style guide compliance before you commit,
 see https://github.com/pixelated-project/puppet-git-hooks#installation
 Please fork https://0xacab.org/leap/platform to open a merge request,
