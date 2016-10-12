@@ -33,7 +33,8 @@ class site_couchdb::setup {
       mode    => '0400',
       owner   => 'soledad-admin',
       group   => 'root',
-      require => [ Package['couchdb'], User['soledad-admin'] ];
+      require => [ Package['couchdb'], User['soledad-admin'] ],
+      notify  => Service['soledad-server'];
     }
   }
 
