@@ -43,4 +43,4 @@ catalog:
 build:
   stage: build
   script:
-    - ./ci-build.sh
+    - unbuffer ./ci-build.sh | ts -s
