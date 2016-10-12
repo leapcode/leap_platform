@@ -17,11 +17,11 @@ class site_couchdb::setup {
   # (i.e. using curl/wget without passing credentials)
   file {
     '/etc/couchdb/couchdb.netrc':
-      ensure  => link,
-      target  => "/etc/couchdb/couchdb-${user}.netrc";
+      ensure => link,
+      target => "/etc/couchdb/couchdb-${user}.netrc";
     '/root/.netrc':
-      ensure  => link,
-      target  => '/etc/couchdb/couchdb.netrc';
+      ensure => link,
+      target => '/etc/couchdb/couchdb.netrc';
   }
 
   # setup /etc/couchdb/couchdb-soledad-admin.netrc file for couchdb admin
