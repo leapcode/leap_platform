@@ -10,7 +10,6 @@
 /tests/platform-ci/provider/facts.json
 /tests/platform-ci/provider/hiera
 /tests/platform-ci/provider/secrets.json
-/tests/platform-ci/provider/users
 /tests/platform-ci/provider/files/ssh/authorized_keys
 /tests/platform-ci/provider/files/ssh/known_hosts
 /tests/platform-ci/provider/files/nodes/
@@ -20,7 +19,8 @@
 !/tests/platform-ci/provider/tags/catalogtest.json
 /tests/platform-ci/provider/users/*
 !/tests/platform-ci/provider/users/gitlab-runner
-!/tests/platform-ci/provider/users/gitlab-runner/*
+/tests/platform-ci/provider/users/gitlab-runner/*
+!/tests/platform-ci/provider/users/gitlab-runner/gitlab-runner_ssh.pub
 /tests/platform-ci/provider/test
 
 /builds
