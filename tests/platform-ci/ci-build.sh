@@ -9,6 +9,11 @@
 #   * leap_platform: in ../..
 #   * test provider: in provider/
 #   * leap-platform-test: installed in path
+#   * AWS credentials as environment variables:
+#     * `AWS_ACCESS_KEY`
+#     * `AWS_SECRET_KEY`
+#   * ssh private key used to login to remove vm
+#     * `SSH_PRIVATE_KEY`
 #
 # Todo:
 #   - Running locally works fine, now use it in gitlab CI ( which ssh-key ? create cloud.json from env vars )
