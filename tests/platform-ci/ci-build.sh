@@ -23,22 +23,24 @@
 set -e
 
 # leap_platform/tests/platform-ci
-export ROOTDIR
 # shellcheck disable=SC2086
 ROOTDIR=$(readlink -f "$(dirname $0)")
 
 # leap_platform/tests/platform-ci/provider
-export PROVIDERDIR
 PROVIDERDIR="${ROOTDIR}/provider"
 
 # leap_platform
-export PLATFORMDIR
 PLATFORMDIR=$(readlink -f "${ROOTDIR}/../..")
 
 LEAP_CMD="/usr/local/bin/bundle exec leap -v2 --yes"
 
 # create node(s) with unique id so we can run tests in parallel
 NAME="citest${CI_BUILD_ID}"
+# when using gitlab-runner locally, CI_BUILD_ID is always 1 which
+# will conflict with running/terminating AWS instances in subsequent runs
+# therefore we pick a random number in this case
+[ "$CI_BUILD_ID" -eq "1" ] && NAME+="000${RANDOM}"
+
 TAG='single'
 SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
 SEEDS='sources.platform.apt.basic:http://deb.leap.se/experimental-0.9 sources.webapp.revision:develop sources.nickserver.revision:master'
