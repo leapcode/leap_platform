@@ -1,4 +1,4 @@
 #!/bin/sh
 
-which bundle || apt install bundle
-bundle install --binstubs --path=vendor --with=test --jobs $(nproc)
+which bundle || /usr/bin/apt install bundle
+/usr/local/bin/bundle install --binstubs --path=/var/cache/gitlab-runner/ --with=test --jobs "$(nproc)"
