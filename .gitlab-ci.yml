@@ -7,40 +7,39 @@ stages:
   - syntax
   - build
 
-# doesn't work in docker atm
-# image: ruby:2.1
+image: leapcode/ruby
 
 lint:
   stage: syntax
   script:
-    - bundle exec rake lint
+    - /usr/local/bin/bundle exec rake lint
 
 syntax:
   stage: syntax
   script:
-    - bundle exec rake syntax
+    - /usr/local/bin/bundle exec rake syntax
 
 validate:
   stage: syntax
   script:
-    - bundle exec rake validate
+    - /usr/local/bin/bundle exec rake validate
 
 templates:
   stage: syntax
   script:
-    - bundle exec rake templates
+    - /usr/local/bin/bundle exec rake templates
 
 catalog:
   stage: syntax
   script:
-    - bundle exec rake catalog
+    - /usr/local/bin/bundle exec rake catalog
 
 #rspec:
 #  stage: rspec
 #  script:
-#    - bundle exec rake spec
+#    - /usr/local/bin/bundle exec rake spec
 
 build:
   stage: build
   script:
-    - unbuffer ./ci-build.sh | ts -s
+    - /usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s
