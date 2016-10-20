@@ -44,7 +44,8 @@ class site_couchdb::create_dbs {
   ## r/w: soledad
   couchdb::create_db { 'shared':
     members => "{ \"names\": [\"${site_couchdb::couchdb_soledad_user}\"], \"roles\": [\"replication\"] }",
-    require => Couchdb::Query::Setup['localhost']
+    require => Couchdb::Query::Setup['localhost'],
+    notify  => Service['soledad-server'];
   }
 
   ## tickets database
