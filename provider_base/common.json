@@ -71,7 +71,7 @@
     "nickserver": {
       "type": "git",
       "source": "https://leap.se/git/nickserver",
-      "revision": "origin/version/0.8"
+      "revision": "origin/version/0.9"
     },
     "platform": {
       "apt": {
