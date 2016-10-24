@@ -23,6 +23,7 @@ Listen 0.0.0.0:<%= @api_port %>
 <% end -%>
     Header always unset X-Powered-By
     Header always unset X-Runtime
+    Header always set X-XSS-Protection "1; mode=block"
     Header always set X-Content-Type-Options: nosniff
   </IfModule>
 
