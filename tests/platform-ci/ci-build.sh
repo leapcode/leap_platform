@@ -43,7 +43,7 @@ NAME="citest${CI_BUILD_ID}"
 
 TAG='single'
 SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
-SEEDS='sources.platform.apt.basic:http://deb.leap.se/experimental-0.9 sources.webapp.revision:develop sources.nickserver.revision:master'
+SEEDS='sources.platform.apt.basic:http://deb.leap.se/experimental-0.9 sources.webapp.revision:master sources.nickserver.revision:master'
 
 
 #
