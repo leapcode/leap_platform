@@ -85,10 +85,10 @@ module LeapCli; module Commands
     SSH.remote_command(nodes) do |ssh, host|
       response = ssh.capture(facter_cmd, :log_output => false)
       if response
-        log 'done', :host => host
-        node = manager.node(host)
+        node = manager.node(host.hostname)
         if node
           new_facts[node.name] = response.strip
+          log 'done', :host => host.to_s
         else
           log :warning, 'Could not find node for hostname %s' % host
         end
