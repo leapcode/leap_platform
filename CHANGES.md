@@ -9,17 +9,24 @@ New Features:
 
 * `leap vm` -- Support for managing remote virtual servers (AWS only, for now)
 * `leap cert renew` -- Integration with Let's Encrypt
+* `leap open monitor` -- for handy access to nagios
 * improved documentation -- open docs/index.html to see
 
 Notable Changes:
 
-* 58 bugs fixed
+* 86 bugs fixed
 * Fixed security issues with VPN
 * More tests
 * Replaced git submodules with git subrepo
 * Nearly all the leap_cli code has been moved to leap_platform.git
+* Command-line leap_cli cleanup to be more logically consistent
 * Better organization of the leap_platform.git directory structure
 * Removed ugly dependency on Capistrano
+* Enabled DANE/TLSA validation
+* Anti-spam improvements
+* Performance improvements for couchdb
+* Change from httpredir.debian.org to deb.debian.org
+* Reduce duplicated logging
 
 Upgrading:
 
