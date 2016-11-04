@@ -1,0 +1,2 @@
+!/[[:alpha:]]/ REJECT Numeric HELO is a sign of spam, please contact us if this is in error
+

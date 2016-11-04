@@ -22,7 +22,10 @@ if ! egrep -q "$DEBIAN_VERSION" /etc/debian_version; then
   exit 1
 fi
 mkdir -p $LEAP_DIR
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+if ! grep -q -e '^en_US.UTF-8' /etc/locale.gen; then
+  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  /usr/sbin/locale-gen
+fi
 
 #
 # UPDATE PACKAGES
@@ -48,6 +51,8 @@ if [[ $error_count > 0 ]]; then
   done
   exit 1
 fi
+
+/usr/bin/apt-get -q -y -o 'DPkg::Options::=--force-confold' dist-upgrade
 
 #
 # UPDATE TIME

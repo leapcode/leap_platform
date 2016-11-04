@@ -1,0 +1,18 @@
+//
+// General service provider configuration.
+//
+{
+  "domain": "example.org",
+  "name": {
+    "en": "Example"
+  },
+  "description": {
+    "en": "You really should change this text"
+  },
+  "contacts": {
+    "default": "root@example.org"
+  },
+  "languages": ["en"],
+  "default_language": "en",
+  "enrollment_policy": "open"
+}

@@ -4,8 +4,8 @@
 #
 
 Leap::Platform.define do
-  self.version = "0.8"
-  self.compatible_cli = "1.8".."1.99"
+  self.version = "0.9"
+  self.compatible_cli = "1.9".."1.99"
 
   #
   # the facter facts that should be gathered
@@ -42,6 +42,7 @@ Leap::Platform.define do
     :tag_config       => 'tags/#{arg}.json',
     :template_config  => 'templates/#{arg}.json',
     :secrets_config   => 'secrets.json',
+    :cloud_config     => 'cloud.json',
     :node_config      => 'nodes/#{arg}.json',
 
     # input config files, environmentally scoped
@@ -65,6 +66,7 @@ Leap::Platform.define do
 
     # output files
     :facts            => 'facts.json',
+    :user_dir         => 'users/#{arg}',
     :user_ssh         => 'users/#{arg}/#{arg}_ssh.pub',
     :user_pgp         => 'users/#{arg}/#{arg}_pgp.pub',
     :known_hosts      => 'files/ssh/known_hosts',
@@ -76,6 +78,8 @@ Leap::Platform.define do
     :client_ca_key    => 'files/ca/client_ca.key',
     :client_ca_cert   => 'files/ca/client_ca.crt',
     :dh_params        => 'files/ca/dh.pem',
+    :acme_key         => 'files/ca/lets-encrypt-account.key',
+    :acme_info        => 'files/ca/lets-encrypt-account.json',
     :commercial_key   => 'files/cert/#{arg}.key',
     :commercial_csr   => 'files/cert/#{arg}.csr',
     :commercial_cert  => 'files/cert/#{arg}.crt',

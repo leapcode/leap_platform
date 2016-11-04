@@ -25,7 +25,8 @@ class site_apt {
     debian_url       => $apt_url_basic,
     security_url     => $apt_url_security,
     backports_url    => $apt_url_backports,
-    use_next_release => $use_next_release
+    use_next_release => $use_next_release,
+    repos            => 'main'
   }
 
   # enable http://deb.leap.se debian package repository

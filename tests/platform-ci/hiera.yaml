@@ -1,0 +1,16 @@
+---
+:backends:
+  - yaml
+  - puppet
+
+:logger: console
+
+:yaml:
+   :datadir: provider/hiera
+
+:hierarchy:
+  - catalogtest
+
+:puppet:
+   :datasource: data
+

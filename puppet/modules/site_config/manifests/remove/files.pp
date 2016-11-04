@@ -11,7 +11,35 @@
 
 class site_config::remove::files {
 
+  #
+  # Platform 0.9 removals
+  #
+
+  tidy {
+    # moved to /srv/static/public/provider.json
+    # for permissions reasons.
+    '/srv/leap/provider.json':;
+
+    # tests are moved to /srv/leap/tests/server-tests
+    # by rsync is not able to clean up the old location,
+    # so, we do it here:
+    '/srv/leap/tests/order.rb':;
+    '/srv/leap/tests/README.md':;
+    '/srv/leap/tests/helpers':
+      recurse => true,
+      rmdirs => true;
+    '/srv/leap/tests/puppet':
+      recurse => true,
+      rmdirs => true;
+    '/srv/leap/tests/white-box':
+      recurse => true,
+      rmdirs => true;
+  }
+
+  #
   # Platform 0.8 removals
+  #
+
   tidy {
     '/etc/default/leap_mx':;
     '/etc/logrotate.d/mx':;

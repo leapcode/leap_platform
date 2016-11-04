@@ -1,0 +1,22 @@
+  Include include.d/defaults.inc
+<% if vhost_part == :ssl -%>
+  Include include.d/ssl_defaults.inc
+<%= scope.function_templatewlv(['apache/vhosts/partials/ssl.erb',
+                                {'configuration' => configuration}]) %>
+<% end -%>
+  ServerName <%= @servername %>
+<% unless @serveralias.empty? || (@serveralias == 'absent') -%>
+  ServerAlias <%= Array(@serveralias).sort.join(' ') %>
+<% end -%>
+<% unless @server_admin.empty? || (@server_admin == 'absent') -%>
+  ServerAdmin <%= @server_admin %>
+<% end -%>
+<% unless @documentroot == 'really_absent' -%>
+  DocumentRoot <%= @documentroot %>/
+<% end -%>
+<% if @default_charset != 'absent' -%>
+  AddDefaultCharset <%= @default_charset %>
+<% end -%>
+<% if @passing_extension != 'absent' -%>
+  DirectoryIndex index.htm index.html index.<%= @passing_extension %>
+<% end -%>

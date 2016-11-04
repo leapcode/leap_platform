@@ -1,3 +1,4 @@
+# Configure basic firewall rules for shorewall
 class site_shorewall::defaults {
 
   include shorewall
@@ -55,7 +56,7 @@ class site_shorewall::defaults {
     mode    => '0644',
     source  => 'puppet:///modules/site_shorewall/Debian/shorewall.service',
     require => Package['shorewall'],
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     } ~>
     Exec['systemctl-daemon-reload']
 
@@ -66,14 +67,14 @@ class site_shorewall::defaults {
       lens    => 'Shellvars.lns',
       incl    => '/etc/shorewall/shorewall.conf',
       require => Package['shorewall'],
-      notify  => Service['shorewall'];
+      notify  => Exec['shorewall_check'];
     # require that the interface exist
     'shorewall_REQUIRE_INTERFACE':
       changes => 'set /files/etc/shorewall/shorewall.conf/REQUIRE_INTERFACE Yes',
       lens    => 'Shellvars.lns',
       incl    => '/etc/shorewall/shorewall.conf',
       require => Package['shorewall'],
-      notify  => Service['shorewall'];
+      notify  => Exec['shorewall_check'];
     # configure shorewall-init
     'shorewall-init':
       changes => 'set /files/etc/default/shorewall-init/PRODUCTS shorewall',

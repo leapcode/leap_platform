@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Provider Configuration - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='../getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='../config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='../nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='../keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='../domains.html'>Domains</a>
+</li>
+<li class='active level1'>
+<a class='' href='../provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='../environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='../virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='../miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='../commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Provider Configuration</h1>
+
+<div id='summary'>Explore how to configure your provider.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#required-provider-configuration">Required provider configuration</a>
+  </li>
+  <li>
+    <a href="index.html#recommended-provider-configuration">Recommended provider configuration</a>
+  </li>
+  <li>
+    <a href="index.html#configuring-service-levels">Configuring service levels</a>
+  </li>
+</ol></div>
+
+<h2><a name="required-provider-configuration"></a>Required provider configuration</h2>
+
+<p>There are a few required settings in <code>provider.json</code>. At a minimum, you must have:</p>
+
+<ul>
+<li><code>domain</code>: defines the primary domain of the provider. This is the domain that users will type in when using the Bitmask client, although it is not necessarily the domain where users will visit if they sign up via the web application. If email is supported, all accounts will be <code>username@domain</code>.</li>
+<li><code>name</code>: A brief title for this provider. It can be multiple words, but should not be too long.</li>
+<li><code>contacts.default</code>: One or more email addresses for sysadmins.</li>
+</ul>
+
+
+<p>For example:</p>
+
+<pre><code>{
+  "domain": "freerobot.org",
+  "name": "Freedom for Robots!",
+  "contacts": {
+    "default": "root@freerobot.org"
+  }
+}
+</code></pre>
+
+<h2><a name="recommended-provider-configuration"></a>Recommended provider configuration</h2>
+
+<ul>
+<li><code>description</code>: A longer description of the provider, shown to the user when they register a new account through Bitmask client.</li>
+<li><code>languages</code>: A list of language codes that should be enabled.</li>
+<li><code>default_language</code>: The initial default language code.</li>
+<li><code>enrollment_policy</code>: One of &ldquo;open&rdquo;, &ldquo;closed&rdquo;, or &ldquo;invite&rdquo;. (invite not currently supported).</li>
+</ul>
+
+
+<p>For example:</p>
+
+<pre><code>{
+  "description": "It is time for robots of the world to unite and throw of the shackles of servitude to our organic overlords.",
+  "languages": ["en", "de", "pt", "01"],
+  "default_language": "01",
+  "enrollman_policy": "open"
+}
+</code></pre>
+
+<p>For a full list of possible settings, you can use <code>leap inspect</code> to see how provider.json is evaluated after including the inherited defaults:</p>
+
+<pre><code>$ leap inspect provider.json
+</code></pre>
+
+<h2><a name="configuring-service-levels"></a>Configuring service levels</h2>
+
+<p>The <code>provider.json</code> file defines the available service levels for the provider.</p>
+
+<p>For example, in provider.json:</p>
+
+<pre><code>"service": {
+   "default_service_level": "low",
+   "levels": {
+      "low": {
+        "description": "Entry level plan, with unlimited bandwidth and minimal storage quota.",
+        "name": "entry",
+        "storage": "10 MB",
+        "rate": {
+          "USD": 5,
+          "GBP": 3,
+          "EUR": 6
+        }
+      },
+      "full": {
+        "description": "Full plan, with unlimited bandwidth and higher quota."
+        "name": "full",
+        "storage": "5 GB",
+        "rate": {
+          "USD": 10,
+          "GBP": 6,
+          "EUR": 12
+        }
+      }
+    }
+  }
+}
+</code></pre>
+
+<p>For a list of currency codes, see <a href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes">https://en.wikipedia.org/wiki/ISO_4217#Active_codes</a></p>
+
+</div>
+</div>
+</body>
+</html>

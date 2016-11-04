@@ -7,26 +7,40 @@ class site_static {
   include site_config::x509::key
   include site_config::x509::ca_bundle
 
-  $static        = hiera('static')
-  $domains       = $static['domains']
-  $formats       = $static['formats']
-  $bootstrap     = $static['bootstrap_files']
-  $tor           = hiera('tor', false)
+  $static         = hiera('static')
+  $domains        = $static['domains']
+  $formats        = $static['formats']
+  $bootstrap      = $static['bootstrap_files']
+  $tor            = hiera('tor', false)
+
+  file {
+    '/srv/static/':
+      ensure => 'directory',
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0744';
+    '/srv/static/public':
+      ensure => 'directory',
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0744';
+  }
 
   if $bootstrap['enabled'] {
     $bootstrap_domain  = $bootstrap['domain']
     $bootstrap_client  = $bootstrap['client_version']
-    file { '/srv/leap/provider.json':
+    file { '/srv/static/public/provider.json':
       content => $bootstrap['provider_json'],
       owner   => 'www-data',
       group   => 'www-data',
-      mode    => '0444';
+      mode    => '0444',
+      notify  => Service[apache];
     }
     # It is important to always touch provider.json: the client needs to check x-min-client-version header,
     # but this is only sent when the file has been modified (otherwise 304 is sent by apache). The problem
     # is that changing min client version won't alter the content of provider.json, so we must touch it.
-    exec { '/bin/touch /srv/leap/provider.json':
-      require => File['/srv/leap/provider.json'];
+    exec { '/bin/touch /srv/static/public/provider.json':
+      require => File['/srv/static/public/provider.json'];
     }
   }
 
@@ -42,8 +56,8 @@ class site_static {
   if (member($formats, 'rack')) {
     include site_apt::preferences::passenger
     class { 'passenger':
-      use_munin => false,
-      require   => Class['site_apt::preferences::passenger']
+      manage_munin => false,
+      require      => Class['site_apt::preferences::passenger']
     }
   }
 
@@ -57,14 +71,23 @@ class site_static {
     }
   }
 
-  create_resources(site_static::domain, $domains)
-
   if $tor {
     $hidden_service = $tor['hidden_service']
+    $tor_domain     = "${hidden_service['address']}.onion"
     if $hidden_service['active'] {
-      include site_webapp::hidden_service
+      include site_static::hidden_service
+    }
+    # Currently, we only support a single hidden service address per server.
+    # So if there is more than one domain configured, then we need to make sure
+    # we don't enable the hidden service for every domain.
+    if size(keys($domains)) == 1 {
+      $always_use_hidden_service = true
+    } else {
+      $always_use_hidden_service = false
     }
   }
+
+  create_resources(site_static::domain, $domains)
 
   include site_shorewall::defaults
   include site_shorewall::service::http

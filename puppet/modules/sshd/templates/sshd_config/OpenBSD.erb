@@ -1,0 +1,144 @@
+#	$OpenBSD: sshd_config,v 1.74 2006/07/19 13:07:10 dtucker Exp $
+
+# This is the sshd server system-wide configuration file.  See
+# sshd_config(5) for more information.
+
+# The strategy used for options in the default sshd_config shipped with
+# OpenSSH is to specify options with their default value where
+# possible, but leave them commented.  Uncommented options change a
+# default value.
+
+<% unless (s=scope.lookupvar('::sshd::head_additional_options')).empty? -%>
+<%= s %>
+<% end -%>
+
+<% scope.lookupvar('::sshd::ports').to_a.each do |port| -%>
+<% if port == 'off' -%>
+#Port -- disabled by puppet
+<% else -%>
+Port <%= port %>
+<% end -%>
+<% end -%>
+
+# Use these options to restrict which interfaces/protocols sshd will bind to
+<% scope.lookupvar('::sshd::listen_address').to_a.each do |address| -%>
+ListenAddress <%= address %>
+<% end -%>
+#Protocol 2,1
+#AddressFamily any
+
+# HostKey for protocol version 1
+#HostKey /etc/ssh/ssh_host_key
+# HostKeys for protocol version 2
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_dsa_key
+
+# Lifetime and size of ephemeral version 1 server key
+#KeyRegenerationInterval 1h
+#ServerKeyBits 768
+
+# Logging
+# obsoletes QuietMode and FascistLogging
+#SyslogFacility AUTH
+#LogLevel INFO
+
+# Authentication:
+
+#LoginGraceTime 2m
+PermitRootLogin <%= scope.lookupvar('::sshd::permit_root_login') %>
+
+StrictModes <%= scope.lookupvar('::sshd::strict_modes') %>
+
+#MaxAuthTries 6
+
+RSAAuthentication <%= scope.lookupvar('::sshd::rsa_authentication') %>
+
+PubkeyAuthentication <%= scope.lookupvar('::sshd::pubkey_authentication') %>
+
+AuthorizedKeysFile <%= scope.lookupvar('::sshd::authorized_keys_file') %>
+
+# For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
+RhostsRSAAuthentication <%= scope.lookupvar('::sshd::rhosts_rsa_authentication') %>
+
+# similar for protocol version 2
+HostbasedAuthentication <%= scope.lookupvar('::sshd::hostbased_authentication') %>
+
+# Change to yes if you don't trust ~/.ssh/known_hosts for
+# RhostsRSAAuthentication and HostbasedAuthentication
+#IgnoreUserKnownHosts no
+
+# Don't read the user's ~/.rhosts and ~/.shosts files
+IgnoreRhosts <%= scope.lookupvar('::sshd::ignore_rhosts') %>
+
+# To disable tunneled clear text passwords, change to no here!
+PasswordAuthentication <%= scope.lookupvar('::sshd::password_authentication') %>
+
+# To enable empty passwords, change to yes (NOT RECOMMENDED)
+PermitEmptyPasswords <%= scope.lookupvar('::sshd::permit_empty_passwords') %>
+
+# Change to no to disable s/key passwords
+ChallengeResponseAuthentication <%= scope.lookupvar('::sshd::challenge_response_authentication') %>
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+#KerberosGetAFSToken no
+
+# GSSAPI options
+#GSSAPIAuthentication no
+#GSSAPICleanupCredentials yes
+
+AllowTcpForwarding <%= scope.lookupvar('::sshd::tcp_forwarding') %>
+
+#GatewayPorts no
+X11Forwarding <%= scope.lookupvar('::sshd::x11_forwarding') %>
+#X11DisplayOffset 10
+#X11UseLocalhost yes
+PrintMotd <%= scope.lookupvar('::sshd::print_motd') %>
+#PrintLastLog yes
+#TCPKeepAlive yes
+#UseLogin no
+#UsePrivilegeSeparation yes
+#PermitUserEnvironment no
+#Compression delayed
+#ClientAliveInterval 0
+#ClientAliveCountMax 3
+#UseDNS yes
+#PidFile /var/run/sshd.pid
+#MaxStartups 10
+#PermitTunnel no
+
+# no default banner path
+#Banner /some/path
+
+# override default of no subsystems
+Subsystem      sftp    <%= (s=scope.lookupvar('::sshd::sftp_subsystem')).empty? ? '/usr/libexec/sftp-server' : s %>
+
+<% unless (s=scope.lookupvar('::sshd::allowed_users')).empty? -%>
+AllowUsers <%= s %>
+<% end -%>
+<% unless (s=scope.lookupvar('::sshd::allowed_groups')).empty? -%>
+AllowGroups <%= s %>
+<%- end -%>
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#	X11Forwarding no
+#	AllowTcpForwarding no
+#	ForceCommand cvs server
+
+<% if scope.lookupvar('::sshd::hardened') == 'yes' -%>
+<% if (scope.function_versioncmp([scope.lookupvar('::ssh_version'),'6.5'])) >= 0 -%>
+KexAlgorithms curve25519-sha256@libssh.org
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,umac-128@openssh.com
+<% else -%>
+Ciphers aes256-ctr
+MACs hmac-sha1
+<% end -%>
+<% end -%>
+
+<% unless (s=scope.lookupvar('::sshd::tail_additional_options')).empty? -%>
+<%= s %>
+<% end -%>

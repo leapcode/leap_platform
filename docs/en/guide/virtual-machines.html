@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Virtual Machines - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='environments.html'>Environments</a>
+</li>
+<li class='active level1'>
+<a class='' href='virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Virtual Machines</h1>
+
+<div id='summary'>Running LEAP platform on remote virtual machines</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="virtual-machines/index.html#introduction">Introduction</a>
+  </li>
+  <li>
+    <a href="virtual-machines/index.html#configuration">Configuration</a>
+  </li>
+  <li>
+    <a href="virtual-machines/index.html#usage">Usage</a>
+  </li>
+  <li>
+    <a href="virtual-machines/index.html#keeping-state-synchronized">Keeping State Synchronized</a>
+  </li>
+  <li>
+    <a href="virtual-machines/index.html#multiple-authentication-profiles">Multiple authentication profiles</a>
+  </li>
+</ol></div>
+
+<h2><a name="introduction"></a>Introduction</h2>
+
+<p>You can use the <code>leap</code> command line to easily remote virtual machines.</p>
+
+<p>Note: there are two types of virtual machines that <code>leap</code> can handle:</p>
+
+<ul>
+<li><strong>Local</strong> virtual machines running with vagrant, for use in testing.</li>
+<li><strong>Remote</strong> virtual machines hosted by a cloud provider like AWS or Rackspace.</li>
+</ul>
+
+
+<p>This guide is for &ldquo;remote virtual machines&rdquo;. For &ldquo;local virtual machines&rdquo; see <a href="../tutorials/vagrant.html">Vagrant</a>.</p>
+
+<p>Currently, only Amazon AWS is supported as a cloud provider.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<p>To get started with virtual machines, you must configure a <code>cloud.json</code> file with your API credentials for the virtual machine vendor. This file lives in the root of your provider directory.</p>
+
+<p>For example:</p>
+
+<pre><code>{
+  "my_aws": {
+    "api": "aws",
+    "vendor": "aws",
+    "auth": {
+      "region": "us-west-2",
+      "aws_access_key_id": "xxxx my key id xxxx",
+      "aws_secret_access_key": "xxxx my access key xxxx"
+    }
+  }
+}
+</code></pre>
+
+<p>This will configure a cloud &ldquo;authentication profile&rdquo; called &ldquo;my_aws&rdquo;. This profile will be used by default if there is only one. See below for managing multiple authentication profiles.</p>
+
+<p><em>Required cloud.json properties</em></p>
+
+<ul>
+<li><code>$profile</code>: In this case, &lsquo;my_aws&rsquo;.</li>
+<li><code>$profile.api</code>: For now, must always be &ldquo;aws&rdquo;.</li>
+<li><code>$profile.vendor</code>: For now, must always be &ldquo;aws&rdquo;.</li>
+<li><code>$profile.auth</code>: API specific authentication configuration for this profile. In the case of AWS, it must include <code>auth.region</code>, <code>auth.aws_access_key_id</code>, and <code>aws_secret_access_key</code>.</li>
+</ul>
+
+
+<p><em>Additional cloud.json properties</em></p>
+
+<p>In addition to required configuration properties, these are optional:</p>
+
+<ul>
+<li><code>$profile.default_image</code>: What image to use for new nodes by default. Generally, you should not specify this, because it will automatically select the right Debian image for your region. A node can override this with the property <code>vm.image</code>.</li>
+<li><code>$profile.default_options</code>: This is passed directly to the cloud API, and so is specific to whichever API you are using. The node can override this with the property <code>vm.options</code>.</li>
+</ul>
+
+
+<p>A more complete example <code>cloud.json</code>:</p>
+
+<pre><code>{
+  "my_aws": {
+    "api": "aws",
+    "vendor": "aws",
+    "auth": {
+      "region": "us-west-2",
+      "aws_access_key_id": "xxxx my key id xxxx",
+      "aws_secret_access_key": "xxxx my access key xxxx"
+    },
+    "default_image": "ami-98e114f8",
+    "default_options": {
+      "InstanceType": "t2.nano"
+    }
+  }
+}
+</code></pre>
+
+<p>See also:</p>
+
+<ul>
+<li><a href="https://aws.amazon.com/ec2/instance-types/">Available instance types for AWS</a></li>
+</ul>
+
+
+<h2><a name="usage"></a>Usage</h2>
+
+<p>See <code>leap help vm</code> for a description of all the possible commands.</p>
+
+<p>In order to be able to create new virtual machine instances, you need to register your SSH key with the VM vendor.</p>
+
+<pre><code>leap vm key-register
+</code></pre>
+
+<p>You only have to do this once, and only people who will be creating new VM instances need to do this.</p>
+
+<p>Once you have done that, you just <code>leap vm add</code> to create the virtual machine and then <code>leap vm start</code> to actually boot it.</p>
+
+<pre><code>leap vm add mynode
+leap vm start mynode
+</code></pre>
+
+<p>You can specify seed values to <code>leap vm add</code>. For example:</p>
+
+<pre><code>leap vm add mynode services:webapp tags:seattle vm.options.InstanceType:t2.small
+</code></pre>
+
+<p>Check to see what the status is of all VMs:</p>
+
+<pre><code>leap vm status
+</code></pre>
+
+<p>If it looks good, you can now deploy to the new server:</p>
+
+<pre><code>leap node init mynode
+leap deploy mynode
+</code></pre>
+
+<p>To stop the VM:</p>
+
+<pre><code>leap vm stop mynode
+</code></pre>
+
+<p>To destroy the VM and clean up its storage space:</p>
+
+<pre><code>leap vm rm mynode
+</code></pre>
+
+<p>In general, you should remove VMs instead of stopping them, unless you plan on stopping the VM for a short amount of time. A stopped VM will still use disk space and still incur charges.</p>
+
+<h2><a name="keeping-state-synchronized"></a>Keeping State Synchronized</h2>
+
+<p>The LEAP platform stores all its state information in flat static files. The virtual machine vendor, however, also has its own state.</p>
+
+<p>On the provider side, VM state is stored in node configuration files in <code>nodes/*.json</code>. Of particular importance are the properties <code>ip_address</code> and <code>vm.id</code>.</p>
+
+<p>Most of the time, you should not have any trouble: the <code>leap vm</code> commands will keep things in sync. However, if the state of your configuration files gets out of sync with the state of the virtual machines, it can cause problems.</p>
+
+<p>The command <code>leap vm status</code> will warn you whenever it detects a problem and it will usually propose a fix.</p>
+
+<p>Typically, the fix is to manually update the binding between a local node configuration and the running remote virtual machine, like so:</p>
+
+<pre><code>leap vm bind NODE_NAME VM_ID
+</code></pre>
+
+<h2><a name="multiple-authentication-profiles"></a>Multiple authentication profiles</h2>
+
+<p>If you have multiple profiles configured in <code>cloud.json</code>, you can specify which one you want to use:</p>
+
+<ul>
+<li>Set the <code>vm.auth</code> property in the node configuration to match the name of the authentication profile.</li>
+<li>Or, pass <code>--auth PROFILE_NAME</code> on the command line.</li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>

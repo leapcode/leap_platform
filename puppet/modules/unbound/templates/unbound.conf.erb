@@ -1,0 +1,8 @@
+<% @real_settings.sort.each do |section, settings| -%>
+<%=   "#{section}:"                                %>
+<%  settings.sort.each do |key, val|              -%>
+<%    [val].flatten.each do |val|                 -%>
+<%=     " #{key}: #{val}"                          %>
+<%     end                                        -%>
+<%  end                                            %>
+<% end                                            -%>

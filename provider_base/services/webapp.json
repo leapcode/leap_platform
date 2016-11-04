@@ -19,6 +19,7 @@
     "allow_unlimited_certs": "= provider.service.allow_unlimited_bandwidth",
     "allow_anonymous_certs": "= provider.service.allow_anonymous",
     "allow_registration": "= provider.service.allow_registration",
+    "invite_required": "= provider.enrollment_policy == 'invite'",
     "default_service_level": "= provider.service.default_service_level",
     "service_levels": "= service_levels()",
     "secret_token": "= secret :webapp_secret_token",

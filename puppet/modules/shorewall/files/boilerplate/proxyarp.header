@@ -1,0 +1,9 @@
+#
+# Shorewall version  3.4 - Proxyarp File
+#
+# For information about entries in this file, type "man shorewall-proxyarp"
+#
+# See http://shorewall.net/ProxyARP.htm for additional information.
+#
+###############################################################################
+#ADDRESS        INTERFACE       EXTERNAL        HAVEROUTE       PERSISTENT

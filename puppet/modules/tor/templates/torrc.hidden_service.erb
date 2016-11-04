@@ -1,0 +1,6 @@
+# hidden service <%= @name %>
+HiddenServiceDir <%= @data_dir %>/<%= @name %>
+<% @ports.each do |port| -%>
+HiddenServicePort <%= port %>
+<% end -%>
+

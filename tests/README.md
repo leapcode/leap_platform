@@ -1,25 +1,24 @@
-Tests
----------------------------------
+What is here?
 
-tests/white-box/
+**server-tests/**
 
-    These tests are run on the server as superuser. They are for
-    troubleshooting any problems with the internal setup of the server.
+These are the tests run on a provider's servers using the command:
 
-tests/black-box/
+    workstation$ leap test
 
-    These test are run the user's local machine. They are for troubleshooting
-    any external problems with the service exposed by the server.
+Or the command:
 
-Additional Files
----------------------------------
+    server# run_tests
 
-tests/helpers/
+These tests are to confirm that a provider's infrasture is working and to troubleshoot any possible problems.
 
-    Utility functions made available to all tests.
+**example-provider/**
 
-tests/order.rb
+Allows you to generate a pre-configured provider using Vagrant virtual
+machines.
 
-    Configuration file to specify which nodes should be tested in which order.
+**platform-ci/**
 
+Continous integration tests run for the LEAP Platform. These tests are for the
+platform code itself.
 

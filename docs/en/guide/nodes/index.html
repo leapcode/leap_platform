@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Nodes - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='../getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='../config.html'>Configuration Files</a>
+</li>
+<li class='active level1'>
+<a class='' href='../nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='../keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='../domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='../provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='../environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='../virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class=' level1'>
+<a class='' href='../miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='../commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Nodes</h1>
+
+<div id='summary'>Working with nodes, services, tags, and locations.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#locations">Locations</a>
+  </li>
+  <li>
+    <a href="index.html#disabling-nodes">Disabling Nodes</a>
+  </li>
+</ol></div>
+
+<h1><a name="locations"></a>Locations</h1>
+
+<p>All nodes should have a <code>location.name</code> specified, and optionally additional information about the location, like the time zone. This location information is used for two things:</p>
+
+<ul>
+<li>Determine which nodes can, or must, communicate with one another via a local network. The way some virtualization environments work, like OpenStack, requires that nodes communicate via the local network if they are on the same network.</li>
+<li>Allows the client to prefer connections to nodes that are closer in physical proximity to the user. This is particularly important for OpenVPN nodes.</li>
+</ul>
+
+
+<p>The location stanza in a node&rsquo;s config file looks like this:</p>
+
+<pre><code>{
+  "location": {
+    "id": "ankara",
+    "name": "Ankara",
+    "country_code": "TR",
+    "timezone": "+2",
+    "hemisphere": "N"
+  }
+}
+</code></pre>
+
+<p>The fields:</p>
+
+<ul>
+<li><code>id</code>: An internal handle to use for this location. If two nodes have match <code>location.id</code>, then they are treated as being on a local network with one another. This value defaults to downcase and underscore of <code>location.name</code>.</li>
+<li><code>name</code>: Can be anything, might be displayed to the user in the client if they choose to manually select a gateway.</li>
+<li><code>country_code</code>: The <a href="https://en.wikipedia.org/wiki/ISO_3166-1">ISO 3166-1</a> two letter country code.</li>
+<li><code>timezone</code>: The timezone expressed as an offset from UTC (in standard time, not daylight savings). You can look up the timezone using this <a href="http://www.timeanddate.com/time/map/">handy map</a>.</li>
+<li><code>hemisphere</code>: This should be &ldquo;S&rdquo; for all servers in South America, Africa, or Australia. Otherwise, this should be &ldquo;N&rdquo;.</li>
+</ul>
+
+
+<p>These location options are very imprecise, but good enough for most usage. The client often does not know its own location precisely either. Instead, the client makes an educated guess at location based on the OS&rsquo;s timezone and locale.</p>
+
+<p>If you have multiple nodes in a single location, it is best to use a tag for the location. For example:</p>
+
+<p><code>tags/ankara.json</code>:</p>
+
+<pre><code>{
+  "location": {
+    "name": "Ankara",
+    "country_code": "TR",
+    "timezone": "+2",
+    "hemisphere": "N"
+  }
+}
+</code></pre>
+
+<p><code>nodes/vpngateway.json</code>:</p>
+
+<pre><code>{
+  "services": "openvpn",
+  "tags": ["production", "ankara"],
+  "ip_address": "1.1.1.1",
+  "openvpn": {
+    "gateway_address": "1.1.1.2"
+  }
+}
+</code></pre>
+
+<p>Unless you are using OpenStack or AWS, setting <code>location</code> for nodes is not required. It is, however, highly recommended.</p>
+
+<h1><a name="disabling-nodes"></a>Disabling Nodes</h1>
+
+<p>There are two ways to temporarily disable a node:</p>
+
+<p><strong>Option 1: disabled environment</strong></p>
+
+<p>You can assign an environment to the node that marks it as disabled. Then, if you use environment pinning, the node will be ignored when you deploy. For example:</p>
+
+<pre><code>{
+  "environment": "disabled"
+}
+</code></pre>
+
+<p>Then use <code>leap env pin ENV</code> to pin the environment to something other than &lsquo;disabled&rsquo;. This only works if all the other nodes are also assigned to some environment.</p>
+
+<p><strong>Option 2: enabled == false</strong></p>
+
+<p>If a node has a property <code>enabled</code> set to false, then the <code>leap</code> command will skip over the node and pretend that it does not exist. For example:</p>
+
+<pre><code>{
+  "ip_address": "1.1.1.1",
+  "services": ["openvpn"],
+  "enabled": false
+}
+</code></pre>
+
+<p><strong>Options 3: no-deploy</strong></p>
+
+<p>If the file <code>/etc/leap/no-deploy</code> exists on a node, then when you run the commmand <code>leap deploy</code> it will halt and prevent a deploy from going through (if the node was going to be included in the deploy).</p>
+
+</div>
+</div>
+</body>
+</html>

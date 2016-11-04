@@ -1,0 +1,45 @@
+before_script:
+  - echo 'Running global before_script'
+  - cd tests/platform-ci
+  - ./setup.sh
+
+stages:
+  - syntax
+  - build
+
+image: leapcode/ruby
+
+lint:
+  stage: syntax
+  script:
+    - /usr/local/bin/bundle exec rake lint
+
+syntax:
+  stage: syntax
+  script:
+    - /usr/local/bin/bundle exec rake syntax
+
+validate:
+  stage: syntax
+  script:
+    - /usr/local/bin/bundle exec rake validate
+
+templates:
+  stage: syntax
+  script:
+    - /usr/local/bin/bundle exec rake templates
+
+catalog:
+  stage: syntax
+  script:
+    - /usr/local/bin/bundle exec rake catalog
+
+#rspec:
+#  stage: rspec
+#  script:
+#    - /usr/local/bin/bundle exec rake spec
+
+build:
+  stage: build
+  script:
+    - /usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s

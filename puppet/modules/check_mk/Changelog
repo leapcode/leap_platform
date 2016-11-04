@@ -1,0 +1,27 @@
+0.3.0:
+
+* Added host tags to agent config so that host groups can be auto-populated
+
+* Fixed incorrect package name when using a file store that was causing the
+package existence check to fail always causing an often failing reinstall
+
+* Enable a static list of hosts to be specified for those without the Puppet
+check_mk module installed
+
+0.2.0:
+
+* Switched to using OMD rather than manually compiling check_mk
+
+* Added support for host tags and creating host groups based on these tags
+
+* Allow local check_mk configuration to be specified in
+/etc/check_mk/main.mk.local that is appended to /etc/check_mk/main.mk as
+check_mk can do a lot more than is covered by this module
+
+0.1.1:
+
+* Brown paper bag release to fix a silly typo
+
+0.1:
+
+* Initial release

@@ -1,3 +1,4 @@
+# Configure tor hidden service for webapp
 class site_webapp::hidden_service {
   $tor              = hiera('tor')
   $hidden_service   = $tor['hidden_service']
@@ -8,7 +9,7 @@ class site_webapp::hidden_service {
   include apache::module::alias
   include apache::module::expires
   include apache::module::removeip
-  
+
   include tor::daemon
   tor::daemon::hidden_service { 'webapp': ports => [ '80 127.0.0.1:80'] }
 
@@ -24,14 +25,16 @@ class site_webapp::hidden_service {
       source  => "/srv/leap/files/nodes/${::hostname}/tor.key",
       owner   => 'debian-tor',
       group   => 'debian-tor',
-      mode    => '0600';
+      mode    => '0600',
+      notify  => Service['tor'];
 
     '/var/lib/tor/webapp/hostname':
       ensure  => present,
-      content => $tor_domain,
+      content => "${tor_domain}\n",
       owner   => 'debian-tor',
       group   => 'debian-tor',
-      mode    => '0600';
+      mode    => '0600',
+      notify  => Service['tor'];
   }
 
   # it is necessary to zero out the config of the status module
@@ -40,7 +43,7 @@ class site_webapp::hidden_service {
   apache::module { 'status': ensure => present, conf_content => ' ' }
   # the access_compat module is required to enable Allow directives
   apache::module { 'access_compat': ensure => present }
-  
+
   apache::vhost::file {
     'hidden_service':
       content => template('site_apache/vhosts.d/hidden_service.conf.erb');

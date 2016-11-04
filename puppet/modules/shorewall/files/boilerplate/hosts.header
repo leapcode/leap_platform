@@ -1,0 +1,9 @@
+#
+# Shorewall version 3.4 - Hosts file
+#
+# For information about entries in this file, type "man shorewall-hosts"
+#
+# For additional information, see http://shorewall.net/Documentation.htm#Hosts
+#
+###############################################################################
+#ZONE   HOST(S)                                 OPTIONS

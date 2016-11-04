@@ -50,7 +50,7 @@ module LeapCli; module Commands
 
   def destroy_all_dbs(nodes)
     ssh_connect(nodes) do |ssh|
-      ssh.run('/etc/init.d/bigcouch stop && test ! -z "$(ls /opt/bigcouch/var/lib/ 2> /dev/null)" && rm -r /opt/bigcouch/var/lib/* && echo "All DBs destroyed" || echo "DBs already destroyed"')
+      ssh.run('/etc/init.d/couchdb stop && test ! -z "$(ls /var/lib/couchdb 2> /dev/null)" && rm -r /var/lib/couchdb/* && echo "All DBs destroyed" || echo "DBs already destroyed"')
     end
   end
 

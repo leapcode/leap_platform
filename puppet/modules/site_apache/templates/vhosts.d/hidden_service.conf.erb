@@ -37,19 +37,4 @@
   </Location>
 <% end -%>
 
-<% if (defined? @services) and (@services.include? 'static') -%>
-  DocumentRoot "/srv/static/root/public"
-  <% if scope.function_guess_apache_version([]) == '2.4' %>
-  <Directory /srv/static/root/public>
-    AllowOverride None
-    Require all granted
-  </Directory>
-  <% end %>
-  AccessFileName .htaccess
-
-  Alias /provider.json /srv/leap/provider.json
-  <Location /provider.json>
-    Header set X-Minimum-Client-Version 0.5
-  </Location>
-<% end -%>
 </VirtualHost>

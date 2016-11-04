@@ -1,0 +1,12 @@
+[Unit]
+Description=Path Activation for Clam AntiVirus userspace daemon
+Documentation=man:clamd(8) man:clamd.conf(5) http://www.clamav.net/lang/en/doc/
+
+[Path]
+# Check and wait for database existence before starting up
+PathExistsGlob=/var/lib/clamav/main.{c[vl]d,inc}
+PathExistsGlob=/var/lib/clamav/daily.{c[vl]d,inc}
+
+[Install]
+WantedBy=sockets.target
+

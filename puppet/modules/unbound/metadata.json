@@ -1,0 +1,50 @@
+{
+  "source": "UNKNOWN",
+  "types": [
+
+  ],
+  "project_page": "UNKNOWN",
+  "checksums": {
+    "manifests/service.pp": "baf263d0a562d6543c7418acf1e79cc2",
+    "tests/anchor.pp": "c6d270f2a0f448d7cebb6aed28b60998",
+    "LICENSE": "f8a2562cac0b3859771886422f703d27",
+    "spec/spec_helper.rb": "a55d1e6483344f8ec6963fcb2c220372",
+    "tests/service/openbsd.pp": "624a9db21c7bf277eec24186c490f4a5",
+    "Modulefile": "f1f67d825f8ef998667be8164f18744c",
+    "manifests/package.pp": "53a9d2e732f5690967f31e90d4eaaa99",
+    "manifests/init.pp": "92245e6671f2c3aef459c766c3df522d",
+    "tests/ssl.pp": "25439a06abaef7b5a2d778719a3d8c95",
+    "tests/service.pp": "106da53de4dd52a3e24d61af51263c00",
+    "tests/root_hints.pp": "7c9a9faa7350d023a00538812b9e3383",
+    "manifests/service/openbsd.pp": "fec14ed74ccf3a4c9a9d39a9870b992e",
+    "manifests/params.pp": "b949b2ac149f62130b0462a268c2a3ea",
+    "README": "6b5a94def03194686b83121ee218debd",
+    "tests/forward.pp": "29b51124459bc4fa265681cb0873afb7",
+    "manifests/root_hints.pp": "8c6879c961c8684dae69dbd13cea5efe",
+    "tests/params.pp": "f8662ff6d212159f10aac3186d010605",
+    "manifests/ssl.pp": "cc6e32a92c843bebbe5c05d7dc530c9b",
+    "tests/stub.pp": "34ca449ff833e3b1719d23f2875385d8",
+    "tests/init.pp": "9105221e2b9c942579d7e88f41a89b10",
+    "manifests/forward.pp": "07b209d883cf9ce1888a8427357a367f",
+    "tests/package.pp": "e1236eb6d345f5368f054f0e847a6a76",
+    "templates/unbound.conf.erb": "f5ee6f6444ad705c8494b8ec04e21d5b",
+    "manifests/stub.pp": "a0421e88c96df10cca872715c808ad5a",
+    "manifests/anchor.pp": "4ddf763591743e0505bf62a859e11a2d"
+  },
+  "license": "ISC",
+  "dependencies": [
+    {
+      "version_requirement": ">= 3.2.0",
+      "name": "puppetlabs/stdlib"
+    },
+    {
+      "version_requirement": ">= 0.1.0",
+      "name": "oppegaard/openbsd"
+    }
+  ],
+  "version": "0.1.0",
+  "summary": "The unbound module manages unbound",
+  "description": "This module manages unbound, the reqursive caching DNS resolver.\n    It manages the package, service, configuration file, control keys and support\n    files.",
+  "author": "Martin Oppegaard",
+  "name": "oppegaard-unbound"
+}

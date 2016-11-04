@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+soledad - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level1'>
+<a class='' href='couchdb.html'>couchdb</a>
+</li>
+<li class=' level1'>
+<a class='' href='openvpn.html'>openvpn</a>
+</li>
+<li class=' level1'>
+<a class='' href='monitor.html'>monitor</a>
+</li>
+<li class=' level1'>
+<a class='' href='mx.html'>mx</a>
+</li>
+<li class='active level1'>
+<a class='' href='soledad.html'>soledad</a>
+</li>
+<li class=' level1'>
+<a class='' href='tor.html'>tor</a>
+</li>
+<li class=' level1'>
+<a class='' href='webapp.html'>webapp</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>soledad</h1>
+
+<div id='summary'>User data synchronization daemon</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="soledad/index.html#topology">Topology</a>
+  </li>
+  <li>
+    <a href="soledad/index.html#configuration">Configuration</a>
+  </li>
+</ol></div>
+
+<h2><a name="topology"></a>Topology</h2>
+
+<p>Currently, the platform is designed for <code>soledad</code> and <code>couchdb</code> services to be combined (e.g. every <code>soledad</code> node should also be a <code>couchdb</code> node). <code>soledad</code> nodes might work in isolation, but this is not tested.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<p>There are no options to configure for <code>soledad</code> nodes.</p>
+
+</div>
+</div>
+</body>
+</html>

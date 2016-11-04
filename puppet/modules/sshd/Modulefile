@@ -1,0 +1,10 @@
+name    'puppet-sshd'
+version '0.1.0'
+source 'https://github.com/duritong/puppet-sshd'
+author 'duritong'
+license 'Apache License, Version 2.0'
+summary 'ssh daemon configuration'
+description 'Manages sshd_config'
+project_page 'https://github.com/duritong/puppet-sshd'
+
+dependency 'puppetlabs/stdlib', '>= 2.0.0'

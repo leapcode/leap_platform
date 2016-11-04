@@ -28,7 +28,7 @@ class site_postfix::mx::smtpd_checks {
     'smtps_relay_restrictions':
       value => 'permit_mynetworks, permit_tls_clientcerts, defer_unauth_destination';
     'smtps_helo_restrictions':
-      value => 'permit_mynetworks, check_helo_access hash:$checks_dir/helo_checks, permit';
+      value => 'permit_mynetworks, check_helo_access hash:$checks_dir/helo_checks, check_helo_access pcre:$checks_dir/helo_checks.pcre, permit';
     'smtpd_sender_restrictions':
       value => 'permit_mynetworks, reject_non_fqdn_sender, reject_unknown_sender_domain, permit';
     }

@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 #
-# this script will run the unit tests in ../tests/*.rb.
+# This script will run the unit tests in /srv/leap/tests
 #
 # Tests for the platform differ from traditional ruby unit tests in a few ways:
 #
@@ -29,11 +29,11 @@ EXIT_CODES = {
 
 HIERA_FILE   = '/etc/leap/hiera.yaml'
 HELPER_PATHS = [
-  '../../tests/helpers/*.rb',
+  '/srv/leap/tests/server-tests/helpers/*.rb',
   '/srv/leap/files/tests/helpers/*.rb'
 ]
 TEST_PATHS   = [
-  '../../tests/white-box/*.rb',
+  '/srv/leap/tests/server-tests/white-box/*.rb',
   '/srv/leap/files/tests/white-box/*.rb',
   '/srv/leap/tests_custom/*.rb'
 ]
@@ -459,7 +459,7 @@ end
 
 def main
   # load node data from hiera file
-  if File.exists?(HIERA_FILE)
+  if File.exist?(HIERA_FILE)
     $node = YAML.load_file(HIERA_FILE)
   else
     $node = {"services" => [], "dummy" => true}

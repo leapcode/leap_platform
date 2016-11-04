@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Quick VPN - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level1'>
+<a class='' href='quick-start.html'>Quick Start Tutorial</a>
+</li>
+<li class='active level1'>
+<a class='' href='single-node-vpn.html'>Quick VPN</a>
+</li>
+<li class=' level1'>
+<a class='' href='single-node-email.html'>Quick email</a>
+</li>
+<li class=' level1'>
+<a class='' href='vagrant.html'>Vagrant</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Single node VPN tutorial</h1>
+
+<div id='summary'>Tutorial for setting up a simple VPN provider.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="single-node-vpn/index.html#our-goal">Our goal</a>
+  </li>
+  <li>
+    <a href="single-node-vpn/index.html#add-vpn-service-to-the-node">Add VPN service to the node</a>
+  </li>
+  <li>
+    <a href="single-node-vpn/index.html#add-gateway_address-to-the-node">Add gateway_address to the node</a>
+  </li>
+  <li>
+    <a href="single-node-vpn/index.html#generate-a-diffie-hellman-file">Generate a Diffie-Hellman file</a>
+  </li>
+  <li>
+    <a href="single-node-vpn/index.html#deploy-to-the-node">Deploy to the node</a>
+  </li>
+  <li>
+    <a href="single-node-vpn/index.html#test-it-out">Test it out</a>
+  </li>
+  <li>
+    <a href="single-node-vpn/index.html#what-do-do-next">What do do next</a>
+  </li>
+</ol></div>
+
+<p>This tutorial walks you through the initial process of creating and deploying a minimal VPN service provider. Please first complete the <a href="quick-start.html">Quick Start Tutorial</a>. This tutorial will pick up where that one left off.</p>
+
+<p>NOTE: For the VPN to work, you must use a real or paravirtualized node, not a local Vagrant node.</p>
+
+<h2><a name="our-goal"></a>Our goal</h2>
+
+<p>We are going to create a minimal LEAP provider offering VPN service.</p>
+
+<p>Our goal is something like this:</p>
+
+<pre><code>$ leap list
+    NODES       SERVICES                       TAGS
+    wildebeest  couchdb, webapp, openvpn, tor
+</code></pre>
+
+<p>Where &lsquo;wildebeest&rsquo; is whatever name you chose for your node in the <a href="quick-start.html">Quick Start Tutorial</a>.</p>
+
+<h2><a name="add-vpn-service-to-the-node"></a>Add VPN service to the node</h2>
+
+<p>In order to add <a href="../services.html">services</a> to a node, edit the node&rsquo;s JSON configuration file.</p>
+
+<p>In our example, we would edit <code>nodes/wildebeest.json</code>:</p>
+
+<pre><code>{
+  "ip_address": "1.1.1.1",
+  "services": ["couchdb", "webapp", "openvpn", "tor"]
+}
+</code></pre>
+
+<p>Here, we added <code>openvpn</code> and <code>tor</code> to the node&rsquo;s <code>services</code> list. Briefly:</p>
+
+<ul>
+<li><strong>openvpn</strong>: nodes with the <strong>openvpn</strong> service will become OpenVPN gateways that clients connect to in order to proxy their internet connection. You can have as many as you want, spread out over as many nodes as you want.</li>
+<li><strong>tor</strong>: nodes with <strong>tor</strong> service become Tor exit nodes. This is entirely optional, and will add additional bandwidth to your node. If you don&rsquo;t have many VPN users, the added traffic will help create cover traffic for your users. On the down side, this VPN gateway will get flagged as an anonymous proxy and some sites may block traffic from it.</li>
+</ul>
+
+
+<p>For more details, see the <a href="../services.html">Services</a> overview, or the individual pages for the <a href="../services/openvpn.html">openvpn</a> and <a href="../services/tor.html">tor</a> services.</p>
+
+<h2><a name="add-gateway_address-to-the-node"></a>Add gateway_address to the node</h2>
+
+<p>VPN gateways require two different IP addresses:</p>
+
+<ul>
+<li><code>ip_address</code>: This property is used for VPN traffic <strong>egress</strong>. In other words, all VPN traffic appears to come from this IP address. This is also the main IP of the server.</li>
+<li><code>openvpn.gateway_address</code>: This property is used for VPN traffic <strong>ingress</strong>. In other words, clients will connect to this IP address.</li>
+</ul>
+
+
+<p>The node configuration file should now look like this:</p>
+
+<pre><code>{
+  "ip_address": "1.1.1.1",
+  "services": ["couchdb", "webapp", "openvpn", "tor"],
+  "openvpn": {
+    "gateway_address": "2.2.2.2"
+  }
+}
+</code></pre>
+
+<p>Why two different addresses? Without this, the traffic from one VPN user to another would not be encrypted. This is because the routing table of VPN clients must ensure that packets with a destination of the VPN gateway are sent unmodified and don&rsquo;t get passed through the VPN&rsquo;s encryption.</p>
+
+<h2><a name="generate-a-diffie-hellman-file"></a>Generate a Diffie-Hellman file</h2>
+
+<p>Next we need to create a Diffie-Hellman parameter file, used for forward secret OpenVPN ciphers. You only need to do this once.</p>
+
+<pre><code>workstation$ leap cert dh
+</code></pre>
+
+<p>Feel free to erase the resulting DH file and regenerate it as you please.</p>
+
+<h2><a name="deploy-to-the-node"></a>Deploy to the node</h2>
+
+<p>Now you should deploy to your node. This may take a while.</p>
+
+<pre><code>workstation$ leap deploy
+</code></pre>
+
+<p>If the deploy was not successful, try to run it again.</p>
+
+<h2><a name="test-it-out"></a>Test it out</h2>
+
+<p>First, run:</p>
+
+<pre><code>workstation$ leap test
+</code></pre>
+
+<p>Then fire up the Bitmask client, register a new user with your provider, and turn on the VPN connection.</p>
+
+<p>Alternately, you can also manually connect to your VPN gateway using OpenVPN on the command line:</p>
+
+<pre><code>workstation$ sudo apt install openvpn
+workstation$ leap test init
+workstation$ sudo openvpn --config test/openvpn/default_unlimited.ovpn
+</code></pre>
+
+<p>Make sure that Bitmask is not connected to the VPN when you run that command.</p>
+
+<p>The name of the test configuration might differ depending on your setup. The test configuration created by <code>leap test init</code> includes a client certificate that will expire, so you may need to re-run <code>leap test init</code> if it has been a while since you last generated the test configuration.</p>
+
+<h2><a name="what-do-do-next"></a>What do do next</h2>
+
+<p>A VPN provider with a single gateway is kind of limited. You can add as many nodes with service <a href="../services/openvpn.html">openvpn</a> as you like. There is no communication among the VPN gateways or with the <a href="../services/webapp.html">webapp</a> or <a href="../services/couchdb.html">couchdb</a> nodes, so there is no issue with scaling out the number of gateways.</p>
+
+<p>For example, add some more nodes:</p>
+
+<pre><code>workstation$ leap node add giraffe ip_address:1.1.1.2 services:openvpn openvpn.gateway_address:2.2.2.3
+workstation$ leap node add rhino ip_address:1.1.1.3 services:openvpn openvpn.gateway_address:2.2.2.4
+workstation$ leap node init giraffe rhino
+workstation$ leap deploy
+</code></pre>
+
+<p>Now you have three VPN gateways.</p>
+
+<p>One consideration is that you should tag each VPN gateway with a <a href="../guide/nodes.html#locations">location</a>. This helps the client determine which VPN gateway it should connect to by default and will allow the user to choose among gateways based on location.</p>
+
+</div>
+</div>
+</body>
+</html>

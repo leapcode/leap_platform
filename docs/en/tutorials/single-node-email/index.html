@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Quick email - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level1'>
+<a class='' href='../quick-start.html'>Quick Start Tutorial</a>
+</li>
+<li class=' level1'>
+<a class='' href='../single-node-vpn.html'>Quick VPN</a>
+</li>
+<li class='active level1'>
+<a class='' href='../single-node-email.html'>Quick email</a>
+</li>
+<li class=' level1'>
+<a class='' href='../vagrant.html'>Vagrant</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Single node email tutorial</h1>
+
+<div id='summary'>Tutorial for setting up a simple email provider.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#our-goal">Our goal</a>
+  </li>
+  <li>
+    <a href="index.html#add-email-services-to-the-node">Add email services to the node</a>
+  </li>
+  <li>
+    <a href="index.html#deploy-to-the-node">Deploy to the node</a>
+  </li>
+  <li>
+    <a href="index.html#setup-dns">Setup DNS</a>
+  </li>
+  <li>
+    <a href="index.html#test-it-out">Test it out</a>
+  </li>
+</ol></div>
+
+<p>This tutorial walks you through the initial process of creating and deploying a minimal email service provider. Please first complete the <a href="../quick-start.html">Quick Start Tutorial</a>. This tutorial will pick up where that one left off.</p>
+
+<h2><a name="our-goal"></a>Our goal</h2>
+
+<p>We are going to create a minimal LEAP provider offering email service.</p>
+
+<p>Our goal is something like this:</p>
+
+<pre><code>$ leap list
+    NODES       SERVICES                       TAGS
+    wildebeest  couchdb, mx, soledad, webapp
+</code></pre>
+
+<p>Where &lsquo;wildebeest&rsquo; is whatever name you chose for your node in the <a href="../quick-start.html">Quick Start Tutorial</a>.</p>
+
+<h2><a name="add-email-services-to-the-node"></a>Add email services to the node</h2>
+
+<p>In order to add <a href="../../services.html">services</a> to a node, edit the node&rsquo;s JSON configuration file.</p>
+
+<p>In our example, we would edit <code>nodes/wildebeest.json</code>:</p>
+
+<pre><code>{
+  "ip_address": "1.1.1.1",
+  "services": ["couchdb", "webapp", "mx", "soledad"]
+}
+</code></pre>
+
+<p>Here, we added <code>mx</code> and <code>soledad</code> to the node&rsquo;s <code>services</code> list. Briefly:</p>
+
+<ul>
+<li><strong>mx</strong>: nodes with the <strong>mx</strong> service will run postfix mail transfer agent, and are able to receive and relay email on behalf of your domain. You can have as many as you want, spread out over as many nodes as you want.</li>
+<li><strong>soledad</strong>: nodes with <strong>soledad</strong> service run the server-side daemon that allows the client to synchronize a user&rsquo;s personal data store among their devices. Currently, <strong>soledad</strong> only runs on nodes that are also <strong>couchdb</strong> nodes.</li>
+</ul>
+
+
+<p>For more details, see the <a href="../../services.html">Services</a> overview, or the individual pages for the <a href="../../services/mx.html">mx</a> and <a href="../../services/soledad.html">soledad</a> services.</p>
+
+<h2><a name="deploy-to-the-node"></a>Deploy to the node</h2>
+
+<p>Now you should deploy to your node.</p>
+
+<pre><code>workstation$ leap deploy
+</code></pre>
+
+<h2><a name="setup-dns"></a>Setup DNS</h2>
+
+<p>There are several important DNS entries that all email providers should have:</p>
+
+<ul>
+<li>SPF (Sender Policy Framework): With SPF, an email provider advertises in their DNS which servers should be allowed to relay email on behalf of your domain.</li>
+<li>DKIM (DomainKey Identified Mail): With DKIM, an email provider is able to vouch for the validity of certain headers in outgoing mail, allowing the receiving provider to have more confidence in these values when processing the message for spam or abuse.</li>
+</ul>
+
+
+<p>In order to take advantage of SPF and DKIM, run this command:</p>
+
+<pre><code>workstation$ leap compile zone
+</code></pre>
+
+<p>Then take the output of that command and merge it with the DNS zone file for your domain.</p>
+
+<p>CAUTION: the output of <code>leap compile zone</code> is not a complete zone file since it is missing a serial number. You will need to manually merge it with your existing zone file.</p>
+
+<h2><a name="test-it-out"></a>Test it out</h2>
+
+<p>First, run:</p>
+
+<pre><code>workstation# leap test
+</code></pre>
+
+<p>Then fire up the bitmask client, register a new user with your provider, and try sending and receiving email.</p>
+
+</div>
+</div>
+</body>
+</html>

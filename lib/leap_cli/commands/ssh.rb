@@ -69,20 +69,6 @@ module LeapCli; module Commands
 
   protected
 
-  #
-  # allow for ssh overrides of all commands that use ssh_connect
-  #
-  def connect_options(options)
-    connect_options = {:ssh_options=>{}}
-    if options[:port]
-      connect_options[:ssh_options][:port] = options[:port]
-    end
-    if options[:ip]
-      connect_options[:ssh_options][:host_name] = options[:ip]
-    end
-    return connect_options
-  end
-
   def ssh_config_help_message
     puts ""
     puts "Are 'too many authentication failures' getting you down?"
@@ -193,7 +179,8 @@ module LeapCli; module Commands
       "-o 'UserKnownHostsFile=/dev/null'"
     ]
     if node.vagrant?
-      options << "-i #{vagrant_ssh_key_file}"    # use the universal vagrant insecure key
+      # use the universal vagrant insecure key:
+      options << "-i #{LeapCli::Util::Vagrant.vagrant_ssh_key_file}"
       options << "-o IdentitiesOnly=yes"         # force the use of the insecure vagrant key
       options << "-o 'StrictHostKeyChecking=no'" # blindly accept host key and don't save it
                                                  # (since userknownhostsfile is /dev/null)

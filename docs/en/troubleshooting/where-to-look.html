@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Where to look - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level1'>
+<a class='' href='tests.html'>Tests and Monitoring</a>
+</li>
+<li class=' level1'>
+<a class='' href='known-issues.html'>Known issues</a>
+</li>
+<li class='active level1'>
+<a class='' href='where-to-look.html'>Where to look</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Where to look for errors</h1>
+
+<div id='summary'>The LEAP Platform is set of complementary packages and server recipes to automate the maintenance of LEAP services in a hardened Debian environment.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="where-to-look/index.html#general">General</a>
+  </li>
+  <li>
+    <a href="where-to-look/index.html#firewall">Firewall</a>
+  </li>
+  <li>
+    <a href="where-to-look/index.html#webapp">Webapp</a>
+    <ol>
+      <li>
+        <a href="where-to-look/index.html#places-to-look-for-errors">Places to look for errors</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#is-haproxy-ok">Is haproxy ok ?</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#is-couchdb-accessible-through-stunnel">Is couchdb accessible through stunnel ?</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#check-couchdb-acl-as-admin">Check couchdb acl as admin</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#check-couchdb-acl-as-unpriviledged-user">Check couchdb acl as unpriviledged user</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#all-urls-accessible">All URLs accessible ?</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#check-client-config-files">Check client config files</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="where-to-look/index.html#soledad">Soledad</a>
+  </li>
+  <li>
+    <a href="where-to-look/index.html#couchdb">Couchdb</a>
+    <ol>
+      <li>
+        <a href="where-to-look/index.html#places-to-look-for-errors-2">Places to look for errors</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#databases">Databases</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#design-documents">Design Documents</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#is-couchdb-cluster-backend-accessible-through-stunnel">Is couchdb cluster backend accessible through stunnel ?</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="where-to-look/index.html#mx">MX</a>
+    <ol>
+      <li>
+        <a href="where-to-look/index.html#places-to-look-for-errors-3">Places to look for errors</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#is-couchdb-accessible-through-stunnel-2">Is couchdb accessible through stunnel ?</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#query-leap-mx">Query leap-mx</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#check-couchdb-acl-as-unpriviledged-user-2">Check couchdb acl as unpriviledged user</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#mailspool">Mailspool</a>
+      </li>
+      <li>
+        <a href="where-to-look/index.html#testing-mail-delivery">Testing mail delivery</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="where-to-look/index.html#vpn">VPN</a>
+    <ol>
+      <li>
+        <a href="where-to-look/index.html#places-to-look-for-errors-4">Places to look for errors</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h1><a name="general"></a>General</h1>
+
+<ul>
+<li>Please increase verbosity when debugging / filing issues in our issue tracker. You can do this with adding i.e. <code>-v 5</code> after the <code>leap</code> cmd, i.e. <code>leap -v 2 deploy</code>.</li>
+<li>We use the <code>example.org</code> domain for documentation purposes here, please replace it with the you domain.</li>
+</ul>
+
+
+<h1><a name="firewall"></a>Firewall</h1>
+
+<p>Every node in your provider has its own restrictive firewall, but you might have a network firewall in place as well that is not managed by LEAP platform. To see what ports and addresses must be open, run this command:</p>
+
+<pre><code>workstation$ leap compile firewall
+</code></pre>
+
+<p>If any of those are blocked, then your provider will not work.</p>
+
+<h1><a name="webapp"></a>Webapp</h1>
+
+<h2><a name="places-to-look-for-errors"></a>Places to look for errors</h2>
+
+<ul>
+<li><code>/var/log/apache2/error.log</code></li>
+<li><code>/srv/leap/webapp/log/production.log</code></li>
+<li><code>/var/log/syslog</code> (watch out for stunnel issues)</li>
+<li><code>/var/log/leap/*</code></li>
+</ul>
+
+
+<h2><a name="is-haproxy-ok"></a>Is haproxy ok ?</h2>
+
+<pre><code>curl -s -X  GET "http://127.0.0.1:4096"
+</code></pre>
+
+<h2><a name="is-couchdb-accessible-through-stunnel"></a>Is couchdb accessible through stunnel ?</h2>
+
+<ul>
+<li><p>Depending on how many couch nodes you have, increase the port for every test
+(see /etc/haproxy/haproxy.cfg for the server/port mapping):</p>
+
+<p>  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4000">http://127.0.0.1:4000</a>&rdquo;
+  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4001">http://127.0.0.1:4001</a>&rdquo;
+  &hellip;</p></li>
+</ul>
+
+
+<h2><a name="check-couchdb-acl-as-admin"></a>Check couchdb acl as admin</h2>
+
+<pre><code>mkdir /etc/couchdb
+cat /srv/leap/webapp/config/couchdb.yml.admin  # see username and password
+echo "machine 127.0.0.1 login admin password &lt;PASSWORD&gt;" &gt; /etc/couchdb/couchdb-admin.netrc
+chmod 600 /etc/couchdb/couchdb-admin.netrc
+
+curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4096"
+curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4096/_all_dbs"
+</code></pre>
+
+<h2><a name="check-couchdb-acl-as-unpriviledged-user"></a>Check couchdb acl as unpriviledged user</h2>
+
+<pre><code>cat /srv/leap/webapp/config/couchdb.yml  # see username and password
+echo "machine 127.0.0.1 login webapp password &lt;PASSWORD&gt;" &gt; /etc/couchdb/couchdb-webapp.netrc
+chmod 600 /etc/couchdb/couchdb-webapp.netrc
+
+curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:4096"
+curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:4096/_all_dbs"
+</code></pre>
+
+<h2><a name="all-urls-accessible"></a>All URLs accessible ?</h2>
+
+<ul>
+<li><a href="https://example.org">https://example.org</a></li>
+<li><a href="https://api.example.org:4430/provider.json">https://api.example.org:4430/provider.json</a></li>
+<li><a href="https://example.org/ca.crt">https://example.org/ca.crt</a></li>
+</ul>
+
+
+<h2><a name="check-client-config-files"></a>Check client config files</h2>
+
+<ul>
+<li><a href="https://example.net/provider.json">https://example.net/provider.json</a></li>
+<li><a href="https://example.net/1/config/smtp-service.json">https://example.net/1/config/smtp-service.json</a></li>
+<li><a href="https://example.net/1/config/soledad-service.json">https://example.net/1/config/soledad-service.json</a></li>
+<li><a href="https://example.net/1/config/eip-service.json">https://example.net/1/config/eip-service.json</a></li>
+</ul>
+
+
+<h1><a name="soledad"></a>Soledad</h1>
+
+<pre><code>/var/log/soledad.log
+</code></pre>
+
+<h1><a name="couchdb"></a>Couchdb</h1>
+
+<h2><a name="places-to-look-for-errors-2"></a>Places to look for errors</h2>
+
+<ul>
+<li><code>/var/log/couchdb/couch.log</code></li>
+<li><code>/var/log/syslog</code> (watch out for stunnel issues)</li>
+</ul>
+
+
+<h2><a name="databases"></a>Databases</h2>
+
+<ul>
+<li>Following output shows all neccessary DBs that should be present. Note that the <code>user-0123456....</code> DBs are the data stores for a particular user.</li>
+</ul>
+
+
+<pre>
+    curl -s --netrc-file /etc/couchdb/couchdb.netrc -X GET 'http://127.0.0.1:5984/_all_dbs'
+    ["customers","identities","sessions","shared","tickets","tokens","user-0","user-9d34680b01074c75c2ec58c7321f540c","user-9d34680b01074c75c2ec58c7325fb7ff","users"]
+</pre>
+
+
+<h2><a name="design-documents"></a>Design Documents</h2>
+
+<ul>
+<li>Is User <code>_design doc</code> available ?</li>
+</ul>
+
+
+<pre>
+    curl -s --netrc-file /etc/couchdb/couchdb.netrc -X  GET "http://127.0.0.1:5984/users/_design/User"
+</pre>
+
+
+<h2><a name="is-couchdb-cluster-backend-accessible-through-stunnel"></a>Is couchdb cluster backend accessible through stunnel ?</h2>
+
+<ul>
+<li>Find out how many connections are set up for the couchdb cluster backend:</li>
+</ul>
+
+
+<pre>
+    grep "accept = 127.0.0.1" /etc/stunnel/*
+</pre>
+
+
+<ul>
+<li>Now connect to all of those local endpoints to see if they up. All these tests should return &ldquo;localhost [127.0.0.1] 4000 (?) open&rdquo;</li>
+</ul>
+
+
+<pre>
+    nc -v 127.0.0.1 4000
+    nc -v 127.0.0.1 4001
+    ...
+</pre>
+
+
+<h1><a name="mx"></a>MX</h1>
+
+<h2><a name="places-to-look-for-errors-3"></a>Places to look for errors</h2>
+
+<ul>
+<li><code>/var/log/mail.log</code></li>
+<li><code>/var/log/leap_mx.log</code></li>
+<li><code>/var/log/syslog</code> (watch out for stunnel issues)</li>
+</ul>
+
+
+<h2><a name="is-couchdb-accessible-through-stunnel-2"></a>Is couchdb accessible through stunnel ?</h2>
+
+<ul>
+<li><p>Depending on how many couch nodes you have, increase the port for every test
+(see /etc/haproxy/haproxy.cfg for the server/port mapping):</p>
+
+<p>  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4000">http://127.0.0.1:4000</a>&rdquo;
+  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4001">http://127.0.0.1:4001</a>&rdquo;
+  &hellip;</p></li>
+</ul>
+
+
+<h2><a name="query-leap-mx"></a>Query leap-mx</h2>
+
+<ul>
+<li>for useraccount</li>
+</ul>
+
+
+<pre>
+    postmap -v -q  "joe@dev.bitmask.net" tcp:localhost:2244
+    ...
+    postmap: dict_tcp_lookup: send: get jow@dev.bitmask.net
+    postmap: dict_tcp_lookup: recv: 200
+    ...
+</pre>
+
+
+<ul>
+<li>for mailalias</li>
+</ul>
+
+
+<pre>
+    postmap -v -q  "joe@dev.bitmask.net" tcp:localhost:4242
+    ...
+    postmap: dict_tcp_lookup: send: get joe@dev.bitmask.net
+    postmap: dict_tcp_lookup: recv: 200 f01bc1c70de7d7d80bc1ad77d987e73a
+    postmap: dict_tcp_lookup: found: f01bc1c70de7d7d80bc1ad77d987e73a
+    f01bc1c70de7d7d80bc1ad77d987e73a
+    ...
+</pre>
+
+
+<h2><a name="check-couchdb-acl-as-unpriviledged-user-2"></a>Check couchdb acl as unpriviledged user</h2>
+
+<pre><code>cat /etc/leap/mx.conf  # see username and password
+echo "machine 127.0.0.1 login leap_mx password &lt;PASSWORD&gt;" &gt; /etc/couchdb/couchdb-leap_mx.netrc
+chmod 600 /etc/couchdb/couchdb-leap_mx.netrc
+
+curl -s --netrc-file /etc/couchdb/couchdb-leap_mx.netrc -X GET "http://127.0.0.1:4096/_all_dbs"   # pick one "user-&lt;hash&gt;" db
+curl -s --netrc-file /etc/couchdb/couchdb-leap_mx.netrc -X GET "http://127.0.0.1:4096/user-de9c77a3d7efbc779c6c20da88e8fb9c"
+</code></pre>
+
+<ul>
+<li>you may check multiple times, cause 127.0.0.1:4096 is haproxy load-balancing the different couchdb nodes</li>
+</ul>
+
+
+<h2><a name="mailspool"></a>Mailspool</h2>
+
+<ul>
+<li>Any file in the leap_mx mailspool longer for a few seconds ?</li>
+</ul>
+
+
+<pre>
+    ls -la /var/mail/vmail/Maildir/cur/
+</pre>
+
+
+<ul>
+<li>Any mails in postfix mailspool longer than a few seconds ?</li>
+</ul>
+
+
+<pre>
+    mailq
+</pre>
+
+
+<h2><a name="testing-mail-delivery"></a>Testing mail delivery</h2>
+
+<pre><code>swaks -f alice@example.org -t bob@example.net -s mx1.example.net --port 25
+swaks -f varac@cdev.bitmask.net -t varac@cdev.bitmask.net -s chipmonk.cdev.bitmask.net --port 465 --tlsc
+swaks -f alice@example.org -t bob@example.net -s mx1.example.net --port 587 --tls
+</code></pre>
+
+<h1><a name="vpn"></a>VPN</h1>
+
+<h2><a name="places-to-look-for-errors-4"></a>Places to look for errors</h2>
+
+<ul>
+<li><code>/var/log/syslog</code> (watch out for openvpn issues)</li>
+</ul>
+
+
+</div>
+</div>
+</body>
+</html>

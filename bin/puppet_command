@@ -28,7 +28,7 @@ SUMMARY_LOG       = '/var/log/leap/deploy-summary.log'
 SUMMARY_LOG_1     = '/var/log/leap/deploy-summary.log.1'
 APPLY_START_STR   = "STARTING APPLY"
 APPLY_FINISH_STR  = "APPLY COMPLETE"
-
+LANG              = "en_US.UTF-8"
 
 def main
   if File.read('/etc/debian_version') !~ DEBIAN_VERSION
@@ -144,7 +144,7 @@ def puppet_apply(options={}, &block)
   fqdn = hiera_file['domain']['full']
   domain = hiera_file['domain']['full_suffix']
   Dir.chdir(PUPPET_DIRECTORY) do
-    return run("FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} --modulepath='#{modulepath}' #{PUPPET_PARAMETERS} #{manifest}", &block)
+    return run("LANG='#{LANG}' FACTER_fqdn='#{fqdn}' FACTER_domain='#{domain}' #{PUPPET_BIN} apply #{custom_parameters(options)} --modulepath='#{modulepath}' #{PUPPET_PARAMETERS} #{manifest}", &block)
   end
 end
 
@@ -173,9 +173,9 @@ def platform_version_check!
   return unless @info["platform"]
   new_version = @info["platform"].split(' ').first
   return unless new_version
-  if File.exists?(SUMMARY_LOG) && File.size(SUMMARY_LOG) != 0
+  if File.exist?(SUMMARY_LOG) && File.size(SUMMARY_LOG) != 0
     file = SUMMARY_LOG
-  elsif File.exists?(SUMMARY_LOG_1) && File.size(SUMMARY_LOG_1) != 0
+  elsif File.exist?(SUMMARY_LOG_1) && File.size(SUMMARY_LOG_1) != 0
     file = SUMMARY_LOG_1
   else
     return
@@ -195,7 +195,7 @@ end
 # Return a ruby object representing the contents of the hiera yaml file.
 #
 def hiera_file
-  unless File.exists?(HIERA_FILE)
+  unless File.exist?(HIERA_FILE)
     log("ERROR: hiera file '#{HIERA_FILE}' does not exist.")
     exit(1)
   end

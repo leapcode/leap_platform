@@ -9,7 +9,7 @@
       "key_type": "RSA",
       "public_key": "= tor_public_key_path(:node_tor_pub_key, tor.hidden_service.key_type) if tor.hidden_service.active",
       "private_key": "= tor_private_key_path(:node_tor_priv_key, tor.hidden_service.key_type) if tor.hidden_service.active",
-      "address": "= onion_address(:node_tor_pub_key) if tor.hidden_service.active"
+      "address": "=> tor.hidden_service.active && onion_address(:node_tor_pub_key)"
     }
   }
 }

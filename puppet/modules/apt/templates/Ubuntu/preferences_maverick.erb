@@ -1,0 +1,30 @@
+Explanation: Ubuntu <%= codename=scope.lookupvar('::ubuntu_codename') %> security
+Package: *
+Pin: release o=Ubuntu,a=<%= codename %>-security
+Pin-Priority: 990
+
+Explanation: Ubuntu <%= codename %> updates
+Package: *
+Pin: release o=Ubuntu,a=<%= codename %>-updates
+Pin-Priority: 980
+
+Explanation: Ubuntu <%= codename %>
+Package: *
+Pin: release o=Ubuntu,a=<%= codename %>
+Pin-Priority: 970
+
+Explanation: Ubuntu backports
+Package: *
+Pin: release a=<%= codename %>-backports
+Pin-Priority: 200
+
+Explanation: Ubuntu <%= next_release=scope.lookupvar('::ubuntu_nextcodename') %>
+Package: *
+Pin: release o=Ubuntu,a=<%= next_release %>
+Pin-Priority: 2
+
+Explanation: Ubuntu fallback
+Package: *
+Pin: release o=Ubuntu
+Pin-Priority: -10
+

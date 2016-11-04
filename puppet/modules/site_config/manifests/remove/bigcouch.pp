@@ -10,6 +10,33 @@ class site_config::remove::bigcouch {
     ]
   }
 
+  tidy {
+    '/etc/logrotate/bigcouch':;
+    '/srv/leap/nagios/plugins/check_unix_open_fds.pl':;
+  }
+
+  augeas {
+    'Couchdb_open_files':
+      incl    => '/etc/check_mk/mrpe.cfg',
+      lens    => 'Spacevars.lns',
+      changes => [
+                  'rm /files/etc/check_mk/mrpe.cfg/Couchdb_open_files',
+                  'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_epmd_procs',
+                  'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_beam_procs',
+                  'rm /files/etc/check_mk/mrpe.cfg/Bigcouch_open_files' ],
+      require => File['/etc/check_mk/mrpe.cfg'];
+  }
+
+  # check syslog msg from:
+  # - empd
+  # - /usr/local/bin/couch-doc-update
+  concat::fragment { 'syslog_bigcouch':
+    ensure  => absent,
+    source  => 'puppet:///modules/site_check_mk/agent/logwatch/syslog/bigcouch.cfg',
+    target  => '/etc/check_mk/logwatch.d/syslog.cfg',
+    order   => '02';
+  }
+
   exec { 'remove_bigcouch_logwatch_stateline':
     command     => "sed -i '/bigcouch.log/d' /etc/check_mk/logwatch.state",
     refreshonly => true,

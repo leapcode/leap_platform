@@ -1,5 +1,4 @@
-# configure logwatch and nagios checks for couchdb (both bigcouch and plain
-# couchdb installations)
+# configure logwatch and nagios checks for couchdb
 class site_check_mk::agent::couchdb {
 
   concat::fragment { 'syslog_couchdb':
@@ -14,21 +13,4 @@ class site_check_mk::agent::couchdb {
     mode    => '0755',
     require => Package['check_mk-agent']
   }
-
-  # check open files for bigcouch proc
-  include site_check_mk::agent::package::perl_plugin
-  file { '/srv/leap/nagios/plugins/check_unix_open_fds.pl':
-    source => 'puppet:///modules/site_check_mk/agent/nagios_plugins/check_unix_open_fds.pl',
-    mode   => '0755'
-  }
-  augeas {
-    'Couchdb_open_files':
-      incl    => '/etc/check_mk/mrpe.cfg',
-      lens    => 'Spacevars.lns',
-      changes => [
-        'rm /files/etc/check_mk/mrpe.cfg/Couchdb_open_files',
-        'set Couchdb_open_files \'/srv/leap/nagios/plugins/check_unix_open_fds.pl -a beam -w 28672,28672 -c 30720,30720\'' ],
-      require => File['/etc/check_mk/mrpe.cfg'];
-  }
-
 }

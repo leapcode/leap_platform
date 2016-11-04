@@ -1,0 +1,3 @@
+fixtures:
+  symlinks:
+    sshd: "#{source_dir}"

@@ -1,0 +1,219 @@
+#!/usr/bin/ruby
+require 'syslog'
+
+#
+# This script will delete or update the values of a particular couchdb document. The benefit of this little script over
+# using a simple curl command for updating a document is this:
+#
+#   * exit non-zero status if document was not updated.
+#   * updates existing documents easily, taking care of the _rev id for you.
+#   * if document doesn't exist, it is created
+#
+# REQUIREMENTS
+#
+#   gem 'couchrest'
+#
+# USAGE
+#
+#   see the ouput of
+#
+#     couch-doc-update
+#
+#   the content of <file> will be merged with the data provided.
+#   If you only want the file content use --data '{}'
+#
+# EXAMPLE
+#
+#   create a new user:
+#     couch-doc-update --db _users --id org.couchdb.user:ca_daemon --data '{"type": "user", "name": "ca_daemon", "roles": ["certs"], "password": "sshhhh"}'
+#
+#   update a user:
+#     couch-doc-update --db _users --id org.couchdb.user:ca_daemon --data '{"password":"sssshhh"}'
+#
+#   To update the _users DB on bigcouch, you must connect to port 5986 instead of the default couchdb port 5984
+#
+#   delete a doc:
+#     couch-doc-update --delete --db invite_codes --id dfaf0ee65670c16d5a9161dc86f3bff8
+#
+
+begin; require 'rubygems'; rescue LoadError; end # optionally load rubygems
+require 'couchrest'
+
+def main
+  db, id, data, delete = process_options
+
+  result = if delete
+    delete_document(db, id)
+  else
+    set_document(db, id, data)
+  end
+
+  exit 0 if result['ok']
+  raise StandardError.new(result.inspect)
+rescue StandardError => exc
+  db_without_password = db.to_s.sub(/:[^\/]*@/, ':PASSWORD_HIDDEN@')
+  indent = "       "
+  log "ERROR: " + exc.to_s
+  log indent + $@[0..4].join("\n#{indent}")
+  log indent + "Failed writing to #{db_without_password}/#{id}"
+  exit 1
+end
+
+def log(message)
+  $stderr.puts message
+  Syslog.open('couch-doc-update') do |logger|
+    logger.log(Syslog::LOG_CRIT, message)
+  end
+end
+
+def process_options
+  #
+  # parse options
+  #
+  host       = nil
+  db_name    = nil
+  doc_id     = nil
+  new_data   = nil
+  filename   = nil
+  netrc_file = nil
+  delete     = false
+  loop do
+    case ARGV[0]
+      when '--host' then ARGV.shift; host     = ARGV.shift
+      when '--db'   then ARGV.shift; db_name  = ARGV.shift
+      when '--id'   then ARGV.shift; doc_id   = ARGV.shift
+      when '--data' then ARGV.shift; new_data = ARGV.shift
+      when '--file' then ARGV.shift; filename = ARGV.shift
+      when '--netrc-file' then ARGV.shift; netrc_file = ARGV.shift
+      when '--delete' then ARGV.shift; delete = true
+      when /^-/     then usage("Unknown option: #{ARGV[0].inspect}")
+      else break
+    end
+  end
+  usage("Missing required option") unless db_name && doc_id && (new_data || delete)
+
+  unless delete
+    new_data = MultiJson.load(new_data)
+    new_data.merge!(read_file(filename)) if filename
+  end
+  db  = CouchRest.database(connection_string(db_name, host, netrc_file))
+  return db, doc_id, new_data, delete
+end
+
+def read_file(filename)
+  data = MultiJson.load( IO.read(filename) )
+  # strip off _id and _rev to avoid conflicts
+  data.delete_if {|k,v| k.start_with? '_'}
+end
+
+  #
+  # update document
+  #
+def set_document(db, id, data)
+  attempt ||= 1
+  doc = get_document(db, id)
+  if doc
+    doc.id ||= id
+    update_document(db, doc, data)
+  else
+    create_document(db, id, data)
+  end
+rescue RestClient::Conflict
+  # retry once, reraise if that does not work
+  raise if attempt > 1
+  attempt += 1
+  retry
+end
+
+COUCH_RESPONSE_OK = { 'ok' => true }
+
+# Deletes document, if exists, with retry
+def delete_document(db, id)
+  attempts ||= 1
+  doc = get_document(db, id)
+  if doc
+    db.delete_doc(doc)
+  else
+    COUCH_RESPONSE_OK
+  end
+rescue RestClient::ExceptionWithResponse => e
+  if attempts < 6 && !e.response.nil? && RETRY_CODES.include?(e.response.code)
+    attempts += 1
+    sleep 10
+    retry
+  else
+    raise e
+  end
+end
+
+def get_document(db, doc_id)
+  begin
+    db.get(doc_id)
+  rescue RestClient::ResourceNotFound
+    nil
+  end
+end
+
+# if the response status code is one of these
+# then retry instead of failing.
+RETRY_CODES = [500, 422].freeze
+
+def update_document(db, doc, data)
+  attempts ||= 1
+  doc.reject! {|k,v| !["_id", "_rev"].include? k}
+  doc.merge! data
+  db.save_doc(doc)
+rescue RestClient::ExceptionWithResponse => e
+  if attempts < 6 && !e.response.nil? && RETRY_CODES.include?(e.response.code)
+    attempts += 1
+    sleep 10
+    retry
+  else
+    raise e
+  end
+end
+
+def create_document(db, doc_id, data)
+  attempts ||= 1
+  data["_id"] = doc_id
+  db.save_doc(data)
+rescue RestClient::ExceptionWithResponse => e
+  if attempts < 6 && !e.response.nil? && RETRY_CODES.include?(e.response.code)
+    attempts += 1
+    sleep 10
+    retry
+  else
+    raise e
+  end
+end
+
+def connection_string(database, host, netrc_file = nil)
+  protocol  = "http"
+  #hostname  = "127.0.0.1"
+  port      = "5984"
+  username  = "admin"
+  password  = ""
+
+  netrc = File.read(netrc_file || '/etc/couchdb/couchdb.netrc')
+  netrc.scan(/\w+ [\w\.]+/).each do |key_value|
+    key, value = key_value.split ' '
+    case key
+      when "machine"  then host ||= value + ':' + port
+      when "login"    then username = value
+      when "password" then password = value
+    end
+  end
+
+  host ||= '127.0.0.1:5984'
+
+  "%s://%s:%s@%s/%s" % [protocol, username, password, host, database]
+end
+
+def usage(s)
+  $stderr.puts(s)
+  $stderr.puts("Usage: #{File.basename($0)} --host <host> --db <db> --id <doc_id> --data <json> [--file <file>] [--netrc-file <netrc-file>]")
+  $stderr.puts("       #{File.basename($0)} --host <host> --db <db> --id <doc_id> --delete [--netrc-file <netrc-file>]")
+  exit(2)
+end
+
+main()

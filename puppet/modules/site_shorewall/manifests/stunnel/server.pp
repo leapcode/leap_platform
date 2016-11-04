@@ -8,7 +8,7 @@ define site_shorewall::stunnel::server($port) {
 
   file { "/etc/shorewall/macro.stunnel_server_${name}":
     content => "PARAM   -       -       tcp    ${port}",
-    notify  => Service['shorewall'],
+    notify  => Exec['shorewall_check'],
     require => Package['shorewall']
   }
   shorewall::rule {

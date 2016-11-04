@@ -1,0 +1,44 @@
+Common Module
+-------------
+
+The common module installs various functions that are required by other
+modules. This module should be installed before any of the other module.
+
+! Upgrade Notice !
+
+The 'append_if_no_such_line' define has been replaced with the 'line' define. If
+you are using 'append_if_no_such_line' anywhere in your manifests, you will need
+to transition to 'line' before upgrading to this version of the common
+module. The 'line' define is a drop-in replacement and essentially equivalent,
+so the transition is quite easy, you should only simply need to change the name
+in your manifests.
+
+To use this module, follow these directions:
+
+1. Your modules directory will need all the files included in this
+   repository placed under a directory called "common"
+
+2. Add the following line to manifests/site.pp:
+   
+       import "modules.pp"
+
+3. Add the following line to manifests/modules.pp:
+
+       import "common"
+
+
+Original author: David Schmitt (mailto:david@dasz.at)
+Copyright:: Copyright (c) 2007-2009 dasz.at OG
+License::   3-clause BSD
+
+Additional authors:
+Copyright (C) 2007 David Schmitt <david@schmitt.edv-bus.at>
+Copyright 2008-2011, admin(at)immerda.ch
+Copyright 2008, Puzzle ITC GmbH
+ Marcel Härry haerry+puppet(at)puzzle.ch
+ Simon Josi josi+puppet(at)puzzle.ch
+Copyright 2009-2011, Riseup Labs <http://riseuplabs.org>
+ Pietro Ferrari <pietro@riseup.net>
+ Micah Anderson <micah@riseup.net>
+Copyright (C) 2007 Antoine Beaupre <anarcat@koumbit.org>
+Copyright (c) 2011 intrigeri - intrigeri(at)boum.org

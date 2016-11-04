@@ -1,0 +1,143 @@
+#!/bin/bash
+#
+# Script to run stunnel in daemon mode at boot time.
+#
+# Check http://www.gaztronics.net/ for the
+# most up-to-date version of this script.
+#
+# This script is realeased under the terms of the GPL.
+# You can source a copy at:
+# http://www.fsf.org/copyleft/copyleft.html
+#
+# Please feel free to modify the script to suite your own needs.
+# I always welcome email feedback with suggestions for improvements.
+# Please do not email for general support. I do not have time to answer
+# personal help requests.
+
+# Author: Gary Myers MIIE MBCS
+# email: http://www.gaztronics.net/webform/
+# Revision 1.0  -  4th March 2005
+
+#====================================================================
+# Run level information:
+#
+# chkconfig: 2345 99 99
+# description: Secure Tunnel
+# processname: stunnel
+#
+# Run "/sbin/chkconfig --add stunnel" to add the Run levels.
+# This will setup the symlinks and set the process to run at boot.
+#====================================================================
+
+#====================================================================
+# Paths and variables and system checks.
+
+# Source function library (It's a Red Hat thing!)
+. /etc/rc.d/init.d/functions
+
+# Check that networking is up.
+#
+[ ${NETWORKING} ="yes" ] || exit 0
+
+# Path to the executable.
+#
+SEXE=/usr/sbin/stunnel
+
+# Path to the configuration file.
+#
+CONF=/etc/stunnel/stunnel.conf
+
+# Check the configuration file exists.
+#
+if [ ! -f $CONF ] ; then
+  echo "The configuration file cannot be found!"
+exit 0
+fi
+
+CHROOT=`grep '^chroot' /etc/stunnel/stunnel.conf | head -n 1 | sed 's/ //g' | awk -F= '{ print $2 }'`
+PIDFILE=`grep '^pid' /etc/stunnel/stunnel.conf | head -n 1 | sed 's/ //g' | awk -F= '{ print $2 }'` 
+if [ -n "$CHROOT" ]; then
+    PIDFILE=$CHROOT/$PIDFILE
+fi
+
+# Path to the lock file.
+#
+LOCK_FILE=/var/lock/subsys/stunnel
+
+#====================================================================
+
+#====================================================================
+# Run controls:
+
+prog=$"stunnel"
+
+RETVAL=0
+
+# Start stunnel as daemon.
+#
+start() {
+  if [ -f $LOCK_FILE ]; then
+    echo "stunnel is already running!"
+    exit 0
+  else
+    echo -n $"Starting $prog: "
+    $SEXE $CONF
+  fi
+
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && success 
+  echo
+  [ $RETVAL -eq 0 ] && touch $LOCK_FILE
+  return $RETVAL
+}
+
+
+# Stop stunnel.
+#
+stop() {
+  if [ ! -f $LOCK_FILE ]; then
+    echo "stunnel is not running!"
+    exit 0
+
+  else
+
+    echo -n $"Shutting down $prog: "
+    killproc -p $PIDFILE stunnel
+    RETVAL=$?
+    [ $RETVAL -eq 0 ]
+     rm -f $LOCK_FILE
+    echo
+    return $RETVAL
+
+  fi
+}
+
+# See how we were called.
+case "$1" in
+   start)
+  start
+  ;;
+   stop)
+  stop
+  ;;
+   restart)
+  stop
+  start
+  ;;
+   condrestart)
+  if [ -f $LOCK_FILE ]; then
+     stop
+     start
+     RETVAL=$?
+  fi
+  ;;
+   status)
+  status -p $PIDFILE stunnel
+  RETVAL=$?
+  ;;
+   *)
+    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+    RETVAL=1
+esac
+
+exit $RETVAL

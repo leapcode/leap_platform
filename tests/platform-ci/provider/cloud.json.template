@@ -1,0 +1,15 @@
+{
+  "platform_ci": {
+    "api": "aws",
+    "vendor": "aws",
+    "auth": {
+      "region": "us-west-2",
+      "aws_access_key_id": "",
+      "aws_secret_access_key": ""
+    },
+    "default_image": "ami-2a34e94a",
+    "default_options": {
+      "InstanceType": "t2.small"
+    }
+  }
+}

@@ -83,7 +83,7 @@ $ActionSendStreamDriverAuthMode anon
 
 <% if scope.lookupvar('rsyslog::log_style') == 'debian' -%>
 # Log auth messages locally
-.*;auth,authpriv.none;mail.none -/var/log/syslog
+auth,authpriv.*                 /var/log/auth.log
 <% elsif scope.lookupvar('rsyslog::log_style') == 'redhat' -%>
 # Log auth messages locally
 auth,authpriv.*                 /var/log/secure
@@ -93,7 +93,7 @@ auth,authpriv.*                 /var/log/secure
 <% if scope.lookupvar('rsyslog::log_style') == 'debian' -%>
 # First some standard log files.  Log by facility.
 #
-*.*;auth,authpriv.none         -/var/log/syslog
+*.*;auth,authpriv.none;mail.none -/var/log/syslog
 cron.*                          /var/log/cron.log
 daemon.*                       -/var/log/daemon.log
 kern.*                         -/var/log/kern.log
@@ -106,10 +106,6 @@ user.*                         -/var/log/user.log
 *.=debug;\
        auth,authpriv.none;\
        news.none;mail.none     -/var/log/debug
-*.=info;*.=notice;*.=warn;\
-       auth,authpriv.none;\
-       cron,daemon.none;\
-       mail,news.none          -/var/log/messages
 
 # Log anything (except mail) of level info or higher.
 # Don't log private authentication messages!

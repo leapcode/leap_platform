@@ -1,0 +1,93 @@
+# Monitoring Server
+check_mk::filestore: 'puppet:///files/check_mk'
+check_mk::package:   'omd-0.56-rh60-29.x86_64.rpm'
+
+#check_parameters = [
+#  ( (95, 99), ALL_HOSTS, [ "fs_/boot" ]),
+#  ( (3192, 3584), ALL_HOSTS, [ "JVM PODDSv3 Memory" ]),
+#  ( (150, 200), ALL_HOSTS, [ "JVM PODDSv3 Threads" ]),
+#  ( (4000, 6000), [ 'coherence' ], ALL_HOSTS, [ "Number of threads" ]),
+#]
+# Defaults:
+#   hosts: ALL_HOSTS
+#   tags: undef
+check_mk::check_parameters:
+  'fs_/boot':
+    warning:  '95'
+    critical: '99'
+  'JVM MyApp Memory':
+    warning:  '3192'
+    critical: '3584'
+  'JVM MyApp Threads':
+    warning:  '150'
+    critical: '200'
+  'Number of threads':
+    tags: [ 'coherence' ]
+    warning: '4000'
+    critical: '6000'
+  'fs_/':
+    hosts: [ 'myhost1.domain.com', 'myhost2.domain.com' ]
+    warning:  '60'
+    critical: '70'    
+
+check_mk::host_groups:
+  'Puppet_Masters':
+    host_tags:
+      - 'puppet-master'
+
+  'My_App':
+    description: 'My Application'
+    host_tags:
+      - 'my-app'
+
+  'My_DB':
+    description: 'My Database'
+    host_tags:
+      - 'my-db'
+
+#ignored_services = [
+#  ( [ "windows" ], ALL_HOSTS, [ "LOG Security" ] ),
+#  ( ALL_HOSTS, [ "NFS mount /home/" ] )
+#]
+
+check_mk::ignored_services:
+  'LOG security':
+    tags:
+      'windows'
+  'NFS mount /home/':
+    hosts:
+      - 'lnxuser1.domain.com'
+      - 'lnxuser2.domain.com'
+
+# Monitoring Agent
+check_mk::agent::filestore: 'puppet:///files/check_mk'
+check_mk::agent::version: '1.2.0p3-1'
+
+# Set host tags based on built-in and custom facts
+check_mk::agent::host_tags:
+  - '%{envtype}'
+  - '%{kernel}'
+  - '%{role}'
+  - '%{location}'
+
+check_mk::agent::jolokia::server:   '127.0.0.1'
+check_mk::agent::jolokia::port:     '8080'
+check_mk::agent::jolokia::user:     'monitoring'
+check_mk::agent::jolokia::password: 'tinstaafl'
+check_mk::agent::jolokia::suburi:   'jolokia'
+
+check_mk::agent::jolokia::instances:
+  'My-App':
+    server: '10.0.0.1'
+    port:   '8190'
+
+check_mk::agent::logwatch::keep_defaults: 'true'
+check_mk::agent::logwatch::logfiles:
+  '/apps/tomcat1/logs/tomcat/catalina.*.log':
+    critical:
+      - '^SERVERE:'
+      - '^ERROR:'
+    warning:
+      - '^WARNING:'
+    ignore:
+      - '^INFO'

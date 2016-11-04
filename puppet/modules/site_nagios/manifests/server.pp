@@ -59,7 +59,7 @@ class site_nagios::server inherits nagios::base {
   include site_webapp::common_vhost
   include apache::module::headers
 
-  File ['nagios_htpasswd'] {
+  File['nagios_htpasswd'] {
     source  => undef,
     content => "nagiosadmin:${nagiosadmin_pw}",
     mode    => '0640',

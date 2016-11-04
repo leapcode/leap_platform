@@ -5,10 +5,17 @@ module LeapCli; module Commands
   arg_name 'FILTER'
   command [:info] do |c|
     c.action do |global,options,args|
-      nodes = manager.filter!(args)
-      ssh_connect(nodes, connect_options(options)) do |ssh|
-        ssh.leap.debug
-      end
+      run_info(global, options, args)
+    end
+  end
+
+  private
+
+  def run_info(global, options, args)
+    require 'leap_cli/ssh'
+    nodes = manager.filter!(args)
+    SSH.remote_command(nodes, options) do |ssh, host|
+      ssh.scripts.debug
     end
   end
 

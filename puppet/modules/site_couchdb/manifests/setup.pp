@@ -3,13 +3,6 @@
 #
 class site_couchdb::setup {
 
-  # ensure that we don't have leftovers from previous installations
-  # where we installed the cloudant bigcouch package
-  # https://leap.se/code/issues/4971
-  class { 'couchdb::bigcouch::package::cloudant':
-    ensure => absent
-  }
-
   $user = $site_couchdb::couchdb_admin_user
 
   # setup /etc/couchdb/couchdb-admin.netrc for couchdb admin access
@@ -24,11 +17,11 @@ class site_couchdb::setup {
   # (i.e. using curl/wget without passing credentials)
   file {
     '/etc/couchdb/couchdb.netrc':
-      ensure  => link,
-      target  => "/etc/couchdb/couchdb-${user}.netrc";
+      ensure => link,
+      target => "/etc/couchdb/couchdb-${user}.netrc";
     '/root/.netrc':
-      ensure  => link,
-      target  => '/etc/couchdb/couchdb.netrc';
+      ensure => link,
+      target => '/etc/couchdb/couchdb.netrc';
   }
 
   # setup /etc/couchdb/couchdb-soledad-admin.netrc file for couchdb admin
@@ -40,7 +33,8 @@ class site_couchdb::setup {
       mode    => '0400',
       owner   => 'soledad-admin',
       group   => 'root',
-      require => [ Package['couchdb'], User['soledad-admin'] ];
+      require => [ Package['couchdb'], User['soledad-admin'] ],
+      notify  => Service['soledad-server'];
     }
   }
 

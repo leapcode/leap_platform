@@ -1,0 +1,42 @@
+Passenger (mod_rails) puppet module
+-----------------------------------
+
+This puppet module handles a passenger setup, it installs the
+packages, and configures some munin graphs.
+
+Dependencies
+------------
+
+This module expects you to have:
+ . apache module
+
+Optional:
+ . munin module
+
+Getting started
+---------------
+
+Simply do 'include passenger' and it will be installed. 
+
+Configuration
+-------------
+
+If you need to install a specific version of passenger or
+librack-ruby, you can specify the version to be installed by providing
+a variable, for example:
+
+class { 'passenger': 
+  passenger_ensure_version => '2.2.23-2~bpo50+1',
+  librack-ruby_ensure_version = "1.0.0-2~bpo50+1"
+}
+
+If you wish to use gems, pass 'use_gems => true'.
+
+By default munin will be used, but you can disable that by passing
+'use_munin => false'.
+
+If you need to set different munin plugin configuration values, you
+can also do so as follows:
+
+$passenger_memory_munin_config = "user root\nenv.passenger_memory_stats /opt/bin/passenger-memory-stats"
+$passenger_stats_munin_config = "user root\nenv.PASSENGER_TMPDIR /var/tmp\n"

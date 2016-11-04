@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Provider Platform - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class='active'>
+<a href='index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='en/guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='en/tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='en/services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='en/upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='en/troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='en/details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>LEAP Platform for Service Providers</h1>
+
+<div id='summary'>The LEAP Platform is set of complementary packages and server recipes to automate the maintenance of LEAP services in a hardened Debian environment.</div>
+</div>
+<div id='content-box'>
+<p>Its goal is to make it as painless as possible for sysadmins to deploy and maintain a service provider&rsquo;s infrastructure for secure communication.</p>
+
+<p><strong>REQUIREMENTS</strong> &ndash; Before you begin, make sure you meet these requirements:</p>
+
+<ul>
+<li><em>Debian Servers</em>: Servers that you deploy to must be running <strong>Debian Jessie</strong>, and no other distribution or version.</li>
+<li><em>Real or Paravirtualized Servers</em>: Servers must be real machines or paravirtualized VMs (e.g. KVM, Xen, OpenStack, AWS, Google Compute). OS level virtualization is not supported (e.g. OpenVZ, Linux-VServer, etc), nor are system emulators (VirtualBox, QEMU, etc).</li>
+<li><em>Your Workstation</em>: You must have a Linux or Mac computer to deploy from (this can be a headless machine with no GUI). Windows is not supported (Cygwin would probably work, but is untested).</li>
+<li><em>Your Own Domain</em>: You must own a domain name. Before your provider can be put into production, you will need to make modifications to the DNS for the provider&rsquo;s domain.</li>
+</ul>
+
+
+<p>The LEAP Platform consists of three parts, detailed below:</p>
+
+<ol>
+<li><a href="index.html#the-platform-recipes">The platform recipes.</a></li>
+<li><a href="index.html#the-provider-instance">The provider instance.</a></li>
+<li><a href="index.html#the-leap-command-line-tool">The <code>leap</code> command line tool.</a></li>
+</ol>
+
+
+<h2><a name="the-platform-recipes"></a>The platform recipes</h2>
+
+<p>The LEAP platform recipes define an abstract service provider. It is a set of <a href="https://puppetlabs.com/puppet/puppet-open-source/">Puppet</a> modules designed to work together to provide to sysadmins everything they need to manage a service provider infrastructure that provides secure communication services.</p>
+
+<p>LEAP maintains a repository of platform recipes, which typically do not need to be modified, although it can be forked and merged as desired. Most service providers using the LEAP platform can use the same set of platform recipes.</p>
+
+<p>As these recipes consist in abstract definitions, in order to configure settings for a particular service provider a system administrator has to create a provider instance (see below).</p>
+
+<p>LEAP&rsquo;s platform recipes are distributed as a git repository: <code>https://leap.se/git/leap_platform</code></p>
+
+<h2><a name="the-provider-instance"></a>The provider instance</h2>
+
+<p>A provider instance is a directory tree (typically tracked in git) containing all the configurations for a service provider&rsquo;s infrastructure. A provider instance <strong>lives on your workstation</strong>, not on the server.</p>
+
+<p>A provider instance primarily consists of:</p>
+
+<ul>
+<li>A pointer to the platform recipes.</li>
+<li>A global configuration file for the provider.</li>
+<li>A configuration file for each server (node) in the provider&rsquo;s infrastructure.</li>
+<li>Additional files, such as certificates and keys.</li>
+</ul>
+
+
+<p>A minimal provider instance directory looks like this:</p>
+
+<pre><code>└── bitmask                 # provider instance directory.
+    ├── Leapfile            # settings for the `leap` command line tool.
+    ├── provider.json       # global settings of the provider.
+    ├── common.json         # settings common to all nodes.
+    ├── nodes/              # a directory for node configurations.
+    ├── files/              # keys, certificates, and other files.
+    └── users/              # public key information for privileged sysadmins.
+</code></pre>
+
+<p>A provider instance directory contains everything needed to manage all the servers that compose a provider&rsquo;s infrastructure. Because of this, any versioning tool and development work-flow can be used to manage your provider instance.</p>
+
+<h2><a name="the-leap-command-line-tool"></a>The <code>leap</code> command line tool</h2>
+
+<p>The <code>leap</code> <a href="en/commands.html">command line tool</a> is used by sysadmins to manage everything about a service provider&rsquo;s infrastructure.</p>
+
+<p>Keep these rules in mind:</p>
+
+<ul>
+<li><code>leap</code> is run on your workstation: The <code>leap</code> command is always run locally on your workstation, never on a server you are deploying to.</li>
+<li><code>leap</code> is run from within a provider instance: The <code>leap</code> command requires that the current working directory is a valid provider instance, except when running <code>leap new</code> to create a new provider instance.</li>
+</ul>
+
+
+<p>The <code>leap</code> command line has many capabilities, including:</p>
+
+<ul>
+<li>Create, initialize, and deploy nodes.</li>
+<li>Manage keys and certificates.</li>
+<li>Query information about the node configurations.</li>
+</ul>
+
+
+<p>Everything about your provider is managed by editing JSON configuration files and running <code>leap</code> commands.</p>
+
+<h2><a name="what-is-next"></a>What is next?</h2>
+
+<p>We recommend reading the platform documentation in the following order:</p>
+
+<ol>
+<li><a href="en/tutorials/quick-start.html">Quick Start Tutorial</a></li>
+<li><a href="en/guide/getting-started.html">Getting Started</a></li>
+<li><a href="en/guide.html">Guide</a></li>
+</ol>
+
+
+</div>
+</div>
+</body>
+</html>

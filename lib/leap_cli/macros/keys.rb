@@ -29,7 +29,7 @@ module LeapCli
     # generating key if it is missing
     #
     def tor_public_key_path(path_name, key_type)
-      file_path(path_name) { generate_tor_key(key_type) }
+      remote_file_path(path_name) { generate_tor_key(key_type) }
     end
 
     #
@@ -37,7 +37,7 @@ module LeapCli
     # generating key if it is missing
     #
     def tor_private_key_path(path_name, key_type)
-      file_path(path_name) { generate_tor_key(key_type) }
+      remote_file_path(path_name) { generate_tor_key(key_type) }
     end
 
     #
@@ -55,15 +55,15 @@ module LeapCli
       require 'base32'
       require 'base64'
       require 'openssl'
-      path = Path.find_file([path_name, self.name])
-      if path && File.exists?(path)
+      path = Path.named_path([path_name, self.name])
+      if path && File.exist?(path)
         public_key_str = File.readlines(path).grep(/^[^-]/).join
         public_key     = Base64.decode64(public_key_str)
         public_key     = public_key.slice(22..-1) # Tor ignores the 22 byte SPKI header
         sha1sum        = Digest::SHA1.new.digest(public_key)
         Base32.encode(sha1sum.slice(0,10)).downcase
       else
-        LeapCli.log :warning, 'Tor public key file "%s" does not exist' % tor_public_key_path
+        LeapCli.log :warning, 'Tor public key file "%s" does not exist' % path
       end
     end
 

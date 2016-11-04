@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Vagrant - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level1'>
+<a class='' href='../quick-start.html'>Quick Start Tutorial</a>
+</li>
+<li class=' level1'>
+<a class='' href='../single-node-vpn.html'>Quick VPN</a>
+</li>
+<li class=' level1'>
+<a class='' href='../single-node-email.html'>Quick email</a>
+</li>
+<li class='active level1'>
+<a class='' href='../vagrant.html'>Vagrant</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Vagrant and the LEAP Platform</h1>
+
+<div id='summary'>Running a local provider with Vagrant</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#what-is-vagrant">What is Vagrant?</a>
+  </li>
+  <li>
+    <a href="index.html#install-vagrant">Install Vagrant</a>
+  </li>
+  <li>
+    <a href="index.html#vagrant-with-leap-command">Vagrant with leap command</a>
+    <ol>
+      <li>
+        <a href="index.html#creating-local-nodes">Creating local nodes</a>
+      </li>
+      <li>
+        <a href="index.html#starting-local-nodes">Starting local nodes</a>
+      </li>
+      <li>
+        <a href="index.html#useful-local-commands">Useful local commands</a>
+        <ol>
+          <li>
+            <a href="index.html#listing-what-machines-are-running">Listing what machines are running</a>
+          </li>
+          <li>
+            <a href="index.html#stopping-machines">Stopping machines</a>
+          </li>
+          <li>
+            <a href="index.html#connecting-to-machines">Connecting to machines</a>
+          </li>
+          <li>
+            <a href="index.html#snapshotting-machines">Snapshotting machines</a>
+          </li>
+          <li>
+            <a href="index.html#more-information">More information</a>
+          </li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#2-vagrant-with-static-vagrantfile">2. Vagrant with static Vagrantfile</a>
+    <ol>
+      <li>
+        <a href="index.html#use-the-bitmask-client-to-do-an-initial-soledad-sync">Use the bitmask client to do an initial soledad sync</a>
+      </li>
+      <li>
+        <a href="index.html#testing-email">Testing email</a>
+      </li>
+      <li>
+        <a href="index.html#re-run-bitmask-client-to-sync-your-mail">Re-run bitmask client to sync your mail</a>
+      </li>
+      <li>
+        <a href="index.html#using-the-webapp">Using the Webapp</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#support-for-libvirt">Support for libvirt</a>
+    <ol>
+      <li>
+        <a href="index.html#install-libvirt-plugin">Install libvirt plugin</a>
+      </li>
+      <li>
+        <a href="index.html#create-libvirt-pool">Create libvirt pool</a>
+      </li>
+      <li>
+        <a href="index.html#force-use-of-libvirt">Force use of libvirt</a>
+      </li>
+      <li>
+        <a href="index.html#debugging">Debugging</a>
+      </li>
+      <li>
+        <a href="index.html#known-issues">Known issues</a>
+      </li>
+      <li>
+        <a href="index.html#useful-commands">Useful commands</a>
+      </li>
+      <li>
+        <a href="index.html#shared-folder-support">Shared folder support</a>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <a href="index.html#verify-vagrantboxes">Verify vagrantboxes</a>
+  </li>
+  <li>
+    <a href="index.html#troubleshooting">Troubleshooting</a>
+  </li>
+  <li>
+    <a href="index.html#additional-notes">Additional notes</a>
+    <ol>
+      <li>
+        <a href="index.html#some-useful-plugins">Some useful plugins</a>
+      </li>
+      <li>
+        <a href="index.html#limitations">Limitations</a>
+      </li>
+      <li>
+        <a href="index.html#known-working-combinations">Known working combinations</a>
+      </li>
+      <li>
+        <a href="index.html#issue-reporting">Issue reporting</a>
+      </li>
+    </ol>
+  </li>
+</ol></div>
+
+<h1><a name="what-is-vagrant"></a>What is Vagrant?</h1>
+
+<p><a href="https://www.vagrantup.com">Vagrant</a> is a tool to make it easier to manage virtual machines running on your desktop computer (typically for testing or development purposes). You can use Vagrant to create virtual machines and deploy the LEAP platform locally.</p>
+
+<p>Vagrant can be a pain to get working initially, but this page should help you get through the process. Please make sure you have at least Vagrant v1.5 installed.</p>
+
+<p>There are two ways you can setup LEAP platform using Vagrant.</p>
+
+<ol>
+<li>use the <code>leap</code> command: this will allow you to create multiple virtual machines.</li>
+<li>use static Vagrantfile: there is a static Vagrantfile that is distributed with the <code>leap_platform.git</code>. This only supports a single, pre-configured virtual machine, but can get you started more quickly.</li>
+</ol>
+
+
+<h1><a name="install-vagrant"></a>Install Vagrant</h1>
+
+<p>Requirements:</p>
+
+<ul>
+<li>A real machine with virtualization support in the CPU (VT-x or AMD-V). In other words, not a virtual machine.</li>
+<li>Have at least 4gb of RAM.</li>
+<li>Have a fast internet connection (because you will be downloading a lot of big files, like virtual machine images).</li>
+<li>You should do everything described below as an unprivileged user, and only run those commands as root that are noted with <em>sudo</em> in front of them. Other than those commands, there is no need for privileged access to your machine, and in fact things may not work correctly.</li>
+</ul>
+
+
+<p><em>Debian &amp; Ubuntu</em></p>
+
+<p>Install core prerequisites:</p>
+
+<pre><code>sudo apt-get install git ruby ruby-dev rsync openssh-client openssl rake make
+</code></pre>
+
+<p>Install Vagrant:</p>
+
+<pre><code>sudo apt-get install vagrant virtualbox
+</code></pre>
+
+<p>If you want to use libvirt instead of virtualbox, you don&rsquo;t need to install virtualbox. See <a href="index.html#support-for-libvirt">support for libvirt</a>.</p>
+
+<p><em>Mac OS X 10.9 (Mavericks)</em></p>
+
+<p>Install Homebrew package manager from <a href="http://brew.sh/">http://brew.sh/</a> and enable the <a href="https://github.com/Homebrew/homebrew/wiki/Interesting-Taps-&amp;-Branches">System Duplicates Repository</a> (needed to update old software versions delivered by Apple) with</p>
+
+<pre><code>brew tap homebrew/dupes
+</code></pre>
+
+<p>Update OpenSSH to support ECDSA keys. Follow <a href="http://www.dctrwatson.com/2013/07/how-to-update-openssh-on-mac-os-x/">this guide</a> to let your system use the Homebrew binary.</p>
+
+<pre><code>brew install openssh --with-brewed-openssl --with-keychain-support
+</code></pre>
+
+<p>The certtool provided by Apple it&rsquo;s really old, install the one provided by GnuTLS and shadow the system&rsquo;s default.</p>
+
+<pre><code>sudo brew install gnutls
+ln -sf /usr/local/bin/gnutls-certtool /usr/local/bin/certool
+</code></pre>
+
+<p>Install the Vagrant and VirtualBox packages for OS X from their respective Download pages.</p>
+
+<ul>
+<li><a href="http://www.vagrantup.com/downloads.html">http://www.vagrantup.com/downloads.html</a></li>
+<li><a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></li>
+</ul>
+
+
+<h1><a name="vagrant-with-leap-command"></a>Vagrant with leap command</h1>
+
+<p>If you have not done so, install <code>leap</code> command line tool:</p>
+
+<pre><code>gem install leap_cli
+</code></pre>
+
+<h2><a name="creating-local-nodes"></a>Creating local nodes</h2>
+
+<p>When you create a service provider, your servers are called &ldquo;nodes&rdquo;. When a node is virtual and exists only locally using vagrant, this type of node is called a &ldquo;local node&rdquo;.</p>
+
+<p>If you do not have a provider already, you will need to create one and configure it before continuing (see the <a href="quick-start.html">Quick Start</a> guide).</p>
+
+<p>These commands, for example, will create an initial provider directory &ldquo;myprovider&rdquo;:</p>
+
+<pre><code>$ leap new --domain example.org --name Example myprovider
+$ cd myprovider
+$ leap add-user --self
+$ leap cert ca
+$ leap cert csr
+</code></pre>
+
+<p>To create local nodes, add the flag <code>--local</code> to the <code>leap node add</code> command. For example:</p>
+
+<pre><code>$ leap node add --local web1 services:webapp
+ = created nodes/web1.json
+ = created files/nodes/web1/
+ = created files/nodes/web1/web1.key
+ = created files/nodes/web1/web1.crt
+</code></pre>
+
+<p>This command creates a node configuration file in <code>nodes/web1.json</code> with the webapp service.</p>
+
+<h2><a name="starting-local-nodes"></a>Starting local nodes</h2>
+
+<p>In order to test the node &ldquo;web1&rdquo; we need to start it. Starting a node for the first time will spin up a virtual machine. The first time you do this will take some time because it will need to download a VM image (about 700mb). After you&rsquo;ve downloaded the base image, you will not need to download it again, and instead you will re-use the downloaded image (until you need to update the image).</p>
+
+<p>NOTE: Many people have difficulties getting Vagrant working. If the following commands do not work, please see the troubleshooting section below.</p>
+
+<pre><code>$ leap local start web1
+ = created test/
+ = created test/Vagrantfile
+ = installing vagrant plugin 'sahara'
+Bringing machine 'web1' up with 'virtualbox' provider...
+[web1] Box 'leap-jessie' was not found. Fetching box from specified URL for
+the provider 'virtualbox'. Note that if the URL does not have
+a box for this provider, you should interrupt Vagrant now and add
+the box yourself. Otherwise Vagrant will attempt to download the
+full box prior to discovering this error.
+Downloading or copying the box...
+Progress: 3% (Rate: 560k/s, Estimated time remaining: 0:13:36)
+...
+Bringing machine 'web1' up with 'virtualbox' provider...
+[web1] Importing base box 'leap-jessie'...
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+</code></pre>
+
+<p>Now the virtual machine &lsquo;web1&rsquo; is running. You can add another local node using the same process. For example, the webapp node needs a databasse to run, so let&rsquo;s add a &ldquo;couchdb&rdquo; node:</p>
+
+<pre><code>$ leap node add --local db1 services:couchdb
+$ leap local start
+ = updated test/Vagrantfile
+Bringing machine 'db1' up with 'virtualbox' provider...
+[db1] Importing base box 'leap-jessie'...
+[db1] Matching MAC address for NAT networking...
+[db1] Setting the name of the VM...
+[db1] Clearing any previously set forwarded ports...
+[db1] Fixed port collision for 22 =&gt; 2222. Now on port 2202.
+[db1] Creating shared folders metadata...
+[db1] Clearing any previously set network interfaces...
+[db1] Preparing network interfaces based on configuration...
+[db1] Forwarding ports...
+[db1] -- 22 =&gt; 2202 (adapter 1)
+[db1] Running any VM customizations...
+[db1] Booting VM...
+[db1] Waiting for VM to boot. This can take a few minutes.
+[db1] VM booted and ready for use!
+[db1] Configuring and enabling network interfaces...
+[db1] Mounting shared folders...
+[db1] -- /vagrant
+</code></pre>
+
+<p>You now can follow the normal LEAP process and initialize it and then deploy your recipes to it:</p>
+
+<pre><code>$ leap node init web1
+$ leap deploy web1
+$ leap node init db1
+$ leap deploy db1
+</code></pre>
+
+<h2><a name="useful-local-commands"></a>Useful local commands</h2>
+
+<p>There are many useful things you can do with a virtualized development environment.</p>
+
+<h3><a name="listing-what-machines-are-running"></a>Listing what machines are running</h3>
+
+<p>Now you have the two virtual machines &ldquo;web1&rdquo; and &ldquo;db1&rdquo; running, you can see the running machines as follows:</p>
+
+<pre><code>$ leap local status
+Current machine states:
+
+db1                      running (virtualbox)
+web1                     running (virtualbox)
+
+This environment represents multiple VMs. The VMs are all listed
+above with their current state. For more information about a specific
+VM, run `vagrant status NAME`.
+</code></pre>
+
+<h3><a name="stopping-machines"></a>Stopping machines</h3>
+
+<p>It is not recommended that you leave your virtual machines running when you are not using them. They consume memory and other resources! To stop your machines, simply do the following:</p>
+
+<pre><code>$ leap local stop web1 db1
+</code></pre>
+
+<h3><a name="connecting-to-machines"></a>Connecting to machines</h3>
+
+<p>You can connect to your local nodes just like you do with normal LEAP nodes, by running &lsquo;leap ssh node&rsquo;.</p>
+
+<p>However, if you cannot connect to your local node, because the networking is not setup properly, or you have deployed a firewall that locks you out, you may need to access the graphical console.</p>
+
+<p>In order to do that, you will need to configure Vagrant to launch a graphical console and then you can login as root there to diagnose the networking problem. To do this, add the following to your $HOME/.leaprc:</p>
+
+<pre><code>@custom_vagrant_vm_line = 'config.vm.provider "virtualbox" do |v|
+  v.gui = true
+end'
+</code></pre>
+
+<p>and then start, or restart, your local Vagrant node. You should get a VirtualBox graphical interface presented to you showing you the bootup and eventually the login.</p>
+
+<h3><a name="snapshotting-machines"></a>Snapshotting machines</h3>
+
+<p>A very useful feature of local Vagrant development nodes is the ability to snapshot the current state and then revert to that when you need.</p>
+
+<p>For example, perhaps the base image is a little bit out of date and you want to get the packages updated to the latest before continuing. You can do that simply by starting the node, connecting to it and updating the packages and then snapshotting the node:</p>
+
+<pre><code>$ leap local start web1
+$ leap ssh web1
+web1# apt-get -u dist-upgrade
+web1# exit
+$ leap local save web1
+</code></pre>
+
+<p>Now you can deploy to web1 and if you decide you want to revert to the state before deployment, you simply have to reset the node to your previous save:</p>
+
+<pre><code>$ leap local reset web1
+</code></pre>
+
+<h3><a name="more-information"></a>More information</h3>
+
+<p>See <code>leap help local</code> for a complete list of local-only commands and how they can be used.</p>
+
+<h1><a name="2-vagrant-with-static-vagrantfile"></a>2. Vagrant with static Vagrantfile</h1>
+
+<p>You can use the static Vagrantfile if you want to get up a running with a pre-canned test provider.</p>
+
+<p>It will install a single node mail server in the default configuration with one single command.</p>
+
+<p>Clone the platform with</p>
+
+<pre><code>git clone --recursive -b develop https://github.com/leapcode/leap_platform.git
+</code></pre>
+
+<p>Start the vagrant box with</p>
+
+<pre><code>cd leap_platform
+vagrant up
+</code></pre>
+
+<p>Follow the instructions how to configure your <code>/etc/hosts</code>
+in order to use the provider!</p>
+
+<p>You can login via ssh with the systemuser <code>vagrant</code> and the same password.</p>
+
+<pre><code>vagrant ssh
+</code></pre>
+
+<p>On the host, run the tests to check if everything is working as expected:</p>
+
+<pre><code>cd /home/vagrant/leap/configuration/
+leap test
+</code></pre>
+
+<h2><a name="use-the-bitmask-client-to-do-an-initial-soledad-sync"></a>Use the bitmask client to do an initial soledad sync</h2>
+
+<p>Copy the self-signed CA certificate from the host.
+The easiest way is to use the <a href="https://github.com/invernizzi/vagrant-scp">vagrant-scp plugin</a>:</p>
+
+<pre><code>vagrant scp :/home/vagrant/leap/configuration/files/ca/ca.crt /tmp/example.org.ca.crt
+
+vagrant@node1:~/leap/configuration$ cat files/ca/ca.crt
+</code></pre>
+
+<p>and write it into a file, needed by the bitmask client:</p>
+
+<pre><code>bitmask --ca-cert-file /tmp/example.org.ca.crt
+</code></pre>
+
+<p>On the first run, bitmask is creating a gpg keypair. This is
+needed for delivering and encrypting incoming mails.</p>
+
+<h2><a name="testing-email"></a>Testing email</h2>
+
+<pre><code>sudo apt install swaks
+swaks -f test22@leap.se -t test22@example.org -s example.org
+</code></pre>
+
+<p>check the logs:</p>
+
+<pre><code>sudo less /var/log/mail.log
+sudo less /var/log/leap/mx.log
+</code></pre>
+
+<p>if an error occurs, see if the mail is still laying in the mailspool dir:</p>
+
+<pre><code>sudo ls /var/mail/leap-mx/Maildir/new
+</code></pre>
+
+<h2><a name="re-run-bitmask-client-to-sync-your-mail"></a>Re-run bitmask client to sync your mail</h2>
+
+<pre><code>bitmask --ca-cert-file /tmp/example.org.ca.crt
+</code></pre>
+
+<p>Now, connect your favorite mail client to the imap and smtp proxy
+started by the bitmask client:</p>
+
+<pre><code>https://bitmask.net/en/help/email
+</code></pre>
+
+<p>Happy testing !</p>
+
+<h2><a name="using-the-webapp"></a>Using the Webapp</h2>
+
+<p>There are 2 users preconfigured:</p>
+
+<p>. <code>testuser</code>  with pw <code>hallo123</code>
+. <code>testadmin</code> with pw <code>hallo123</code></p>
+
+<p>login as <code>testadmin</code> to access the webapp with admin priviledges.</p>
+
+<h1><a name="support-for-libvirt"></a>Support for libvirt</h1>
+
+<h2><a name="install-libvirt-plugin"></a>Install libvirt plugin</h2>
+
+<p>By default, Vagrant will use VirtualBox to create the virtual machines, but this is how you can use libvirt. Using libvirt is more efficient, but VirtualBox is more stable and easier to set up.</p>
+
+<p><em>For debian/ubuntu:</em></p>
+
+<pre><code>sudo apt-get install libvirt-bin libvirt-dev
+
+# to build the vagrant-libvirt plugin you need the following packages:
+sudo apt-get install ruby-dev libxslt-dev libxml2-dev libvirt-dev
+
+# install the required plugins
+vagrant plugin install vagrant-libvirt fog fog-libvirt sahara
+</code></pre>
+
+<p>Log out and then log back in.</p>
+
+<p>Note: if running ubuntu 15.10 as the host OS, you will probably need to run the following commands before &ldquo;vagrant plugin install vagrant-libvirt&rdquo; will work:</p>
+
+<pre><code>ln -sf /usr/lib/liblzma.so.5 /opt/vagrant/embedded/lib
+ln -sf /usr/lib/liblzma.so.5.0.0 /opt/vagrant/embedded/lib
+</code></pre>
+
+<h2><a name="create-libvirt-pool"></a>Create libvirt pool</h2>
+
+<p>Next, you must create the libvirt image pool. The &ldquo;default&rdquo; pool uses <code>/var/lib/libvirt/images</code>, but Vagrant will not download base boxes there. Instead, create a libvirt pool called &ldquo;vagrant&rdquo;, like so:</p>
+
+<pre><code>virsh pool-define-as vagrant dir - - - - /home/$USER/.vagrant.d/boxes
+virsh pool-start vagrant
+virsh pool-autostart vagrant
+</code></pre>
+
+<p>If you want to use a name different than &ldquo;vagrant&rdquo; for the pool, you can change the name in <code>Leapfile</code> by setting the <code>@vagrant_libvirt_pool</code> variable:</p>
+
+<pre><code>@vagrant_libvirt_pool = "vagrant"
+</code></pre>
+
+<h2><a name="force-use-of-libvirt"></a>Force use of libvirt</h2>
+
+<p>Finally, you need to tell Vagrant to use libvirt instead of VirtualBox. If using vagrant with leap_cli, modify your <code>Leapfile</code> or <code>.leaprc</code> file and add this line:</p>
+
+<pre><code>@vagrant_provider = "libvirt"
+</code></pre>
+
+<p>Alternately, if using the static Vagrantfile, you must run this in your shell instead:</p>
+
+<pre><code>export VAGRANT_DEFAULT_PROVIDER=libvirt
+</code></pre>
+
+<h2><a name="debugging"></a>Debugging</h2>
+
+<p>If you get an error in any of the above commands, try to get some debugging information, it will often tell you what is wrong. In order to get debugging logs, you simply need to re-run the command that produced the error but prepend the command with VAGRANT_LOG=info, for example:</p>
+
+<pre><code>VAGRANT_LOG=info vagrant box add LEAP/jessie
+</code></pre>
+
+<p>You can also run vagrant with &ndash;debug for full logging.</p>
+
+<h2><a name="known-issues"></a>Known issues</h2>
+
+<ul>
+<li>You may need to undefine the default libvirt pool:
+  sudo virsh pool-undefine default</li>
+<li><code>Call to virConnectOpen failed: internal error: Unable to locate libvirtd daemon in /usr/sbin (to override, set $LIBVIRTD_PATH to the name of the libvirtd binary)</code> - you don&rsquo;t have the libvirtd daemon running or installed, be sure you installed the &lsquo;libvirt-bin&rsquo; package and it is running</li>
+<li><code>Call to virConnectOpen failed: Failed to connect socket to '/var/run/libvirt/libvirt-sock': Permission denied</code> - you need to be in the libvirt group to access the socket, do &lsquo;sudo adduser <user> libvirtd&rsquo; and then re-login to your session.</li>
+<li>if each call to vagrant ends up with a segfault, it may be because you still have virtualbox around. if so, remove virtualbox to keep only libvirt + KVM. according to <a href="https://github.com/pradels/vagrant-libvirt/issues/75">https://github.com/pradels/vagrant-libvirt/issues/75</a> having two virtualization engines installed simultaneously can lead to such weird issues.</li>
+<li>see the <a href="https://github.com/pradels/vagrant-libvirt/issues">vagrant-libvirt issue list on github</a></li>
+<li>be sure to use vagrant-libvirt >= 0.0.11 and sahara >= 0.0.16 (which are the latest stable gems you would get with <code>vagrant plugin install [vagrant-libvirt|sahara]</code>) for proper libvirt support,</li>
+</ul>
+
+
+<h2><a name="useful-commands"></a>Useful commands</h2>
+
+<p>Force re-download of image, in case something goes wrong:</p>
+
+<pre><code>vagrant box add leap/jessie --force --provider libvirt
+</code></pre>
+
+<h2><a name="shared-folder-support"></a>Shared folder support</h2>
+
+<p>For shared folder support, you need nfs-kernel-server installed on the host machine and set up sudo to allow unpriviledged users to modify /etc/exports. See <a href="https://github.com/pradels/vagrant-libvirt#synced-folders">vagrant-libvirt#synced-folders</a></p>
+
+<pre><code>sudo apt-get install nfs-kernel-serve
+</code></pre>
+
+<p>or you can disable shared folder support (if you do not need it), by setting the following in your Vagrantfile:</p>
+
+<pre><code>config.vm.synced_folder "src/", "/srv/website", disabled: trueconfig.vm.synced_folder "src/", "/srv/website", disabled: true
+</code></pre>
+
+<p>if you are wanting this disabled for all the leap vagrant integration, you can add this to ~/.leaprc:</p>
+
+<pre><code>@custom_vagrant_vm_line = 'config.vm.synced_folder "src/", "/srv/website", disabled: true'
+</code></pre>
+
+<h1><a name="verify-vagrantboxes"></a>Verify vagrantboxes</h1>
+
+<p>When you run vagrant, it goes out to the internet and downloads an initial image for the virtual machine. If you want to verify that authenticity of these images, follow these steps.</p>
+
+<p>Import LEAP archive signing key:</p>
+
+<pre><code>gpg --search-keys 0x1E34A1828E207901
+</code></pre>
+
+<p>now, either you already have a trustpath to it through one of the people
+who signed it, or you can verify this by checking this fingerprint:</p>
+
+<pre><code>gpg --fingerprint  --list-keys 1E34A1828E207901
+
+  pub   4096R/1E34A1828E207901 2013-02-06 [expires: 2015-02-07]
+        Key fingerprint = 1E45 3B2C E87B EE2F 7DFE  9966 1E34 A182 8E20 7901
+  uid                          LEAP archive signing key &lt;sysdev@leap.se&gt;
+</code></pre>
+
+<p>if the fingerprint matches, you could locally sign it so you remember the you already
+verified it:</p>
+
+<pre><code>gpg --lsign-key 1E34A1828E207901
+</code></pre>
+
+<p>Then download the SHA215SUMS file and it&rsquo;s signature file</p>
+
+<pre><code>wget https://downloads.leap.se/platform/SHA256SUMS.sign
+wget https://downloads.leap.se/platform/SHA256SUMS
+</code></pre>
+
+<p>and verify the signature against your local imported LEAP archive signing pubkey</p>
+
+<pre><code>gpg --verify SHA256SUMS.sign
+
+  gpg: Signature made Sat 01 Nov 2014 12:25:05 AM CET
+  gpg:                using RSA key 1E34A1828E207901
+  gpg: Good signature from "LEAP archive signing key &lt;sysdev@leap.se&gt;"
+</code></pre>
+
+<p>Make sure that the last line says &ldquo;Good signature from&hellip;&rdquo;, which tells you that your
+downloaded SHA256SUMS file has the right contents!</p>
+
+<p>Now you can compare the sha215sum of your downloaded vagrantbox with the one in the SHA215SUMS file. You could have downloaded it manually from <a href="https://atlas.hashicorp.com/api/v1/box/LEAP/jessie/$version/$provider.box">https://atlas.hashicorp.com/api/v1/box/LEAP/jessie/$version/$provider.box</a> otherwise it&rsquo;s probably located within ~/.vagrant.d/.</p>
+
+<pre><code>wget https://atlas.hashicorp.com/LEAP/boxes/jessie/versions/1.1.0/providers/libvirt.box
+sha215sum libvirt.box
+cat SHA215SUMS
+</code></pre>
+
+<h1><a name="troubleshooting"></a>Troubleshooting</h1>
+
+<p>To troubleshoot vagrant issues, try going through these steps:</p>
+
+<ul>
+<li>Try plain vagrant using the <a href="http://docs.vagrantup.com/v2/getting-started/index.html">Getting started guide</a>.</li>
+<li>If that fails, make sure that you can run virtual machines (VMs) in plain virtualbox (Virtualbox GUI or VBoxHeadless).
+We don&rsquo;t suggest a special howto for that, <a href="http://www.thegeekstuff.com/2012/02/virtualbox-install-create-vm/">this one</a> seems pretty decent, or you follow the <a href="http://www.virtualbox.org/manual/UserManual.html">Oracale Virtualbox User Manual</a>. There&rsquo;s also specific documentation for <a href="https://wiki.debian.org/VirtualBox">Debian</a> and for <a href="https://help.ubuntu.com/community/VirtualBox">Ubuntu</a>. If you succeeded, try again if you now can start vagrant nodes using plain vagrant (see first step).</li>
+<li>If plain vagrant works for you, you&rsquo;re very close to using vagrant with leap! If you encounter any problems now, please <a href="https://leap.se/en/about-us/contact">contact us</a> or use our <a href="https://leap.se/code">issue tracker</a></li>
+</ul>
+
+
+<h1><a name="additional-notes"></a>Additional notes</h1>
+
+<h2><a name="some-useful-plugins"></a>Some useful plugins</h2>
+
+<ul>
+<li>The vagrant-cachier (plugin <a href="http://fgrehm.viewdocs.io/vagrant-cachier/">http://fgrehm.viewdocs.io/vagrant-cachier/</a>) lets you cache .deb packages on your hosts so they are not downloaded by multiple machines over and over again, after resetting to a previous state.</li>
+</ul>
+
+
+<h2><a name="limitations"></a>Limitations</h2>
+
+<p>Please consult the known issues for vagrant, see the <a href="known-issues.html">Known Issues</a>, section <em>Special Environments</em></p>
+
+<h2><a name="known-working-combinations"></a>Known working combinations</h2>
+
+<p>Please consider that using other combinations might work for you as well, these are just the combinations we tried and worked for us:</p>
+
+<p>Debian Wheezy</p>
+
+<ul>
+<li><code>virtualbox-4.2 4.2.16-86992~Debian~wheezy</code> from Oracle and <code>vagrant 1.2.2</code> from vagrantup.com</li>
+</ul>
+
+
+<p>Ubuntu Wily 15.10</p>
+
+<ul>
+<li>libvirt with vagrant 1.7.2, from standard Ubuntu packages.</li>
+</ul>
+
+
+<p>Mac OS X 10.9</p>
+
+<ul>
+<li><code>VirtualBox 4.3.10</code> from virtualbox.org and <code>vagrant 1.5.4</code> from vagrantup.com</li>
+</ul>
+
+
+<h2><a name="issue-reporting"></a>Issue reporting</h2>
+
+<p>When you encounter any bugs, please <a href="https://leap.se/code/search">check first</a> on our bugtracker if it&rsquo;s something already known. Reporting bugs is the first <a href="https://leap.se/code/projects/report-issues">step in fixing them</a>. Please include all the relevant details: platform branch, version of leap_cli, past upgrades.</p>
+
+</div>
+</div>
+</body>
+</html>

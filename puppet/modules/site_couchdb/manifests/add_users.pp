@@ -33,7 +33,8 @@ class site_couchdb::add_users {
     roles   => '["tokens"]',
     pw      => $site_couchdb::couchdb_soledad_pw,
     salt    => $site_couchdb::couchdb_soledad_salt,
-    require => Couchdb::Query::Setup['localhost']
+    require => Couchdb::Query::Setup['localhost'],
+    notify  => Service['soledad-server'];
   }
 
   ## webapp couchdb user

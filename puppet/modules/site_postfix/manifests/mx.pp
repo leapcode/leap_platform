@@ -57,10 +57,6 @@ class site_postfix::mx {
       value => 'sha1';
     'relay_clientcerts':
       value => 'tcp:localhost:2424';
-    # Note: we are setting this here, instead of in site_postfix::mx::smtp_tls
-    # because the satellites need to have a different value
-    'smtp_tls_security_level':
-      value => 'may';
     # reject inbound mail to system users
     # see https://leap.se/code/issues/6829
     # this blocks *only* mails to system users, that don't appear in the
@@ -90,6 +86,35 @@ class site_postfix::mx {
       value => 'permit_mynetworks';
     'postscreen_greet_action':
       value => 'enforce';
+    # Level of DNS support in the Postfix SMTP client.  Enable DNS lookups
+    # (default: empty). When empty, then the legacy "disable_dns_lookups"
+    # (default: no) parameter is used. Setting 'smtp_dns_support_level' to
+    # enabled sets the previous behavior with the new parameter.  When set to
+    # 'dnssec" this enables DNSSEC lookups.
+    'smtp_dns_support_level':
+      value => 'dnssec';
+
+    # http://www.postfix.org/TLS_README.html#client_tls_dane The "dane" level is
+    # a stronger form of opportunistic TLS that is resistant to man in the
+    # middle and downgrade attacks when the destination domain uses DNSSEC to
+    # publish DANE TLSA records for its MX hosts. If a remote SMTP server has
+    # "usable" (see RFC 6698) DANE TLSA records, the server connection will be
+    # authenticated. When DANE authentication fails, there is no fallback to
+    # unauthenticated or plaintext delivery.
+    #
+    # If TLSA records are published for a given remote SMTP server (implying TLS
+    # support), but are all "unusable" due to unsupported parameters or
+    # malformed data, the Postfix SMTP client will use mandatory unauthenticated
+    # TLS. Otherwise, when no TLSA records are published, the Postfix SMTP
+    # client behavior is the same as with may.
+    #
+    # This requires postfix to be able to send its DNS queries to a recursive
+    # DNS nameserver that is able to validate the signed records
+    #
+    # Note: we are setting this here, instead of in site_postfix::mx::smtp_tls
+    # because the satellites need to have a different value
+    'smtp_tls_security_level':
+      value => 'dane';
   }
 
   # Make sure that the cleanup serivce is not chrooted, otherwise it cannot

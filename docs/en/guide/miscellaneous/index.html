@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Miscellaneous - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../../index.html'>Home</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../../guide.html'>Guide</a>
+</li>
+<li class=' level1'>
+<a class='' href='../getting-started.html'>Getting Started</a>
+</li>
+<li class=' level1'>
+<a class='' href='../config.html'>Configuration Files</a>
+</li>
+<li class=' level1'>
+<a class='' href='../nodes.html'>Nodes</a>
+</li>
+<li class=' level1'>
+<a class='' href='../keys-and-certificates.html'>Keys and Certificates</a>
+</li>
+<li class=' level1'>
+<a class='' href='../domains.html'>Domains</a>
+</li>
+<li class=' level1'>
+<a class='' href='../provider-configuration.html'>Provider Configuration</a>
+</li>
+<li class=' level1'>
+<a class='' href='../environments.html'>Environments</a>
+</li>
+<li class=' level1'>
+<a class='' href='../virtual-machines.html'>Virtual Machines</a>
+</li>
+<li class='active level1'>
+<a class='' href='../miscellaneous.html'>Miscellaneous</a>
+</li>
+<li class=' level1'>
+<a class='' href='../commands.html'>Command Line Reference</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../services.html'>Services</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Miscellaneous</h1>
+
+<div id='summary'>Miscellaneous commands you may need to know.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="index.html#facts">Facts</a>
+  </li>
+</ol></div>
+
+<h1><a name="facts"></a>Facts</h1>
+
+<p>There are a few cases when we must gather internal data from a node before we can successfully deploy to other nodes. This is what <code>facts.json</code> is for. It stores a snapshot of certain facts about each node, as needed. Entries in <code>facts.json</code> are updated automatically when you initialize, rename, or remove a node. To manually force a full update of <code>facts.json</code>, run:</p>
+
+<pre><code>leap facts update FILTER
+</code></pre>
+
+<p>Run <code>leap help facts update</code> for more information.</p>
+
+<p>The file <code>facts.json</code> should be committed to source control. You might not have a <code>facts.json</code> if one is not required for your provider.</p>
+
+</div>
+</div>
+</body>
+</html>

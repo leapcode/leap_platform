@@ -7,24 +7,7 @@ module LeapCli; module Commands
     test.command :run do |run|
       run.switch 'continue', :desc => 'Continue over errors and failures (default is --no-continue).', :negatable => true
       run.action do |global_options,options,args|
-        test_order = File.join(Path.platform, 'tests/order.rb')
-        if File.exists?(test_order)
-          require test_order
-        end
-        manager.filter!(args).names_in_test_dependency_order.each do |node_name|
-          node = manager.nodes[node_name]
-          begin
-            ssh_connect(node) do |ssh|
-              ssh.run(test_cmd(options))
-            end
-          rescue Capistrano::CommandError => exc
-            if options[:continue]
-              exit_status(1)
-            else
-              bail!
-            end
-          end
-        end
+        do_test_run(global_options, options, args)
       end
     end
 
@@ -39,6 +22,28 @@ module LeapCli; module Commands
   end
 
   private
+
+  def do_test_run(global_options, options, args)
+    require 'leap_cli/ssh'
+    test_order = File.join(Path.platform, 'tests/order.rb')
+    if File.exist?(test_order)
+      require test_order
+    end
+    manager.filter!(args).names_in_test_dependency_order.each do |node_name|
+      node = manager.nodes[node_name]
+      begin
+        SSH::remote_command(node, options) do |ssh, host|
+          ssh.stream(test_cmd(options), :raise_error => true, :log_wrap => true)
+        end
+      rescue LeapCli::SSH::ExecuteError
+        if options[:continue]
+          exit_status(1)
+        else
+          bail!
+        end
+      end
+    end
+  end
 
   def test_cmd(options)
     if options[:continue]

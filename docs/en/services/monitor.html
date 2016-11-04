@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+monitor - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class=' level1'>
+<a class='' href='couchdb.html'>couchdb</a>
+</li>
+<li class=' level1'>
+<a class='' href='openvpn.html'>openvpn</a>
+</li>
+<li class='active level1'>
+<a class='' href='monitor.html'>monitor</a>
+</li>
+<li class=' level1'>
+<a class='' href='mx.html'>mx</a>
+</li>
+<li class=' level1'>
+<a class='' href='soledad.html'>soledad</a>
+</li>
+<li class=' level1'>
+<a class='' href='tor.html'>tor</a>
+</li>
+<li class=' level1'>
+<a class='' href='webapp.html'>webapp</a>
+</li>
+<li class=' level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>monitor</h1>
+
+<div id='summary'>Nagios monitoring and continuous testing.</div>
+</div>
+<div id='content-box'>
+<div id="TOC"><ol>
+  <li>
+    <a href="monitor/index.html#topology">Topology</a>
+  </li>
+  <li>
+    <a href="monitor/index.html#configuration">Configuration</a>
+  </li>
+  <li>
+    <a href="monitor/index.html#access-nagios-web">Access nagios web</a>
+  </li>
+</ol></div>
+
+<p>The <code>monitor</code> node provides a nagios control panel that will give you a view into the health and status of all the servers and all the services. It will also spam you with alerts if something goes down.</p>
+
+<h2><a name="topology"></a>Topology</h2>
+
+<p>Currently, you can have zero or one <code>monitor</code> nodes defined. It is required that the monitor be on the webapp node. It was not designed to be run as a separate node service.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<ul>
+<li><code>nagios.environments</code>: By default, the monitor node will monitor all servers in all environments. You can <strong>optionally</strong> restrict the environments to the ones you specify.</li>
+</ul>
+
+
+<p>For example:</p>
+
+<pre><code>{
+  "nagios": {
+    "environments": ["unstable", "production"]
+  }
+}
+</code></pre>
+
+<h2><a name="access-nagios-web"></a>Access nagios web</h2>
+
+<p>To open the nagios control panel:</p>
+
+<pre><code>workstation$ leap open monitor
+</code></pre>
+
+<p>This will open a web browser window with the appropriate URL, including the nagios username and password.</p>
+
+<p>If the URL does not open because of HSTS or DNS problems, pass the <code>--ip</code> option to <code>leap</code>.</p>
+
+<p>If you are using an older version of <code>leap</code> command that doesn&rsquo;t include <code>leap open</code>, you can determine the nagio parameters manually:</p>
+
+<p>Step 1. find the domain:</p>
+
+<pre><code>workstation$ export DOMAIN=$(leap ls --print webapp.domain monitor | grep . | cut -f3 -d' ')
+</code></pre>
+
+<p>Step 2. find the username:</p>
+
+<pre><code>workstation$ export USERNAME="nagiosadmin"
+</code></pre>
+
+<p>Step 3. find the password:</p>
+
+<pre><code>workstation$ export PASSWORD=$(grep nagios_admin_password secrets.json | cut -f4 -d\")
+</code></pre>
+
+<p>Step 4. put it all together:</p>
+
+<pre><code>workstation$ sensible-browser "https://$USERNAME:$PASSWORD@$DOMAIN/nagios3"
+</code></pre>
+
+</div>
+</div>
+</body>
+</html>

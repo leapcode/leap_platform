@@ -4,7 +4,7 @@ require 'fileutils'
 module LeapCli; module Commands
 
   desc "Manage local virtual machines."
-  long_desc "This command provides a convient way to manage Vagrant-based virtual machines. If FILTER argument is missing, the command runs on all local virtual machines. The Vagrantfile is automatically generated in 'test/Vagrantfile'. If you want to run vagrant commands manually, cd to 'test'."
+  long_desc "This command provides a convenient way to manage Vagrant-based virtual machines. If FILTER argument is missing, the command runs on all local virtual machines. The Vagrantfile is automatically generated in 'test/Vagrantfile'. If you want to run vagrant commands manually, cd to 'test'."
   command [:local, :l] do |local|
     local.desc 'Starts up the virtual machine(s)'
     local.arg_name 'FILTER', :optional => true #, :multiple => false
@@ -35,7 +35,7 @@ module LeapCli; module Commands
 
     local.desc 'Destroys the virtual machine(s), reclaiming the disk space'
     local.arg_name 'FILTER', :optional => true #, :multiple => false
-    local.command :destroy do |destroy|
+    local.command [:rm, :destroy] do |destroy|
       destroy.action do |global_options,options,args|
         if global_options[:yes]
           vagrant_command("destroy --force", args)
@@ -47,7 +47,7 @@ module LeapCli; module Commands
 
     local.desc 'Print the status of local virtual machine(s)'
     local.arg_name 'FILTER', :optional => true #, :multiple => false
-    local.command :status do |status|
+    local.command [:ls, :status] do |status|
       status.action do |global_options,options,args|
         vagrant_command("status", args)
       end
@@ -68,25 +68,6 @@ module LeapCli; module Commands
         vagrant_command("sandbox rollback", args)
       end
     end
-  end
-
-  public
-
-  #
-  # returns the path to a vagrant ssh private key file.
-  #
-  # if the vagrant.key file is owned by root or ourselves, then
-  # we need to make sure that it owned by us and not world readable.
-  #
-  def vagrant_ssh_key_file
-    file_path = Path.vagrant_ssh_priv_key_file
-    Util.assert_files_exist! file_path
-    uid = File.new(file_path).stat.uid
-    if uid == 0 || uid == Process.euid
-      FileUtils.install file_path, '/tmp/vagrant.key', :mode => 0600
-      file_path = '/tmp/vagrant.key'
-    end
-    return file_path
   end
 
   protected

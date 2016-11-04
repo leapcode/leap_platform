@@ -1,0 +1,21 @@
+$HTTP["host"] == "<%= gitweb_url %>" {
+    url.redirect += (
+      "^$" => "/",
+    )
+
+    <%- if logmode.to_s == 'anonym' -%>
+    accesslog.format = "127.0.0.1 %V %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\""
+    <%- end -%>
+
+    alias.url += (
+      "/static/gitweb.css" => "/var/www/git/static/gitweb.css",
+      "/static/git-logo.png" => "/var/www/git/static/git-logo.png",
+      "/static/git-favicon.png" => "/var/www/git/static/git-favicon.png",
+      "/" => "/var/www/git/gitweb.cgi",
+    )
+
+    setenv.add-environment = (
+      "GITWEB_CONFIG" => "<%= gitweb_config %>"
+    )
+    cgi.assign = ( ".cgi" => "" )
+}

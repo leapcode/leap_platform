@@ -79,19 +79,26 @@ module LeapCli
     #
     #   file_path(:dkim_priv_key) {generate_dkim_key}
     #
-    # notes:
+    # Notes:
     #
-    # * argument 'path' is relative to Path.provider/files or
-    #   Path.provider_base/files
-    # * the path returned by this method is absolute
-    # * the path stored for use later by rsync is relative to Path.provider
-    # * if the path does not exist locally, but exists in provider_base,
+    # * Argument 'path' must be relative to Path.provider/files or
+    #   Path.provider_base/files. It is OK for the path to be prefixed with
+    #   with 'files/', this prefix will be ignored.
+    #
+    # * The path returned by this method is an absolute path on the server.
+    #
+    # * The path stored for use later by rsync is relative to the local
+    #   Path.provider. It should always be prefixed with 'files/'
+    #
+    # * If the path does not exist locally, but exists in provider_base,
     #   then the default file from provider_base is copied locally. this
     #   is required for rsync to work correctly.
     #
+    #   NOTE: this is an aweful way to do this. It would be better
+    #         to rsync twice.
+    #
     def remote_file_path(path, options={}, &block)
       local_path = local_file_path(path, options, &block)
-
       return nil if local_path.nil?
 
       # if file is under Path.provider_base, we must copy the default file to
@@ -110,9 +117,11 @@ module LeapCli
       end
 
       relative_path = Path.relative_path(local_path)
-      relative_path.sub!(/^files\//, '') # remove "files/" prefix
       @node.file_paths << relative_path
-      return File.join(Leap::Platform.files_dir, relative_path)
+      return File.join(
+        Leap::Platform.files_dir,
+        relative_path.sub(/^files\//, '')
+      )
     end
 
     # deprecated

@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://leap.se/git/puppet_shorewall
+	branch = master
+	commit = 06e89ed3486916ae12186e46b8ec59c8c7c79142
+	parent = 6083b23278927189de58c11bbb5bc7d93ccced24
+	cmdver = 0.3.0

@@ -1,0 +1,5 @@
+# The real subnets from RFC1918
+172.16.0.0/12           logdrop         # RFC 1918
+192.168.0.0/16          logdrop         # RFC 1918
+10.0.0.0/8              logdrop         # RFC 1918
+#LAST LINE -- ADD YOUR ENTRIES BEFORE THIS ONE -- DO NOT REMOVE
