@@ -35,6 +35,7 @@ flags.set_events_enabled(False)
 
 NUMDOCS = 1
 USAGE = "Usage: %s uuid token server cert_file password" % sys.argv[0]
+SYNC_TIMEOUT = 60
 
 
 def bail(msg, exitcode):
@@ -68,9 +69,20 @@ if __name__ == '__main__':
     s = get_soledad_instance(
         uuid, passphrase, tempdir, server, cert_file, token)
 
+    def syncWithTimeout(_):
+        d = s.sync()
+        reactor.callLater(SYNC_TIMEOUT, d.cancel)
+        return d
+
     def onSyncDone(sync_result):
         print "SYNC_RESULT:", sync_result
         s.close()
+        rm_tempdir()
+        reactor.stop()
+
+    def trap_cancel(f):
+        f.trap(defer.CancelledError)
+        log.err("sync timed out after %s seconds" % SYNC_TIMEOUT)
         rm_tempdir()
         reactor.stop()
 
@@ -81,8 +93,9 @@ if __name__ == '__main__':
 
     def start_sync():
         d = create_docs(s)
-        d.addCallback(lambda _: s.sync())
+        d.addCallback(syncWithTimeout)
         d.addCallback(onSyncDone)
+        d.addErrback(trap_cancel)
         d.addErrback(log_and_exit)
 
     reactor.callWhenRunning(start_sync)
