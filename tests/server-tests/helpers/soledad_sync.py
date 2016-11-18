@@ -27,6 +27,7 @@ os.environ['SKIP_TWISTED_SSL_CHECK'] = '1'
 
 from twisted.internet import defer, reactor
 from twisted.python import log
+from twisted.python.lockfile import FilesystemLock
 
 from client_side_db import get_soledad_instance
 from leap.common.events import flags
@@ -41,6 +42,13 @@ SYNC_TIMEOUT = 60
 def bail(msg, exitcode):
     print "[!] %s" % msg
     sys.exit(exitcode)
+
+
+def obtain_lock():
+    scriptname = os.path.basename(__file__)
+    lockfile = os.path.join(tempfile.gettempdir(), scriptname + '.lock')
+    lock = FilesystemLock(lockfile)
+    return lock.lock()
 
 
 def create_docs(soledad):
@@ -64,6 +72,9 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 6:
         bail(USAGE, 2)
+
+    if not obtain_lock():
+        bail("another instance is already running", 1)
 
     uuid, token, server, cert_file, passphrase = sys.argv[1:]
     s = get_soledad_instance(
