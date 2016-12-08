@@ -22,7 +22,7 @@ if ! egrep -q "$DEBIAN_VERSION" /etc/debian_version; then
   exit 1
 fi
 mkdir -p $LEAP_DIR
-if ! grep -q -e '^en_US.UTF-8' /etc/locale.gen; then
+if ! grep -q -e '^en_US.UTF-8' /etc/locale.gen 2> /dev/null; then
   echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
   /usr/sbin/locale-gen
 fi
