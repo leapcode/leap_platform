@@ -3,10 +3,10 @@ class site_config::files {
 
   file {
     '/srv/leap':
-      ensure  => directory,
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0711';
+      ensure => directory,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0711';
 
     [ '/etc/leap', '/var/lib/leap']:
       ensure => directory,
