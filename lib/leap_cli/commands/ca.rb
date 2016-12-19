@@ -281,11 +281,13 @@ module LeapCli; module Commands
     if status == 'valid'
       log 'authorized!', color: :green, style: :bold
     elsif status == 'error'
-      bail! :error, message
+      bail! :error, message.inspect
     elsif status == 'unauthorized'
-      bail!(:unauthorized, message, color: :yellow, style: :bold) do
+      bail!(:unauthorized, message.inspect, color: :yellow, style: :bold) do
         log 'You must first run `leap cert register` to register the account key with letsencrypt.org'
       end
+    else
+      bail!(:error, "unrecognized status: #{status.inspect}, #{message.inspect}")
     end
 
     log :fetching, "new certificate from letsencrypt.org"
