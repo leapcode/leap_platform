@@ -10,6 +10,3 @@ class { '::leap::cli::install':
 file { [ '/srv/leap', '/srv/leap/configuration', '/var/log/leap' ]:
   ensure => directory
 }
-
-# install prerequisites for configuring the provider
-include ::git

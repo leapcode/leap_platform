@@ -35,10 +35,6 @@ echo '{ "webapp": { "admins": ["testadmin"] } }' > services/webapp.json
 
 $LEAP $OPTS compile
 
-$GIT init
-$GIT add .
-$GIT commit -m'configured provider'
-
 $LEAP $OPTS node init $NODE
 if [ $? -eq 1 ]; then
   echo 'node init failed'
@@ -51,9 +47,6 @@ fi
 gem install rake
 
 $LEAP $OPTS -v 2 deploy
-
-$GIT add .
-$GIT commit -m'initialized and deployed provider'
 
 # Vagrant: leap_mx fails to start on jessie
 # https://leap.se/code/issues/7755
