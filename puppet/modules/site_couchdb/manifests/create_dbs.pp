@@ -1,5 +1,6 @@
 # creates neccesary databases
 class site_couchdb::create_dbs {
+  $services = hiera('services', [])
 
   Class['site_couchdb::setup']
     -> Class['site_couchdb::create_dbs']
@@ -42,10 +43,12 @@ class site_couchdb::create_dbs {
 
   ## shared database
   ## r/w: soledad
-  couchdb::create_db { 'shared':
-    members => "{ \"names\": [\"${site_couchdb::couchdb_soledad_user}\"], \"roles\": [\"replication\"] }",
-    require => Couchdb::Query::Setup['localhost'],
-    notify  => Service['soledad-server'];
+  if member($services, 'soledad') {
+    couchdb::create_db { 'shared':
+      members => "{ \"names\": [\"${site_couchdb::couchdb_soledad_user}\"], \"roles\": [\"replication\"] }",
+      require => Couchdb::Query::Setup['localhost'],
+      notify  => Service['soledad-server'];
+    }
   }
 
   ## tickets database
