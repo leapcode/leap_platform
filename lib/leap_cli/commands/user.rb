@@ -113,6 +113,20 @@ module LeapCli
     def do_list_users(global, options, args)
       require 'leap_cli/ssh'
 
+      ssh_keys = {}
+      Dir.glob("#{ENV['HOME']}/.ssh/*.pub").each do |keyfile|
+        key = SSH::Key.load(keyfile)
+        ssh_keys[key.fingerprint] = key if key
+      end
+
+      ssh_agent_keys = {}
+      if !`which ssh-add`.empty?
+        `ssh-add -L`.split("\n").each do |keystring|
+          key = SSH::Key.load(keystring)
+          ssh_agent_keys[key.fingerprint] = key if key
+        end
+      end
+
       Dir.glob(path([:user_ssh, '*'])).each do |keyfile|
         username = File.basename(File.dirname(keyfile))
         log username, :color => :cyan do
@@ -121,6 +135,14 @@ module LeapCli
           log 'SSH MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :ssh, :encoding => :hex)
           log 'SSH SHA256 fingerprint: ' + key.fingerprint(:digest => :sha256, :type => :ssh, :encoding => :base64)
           log 'DER MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :der, :encoding => :hex)
+          if ssh_keys[key.fingerprint]
+            log 'Matches local key: ' + ssh_keys[key.fingerprint].filename, color: :green
+            if ssh_agent_keys[key.fingerprint]
+              log 'Matches ssh-agent key: ' + ssh_agent_keys[key.fingerprint].summary(encoding: :base64), color: :green
+            else
+              log :error, 'No matching key in the ssh-agent'
+            end
+          end
         end
       end
     end
@@ -154,6 +176,9 @@ module LeapCli
         end
       else
         key_index = 0
+        log "Picking the only compatible ssh key: "+ ssh_keys[key_index].filename do
+          log ssh_keys[key_index].summary
+        end
       end
 
       return ssh_keys[key_index]
