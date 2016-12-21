@@ -169,8 +169,8 @@ module LeapCli; module Config
     #
     # modifies the config file nodes/NAME.json for this node.
     #
-    def update_json(new_values)
-      self.env.update_node_json(node, new_values)
+    def update_json(new_values, options=nil)
+      self.env.update_node_json(node, new_values, options)
     end
 
     #
