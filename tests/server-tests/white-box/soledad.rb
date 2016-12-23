@@ -10,7 +10,7 @@ class Soledad < LeapTest
   end
 
   def test_00_Is_Soledad_running?
-    assert_running '.*/usr/bin/twistd.*--wsgi=leap.soledad.server.application'
+    assert_running '/usr/bin/python /usr/bin/twistd --uid=soledad --gid=soledad --pidfile=/var/run/soledad.pid --syslog --prefix=soledad-server web --class=leap.soledad.server.resource.SoledadResource.*'
     pass
   end
 
