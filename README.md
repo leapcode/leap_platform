@@ -1,7 +1,7 @@
 Leap Platform
 =============================
 
-[![Build Status](https://0xacab.org/leap/platform/badges/develop/build.svg)](https://0xacab.org/leap/platform/commits/develop)
+[![Build Status](https://0xacab.org/leap/platform/badges/master/build.svg)](https://0xacab.org/leap/platform/commits/master)
 
 The LEAP Platform is set of complementary packages and server recipes to
 automate the maintenance of LEAP services in a hardened Debian environment. Its
