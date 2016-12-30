@@ -1,6 +1,8 @@
 # add couchdb users for all services
 class site_couchdb::add_users {
 
+  $services = hiera('services', [])
+
   Class['site_couchdb::create_dbs']
     -> Class['site_couchdb::add_users']
 
@@ -29,12 +31,14 @@ class site_couchdb::add_users {
   ## soledad couchdb user
   ## r/w: user-<uuid>, shared
   ## read: tokens
-  couchdb::add_user { $site_couchdb::couchdb_soledad_user:
-    roles   => '["tokens"]',
-    pw      => $site_couchdb::couchdb_soledad_pw,
-    salt    => $site_couchdb::couchdb_soledad_salt,
-    require => Couchdb::Query::Setup['localhost'],
-    notify  => Service['soledad-server'];
+  if member($services, 'soledad') {
+    couchdb::add_user { $site_couchdb::couchdb_soledad_user:
+      roles   => '["tokens"]',
+      pw      => $site_couchdb::couchdb_soledad_pw,
+      salt    => $site_couchdb::couchdb_soledad_salt,
+      require => Couchdb::Query::Setup['localhost'],
+      notify  => Service['soledad-server'];
+    }
   }
 
   ## webapp couchdb user
