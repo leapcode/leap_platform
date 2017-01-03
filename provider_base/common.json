@@ -75,7 +75,7 @@
     },
     "platform": {
       "apt": {
-        "basic": "http://deb.leap.se/experimental-0.9"
+        "basic": "http://deb.leap.se/experimental-platform"
       }
     },
     "soledad": {
