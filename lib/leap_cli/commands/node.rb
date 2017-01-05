@@ -45,6 +45,23 @@ module LeapCli; module Commands
         do_node_rm(global_options, options, args)
       end
     end
+
+    node.desc 'Mark a node as disabled.'
+    node.arg_name 'NAME'
+    node.command :disable do |cmd|
+      cmd.action do |global_options,options,args|
+        do_node_disable(global_options, options, args)
+      end
+    end
+
+    node.desc 'Mark a node as enabled.'
+    node.arg_name 'NAME'
+    node.command :enable do |cmd|
+      cmd.action do |global_options,options,args|
+        do_node_enable(global_options, options, args)
+      end
+    end
+
   end
 
   ##
@@ -124,6 +141,16 @@ module LeapCli; module Commands
     end
     node.remove_files
     remove_node_facts(node.name)
+  end
+
+  def do_node_enable(global, options, args)
+    node = get_node_from_args(args, include_disabled: true)
+    node.update_json({}, remove: ["enabled"])
+  end
+
+  def do_node_disable(global, options, args)
+    node = get_node_from_args(args, include_disabled: true)
+    node.update_json("enabled" => false)
   end
 
 end; end
