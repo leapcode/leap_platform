@@ -132,15 +132,21 @@ module LeapCli
         log username, :color => :cyan do
           log Path.relative_path(keyfile)
           key = SSH::Key.load(keyfile)
-          log 'SSH MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :ssh, :encoding => :hex)
-          log 'SSH SHA256 fingerprint: ' + key.fingerprint(:digest => :sha256, :type => :ssh, :encoding => :base64)
-          log 'DER MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :der, :encoding => :hex)
-          if ssh_keys[key.fingerprint]
-            log 'Matches local key: ' + ssh_keys[key.fingerprint].filename, color: :green
-            if ssh_agent_keys[key.fingerprint]
-              log 'Matches ssh-agent key: ' + ssh_agent_keys[key.fingerprint].summary(encoding: :base64), color: :green
-            else
-              log :error, 'No matching key in the ssh-agent'
+          if key.nil?
+            log :warning, "could not read ssh key #{keyfile}" do
+              log "currently, only these ssh key types are supported: " + SSH::Key::SUPPORTED_TYPES.join(", ")
+            end
+          else
+            log 'SSH MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :ssh, :encoding => :hex)
+            log 'SSH SHA256 fingerprint: ' + key.fingerprint(:digest => :sha256, :type => :ssh, :encoding => :base64)
+            log 'DER MD5 fingerprint: ' + key.fingerprint(:digest => :md5, :type => :der, :encoding => :hex)
+            if ssh_keys[key.fingerprint]
+              log 'Matches local key: ' + ssh_keys[key.fingerprint].filename, color: :green
+              if ssh_agent_keys[key.fingerprint]
+                log 'Matches ssh-agent key: ' + ssh_agent_keys[key.fingerprint].summary(encoding: :base64), color: :green
+              else
+                log :error, 'No matching key in the ssh-agent'
+              end
             end
           end
         end
