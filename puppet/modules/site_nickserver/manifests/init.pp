@@ -101,42 +101,26 @@ class site_nickserver {
   # NICKSERVER DAEMON
   #
 
-  file {
-    '/usr/bin/nickserver':
-      ensure  => link,
-      target  => '/srv/leap/nickserver/bin/nickserver',
-      require => Vcsrepo['/srv/leap/nickserver'];
-
-    '/etc/init.d/nickserver':
-      owner   => root,
-      group   => 0,
-      mode    => '0755',
-      source  => '/srv/leap/nickserver/dist/debian-init-script',
-      require => Vcsrepo['/srv/leap/nickserver'];
+  file { '/usr/bin/nickserver':
+    ensure  => link,
+    target  => '/srv/leap/nickserver/bin/nickserver',
+    require => Vcsrepo['/srv/leap/nickserver'];
   }
 
-  # register initscript at systemd on nodes newer than wheezy
-  # see https://leap.se/code/issues/7614
-  case $::operatingsystemrelease {
-    /^7.*/: { }
-    default:  {
-      exec { 'register_systemd_nickserver':
-        refreshonly => true,
-        command     => '/bin/systemctl enable nickserver',
-        subscribe   => File['/etc/init.d/nickserver'],
-        before      => Service['nickserver'];
-      }
-    }
+  ::systemd::unit_file {'nickserver.service':
+    ensure    => present,
+    source    => '/srv/leap/nickserver/dist/nickserver.service',
+    subscribe => Vcsrepo['/srv/leap/nickserver'],
+    require   => File['/usr/bin/nickserver'];
   }
 
   service { 'nickserver':
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => [
-      File['/etc/init.d/nickserver'],
-      File['/usr/bin/nickserver'],
+    ensure   => running,
+    provider => 'systemd',
+    enable   => true,
+    require  => [
+      Systemd::Unit_file['nickserver.service'],
+      Exec['systemctl-daemon-reload'],
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];
