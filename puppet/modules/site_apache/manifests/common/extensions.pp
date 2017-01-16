@@ -6,9 +6,7 @@ class site_apache::common::extensions {
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => [
-      Service['apache']
-    ]
-  }~>
-  Exec['systemctl-daemon-reload']
+    require => Service['apache'],
+    notify  => Exec['systemctl-daemon-reload']
+  }
 }
