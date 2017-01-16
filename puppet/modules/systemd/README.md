@@ -5,11 +5,23 @@
 
 ## Overview
 
-This module declares exec resources that you can use when you change systemd units or configuration files.
+This module declares exec resources to create global sync points for reloading systemd.
 
-## Examples
+## Usage and examples
 
-### systemctl --daemon-reload
+There are two ways to use this module.
+
+### unit files
+
+Let this module handle file creation and systemd reloading.
+
+```puppet
+::systemd::unit_file { 'foo.service':
+ source => "puppet:///modules/${module_name}/foo.service",
+}
+```
+
+Or handle file creation yourself and trigger systemd.
 
 ```puppet
 include ::systemd
@@ -23,7 +35,17 @@ file { '/usr/lib/systemd/system/foo.service':
 Exec['systemctl-daemon-reload']
 ```
 
-### systemd-tmpfiles --create
+### tmpfiles
+
+Let this module handle file creation and systemd reloading
+
+```puppet
+::systemd::tmpfile { 'foo.conf':
+  source => "puppet:///modules/${module_name}/foo.conf",
+}
+```
+
+Or handle file creation yourself and trigger systemd.
 
 ```puppet
 include ::systemd
@@ -35,4 +57,25 @@ file { '/etc/tmpfiles.d/foo.conf':
   source => "puppet:///modules/${module_name}/foo.conf",
 } ~>
 Exec['systemd-tmpfiles-create']
+```
+
+### service limits
+
+Manage soft and hard limits on various resources for executed processes.
+
+```puppet
+::systemd::service_limits { 'foo.service':
+  limits => {
+    LimitNOFILE => 8192,
+    LimitNPROC  => 16384
+  }
+}
+```
+
+Or provide the configuration file yourself. Systemd reloading and restarting of the service are handled by the module.
+
+```puppet
+::systemd::service_limits { 'foo.service':
+  source => "puppet:///modules/${module_name}/foo.conf",
+}
 ```
