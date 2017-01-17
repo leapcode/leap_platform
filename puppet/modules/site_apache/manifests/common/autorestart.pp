@@ -3,8 +3,16 @@
 #
 class site_apache::common::autorestart {
 
-  ::systemd::unit_file { '/etc/systemd/system/apache2.service.d/autorestart.conf':
+  file { '/etc/systemd/system/apache2.service.d':
+    ensure => directory,
+    mode   => '0755',
+  }
+
+  ::systemd::unit_file { 'apache2.service.d/autorestart.conf':
     source  => 'puppet:///modules/site_apache/autorestart.conf',
-    require => Service['apache'],
+    require => [
+      File['/etc/systemd/system/apache2.service.d'],
+      Service['apache'],
+    ]
   }
 }
