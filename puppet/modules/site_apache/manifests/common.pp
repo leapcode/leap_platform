@@ -28,6 +28,6 @@ class site_apache::common {
 
   include site_apache::common::tls
   include site_apache::common::acme
-  include site_apache::common::extensions
+  include site_apache::common::autorestart
 
 }
