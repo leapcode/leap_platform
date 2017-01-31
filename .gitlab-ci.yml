@@ -1,13 +1,25 @@
+image: leapcode/ruby
+
+# This is for caching the gems not only between the stages, but also persistent
+# on the gitlab-runner so we don't need to install from scratch on every pipeline
+cache:
+  key: "$CI_BUILD_REF_NAME"
+  untracked: true
+  paths:
+    - tests/platform-ci/vendor/
+
 before_script:
-  - echo 'Running global before_script'
   - cd tests/platform-ci
-  - ./setup.sh
 
 stages:
+  - setup
   - syntax
   - build
 
-image: leapcode/ruby
+setup:
+  stage: setup
+  script:
+    - ./setup.sh
 
 lint:
   stage: syntax
