@@ -52,17 +52,17 @@ class Mx < LeapTest
   end
 
   def test_04_Are_MX_daemons_running?
-    assert_running '.*/usr/bin/twistd.*mx.tac'
-    assert_running '^/usr/lib/postfix/master$'
-    assert_running '^/usr/sbin/postfwd'
-    assert_running 'postfwd2::cache$'
-    assert_running 'postfwd2::policy$'
-    assert_running '^/usr/sbin/unbound'
-    assert_running '^/usr/bin/freshclam'
-    assert_running '^/usr/sbin/opendkim'
+    assert_running match: '.*/usr/bin/twistd.*mx.tac'
+    assert_running match: '^/usr/lib/postfix/master$'
+    assert_running match: '^/usr/sbin/postfwd'
+    assert_running match: 'postfwd2::cache$'
+    assert_running match: 'postfwd2::policy$'
+    assert_running match: '^/usr/sbin/unbound'
+    assert_running match: '^/usr/bin/freshclam'
+    assert_running match: '^/usr/sbin/opendkim'
     if Dir.glob("/var/lib/clamav/main.{c[vl]d,inc}").size > 0 and Dir.glob("/var/lib/clamav/daily.{c[vl]d,inc}").size > 0
-      assert_running '^/usr/sbin/clamd'
-      assert_running '^/usr/sbin/clamav-milter'
+      assert_running match: '^/usr/sbin/clamd'
+      assert_running match: '^/usr/sbin/clamav-milter'
       pass
     else
       skip "Downloading the clamav signature files (/var/lib/clamav/{daily,main}.{c[vl]d,inc}) is still in progress, so clamd is not running."
