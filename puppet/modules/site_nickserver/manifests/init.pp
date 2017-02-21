@@ -61,21 +61,30 @@ class site_nickserver {
     require   => Group['nickserver'];
   }
 
+  # Eariler we used bundle install without --deployment
+  exec { 'clean_git_repo':
+    cwd     => '/srv/leap/nickserver',
+    user    => 'nickserver',
+    command => '/usr/bin/git checkout Gemfile.lock',
+    onlyif  => '/usr/bin/git status | /bin/grep -q "modified: *Gemfile.lock"',
+    require => Package['git']
+  }
+
   vcsrepo { '/srv/leap/nickserver':
-    ensure   => present,
+    ensure   => latest,
     revision => $sources['nickserver']['revision'],
     provider => $sources['nickserver']['type'],
     source   => $sources['nickserver']['source'],
     owner    => 'nickserver',
     group    => 'nickserver',
-    require  => [ User['nickserver'], Group['nickserver'] ],
+    require  => [ User['nickserver'], Group['nickserver'], Exec['clean_git_repo'] ],
     notify   => Exec['nickserver_bundler_update'];
   }
 
   exec { 'nickserver_bundler_update':
     cwd     => '/srv/leap/nickserver',
-    command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install --path vendor/bundle"',
-    unless  => '/usr/bin/bundle check',
+    command => '/usr/bin/bundle install --deployment',
+    unless  => 'bash -c "/usr/bin/bundle config --local frozen 1; /usr/bin/bundle check"',
     user    => 'nickserver',
     timeout => 600,
     require => [
