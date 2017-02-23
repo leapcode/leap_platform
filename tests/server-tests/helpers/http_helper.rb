@@ -5,7 +5,7 @@ class LeapTest
   #
   # In order to easily provide detailed error messages, it is useful
   # to append a memo to a url string that details what this url is for
-  # (e.g. stunnel, haproxy, etc).
+  # (e.g. stunnel, etc).
   #
   # So, the url happens to be a UrlString, the memo field is used
   # if there is an error in assert_get.
