@@ -1,3 +1,4 @@
+# Configures webapp couchdb config
 class site_webapp::couchdb {
 
   $webapp                  = hiera('webapp')
@@ -22,8 +23,8 @@ class site_webapp::couchdb {
     # couchdb.admin.yml is a symlink to prevent the vcsrepo resource
     # from changing its user permissions every time.
     '/srv/leap/webapp/config/couchdb.admin.yml':
-      ensure => 'link',
-      target => '/etc/leap/couchdb.admin.yml',
+      ensure  => 'link',
+      target  => '/etc/leap/couchdb.admin.yml',
       require => Vcsrepo['/srv/leap/webapp'];
 
     '/etc/leap/couchdb.admin.yml':
