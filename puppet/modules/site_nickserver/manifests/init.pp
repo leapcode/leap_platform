@@ -1,9 +1,8 @@
 #
-# TODO: currently, this is dependent on some things that are set up in
+# TODO: currently, this is dependent on one thing that is set up in
 # site_webapp
 #
-# (1) HAProxy -> couchdb
-# (2) Apache
+# (1) Apache
 #
 # It would be good in the future to make nickserver installable independently of
 # site_webapp.
@@ -29,10 +28,9 @@ class site_nickserver {
   # the port that nickserver is actually running on
   $nickserver_local_port = '64250'
 
-  # couchdb is available on localhost via haproxy, which is bound to 4096.
+  # couchdb is available on localhost via stunnel, which is bound to 4000.
   $couchdb_host      = 'localhost'
-  # See site_webapp/templates/haproxy_couchdb.cfg.erg
-  $couchdb_port      = '4096'
+  $couchdb_port      = '4000'
 
   $sources           = hiera('sources')
 

@@ -2,7 +2,7 @@
 # debug script to be run on remote servers
 # called from leap_cli with the 'leap debug' cmd
 
-apps='(leap|pixelated|stunnel|couch|soledad|haproxy)'
+apps='(leap|pixelated|stunnel|couch|soledad)'
 
 facts='(apt_running |^architecture |^augeasversion |^couchdb_.* |^debian_.* |^dhcp_enabled |^domain |^facterversion |^filesystems |^fqdn |^hardwaremodel |^hostname |^interface.* |^ipaddress.* |^is_pe |^is_virtual |^kernel.* |^lib |^lsb.* |^memory.* |^mtu_.* |^netmask.* |^network_.* |^operatingsystem |^os.* |^path |^physicalprocessorcount |^processor.* |^ps |^puppetversion |^root_home |^rsyslog_version |^rubysitedir |^rubyversion |^selinux |^ssh_version |^swapfree.* |^swapsize.* |^type |^virtual)'
 
@@ -24,6 +24,3 @@ ps aux|egrep "$apps"
 echo -e '\n\n'
 echo -e "Last deploy:\n"
 tail -2 /var/log/leap/deploy-summary.log
-
-
-

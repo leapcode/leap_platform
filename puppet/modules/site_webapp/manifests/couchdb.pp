@@ -2,9 +2,9 @@
 class site_webapp::couchdb {
 
   $webapp                  = hiera('webapp')
-  # haproxy listener on port localhost:4096, see site_webapp::haproxy
+  # stunnel endpoint on port localhost:4000
   $couchdb_host            = 'localhost'
-  $couchdb_port            = '4096'
+  $couchdb_port            = '4000'
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
   $couchdb_admin_user      = $webapp['couchdb_admin_user']['username']
