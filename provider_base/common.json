@@ -75,8 +75,8 @@
     },
     "platform": {
       "apt": {
-        "basic": "http://deb.leap.se/0.9",
-        "component": "main"
+        "basic": "http://deb.leap.se/platform",
+        "component": "snapshots"
       }
     },
     "soledad": {

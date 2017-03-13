@@ -1,2 +1,10 @@
 {
+  "sources": {
+    "platform": {
+      "apt": {
+        "basic": "http://deb.leap.se/platform",
+        "component": "snapshots"
+      }
+    }
+  }
 }
