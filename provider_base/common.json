@@ -75,7 +75,8 @@
     },
     "platform": {
       "apt": {
-        "basic": "http://deb.leap.se/experimental-gitbuildpackage"
+        "basic": "http://deb.leap.se/0.9",
+        "component": "main"
       }
     },
     "soledad": {

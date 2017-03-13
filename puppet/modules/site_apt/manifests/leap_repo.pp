@@ -5,7 +5,7 @@ class site_apt::leap_repo {
   $major_version = $platform['major_version']
 
   apt::sources_list { 'leap.list':
-    content => "deb ${::site_apt::apt_url_platform_basic} ${::lsbdistcodename} main\n",
+    content => "deb ${::site_apt::apt_url_platform_basic} ${::site_apt::apt_platform_codename} ${::site_apt::apt_platform_component}\n",
     before  => Exec[refresh_apt]
   }
 

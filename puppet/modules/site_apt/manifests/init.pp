@@ -12,6 +12,13 @@ class site_apt {
   # leap repo url
   $platform_sources       = $sources['platform']
   $apt_url_platform_basic = $platform_sources['apt']['basic']
+  $apt_platform_component = $platform_sources['apt']['component']
+
+  if ( $platform_sources['apt']['codename'] == '') {
+    $apt_platform_codename = $::lsbdistcodename
+  } else {
+    $apt_platform_codename = $platform_sources['apt']['codename']
+  }
 
   # needed on jessie hosts for getting pnp4nagios from testing
   if ( $::operatingsystemmajrelease == '8' ) {
