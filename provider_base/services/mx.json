@@ -24,6 +24,7 @@
     "password": "= secret :couch_leap_mx_password",
     "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
   },
+  "couchdb_port": "= couchdb_port",
   "mynetworks": "= host_ips(nodes)",
   "rbls": ["zen.spamhaus.org"],
   "clamav": {

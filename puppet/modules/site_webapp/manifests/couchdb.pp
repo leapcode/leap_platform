@@ -4,7 +4,7 @@ class site_webapp::couchdb {
   $webapp                  = hiera('webapp')
   # stunnel endpoint on port localhost:4000
   $couchdb_host            = 'localhost'
-  $couchdb_port            = '4000'
+  $couchdb_port            = $webapp['couchdb_port']
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
   $couchdb_admin_user      = $webapp['couchdb_admin_user']['username']

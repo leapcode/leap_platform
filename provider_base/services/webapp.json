@@ -11,6 +11,7 @@
       "tickets", "vmail", "www-data"],
     "domain": "= provider.domain",
     "modules": ["user", "billing", "help"],
+    "couchdb_port": "= couchdb_port",
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "customization_dir": "= file_path 'webapp'",
