@@ -6,7 +6,7 @@ class leap_mx {
   $couchdb_password = $leap_mx['password']
 
   $couchdb_host     = 'localhost'
-  $couchdb_port     = '4096'
+  $couchdb_port     = hiera('couchdb_port')
 
   $sources          = hiera('sources')
 
