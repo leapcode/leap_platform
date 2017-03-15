@@ -13,7 +13,6 @@ class site_mx {
   include ::site_stunnel
 
   include ::site_postfix::mx
-  include ::site_haproxy
   include ::site_shorewall::mx
   include ::site_shorewall::service::smtp
   include ::leap_mx

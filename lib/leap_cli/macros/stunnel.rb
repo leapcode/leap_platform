@@ -87,6 +87,18 @@ module LeapCli
       }
     end
 
+    #
+    # what it the port of the couchdb we should connect to.
+    # host will always be localhost.
+    #
+    def couchdb_port
+      if services.include?('couchdb')
+        couch.port
+      else
+        stunnel.clients.couch_client.values.first.accept_port
+      end
+    end
+
     private
 
     #

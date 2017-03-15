@@ -24,16 +24,6 @@ class Mx < LeapTest
     pass
   end
 
-  def test_02_Can_contact_couchdb_via_haproxy?
-    if property('haproxy.couch')
-      url = couchdb_url_via_haproxy("", couch_url_options)
-      assert_get(url) do |body|
-        assert_match /"couchdb":"Welcome"/, body, "Request to #{url} should return couchdb welcome message."
-      end
-      pass
-    end
-  end
-
   #
   # this test picks a random identity document, then queries
   # using the by_address view for that same document again.

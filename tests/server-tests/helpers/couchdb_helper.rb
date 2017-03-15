@@ -31,35 +31,6 @@ class LeapTest
   end
 
   #
-  # generates a couchdb url for accessing couchdb via haproxy
-  #
-  # example properties:
-  #
-  # haproxy:
-  #   couch:
-  #     listen_port: 4096
-  #     servers:
-  #       panda:
-  #         backup: false
-  #         host: localhost
-  #         port: 4000
-  #         weight: 100
-  #         writable: true
-  #
-  def couchdb_url_via_haproxy(path="", options=nil)
-    path = path.gsub('"', '%22')
-    if options && options[:username] && options[:password]
-      userpart = "%{username}:%{password}@" % options
-    else
-      userpart = ""
-    end
-    port = assert_property('haproxy.couch.listen_port')
-    return URLString.new("http://#{userpart}localhost:#{port}#{path}").tap { |url|
-      url.memo = '(via haproxy)'
-    }
-  end
-
-  #
   # generates a couchdb url for when couchdb is running locally.
   #
   # example properties:

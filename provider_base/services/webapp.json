@@ -11,6 +11,7 @@
       "tickets", "vmail", "www-data"],
     "domain": "= provider.domain",
     "modules": ["user", "billing", "help"],
+    "couchdb_port": "= couchdb_port",
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "customization_dir": "= file_path 'webapp'",
@@ -43,12 +44,6 @@
   "stunnel": {
     "clients": {
       "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
-    }
-  },
-  "haproxy": {
-    "couch": {
-      "listen_port": 4096,
-      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port)"
     }
   },
   "definition_files": {
