@@ -8,6 +8,7 @@ production = {
   "force_ssl" => @webapp['secure'],
   "client_ca_key" => "%s/%s.key" % [scope.lookupvar('x509::variables::keys'), scope.lookupvar('site_config::params::client_ca_name')],
   "client_ca_cert" => "%s/%s.crt" % [scope.lookupvar('x509::variables::local_CAs'), scope.lookupvar('site_config::params::client_ca_name')],
+  "secret_key_base" => @secret_key_base,
   "secret_token" => @secret_token,
   "client_cert_lifespan" => cert_options['life_span'],
   "client_cert_bit_size" => cert_options['bit_size'].to_i,
