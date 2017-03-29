@@ -78,10 +78,10 @@ $LEAP_CMD compile "$TAG"
 $LEAP_CMD vm status "$TAG"
 
 $LEAP_CMD node init "$TAG"
-$LEAP_CMD info "${TAG}"
 
 # Deploy and test
 $LEAP_CMD deploy "$TAG"
+$LEAP_CMD info "${TAG}"
 $LEAP_CMD test "$TAG"
 
 # if everything succeeds, destroy the vm
