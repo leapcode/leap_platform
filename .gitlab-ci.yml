@@ -1,4 +1,4 @@
-image: leapcode/ruby
+image: 0xacab.org:4567/leap/gitlab-buildpackage:ruby
 
 # This is for caching the gems not only between the stages, but also persistent
 # on the gitlab-runner so we don't need to install from scratch on every pipeline
@@ -14,7 +14,7 @@ before_script:
 stages:
   - setup
   - syntax
-  - build
+  - deploy
 
 setup:
   stage: setup
@@ -24,27 +24,27 @@ setup:
 lint:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake lint
+    - su -c '/usr/local/bin/bundle exec rake lint' cirunner
 
 syntax:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake syntax
+    - su -c '/usr/local/bin/bundle exec rake syntax' cirunner
 
 validate:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake validate
+    - su -c '/usr/local/bin/bundle exec rake validate' cirunner
 
 templates:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake templates
+    - su -c '/usr/local/bin/bundle exec rake templates' cirunner
 
 catalog:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake catalog
+    - su -c '/usr/local/bin/bundle exec rake catalog' cirunner
 
 #rspec:
 #  stage: rspec
@@ -52,6 +52,20 @@ catalog:
 #    - /usr/local/bin/bundle exec rake spec
 
 build:
-  stage: build
+  stage: deploy
   script:
-    - /usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s
+    - su -c '/usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s' cirunner
+
+# Latest job will only run on the master branch, which means all merge requests
+# that are created from branches don't get to deploy to the latest-ci server.
+# When a merge request is merged, then the latest job will deploy the code to
+# the latest provider, and the deployment will be recorded in an environment
+# named 'latest'
+latest:
+  stage: deploy
+  environment:
+    name: latest
+  only:
+  - master
+  script:
+    - su -c '/usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s' cirunner

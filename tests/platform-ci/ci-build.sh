@@ -15,75 +15,105 @@
 #   * ssh private key used to login to remove vm
 #     * `SSH_PRIVATE_KEY`
 #
-# Todo:
-#   - Running locally works fine, now use it in gitlab CI ( which ssh-key ? create cloud.json from env vars )
-#   - Speed up vm boot if possible ( right now 3-4mins )
 
 # exit if any commands returns non-zero status
 set -e
+# because the ci-build is running in a pipe we need to also set the following
+# so exit codes will be caught correctly.
+set -o pipefail
 
 # leap_platform/tests/platform-ci
 # shellcheck disable=SC2086
 ROOTDIR=$(readlink -f "$(dirname $0)")
 
-# leap_platform/tests/platform-ci/provider
-PROVIDERDIR="${ROOTDIR}/provider"
-
 # leap_platform
 PLATFORMDIR=$(readlink -f "${ROOTDIR}/../..")
 
-LEAP_CMD="/usr/local/bin/bundle exec leap -v2 --yes"
+LEAP_CMD() {
+  /usr/local/bin/bundle exec leap -v2 --yes "$@"
+}
 
-# create node(s) with unique id so we can run tests in parallel
-NAME="citest${CI_BUILD_ID}"
-# when using gitlab-runner locally, CI_BUILD_ID is always 1 which
-# will conflict with running/terminating AWS instances in subsequent runs
-# therefore we pick a random number in this case
-[ "$CI_BUILD_ID" -eq "1" ] && NAME+="000${RANDOM}"
+deploy() {
+  LEAP_CMD deploy "$TAG"
+}
 
-TAG='single'
-SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
-SEEDS=''
+test() {
+  LEAP_CMD test "$TAG"
+}
+
+build_from_scratch() {
+  # leap_platform/tests/platform-ci/provider
+  PROVIDERDIR="${ROOTDIR}/provider"
+  /bin/echo "Provider directory: ${PROVIDERDIR}"
+  cd "$PROVIDERDIR"
+
+  # Create cloud.json needed for `leap vm` commands using AWS credentials
+  which jq || ( apt-get update -y && apt-get install jq -y )
+  /usr/bin/jq ".platform_ci.auth |= .+ {\"aws_access_key_id\":\"$AWS_ACCESS_KEY\", \"aws_secret_access_key\":\"$AWS_SECRET_KEY\"}" < cloud.json.template > cloud.json
+
+  [ -d "./tags" ] || mkdir "./tags"
+  /bin/echo "{\"environment\": \"$TAG\"}" | /usr/bin/json_pp > "${PROVIDERDIR}/tags/${TAG}.json"
+
+  pwd
+  LEAP_CMD vm status "$TAG"
+  # shellcheck disable=SC2086
+  LEAP_CMD vm add "$NAME" services:"$SERVICES" tags:"$TAG" $SEEDS
+  LEAP_CMD compile "$TAG"
+  LEAP_CMD vm status "$TAG"
+
+  LEAP_CMD node init "$TAG"
+  LEAP_CMD info "${TAG}"
+}
 
 #
 # Main
 #
 
-
 /bin/echo "CI directory: ${ROOTDIR}"
-/bin/echo "Provider directory: ${PROVIDERDIR}"
 /bin/echo "Platform directory: ${PLATFORMDIR}"
-cd "$PROVIDERDIR"
 
 # Ensure we don't output secret stuff to console even when running in verbose mode with -x
 set +x
-
-# Create cloud.json needed for `leap vm` commands using AWS credentials
-which jq || ( apt-get update -y && apt-get install jq -y )
-/usr/bin/jq ".platform_ci.auth |= .+ {\"aws_access_key_id\":\"$AWS_ACCESS_KEY\", \"aws_secret_access_key\":\"$AWS_SECRET_KEY\"}" < cloud.json.template > cloud.json
 
 # Configure ssh keypair
 [ -d ~/.ssh ] || /bin/mkdir ~/.ssh
 /bin/echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
 /bin/chmod 600 ~/.ssh/id_rsa
-/bin/cp users/gitlab-runner/gitlab-runner_ssh.pub ~/.ssh/id_rsa.pub
+/bin/cp "${ROOTDIR}/provider/users/gitlab-runner/gitlab-runner_ssh.pub" ~/.ssh/id_rsa.pub
 
-[ -d "./tags" ] || mkdir "./tags"
-/bin/echo "{\"environment\": \"$TAG\"}" | /usr/bin/json_pp > "${PROVIDERDIR}/tags/${TAG}.json"
+case "$CI_BUILD_STAGE" in
+  build)
+    # create node(s) with unique id so we can run tests in parallel
+    NAME="citest${CI_BUILD_ID}"
+    # when using gitlab-runner locally, CI_BUILD_ID is always 1 which
+    # will conflict with running/terminating AWS instances in subsequent runs
+    # therefore we pick a random number in this case
+    [ "$CI_BUILD_ID" -eq "1" ] && NAME+="000${RANDOM}"
 
-$LEAP_CMD vm status "$TAG"
-# shellcheck disable=SC2086
-$LEAP_CMD vm add "$NAME" services:"$SERVICES" tags:"$TAG" $SEEDS
-$LEAP_CMD compile "$TAG"
-$LEAP_CMD vm status "$TAG"
-
-$LEAP_CMD node init "$TAG"
-
-# Deploy and test
-$LEAP_CMD deploy "$TAG"
-$LEAP_CMD info "${TAG}"
-$LEAP_CMD test "$TAG"
-
-# if everything succeeds, destroy the vm
-$LEAP_CMD vm rm "${TAG}"
-[ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
+    TAG='single'
+    SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
+    SEEDS=''
+    build_from_scratch
+    # Deploy and test
+    deploy
+    test
+    # if everything succeeds, destroy the vm
+    LEAP_CMD vm rm "${TAG}"
+    [ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
+    ;;
+  latest)
+    TAG='latest'
+    echo "Cloning ibex provider..."
+    git clone -q --depth 1 ssh://gitolite@leap.se/ibex
+    cd ibex
+    git rev-parse HEAD
+    echo -n "Operating in the ibex directory: "
+    pwd
+    echo "Listing current node information..."
+    LEAP_CMD list
+    echo "Attempting a deploy..."
+    deploy
+    echo "Attempting to run tests..."
+    test
+    ;;
+esac
