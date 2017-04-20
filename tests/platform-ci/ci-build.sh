@@ -81,8 +81,23 @@ set +x
 /bin/chmod 600 ~/.ssh/id_rsa
 /bin/cp "${ROOTDIR}/provider/users/gitlab-runner/gitlab-runner_ssh.pub" ~/.ssh/id_rsa.pub
 
-case "$CI_BUILD_STAGE" in
-  build)
+case "$CI_ENVIRONMENT_NAME" in
+  latest)
+    TAG='latest'
+    echo "Cloning ibex provider..."
+    git clone -q --depth 1 ssh://gitolite@leap.se/ibex
+    cd ibex
+    git rev-parse HEAD
+    echo -n "Operating in the ibex directory: "
+    pwd
+    echo "Listing current node information..."
+    LEAP_CMD list
+    echo "Attempting a deploy..."
+    deploy
+    echo "Attempting to run tests..."
+    test
+    ;;
+  *)
     # create node(s) with unique id so we can run tests in parallel
     NAME="citest${CI_BUILD_ID}"
     # when using gitlab-runner locally, CI_BUILD_ID is always 1 which
@@ -100,20 +115,5 @@ case "$CI_BUILD_STAGE" in
     # if everything succeeds, destroy the vm
     LEAP_CMD vm rm "${TAG}"
     [ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
-    ;;
-  latest)
-    TAG='latest'
-    echo "Cloning ibex provider..."
-    git clone -q --depth 1 ssh://gitolite@leap.se/ibex
-    cd ibex
-    git rev-parse HEAD
-    echo -n "Operating in the ibex directory: "
-    pwd
-    echo "Listing current node information..."
-    LEAP_CMD list
-    echo "Attempting a deploy..."
-    deploy
-    echo "Attempting to run tests..."
-    test
     ;;
 esac
