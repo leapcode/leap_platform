@@ -51,8 +51,14 @@ catalog:
 #  script:
 #    - /usr/local/bin/bundle exec rake spec
 
-build:
+# The deploy_test job is run on any merge request. This is used to ensure that
+# the merge request will deploy and test properly. It is not run when the merge
+# request is accepted into master, instead the 'latest' job below is run
+# instead.
+deploy_test:
   stage: deploy
+  except:
+    - master
   script:
     - su -c '/usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s' cirunner
 
@@ -64,7 +70,7 @@ build:
 latest:
   stage: deploy
   environment:
-    name: latest
+    name: staging
   only:
   - master
   script:
