@@ -11,7 +11,10 @@ class site_webapp::hidden_service {
   include apache::module::removeip
 
   include tor::daemon
-  tor::daemon::hidden_service { 'webapp': ports => [ '80 127.0.0.1:80'] }
+  tor::daemon::hidden_service { 'webapp':
+    ports      => [ '80 127.0.0.1:80'],
+    single_hop => $hidden_service['single_hop']
+  }
 
   file {
     '/var/lib/tor/webapp/':

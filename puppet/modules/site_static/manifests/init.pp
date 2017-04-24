@@ -74,8 +74,7 @@ class site_static {
   if $tor {
     $hidden_service = $tor['hidden_service']
     $tor_domain     = "${hidden_service['address']}.onion"
-    if $hidden_service['active'] {
-      include site_static::hidden_service
+      class { 'site_static::hidden_service': single_hop => $hidden_service['single_hop']
     }
     # Currently, we only support a single hidden service address per server.
     # So if there is more than one domain configured, then we need to make sure

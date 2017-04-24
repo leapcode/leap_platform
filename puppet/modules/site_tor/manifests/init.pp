@@ -20,7 +20,7 @@ class site_tor {
   }
 
   include site_config::default
-  include tor::daemon
+  class { 'tor::daemon': ensure_version => latest }
   tor::daemon::relay { $nickname:
     port           => 9001,
     address        => $address,
