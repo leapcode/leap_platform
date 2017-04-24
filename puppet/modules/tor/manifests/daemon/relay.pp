@@ -33,9 +33,6 @@ define tor::daemon::relay(
   concat::fragment { '03.relay':
     ensure  => $ensure,
     content => template('tor/torrc.relay.erb'),
-    owner   => 'debian-tor',
-    group   => 'debian-tor',
-    mode    => '0644',
     order   => 03,
     target  => $tor::daemon::config_file,
   }

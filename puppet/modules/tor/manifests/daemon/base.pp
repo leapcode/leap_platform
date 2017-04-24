@@ -2,7 +2,7 @@
 class tor::daemon::base inherits tor::base {
   # packages, user, group
   Service['tor'] {
-    subscribe => File[$tor::daemon::config_file],
+    subscribe => Concat[$tor::daemon::config_file],
   }
 
   Package[ 'tor' ] {
@@ -49,18 +49,15 @@ class tor::daemon::base inherits tor::base {
 
   # tor configuration file
   concat { $tor::daemon::config_file:
-    mode   => '0600',
-    owner  => 'debian-tor',
-    group  => 'debian-tor',
+    mode  => '0600',
+    owner => 'debian-tor',
+    group => 'debian-tor',
   }
 
   # config file headers
   concat::fragment { '00.header':
     ensure  => present,
     content => template('tor/torrc.header.erb'),
-    owner   => 'debian-tor',
-    group   => 'debian-tor',
-    mode    => '0644',
     order   => 00,
     target  => $tor::daemon::config_file,
   }
@@ -68,9 +65,6 @@ class tor::daemon::base inherits tor::base {
   # global configurations
   concat::fragment { '01.global':
     content => template('tor/torrc.global.erb'),
-    owner   => 'debian-tor',
-    group   => 'debian-tor',
-    mode    => '0644',
     order   => 01,
     target  => $tor::daemon::config_file,
   }

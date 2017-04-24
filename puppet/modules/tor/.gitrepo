@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://leap.se/git/puppet_tor
 	branch = master
-	commit = 9981a70f7ba1f9e4fe33e4eb46654295287c1fc1
-	parent = 26aac7ccf240b06d65616bdd00ae472d980aaea9
-	cmdver = 0.3.0
+	commit = 5ef29012dccc90e68afc215be9521629a0903bc6
+	parent = 747d3e9b55c8b7b7d98a63474b6de82d7114c389
+	cmdver = 0.4.0

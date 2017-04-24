@@ -8,7 +8,7 @@ class tor::munin {
   }
 
   Munin::Plugin::Deploy {
-    config  => "user debian-tor\n env.cookiefile /var/run/tor/control.authcookie\n env.port 19051"
+    config  => "user debian-tor\n env.cookiefile /var/run/tor/control.authcookie\n env.port 19051" # lint:ignore:80chars
   }
   munin::plugin::deploy {
     'tor_connections':
