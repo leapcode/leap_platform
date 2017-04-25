@@ -22,6 +22,11 @@ set -e
 # so exit codes will be caught correctly.
 set -o pipefail
 
+# we wrap the whole script in curly braces so we can pipe it all through ts to
+# get timestamps. If we put it outside of the script, then we can't get proper
+# pipefail results.
+
+{
 # leap_platform/tests/platform-ci
 # shellcheck disable=SC2086
 ROOTDIR=$(readlink -f "$(dirname $0)")
@@ -117,3 +122,4 @@ case "$CI_ENVIRONMENT_NAME" in
     [ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
     ;;
 esac
+} | /usr/bin/ts -s

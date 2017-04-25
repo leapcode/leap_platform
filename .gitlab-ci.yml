@@ -60,7 +60,7 @@ deploy_test:
   except:
     - master
   script:
-    - su -c '/usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s' cirunner
+    - su -c '/usr/bin/unbuffer ./ci-build.sh' cirunner
 
 # Latest job will only run on the master branch, which means all merge requests
 # that are created from branches don't get to deploy to the latest-ci server.
@@ -74,4 +74,4 @@ latest:
   only:
   - master
   script:
-    - su -c '/usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s' cirunner
+    - su -c '/usr/bin/unbuffer ./ci-build.sh' cirunner
