@@ -1,4 +1,4 @@
-image: 0xacab.org:4567/leap/gitlab-buildpackage:ruby
+image: 0xacab.org:4567/leap-docker/ruby:latest
 
 # This is for caching the gems not only between the stages, but also persistent
 # on the gitlab-runner so we don't need to install from scratch on every pipeline
