@@ -75,3 +75,13 @@ latest:
   - master
   script:
     - su -c '/usr/bin/unbuffer ./ci-build.sh' cirunner
+
+production:
+  stage: deploy
+  environment:
+    name: production
+  only:
+    - master
+  when: manual
+  script:
+    - su -c '/usr/bin/unbuffer ./ci-build.sh' cirunner

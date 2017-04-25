@@ -70,6 +70,21 @@ build_from_scratch() {
   LEAP_CMD info "${TAG}"
 }
 
+run() {
+  echo "Cloning $1 repo: $2"
+    git clone -q --depth 1 "$2"
+    cd "$1"
+    git rev-parse HEAD
+    echo -n "Operating in the $1 directory: "
+    pwd
+    echo "Listing current node information..."
+    LEAP_CMD list
+    echo "Attempting a deploy..."
+    deploy
+    echo "Attempting to run tests..."
+    test
+}
+
 #
 # Main
 #
@@ -89,18 +104,15 @@ set +x
 case "$CI_ENVIRONMENT_NAME" in
   latest)
     TAG='latest'
-    echo "Cloning ibex provider..."
-    git clone -q --depth 1 ssh://gitolite@leap.se/ibex
-    cd ibex
-    git rev-parse HEAD
-    echo -n "Operating in the ibex directory: "
-    pwd
-    echo "Listing current node information..."
-    LEAP_CMD list
-    echo "Attempting a deploy..."
-    deploy
-    echo "Attempting to run tests..."
-    test
+    run ibex ssh://gitolite@leap.se/ibex
+    ;;
+  production/mail)
+    TAG='demomail'
+    run bitmask ssh://gitolite@leap.se/bitmask
+    ;;
+  production/vpn)
+    TAG='demovpn'
+    run bitmask ssh://gitolite@leap.se/bitmask
     ;;
   *)
     # create node(s) with unique id so we can run tests in parallel
