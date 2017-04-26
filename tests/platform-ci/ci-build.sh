@@ -22,11 +22,16 @@ set -e
 # so exit codes will be caught correctly.
 set -o pipefail
 
-# we wrap the whole script in curly braces so we can pipe it all through ts to
-# get timestamps. If we put it outside of the script, then we can't get proper
-# pipefail results.
+# Check if scipt is run in debug mode so we can hide secrets
+if [[ "$-" =~ 'x' ]]
+then
+  echo 'Running with xtrace enabled!'
+  xtrace=true
+else
+  echo 'Running with xtrace disabled!'
+  xtrace=false
+fi
 
-{
 # leap_platform/tests/platform-ci
 # shellcheck disable=SC2086
 ROOTDIR=$(readlink -f "$(dirname $0)")
@@ -34,9 +39,20 @@ ROOTDIR=$(readlink -f "$(dirname $0)")
 # leap_platform
 PLATFORMDIR=$(readlink -f "${ROOTDIR}/../..")
 
-LEAP_CMD() {
-  /usr/local/bin/bundle exec leap -v2 --yes "$@"
-}
+# In the gitlab CI pipeline leap is installed in a different
+# stage by bundle. To debug you can run a single CI job locally
+# so we install leap_cli as gem here.
+if /usr/local/bin/bundle exec leap >/dev/null 2>&1
+then
+  LEAP_CMD() {
+    /usr/local/bin/bundle exec leap -v2 --yes "$@"
+  }
+else
+  sudo gem install leap_cli
+  LEAP_CMD() {
+    leap -v2 --yes "$@"
+  }
+fi
 
 deploy() {
   LEAP_CMD deploy "$TAG"
@@ -54,19 +70,38 @@ build_from_scratch() {
 
   # Create cloud.json needed for `leap vm` commands using AWS credentials
   which jq || ( apt-get update -y && apt-get install jq -y )
+
+  # Dsiable xtrace
+  set +x
   /usr/bin/jq ".platform_ci.auth |= .+ {\"aws_access_key_id\":\"$AWS_ACCESS_KEY\", \"aws_secret_access_key\":\"$AWS_SECRET_KEY\"}" < cloud.json.template > cloud.json
+  # Enable xtrace again only if it was set at beginning of script
+  [[ $xtrace == true ]] && set -x
 
   [ -d "./tags" ] || mkdir "./tags"
   /bin/echo "{\"environment\": \"$TAG\"}" | /usr/bin/json_pp > "${PROVIDERDIR}/tags/${TAG}.json"
 
   pwd
+
+# remove old cached nodes
+  echo "Removing old cached nodes..."
+  find nodes -name 'citest*' -exec rm {} \;
+
+  echo "Listing current VM status..."
   LEAP_CMD vm status "$TAG"
   # shellcheck disable=SC2086
-  LEAP_CMD vm add "$NAME" services:"$SERVICES" tags:"$TAG" $SEEDS
+  echo "Adding VM $NAME with the services: $SERVICES and the tags: $TAG"
+  LEAP_CMD vm add "$NAME" services:"$SERVICES" tags:"$TAG"
+  echo "Compiling $TAG..."
   LEAP_CMD compile "$TAG"
+  echo "Listing current VM status for TAG: $TAG..."
   LEAP_CMD vm status "$TAG"
 
+  echo "Running leap list..."
+  LEAP_CMD list
+
+  echo "Running leap node init on TAG: $TAG"
   LEAP_CMD node init "$TAG"
+  echo "Running leap info on $TAG"
   LEAP_CMD info "${TAG}"
 }
 
@@ -101,30 +136,32 @@ set +x
 /bin/chmod 600 ~/.ssh/id_rsa
 /bin/cp "${ROOTDIR}/provider/users/gitlab-runner/gitlab-runner_ssh.pub" ~/.ssh/id_rsa.pub
 
+# Enable xtrace again only if it was set at beginning of script
+[[ $xtrace == true ]] && set -x
+
 case "$CI_ENVIRONMENT_NAME" in
-  latest)
+  staging)
     TAG='latest'
     run ibex ssh://gitolite@leap.se/ibex
     ;;
-  production/mail)
+  demo/mail)
     TAG='demomail'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
-  production/vpn)
+  demo/vpn)
     TAG='demovpn'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
   *)
     # create node(s) with unique id so we can run tests in parallel
-    NAME="citest${CI_BUILD_ID}"
+    NAME="citest${CI_BUILD_ID:-0}"
     # when using gitlab-runner locally, CI_BUILD_ID is always 1 which
     # will conflict with running/terminating AWS instances in subsequent runs
     # therefore we pick a random number in this case
-    [ "$CI_BUILD_ID" -eq "1" ] && NAME+="000${RANDOM}"
+    [ "${CI_BUILD_ID:-0}" -eq "1" ] && NAME+="000${RANDOM}"
 
     TAG='single'
     SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
-    SEEDS=''
     build_from_scratch
     # Deploy and test
     deploy
@@ -134,4 +171,3 @@ case "$CI_ENVIRONMENT_NAME" in
     [ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
     ;;
 esac
-} | /usr/bin/ts -s
