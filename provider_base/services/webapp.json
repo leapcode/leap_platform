@@ -23,6 +23,7 @@
     "invite_required": "= provider.enrollment_policy == 'invite'",
     "default_service_level": "= provider.service.default_service_level",
     "service_levels": "= service_levels()",
+    "secret_key_base": "= secret :webapp_secret_key_base",
     "secret_token": "= secret :webapp_secret_token",
     "api_version": 1,
     "secure": false,

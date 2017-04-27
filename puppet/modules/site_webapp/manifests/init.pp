@@ -10,6 +10,7 @@ class site_webapp {
   $provider_domain  = $node_domain['full_suffix']
   $webapp           = hiera('webapp')
   $api_version      = $webapp['api_version']
+  $secret_key_base  = $webapp['secret_key_base']
   $secret_token     = $webapp['secret_token']
   $tor              = hiera('tor', false)
   $sources          = hiera('sources')
