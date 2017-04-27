@@ -144,11 +144,11 @@ case "$CI_ENVIRONMENT_NAME" in
     TAG='latest'
     run ibex ssh://gitolite@leap.se/ibex
     ;;
-  demo/mail)
+  production/demo/mail)
     TAG='demomail'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
-  demo/vpn)
+  production/demo/vpn)
     TAG='demovpn'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;

@@ -79,7 +79,7 @@ ci.leap.se:
 demo.bitmask.net:
   stage: deploy
   environment:
-    name: production/vpn
+    name: production/demo/vpn
   only:
     - master
   when: manual
@@ -89,7 +89,7 @@ demo.bitmask.net:
 mail.bitmask.net:
   stage: deploy
   environment:
-    name: production/mail
+    name: production/demo/mail
   only:
     - master
   when: manual
