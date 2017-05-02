@@ -72,7 +72,7 @@ ci.leap.se:
   environment:
     name: staging
   only:
-    - master
+    - master@leap/platform
   script:
     - su -c '/usr/bin/unbuffer ./ci-build.sh' cirunner
 
