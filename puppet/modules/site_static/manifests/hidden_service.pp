@@ -1,7 +1,7 @@
 # create hidden service for static sites
 class site_static::hidden_service ( $single_hop = false ) {
 
-  include tor::daemon
+  include site_tor
   tor::daemon::hidden_service { 'static':
     ports      => [ '80 127.0.0.1:80'],
     single_hop => $single_hop

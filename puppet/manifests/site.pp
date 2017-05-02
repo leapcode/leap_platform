@@ -45,7 +45,7 @@ node default {
   }
 
   if member($services, 'tor') {
-    include site_tor
+    include site_tor::relay
   }
 
   if member($services, 'mx') {

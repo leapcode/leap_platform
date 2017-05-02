@@ -10,7 +10,7 @@ class site_webapp::hidden_service {
   include apache::module::expires
   include apache::module::removeip
 
-  include tor::daemon
+  include site_tor
   tor::daemon::hidden_service { 'webapp':
     ports      => [ '80 127.0.0.1:80'],
     single_hop => $hidden_service['single_hop']
