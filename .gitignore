@@ -24,3 +24,6 @@
 /tests/platform-ci/provider/test
 
 /builds
+
+/.ruby-version
+/.rbenv-gemsets
