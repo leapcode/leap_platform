@@ -54,7 +54,10 @@ class soledad::server {
 
   package { $sources['soledad']['package']:
     ensure  => $sources['soledad']['revision'],
-    require => Class['site_apt::leap_repo'];
+    require => [
+      Class['site_apt::leap_repo'],
+      Package['ssl-cert']
+    ];
   }
 
   file { '/etc/default/soledad':
