@@ -63,6 +63,7 @@
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",
+    "couchdb_port": "= couchdb_port",
     "couchdb_nickserver_user": {
       "username": "= global.services[:couchdb].couch.users[:nickserver].username",
       "password": "= secret :couch_nickserver_password",

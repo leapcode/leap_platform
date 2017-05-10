@@ -28,9 +28,11 @@ class site_nickserver {
   # the port that nickserver is actually running on
   $nickserver_local_port = '64250'
 
-  # couchdb is available on localhost via stunnel, which is bound to 4000.
+  # couchdb is available on localhost:
+  # - When couchdb is running on a different node: Via stunnel, which is bound to 4000.
+  # - When couchdb is running on the same node: On port 5984
   $couchdb_host      = 'localhost'
-  $couchdb_port      = '4000'
+  $couchdb_port      = $nickserver['couchdb_port']
 
   $sources           = hiera('sources')
 
