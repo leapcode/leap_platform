@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Exit on failure
+set -e
+
 # shellcheck disable=SC1091
 . /vagrant/vagrant/vagrant.config
 
@@ -14,7 +17,7 @@ mkdir -p "$PROVIDERDIR"
 chown "${USER}:${USER}" "${PROVIDERDIR}"
 cd "$PROVIDERDIR" || exit
 
-$LEAP "$OPTS" new --contacts "${contacts:?}" --domain "${provider_domain:?}" --name "${provider_name:?}" --platform="$PLATFORMDIR" .
+$LEAP new --contacts "${contacts:?}" --domain "${provider_domain:?}" --name "${provider_name:?}" --platform="$PLATFORMDIR" .
 printf '\n@log = "./deploy.log"' >> Leapfile
 
 if [ ! -e "/home/${USER}/.ssh/id_rsa" ]; then
@@ -27,15 +30,15 @@ $SUDO mkdir -p "${PROVIDERDIR}/files/nodes/${NODE}"
 sh -c "cat /etc/ssh/ssh_host_rsa_key.pub | cut -d' ' -f1,2 >> $PROVIDERDIR/files/nodes/$NODE/${NODE}_ssh.pub"
 chown "${USER}:${USER}" "${PROVIDERDIR}/files/nodes/${NODE}/${NODE}_ssh.pub"
 
-$LEAP "$OPTS" add-user --self
-$LEAP "$OPTS" cert ca
-$LEAP "$OPTS" cert csr
-$LEAP "$OPTS" node add "$NODE" ip_address:"$(facter ipaddress)" couch.mode:plain  services:"${services:?}" tags:production
+$LEAP add-user --self
+$LEAP cert ca
+$LEAP cert csr
+$LEAP node add "$NODE" ip_address:"$(facter ipaddress)" couch.mode:plain  services:"${services:?}" tags:production
 echo '{ "webapp": { "admins": ["testadmin"] } }' > services/webapp.json
 
-$LEAP "$OPTS" compile
+$LEAP compile
 
-$LEAP "$OPTS" node init "$NODE"
+$LEAP node init "$NODE"
 if [ $? -eq 1 ]; then
   echo 'node init failed'
   exit 1
@@ -46,7 +49,7 @@ fi
 # workaround is to install rake as gem
 gem install rake
 
-$LEAP "$OPTS" -v 2 deploy
+$LEAP -v 2 deploy
 
 # Vagrant: leap_mx fails to start on jessie
 # https://leap.se/code/issues/7755
@@ -62,7 +65,7 @@ echo '==============================================='
 echo 'testing the platform'
 echo '==============================================='
 
-$LEAP "$OPTS" -v 2 test --continue
+$LEAP -v 2 test --continue
 
 echo '==============================================='
 echo 'setting node to demo-mode'
