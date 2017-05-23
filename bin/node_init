@@ -91,3 +91,8 @@ fi
 mkdir -p $HIERA_DIR
 chmod 0755 $HIERA_DIR
 touch $INIT_FILE
+
+# Sometimes not all keys are already generated, happens more often
+# with VMs
+# that would give us errors in the get_ssh_keys_cmd during node init
+/usr/bin/ssh-keygen -A
