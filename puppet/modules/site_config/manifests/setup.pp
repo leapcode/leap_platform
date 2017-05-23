@@ -37,7 +37,7 @@ class site_config::setup {
   # we need to include shorewall::interface{eth0} in setup.pp so
   # packages can be installed during main puppetrun, even before shorewall
   # is configured completly
-  if ( $::site_config::params::environment == 'local' ) {
+  if $::vagrant {
     include site_config::vagrant
   }
 
