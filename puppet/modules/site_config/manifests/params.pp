@@ -1,3 +1,4 @@
+# Default parameters
 class site_config::params {
 
   $ip_address               = hiera('ip_address')
@@ -6,8 +7,16 @@ class site_config::params {
   $environment              = hiera('environment', undef)
 
 
-  if $environment == 'local' {
-    $interface = 'eth1'
+  if $::vagrant {
+    # Depending on the backend hypervisor networking is setup differently.
+    if $::interfaces =~ /eth1/ {
+      # Virtualbox: Private networking creates a second interface eth1
+      $interface = 'eth1'
+    }
+    else {
+      # KVM/Libvirt: Private networking is done by defauly on first interface
+      $interface = 'eth0'
+    }
     include site_config::packages::build_essential
   }
   elsif hiera('interface','') != '' {

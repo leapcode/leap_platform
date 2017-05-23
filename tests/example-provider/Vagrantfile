@@ -42,6 +42,10 @@ Vagrant.configure("2") do |config|
 
   config.ssh.username = "vagrant"
 
+  # Enable private networking so the box can be accessed directly,
+  # not only via port forwaring
+  config.vm.network "private_network", type: "dhcp"
+
   # forward leap_web ports
   config.vm.network "forwarded_port", guest: 443, host:4443
   # forward pixelated ports
