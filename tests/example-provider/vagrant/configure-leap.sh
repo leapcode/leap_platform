@@ -33,7 +33,16 @@ chown "${USER}:${USER}" "${PROVIDERDIR}/files/nodes/${NODE}/${NODE}_ssh.pub"
 $LEAP add-user --self
 $LEAP cert ca
 $LEAP cert csr
-$LEAP node add "$NODE" ip_address:"$(facter ipaddress)" couch.mode:plain  services:"${services:?}" tags:production
+
+# Try to see if there's a private IP for eth1
+# Otherwise take eth0
+# (virtualbox and libvirt backends behave differenently setting up
+# direct accessible private networks.
+# see https://www.vagrantup.com/docs/networking/private_network.html
+IP="$(facter ipaddress_eth1)"
+[ "$IP" = '' ] && IP="$(facter ipaddress_eth0)"
+$LEAP node add "$NODE" ip_address:"${IP}" couch.mode:plain  services:"${services:?}" tags:production
+
 echo '{ "webapp": { "admins": ["testadmin"] } }' > services/webapp.json
 
 $LEAP compile
