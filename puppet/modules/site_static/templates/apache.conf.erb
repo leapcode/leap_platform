@@ -80,7 +80,9 @@
 ##
 <VirtualHost 127.0.0.1:80>
   ServerName <%= @tor_domain %>
+<%- if @www_alias -%>
   ServerAlias www.<%= @tor_domain %>
+<%- end -%>
 
   <IfModule mod_headers.c>
     Header set X-Frame-Options "deny"
@@ -102,7 +104,9 @@
 ##
 <VirtualHost *:80>
   ServerName <%= @domain %>
-  ServerAlias www.<%= @domain %>
+<%- if @www_alias -%>
+  ServerAlias www.<%= @tor_domain %>
+<%- end -%>
 <%- @aliases && @aliases.each do |domain_alias| -%>
   ServerAlias <%= domain_alias %>
 <%- end -%>
@@ -122,7 +126,9 @@
 ##
 <VirtualHost *:443>
   ServerName <%= @domain %>
-  ServerAlias www.<%= @domain %>
+<%- if @www_alias -%>
+  ServerAlias www.<%= @tor_domain %>
+<%- end -%>
 <%- @aliases && @aliases.each do |domain_alias| -%>
   ServerAlias <%= domain_alias %>
 <%- end -%>

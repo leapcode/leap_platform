@@ -337,31 +337,41 @@ module LeapCli; module Commands
   # This method will bail if any checks fail.
   #
   def domain_ready_for_acme!(domain)
-    begin
-      uri = URI("https://#{domain}/.well-known/acme-challenge/ok")
-      options = {
-        use_ssl: true,
-        open_timeout: 5,
-        verify_mode: OpenSSL::SSL::VERIFY_NONE
-      }
-      Net::HTTP.start(uri.host, uri.port, options) do |http|
-        http.request(Net::HTTP::Get.new(uri)) do |response|
-          if !response.is_a?(Net::HTTPSuccess)
-            bail!(:error, "Could not GET %s" % uri) do
-              log "%s %s" % [response.code, response.message]
-              log "You may need to run `leap deploy`"
-            end
+    uri = URI("https://#{domain}/.well-known/acme-challenge/ok")
+    options = {
+      use_ssl: true,
+      open_timeout: 5,
+      verify_mode: OpenSSL::SSL::VERIFY_NONE
+    }
+    http_get(uri, options)
+  end
+
+  private
+
+  def http_get(uri, options, limit = 10)
+    raise ArgumentError, "HTTP redirect too deep (#{uri})" if limit == 0
+    Net::HTTP.start(uri.host, uri.port, options) do |http|
+      http.request(Net::HTTP::Get.new(uri)) do |response|
+        case response
+        when Net::HTTPSuccess then
+          return response
+        when Net::HTTPRedirection then
+          return http_get(URI(response['location']), options, limit - 1)
+        else
+          bail!(:error, "Could not GET %s" % uri) do
+            log "%s %s" % [response.code, response.message]
+            log "You may need to run `leap deploy`"
           end
         end
       end
-    rescue Errno::ETIMEDOUT, Net::OpenTimeout
-      bail! :error, "Connection attempt timed out: %s" % uri
-    rescue Interrupt
-      bail!
-    rescue StandardError => exc
-      bail!(:error, "Could not GET %s" % uri) do
-        log exc.to_s
-      end
+    end
+  rescue Errno::ETIMEDOUT, Net::OpenTimeout
+    bail! :error, "Connection attempt timed out: %s" % uri
+  rescue Interrupt
+    bail!
+  rescue StandardError => exc
+    bail!(:error, "Could not GET %s" % uri) do
+      log exc.to_s
     end
   end
 

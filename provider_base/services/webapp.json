@@ -71,9 +71,6 @@
     },
     "port": 6425
   },
-  "dns": {
-    "aliases": "= [domain.full, webapp.domain, api.domain, nickserver.domain]"
-  },
   "x509": {
     "use": true,
     "use_commercial": true,

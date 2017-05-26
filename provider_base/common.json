@@ -12,7 +12,8 @@
      "name": "= node.name + '.' + (dns.public ? domain.full_suffix : domain.internal_suffix)"
   },
   "dns": {
-    "public": "= service_type != 'internal_service'"
+    "public": "= service_type != 'internal_service'",
+    "aliases": []
   },
   "ssh": {
     "authorized_keys": "= authorized_keys",
