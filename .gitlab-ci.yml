@@ -64,6 +64,17 @@ deploy_test:
   script:
     - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
 
+# However, sometimes it's important to have a way of triggering a deploy
+# from scratch manually even from the master branch, when i.e. new packages
+# got uploaded to the master component of the platform deb repo.
+deploy_test:manual:
+  stage: deploy
+  only:
+    - master
+  when: manual
+  script:
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
+
 # Latest job will only run on the master branch, which means all merge requests
 # that are created from branches don't get to deploy to the latest-ci server.
 # When a merge request is merged, then the latest job will deploy the code to
