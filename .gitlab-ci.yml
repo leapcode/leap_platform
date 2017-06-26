@@ -60,7 +60,7 @@ deploy_test:
   except:
     - master
   script:
-    - su -c '/usr/bin/unbuffer /bin/bash -o pipefail ./ci-build.sh | /usr/bin/ts' cirunner
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
 
 # Latest job will only run on the master branch, which means all merge requests
 # that are created from branches don't get to deploy to the latest-ci server.
