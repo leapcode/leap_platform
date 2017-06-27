@@ -94,15 +94,11 @@ class leap_mx {
   # LEAP-MX CODE AND DEPENDENCIES
   #
 
-  package {
-    $sources['leap-mx']['package']:
-      ensure  => $sources['leap-mx']['revision'],
-      require => [
-        Class['site_apt::leap_repo'],
-        User['leap-mx'] ];
-
-    'leap-keymanager':
-      ensure => latest;
+  package { $sources['leap-mx']['package']:
+    ensure  => $sources['leap-mx']['revision'],
+    require => [
+      Class['site_apt::leap_repo'],
+      User['leap-mx'] ];
   }
 
   #
