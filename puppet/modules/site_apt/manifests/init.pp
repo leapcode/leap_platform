@@ -20,20 +20,24 @@ class site_apt {
     $apt_platform_codename = $platform_sources['apt']['codename']
   }
 
-  # needed on jessie hosts for getting pnp4nagios from testing
+  # needed on jessie hosts for getting python-treq from stretch
+  # see https://0xacab.org/leap/platform/issues/8836
   if ( $::operatingsystemmajrelease == '8' ) {
-    $use_next_release = true
+    $use_next_release   = true
+    $custom_preferences = template("site_apt/${::operatingsystem}/preferences_jessie.erb")
   } else {
-    $use_next_release = false
+    $use_next_release   = false
+    $custom_preferences = ''
   }
 
   class { 'apt':
-    custom_key_dir   => 'puppet:///modules/site_apt/keys',
-    debian_url       => $apt_url_basic,
-    security_url     => $apt_url_security,
-    backports_url    => $apt_url_backports,
-    use_next_release => $use_next_release,
-    repos            => 'main'
+    custom_key_dir     => 'puppet:///modules/site_apt/keys',
+    debian_url         => $apt_url_basic,
+    security_url       => $apt_url_security,
+    backports_url      => $apt_url_backports,
+    use_next_release   => $use_next_release,
+    custom_preferences => $custom_preferences,
+    repos              => 'main'
   }
 
   # enable http://deb.leap.se debian package repository
