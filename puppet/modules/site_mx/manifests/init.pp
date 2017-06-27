@@ -19,4 +19,6 @@ class site_mx {
   include ::site_check_mk::agent::mx
   # install twisted from jessie backports
   include ::site_apt::preferences::twisted
+  # install python-cryptography from jessie backports
+  include ::site_apt::preferences::python_cryptography
 }
