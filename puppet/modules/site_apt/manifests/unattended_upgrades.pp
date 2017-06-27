@@ -11,8 +11,7 @@ class site_apt::unattended_upgrades {
 
   # configure LEAP upgrades
   apt::apt_conf { '51unattended-upgrades-leap':
-    source      => [
-      "puppet:///modules/site_apt/${::lsbdistid}/51unattended-upgrades-leap"],
+    content     => template('site_apt/51unattended-upgrades-leap'),
     require     => Package['unattended-upgrades'],
     refresh_apt => false,
   }
