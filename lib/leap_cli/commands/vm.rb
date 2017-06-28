@@ -415,7 +415,6 @@ module LeapCli; module Commands
     config = manager.env.cloud
     name = nil
     if options[:mock]
-      Fog.mock!
       name = 'mock_aws'
       config['mock_aws'] = {
         "api" => "aws",
@@ -451,6 +450,10 @@ module LeapCli; module Commands
     assert! entry['api'] == 'aws', "cloud.json: currently, only 'aws' is supported for `api`."
     assert! entry['vendor'] == 'aws', "cloud.json: currently, only 'aws' is supported for `vendor`."
 
+    LeapCli::Cloud::check_dependencies!(entry)
+    if options[:mock]
+      Fog.mock!
+    end
     return LeapCli::Cloud.new(name, entry, node)
   end
 

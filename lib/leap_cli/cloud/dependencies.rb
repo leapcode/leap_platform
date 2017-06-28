@@ -1,40 +1,37 @@
 #
-# I am not sure this is a good idea, but it might be. Tricky, so disabled for now
+# Ensure that the needed fog gems are installed
 #
-
-=begin
 module LeapCli
   class Cloud
 
-    def self.check_required_gems
+    SUPPORTED = {
+      'aws' => {require: 'fog/aws', gem: 'fog-aws'}
+    }.freeze
+
+    def self.check_dependencies!(config)
+      required_gem = map_api_to_gem(config['api'])
+      if required_gem.nil?
+        Util.bail! do
+          Util.log :error, "The API '#{config['api']}' specified in cloud.json is not one that I know how to speak. Try one of #{supported_list}."
+        end
+      end
+
       begin
-        require "fog"
+        require required_gem[:require]
       rescue LoadError
-        bail! do
-          log :error, "The 'vm' command requires the gem 'fog-core'. Please run `gem install fog-core` and try again."
-        end
-      end
-
-      fog_gems = @cloud.required_gems
-      if !options[:mock] && fog_gems.empty?
-        bail! do
-          log :warning, "no vm providers are configured in cloud.json."
-          log "You must have credentials for one of: #{@cloud.possible_apis.join(', ')}."
-        end
-      end
-
-      fog_gems.each do |name, gem_name|
-        begin
-          require gem_name.sub('-','/')
-        rescue LoadError
-          bail! do
-            log :error, "The 'vm' command requires the gem '#{gem_name}' (because of what is configured in cloud.json)."
-            log "Please run `sudo gem install #{gem_name}` and try again."
-          end
+        Util.bail! do
+          Util.log :error, "The 'vm' command requires the gem '#{required_gem[:gem]}'. Please run `gem install #{required_gem[:gem]}` and try again."
+          Util.log "(make sure you install the gem in the ruby #{RUBY_VERSION} environment)"
         end
       end
     end
 
+    def self.supported_list
+      SUPPORTED.keys.join(', ')
+    end
+
+    def self.map_api_to_gem(api)
+      SUPPORTED[api]
+    end
   end
 end
-=end
