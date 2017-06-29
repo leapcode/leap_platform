@@ -12,6 +12,9 @@ cache:
 
 before_script:
   - cd tests/platform-ci
+  # Check if running locally ($CI_PROJECT_ID is 0 then) and run setup.sh in
+  # this case
+  - if [ "$CI_PROJECT_ID" = "0" ]; then ./setup.sh; fi
 
 stages:
   - setup
