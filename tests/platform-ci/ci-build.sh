@@ -68,12 +68,14 @@ test() {
 }
 
 build_from_scratch() {
-  # create node(s) with unique id so we can run tests in parallel
-  NAME="citest${CI_BUILD_ID:-0}"
   # when using gitlab-runner locally, CI_BUILD_ID is always 1 which
   # will conflict with running/terminating AWS instances in subsequent runs
   # therefore we pick a random number in this case
-  [ "${CI_BUILD_ID:-0}" -eq "1" ] && NAME+="000${RANDOM}"
+  [ "${CI_JOB_ID}" == "1" ] && CI_JOB_ID="000${RANDOM}"
+
+  # create node(s) with unique id so we can run tests in parallel
+  NAME="citest${CI_JOB_ID:-0}"
+
 
   TAG='single'
   SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
