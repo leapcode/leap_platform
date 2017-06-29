@@ -147,7 +147,13 @@ upgrade_test() {
   git remote add leap https://leap.se/git/leap_platform
   git fetch leap
   git checkout -b leap_stable remotes/leap/stable
+  # After checking out a different platform branch
+  # bundle install is needed again
+  cd "$ROOTDIR"
+  /usr/local/bin/bundle install
+
   cd "$PROVIDERDIR"
+
   build_from_scratch
   deploy
   test
@@ -155,6 +161,11 @@ upgrade_test() {
   # Checkout HEAD of current branch and re-deploy
   cd "$PLATFORMDIR"
   git checkout "$CI_COMMIT_REF"
+  # After checking out a different platform branch
+  # bundle install is needed again
+  cd "$ROOTDIR"
+  /usr/local/bin/bundle install
+
   cd "$PROVIDERDIR"
   deploy
   test
