@@ -92,7 +92,7 @@ build_from_scratch() {
 
   pwd
 
-# remove old cached nodes
+  # remove old cached nodes
   echo "Removing old cached nodes..."
   find nodes -name 'citest*' -exec rm {} \;
 
@@ -149,16 +149,16 @@ set +x
 # Enable xtrace again only if it was set at beginning of script
 [[ $xtrace == true ]] && set -x
 
-case "$CI_ENVIRONMENT_NAME" in
-  staging)
+case "$CI_JOB_NAME" in
+  ci.leap.se)
     TAG='latest'
     run ibex ssh://gitolite@leap.se/ibex
     ;;
-  production/demo/mail)
+  mail.bitmask.net)
     TAG='demomail'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
-  production/demo/vpn)
+  demo.bitmask.net)
     TAG='demovpn'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
