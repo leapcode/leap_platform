@@ -178,10 +178,13 @@ case "$CI_JOB_NAME" in
     TAG='demovpn'
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
-  *)
+  deploy_test*)
     build_from_scratch
     deploy
     test
     cleanup
+    ;;
+  *)
+    fail "Don't know what to do for \$CI_JOB_NAME \"$CI_JOB_NAME\"!"
     ;;
 esac
