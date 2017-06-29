@@ -68,6 +68,16 @@ test() {
 }
 
 build_from_scratch() {
+  # create node(s) with unique id so we can run tests in parallel
+  NAME="citest${CI_BUILD_ID:-0}"
+  # when using gitlab-runner locally, CI_BUILD_ID is always 1 which
+  # will conflict with running/terminating AWS instances in subsequent runs
+  # therefore we pick a random number in this case
+  [ "${CI_BUILD_ID:-0}" -eq "1" ] && NAME+="000${RANDOM}"
+
+  TAG='single'
+  SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
+
   # leap_platform/tests/platform-ci/provider
   PROVIDERDIR="${ROOTDIR}/provider"
   /bin/echo "Provider directory: ${PROVIDERDIR}"
@@ -130,6 +140,12 @@ run() {
     test
 }
 
+cleanup() {
+  # if everything succeeds, destroy the vm
+  LEAP_CMD vm rm "${TAG}"
+  [ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
+}
+
 #
 # Main
 #
@@ -163,21 +179,9 @@ case "$CI_JOB_NAME" in
     run bitmask ssh://gitolite@leap.se/bitmask
     ;;
   *)
-    # create node(s) with unique id so we can run tests in parallel
-    NAME="citest${CI_BUILD_ID:-0}"
-    # when using gitlab-runner locally, CI_BUILD_ID is always 1 which
-    # will conflict with running/terminating AWS instances in subsequent runs
-    # therefore we pick a random number in this case
-    [ "${CI_BUILD_ID:-0}" -eq "1" ] && NAME+="000${RANDOM}"
-
-    TAG='single'
-    SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
     build_from_scratch
-    # Deploy and test
     deploy
     test
-    # if everything succeeds, destroy the vm
-    LEAP_CMD vm rm "${TAG}"
-    [ -f "nodes/${NAME}.json" ] && /bin/rm "nodes/${NAME}.json"
+    cleanup
     ;;
 esac
