@@ -140,6 +140,29 @@ run() {
     test
 }
 
+upgrade_test() {
+  # Checkout stable branch containing last release
+  # and deploy this
+  cd "$PLATFORMDIR"
+  git remote add leap https://leap.se/git/leap_platform
+  git fetch leap
+  git checkout -b leap_stable remotes/leap/stable
+  cd "$PROVIDERDIR"
+  build_from_scratch
+  deploy
+  test
+
+  # Checkout HEAD of current branch and re-deploy
+  cd "$PLATFORMDIR"
+  git checkout "$CI_COMMIT_REF"
+  cd "$PROVIDERDIR"
+  deploy
+  test
+
+  cleanup
+
+}
+
 cleanup() {
   # if everything succeeds, destroy the vm
   LEAP_CMD vm rm "${TAG}"
@@ -183,6 +206,9 @@ case "$CI_JOB_NAME" in
     deploy
     test
     cleanup
+    ;;
+  upgrade_test)
+    upgrade_test
     ;;
   *)
     fail "Don't know what to do for \$CI_JOB_NAME \"$CI_JOB_NAME\"!"
