@@ -1,45 +1,128 @@
+---
+image: 0xacab.org:4567/leap/docker/ruby:latest
+
+# This is for caching the gems not only between the stages, but also
+# persistent on the gitlab-runner so we don't need to install from
+# scratch on every pipeline
+cache:
+  key: "$CI_BUILD_REF_NAME"
+  untracked: true
+  paths:
+    - tests/platform-ci/vendor/
+
 before_script:
-  - echo 'Running global before_script'
   - cd tests/platform-ci
-  - ./setup.sh
+  # Check if running locally ($CI_PROJECT_ID is 0 then) and run setup.sh in
+  # this case
+  - if [ "$CI_PROJECT_ID" = "0" ]; then ./setup.sh; fi
 
 stages:
+  - setup
   - syntax
-  - build
+  - deploy
 
-image: leapcode/ruby
+setup:
+  stage: setup
+  script:
+    - ./setup.sh
 
 lint:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake lint
+    - su -c '/usr/local/bin/bundle exec rake lint' cirunner
 
 syntax:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake syntax
+    - su -c '/usr/local/bin/bundle exec rake syntax' cirunner
 
 validate:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake validate
+    - su -c '/usr/local/bin/bundle exec rake validate' cirunner
 
 templates:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake templates
+    - su -c '/usr/local/bin/bundle exec rake templates' cirunner
 
 catalog:
   stage: syntax
   script:
-    - /usr/local/bin/bundle exec rake catalog
+    - su -c '/usr/local/bin/bundle exec rake catalog' cirunner
 
-#rspec:
+# rspec:
 #  stage: rspec
 #  script:
 #    - /usr/local/bin/bundle exec rake spec
 
-build:
-  stage: build
+# The deploy_test job is run on any merge request. This is used to ensure that
+# the merge request will deploy and test properly. It is not run when the merge
+# request is accepted into master, instead the 'latest' job below is run
+# instead.
+deploy_test:
+  stage: deploy
+  except:
+    - master
   script:
-    - /usr/bin/unbuffer ./ci-build.sh | /usr/bin/ts -s
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
+
+# However, sometimes it's important to have a way of triggering a deploy
+# from scratch manually even from the master branch, when i.e. new packages
+# got uploaded to the master component of the platform deb repo.
+deploy_test:manual:
+  stage: deploy
+  only:
+    - master
+  when: manual
+  script:
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
+
+# Test upgrades from the latetest release to latest HEAD
+upgrade_test:
+  stage: deploy
+  when: manual
+  script:
+    # Allow unpriviledged user to checkout last release of leap_platform
+    - chown cirunner:cirunner -R ../..
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner || sleep 9000
+
+# Latest job will only run on the master branch, which means all merge requests
+# that are created from branches don't get to deploy to the latest-ci server.
+# When a merge request is merged, then the latest job will deploy the code to
+# the latest provider, and the deployment will be recorded in an environment
+# named 'latest'
+ci.leap.se:
+  stage: deploy
+  environment:
+    name: staging
+  only:
+    - master@leap/platform
+  script:
+    - >
+      su -c '/usr/bin/unbuffer /bin/bash -o pipefail ./ci-build.sh |
+      /usr/bin/ts' cirunner
+
+demo.bitmask.net:
+  stage: deploy
+  environment:
+    name: production/demo/vpn
+  only:
+    - master
+  when: manual
+  script:
+    - >
+      su -c '/usr/bin/unbuffer /bin/bash -o pipefail ./ci-build.sh |
+      /usr/bin/ts' cirunner
+
+mail.bitmask.net:
+  stage: deploy
+  environment:
+    name: production/demo/mail
+  only:
+    - master
+  when: manual
+  script:
+    - >
+      su -c '/usr/bin/unbuffer /bin/bash -o pipefail ./ci-build.sh |
+      /usr/bin/ts' cirunner

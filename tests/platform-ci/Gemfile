@@ -12,6 +12,8 @@ group :test do
   gem "mocha"
   # Use puppet-catalog-test from git because last released gem 0.4.2 gives a deprecation
   # warning: "[DEPRECATION] `last_comment` is deprecated.  Please use `last_description` instead."
-  gem "puppet-catalog-test", :git => 'https://github.com/invadersmustdie/puppet-catalog-test.git'
-  gem "leap_cli", :git => 'https://leap.se/git/leap_cli.git', :branch => 'develop'
+  gem "puppet-catalog-test", :git => 'https://github.com/invadersmustdie/puppet-catalog-test.git', :ref => 'ac386793c2c456d2071dd0adda716224128f0bb3'
+  # Install fog-aws because the gem dependency of leap_cli is now optional
+  gem "fog-aws"
+  gem "leap_cli", :git => 'https://leap.se/git/leap_cli.git'
 end
