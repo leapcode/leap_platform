@@ -78,6 +78,14 @@ deploy_test:manual:
   script:
     - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
 
+# Test upgrades from the latetest release to latest HEAD
+upgrade_test:
+  stage: deploy
+  script:
+    # Allow unpriviledged user to checkout last release of leap_platform
+    - chown cirunner:cirunner -R ../..
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
+
 # Latest job will only run on the master branch, which means all merge requests
 # that are created from branches don't get to deploy to the latest-ci server.
 # When a merge request is merged, then the latest job will deploy the code to
