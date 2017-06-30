@@ -4,9 +4,6 @@
       "apt": {
         "basic": "http://deb.leap.se/experimental-0.9"
       }
-    },
-    "nickserver": {
-      "revision": "develop"
     }
   }
 }
