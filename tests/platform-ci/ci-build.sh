@@ -146,7 +146,8 @@ upgrade_test() {
   # Checkout stable branch containing last release
   # and deploy this
   cd "$PLATFORMDIR"
-  git remote add leap https://leap.se/git/leap_platform
+  # due to cache, this remote is sometimes already added
+  git remote add leap https://leap.se/git/leap_platform || true
   git fetch leap
   git checkout -b leap_stable remotes/leap/stable
   # After checking out a different platform branch
