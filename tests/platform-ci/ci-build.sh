@@ -149,7 +149,10 @@ upgrade_test() {
   # due to cache, this remote is sometimes already added
   git remote add leap https://leap.se/git/leap_platform || true
   git fetch leap
+  echo "Checking out leap/stable"
   git checkout -b leap_stable remotes/leap/stable || true
+  echo -n "Current version: "
+  git rev-parse HEAD
   # After checking out a different platform branch
   # bundle install is needed again
   cd "$ROOTDIR"
@@ -163,7 +166,10 @@ upgrade_test() {
 
   # Checkout HEAD of current branch and re-deploy
   cd "$PLATFORMDIR"
-  git checkout "$CI_COMMIT_REF"
+  echo "Checking out: $CI_COMMIT_SHA"
+  git checkout "$CI_COMMIT_SHA"
+  echo -n "Current version: "
+  git rev-parse HEAD
   # After checking out a different platform branch
   # bundle install is needed again
   cd "$ROOTDIR"
