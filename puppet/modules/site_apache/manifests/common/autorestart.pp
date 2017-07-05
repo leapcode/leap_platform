@@ -5,6 +5,8 @@ class site_apache::common::autorestart {
 
   file { '/etc/systemd/system/apache2.service.d':
     ensure => directory,
+    owner  => root,
+    group  => root,
     mode   => '0755',
   }
 
