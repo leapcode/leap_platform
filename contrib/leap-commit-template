@@ -1,0 +1,20 @@
+# Bug|Feat|CI|Docs|Style|Tests|I18n|Vagrant|Lint: [style: https://github.com/m1foley/fit-commit]
+
+
+# [Story about your commit.]
+
+# Use one or more of these things:
+# - Fixes|Closes #3210
+# - Related: #1234
+
+#example:
+#    
+#   Bug: fix apache systemd insanity
+#    
+#   Apache2 systemd autorestart was failing because of #2314432
+#   and it was caused by a gremlin that was entering through a wormhole
+#   caused by #985843, so this commit resolves this wormhole
+#    
+#    # Use one of these things:
+#    [- Fixes|Closes #5234]
+#    [- Related: #1234]
