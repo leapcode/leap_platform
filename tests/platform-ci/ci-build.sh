@@ -128,18 +128,34 @@ build_from_scratch() {
 }
 
 run() {
-  echo "Cloning $1 repo: $2"
-    git clone -q --depth 1 "$2"
-    cd "$1"
-    git rev-parse HEAD
-    echo -n "Operating in the $1 directory: "
-    pwd
-    echo "Listing current node information..."
-    LEAP_CMD list
-    echo "Attempting a deploy..."
-    deploy
-    echo "Attempting to run tests..."
-    test
+  provider_name=$1
+  provider_URI=$2
+  platform_branch=$3
+
+  # If the third argument is set make sure we are on that platform branch
+  if [[ -n $platform_branch ]]
+  then
+      echo "Checking out $platform_branch branch of platform"
+      cd "$PLATFORMDIR"
+      git checkout -B "$platform_branch"
+  fi
+
+  # Setup the provider repository
+  echo "Setting up the provider repository: $provider_name by cloning $provider_URI"
+  git clone -q --depth 1 "$provider_URI" "$ROOTDIR"
+  cd "$provider_name"
+  echo -n "$provider_name repo at revision: "
+  git rev-parse HEAD
+  echo -n "Operating in the $provider_name directory: "
+  pwd
+  echo "Listing current node information..."
+  LEAP_CMD list
+
+  # Do the deployment
+  echo "Attempting a deploy..."
+  deploy
+  echo "Attempting to run tests..."
+  test
 }
 
 upgrade_test() {
@@ -215,7 +231,7 @@ case "$CI_JOB_NAME" in
     ;;
   mail.bitmask.net)
     TAG='demomail'
-    run bitmask ssh://gitolite@leap.se/bitmask
+    run bitmask ssh://gitolite@leap.se/bitmask master
     ;;
   demo.bitmask.net)
     TAG='demovpn'
