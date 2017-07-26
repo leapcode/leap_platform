@@ -8,13 +8,13 @@
 # - Related: #1234
 
 #example:
-#    
-#   Bug: fix apache systemd insanity
-#    
-#   Apache2 systemd autorestart was failing because of #2314432
-#   and it was caused by a gremlin that was entering through a wormhole
-#   caused by #985843, so this commit resolves this wormhole
-#    
-#    # Use one of these things:
-#    [- Fixes|Closes #5234]
-#    [- Related: #1234]
+#
+# Bug: fix apache systemd insanity
+#
+# Apache2 systemd autorestart was failing because of a gremlin that was entering
+# through a wormhole. This fixes #985843 by closing the wormhole so no further
+# gremlins can come through.
+#
+# # Use one of these things:
+# [- Fixes|Closes #5234]
+# [- Related: #1234]
