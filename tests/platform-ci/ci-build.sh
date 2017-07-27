@@ -132,6 +132,16 @@ run() {
   provider_URI=$2
   platform_branch=$3
 
+  # Setup the provider repository
+  echo "Setting up the provider repository: $provider_name by cloning $provider_URI"
+  git clone -q --depth 1 "$provider_URI"
+  cd "$provider_name"
+  echo -n "$provider_name repo at revision: "
+  git rev-parse HEAD
+  echo -n "Operating in the $provider_name directory: "
+  pwd
+
+
   # If the third argument is set make sure we are on that platform branch
   if [[ -n $platform_branch ]]
   then
@@ -140,14 +150,7 @@ run() {
       git checkout -B "$platform_branch"
   fi
 
-  # Setup the provider repository
-  echo "Setting up the provider repository: $provider_name by cloning $provider_URI"
-  git clone -q --depth 1 "$provider_URI" "$ROOTDIR"
-  cd "$provider_name"
-  echo -n "$provider_name repo at revision: "
-  git rev-parse HEAD
-  echo -n "Operating in the $provider_name directory: "
-  pwd
+  cd "${ROOTDIR}/${provider_name}"
   echo "Listing current node information..."
   LEAP_CMD list
 
