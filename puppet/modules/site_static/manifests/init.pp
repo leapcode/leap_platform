@@ -12,6 +12,11 @@ class site_static {
   $formats        = $static['formats']
   $bootstrap      = $static['bootstrap_files']
   $tor            = hiera('tor', false)
+  if $tor and member($services, 'tor') and $tor['hidden_service']['active'] == true {
+    $tor_active = true
+  } else {
+    $tor_active = false
+  }
 
   file {
     '/srv/static/':
@@ -67,15 +72,17 @@ class site_static {
     }
 
     package { 'zlib1g-dev':
-        ensure => installed
+      ensure => installed
     }
   }
 
-  if $tor {
+  if $tor_active {
     $hidden_service = $tor['hidden_service']
     $tor_domain     = "${hidden_service['address']}.onion"
-      class { 'site_static::hidden_service': single_hop => $hidden_service['single_hop']
+    class { 'site_static::hidden_service':
+      single_hop => $hidden_service['single_hop']
     }
+
     # Currently, we only support a single hidden service address per server.
     # So if there is more than one domain configured, then we need to make sure
     # we don't enable the hidden service for every domain.
