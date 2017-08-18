@@ -178,7 +178,7 @@ module LeapCli
       rescue StandardError => exc
         if exc.is_a?(SSHKit::Command::Failed) || exc.is_a?(SSHKit::Runner::ExecuteError)
           if @options[:raise_error]
-            raise LeapCli::SSH::ExecuteError, exc.to_s
+            raise exc
           elsif @options[:fail_msg]
             @logger.log(@options[:fail_msg], host: @host.hostname, :color => :red)
           else
