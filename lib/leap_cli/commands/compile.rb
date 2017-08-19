@@ -155,7 +155,7 @@ module LeapCli
       buffer = StringIO.new
       keys = Dir.glob(path([:user_ssh, '*']))
       if keys.empty?
-        bail! "You must have at least one public SSH user key configured in order to proceed. See `leap help add-user`."
+        bail! "You must have at least one public SSH user key configured in order to proceed. See `leap help user add`."
       end
       if file_exists?(path(:monitor_pub_key))
         keys << path(:monitor_pub_key)
