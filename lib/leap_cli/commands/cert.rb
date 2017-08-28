@@ -102,13 +102,13 @@ module LeapCli; module Commands
   def generate_test_client_cert(prefix=nil)
     require 'leap_cli/x509'
     cert = CertificateAuthority::Certificate.new
-    cert.serial_number.number = cert_serial_number(provider.domain)
-    cert.subject.common_name = [prefix, random_common_name(provider.domain)].join
+    cert.serial_number.number = X509.cert_serial_number(provider.domain)
+    cert.subject.common_name = [prefix, X509.random_common_name(provider.domain)].join
     cert.not_before = X509.yesterday
     cert.not_after  = X509.yesterday.advance(:years => 1)
     cert.key_material.generate_key(1024) # just for testing, remember!
-    cert.parent = client_ca_root
-    cert.sign! client_test_signing_profile
+    cert.parent = X509.client_ca_root
+    cert.sign! X509.client_test_signing_profile
     yield cert.key_material.private_key.to_pem, cert.to_pem
   end
 
