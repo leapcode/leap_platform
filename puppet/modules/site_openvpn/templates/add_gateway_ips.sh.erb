@@ -1,11 +1,21 @@
 #!/bin/sh
 
-ip addr show dev <%= scope.lookupvar('site_config::params::interface') %> | grep -q <%= @openvpn_gateway_address %>/<%= @primary_netmask %> ||
+ip addr show dev <%= scope.lookupvar('site_config::params::interface') %> | grep -q "inet <%= @openvpn_gateway_address %>/" ||
   ip addr add <%= @openvpn_gateway_address %>/<%= @primary_netmask %> dev <%= scope.lookupvar('site_config::params::interface') %>
 
+EXITCODE=$?
+if [ $EXITCODE != 0 ]; then
+  exit $EXITCODE
+fi
+
 <% if @openvpn_second_gateway_address %>
-ip addr show dev <%= scope.lookupvar('site_config::params::interface') %> | grep -q <%= @openvpn_second_gateway_address %>/<%= @primary_netmask %> ||
+ip addr show dev <%= scope.lookupvar('site_config::params::interface') %> | grep -q "<%= @openvpn_second_gateway_address %>/" ||
   ip addr add <%= @openvpn_second_gateway_address %>/<%= @primary_netmask %> dev <%= scope.lookupvar('site_config::params::interface') %>
+
+EXITCODE=$?
+if [ $EXITCODE != 0 ]; then
+  exit $EXITCODE
+fi
 <% end %>
 
 /bin/echo 1 > /proc/sys/net/ipv4/ip_forward

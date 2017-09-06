@@ -6,8 +6,7 @@ class site_config::params {
   $ec2_local_ipv4_interface = getvar("interface_${::ec2_local_ipv4}")
   $environment              = hiera('environment', undef)
 
-
-  if $::vagrant {
+  if str2bool("$::vagrant") {
     # Depending on the backend hypervisor networking is setup differently.
     if $::interfaces =~ /eth1/ {
       # Virtualbox: Private networking creates a second interface eth1

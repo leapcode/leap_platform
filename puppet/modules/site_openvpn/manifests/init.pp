@@ -68,7 +68,7 @@ class site_openvpn {
   # find out the netmask in cidr format of the primary IF
   # thx to https://blog.kumina.nl/tag/puppet-tips-and-tricks/
   # we can do this using an inline_template:
-  $factname_primary_netmask = "netmask_cidr_${::site_config::params::interface}"
+  $factname_primary_netmask = "netmask_${::site_config::params::interface}"
   $primary_netmask = inline_template('<%= scope.lookupvar(@factname_primary_netmask) %>')
 
   # deploy dh keys
