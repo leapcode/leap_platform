@@ -238,7 +238,7 @@ case "$CI_JOB_NAME" in
     ;;
   demo.bitmask.net)
     TAG='demovpn'
-    run bitmask ssh://gitolite@leap.se/bitmask
+    run bitmask ssh://gitolite@leap.se/bitmask master
     ;;
   deploy_test*)
     build_from_scratch
