@@ -74,14 +74,14 @@
   Require all granted
 </Directory>
 
-<%- if @tor_active && (@always_use_hidden_service || @use_hidden_service) -%>
+<%- if @onion_active && (@always_use_hidden_service || @use_hidden_service) -%>
 ##
-## Tor
+## Hidden Service
 ##
 <VirtualHost 127.0.0.1:80>
-  ServerName <%= @tor_domain %>
+  ServerName <%= @onion_domain %>
 <%- if @www_alias -%>
-  ServerAlias www.<%= @tor_domain %>
+  ServerAlias www.<%= @onion_domain %>
 <%- end -%>
 
   <IfModule mod_headers.c>
@@ -105,7 +105,7 @@
 <VirtualHost *:80>
   ServerName <%= @domain %>
 <%- if @www_alias -%>
-  ServerAlias www.<%= @tor_domain %>
+  ServerAlias www.<%= @domain %>
 <%- end -%>
 <%- @aliases && @aliases.each do |domain_alias| -%>
   ServerAlias <%= domain_alias %>
@@ -127,7 +127,7 @@
 <VirtualHost *:443>
   ServerName <%= @domain %>
 <%- if @www_alias -%>
-  ServerAlias www.<%= @tor_domain %>
+  ServerAlias www.<%= @domain %>
 <%- end -%>
 <%- @aliases && @aliases.each do |domain_alias| -%>
   ServerAlias <%= domain_alias %>

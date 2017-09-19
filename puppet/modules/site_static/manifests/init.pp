@@ -12,10 +12,10 @@ class site_static {
   $formats        = $static['formats']
   $bootstrap      = $static['bootstrap_files']
   $tor            = hiera('tor', false)
-  if $tor and member($services, 'tor') and $tor['hidden_service']['active'] == true {
-    $tor_active = true
+  if $tor and member($services, 'hidden_service') {
+    $onion_active = true
   } else {
-    $tor_active = false
+    $onion_active = false
   }
 
   file {
@@ -76,9 +76,9 @@ class site_static {
     }
   }
 
-  if $tor_active {
+  if $onion_active {
     $hidden_service = $tor['hidden_service']
-    $tor_domain     = "${hidden_service['address']}.onion"
+    $onion_domain     = "${hidden_service['address']}.onion"
     class { 'site_static::hidden_service':
       single_hop => $hidden_service['single_hop']
     }

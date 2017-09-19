@@ -23,7 +23,7 @@ class site_static::hidden_service ( $single_hop = false ) {
 
     '/var/lib/tor/static/hostname':
       ensure  => present,
-      content => "${::site_static::tor_domain}\n",
+      content => "${::site_static::onion_domain}\n",
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600',

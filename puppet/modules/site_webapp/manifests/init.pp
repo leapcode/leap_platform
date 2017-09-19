@@ -177,11 +177,9 @@ class site_webapp {
       notify  => Service['apache'];
   }
 
-  if $tor {
+  if $tor and member($services, 'hidden_service') {
     $hidden_service = $tor['hidden_service']
-    if $hidden_service['active'] {
-      include ::site_webapp::hidden_service
-    }
+    include ::site_webapp::hidden_service
   }
 
 

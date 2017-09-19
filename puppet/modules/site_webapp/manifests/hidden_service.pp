@@ -2,7 +2,7 @@
 class site_webapp::hidden_service {
   $tor              = hiera('tor')
   $hidden_service   = $tor['hidden_service']
-  $tor_domain       = "${hidden_service['address']}.onion"
+  $onion_domain     = "${hidden_service['address']}.onion"
 
   include site_apache::common
   include apache::module::headers
@@ -33,7 +33,7 @@ class site_webapp::hidden_service {
 
     '/var/lib/tor/webapp/hostname':
       ensure  => present,
-      content => "${tor_domain}\n",
+      content => "${onion_domain}\n",
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600',
