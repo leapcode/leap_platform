@@ -10,7 +10,7 @@
     "webapp",
     "monitor",
     "openvpn",
-    "tor",
+    "tor_relay",
     "obfsproxy",
     "static"
   ],

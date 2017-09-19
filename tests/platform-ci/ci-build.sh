@@ -71,6 +71,13 @@ test() {
 }
 
 build_from_scratch() {
+  # allow passing into the function the services, use a default set if empty
+  SERVICES=$1
+  if [ -z "$SERVICES" ]
+  then
+      SERVICES='couchdb,soledad,mx,webapp,tor_relay,monitor'
+  fi
+
   # when using gitlab-runner locally, CI_JOB_ID is always 1 which
   # will conflict with running/terminating AWS instances in subsequent runs
   # therefore we pick a random number in this case
@@ -78,10 +85,7 @@ build_from_scratch() {
 
   # create node(s) with unique id so we can run tests in parallel
   NAME="citest${CI_JOB_ID:-0}"
-
-
   TAG='single'
-  SERVICES='couchdb,soledad,mx,webapp,tor,monitor'
 
   # leap_platform/tests/platform-ci/provider
   PROVIDERDIR="${ROOTDIR}/provider"
@@ -184,7 +188,7 @@ upgrade_test() {
 
   cd "$PROVIDERDIR"
 
-  build_from_scratch
+  build_from_scratch 'couchdb,soledad,mx,webapp,tor,monitor'
   deploy
   test
 
@@ -200,6 +204,11 @@ upgrade_test() {
   /usr/local/bin/bundle install
 
   cd "$PROVIDERDIR"
+
+  # due to the 'tor' service no longer being valid in 0.10, we need to change
+  # that service to 'tor_relay'. This is done by changing the services array
+  # with jq to be set to the full correct list of services
+  jq '.services = ["couchdb","soledad","mx","webapp","tor_relay","monitor"]' < nodes/${NAME}.json
   deploy
   test
 

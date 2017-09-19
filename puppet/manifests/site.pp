@@ -52,7 +52,7 @@ node default {
     include site_tor::relay
   }
 
-  if member($services, 'hidden_service') {
+  if member($services, 'tor_hidden_service') {
     include site_tor::hidden_service
   }
 

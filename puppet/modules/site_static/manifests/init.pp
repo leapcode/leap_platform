@@ -7,12 +7,13 @@ class site_static {
   include site_config::x509::key
   include site_config::x509::ca_bundle
 
-  $static         = hiera('static')
-  $domains        = $static['domains']
-  $formats        = $static['formats']
-  $bootstrap      = $static['bootstrap_files']
-  $tor            = hiera('tor', false)
-  if $tor and member($services, 'hidden_service') {
+  $services  = hiera('services', [])
+  $static    = hiera('static')
+  $domains   = $static['domains']
+  $formats   = $static['formats']
+  $bootstrap = $static['bootstrap_files']
+  $tor       = hiera('tor', false)
+  if $tor and member($services, 'tor_hidden_service') {
     $onion_active = true
   } else {
     $onion_active = false

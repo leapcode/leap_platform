@@ -1,5 +1,7 @@
 # Configure tor hidden service for webapp
 class site_webapp::hidden_service {
+  Class['site_tor::hidden_service'] -> Class['site_webapp::hidden_service']
+  include site_tor::hidden_service
   $tor              = hiera('tor')
   $hidden_service   = $tor['hidden_service']
   $onion_domain     = "${hidden_service['address']}.onion"
@@ -10,7 +12,6 @@ class site_webapp::hidden_service {
   include apache::module::expires
   include apache::module::removeip
 
-  include site_tor
   tor::daemon::hidden_service { 'webapp':
     ports      => [ '80 127.0.0.1:80'],
     single_hop => $hidden_service['single_hop']

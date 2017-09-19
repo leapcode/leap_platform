@@ -1,13 +1,15 @@
 # create hidden service for static sites
 class site_static::hidden_service ( $single_hop = false ) {
+  Class['site_tor::hidden_service'] -> Class['site_static::hidden_service']
+  include site_tor::hidden_service
 
-  include site_tor
   tor::daemon::hidden_service { 'static':
     ports      => [ '80 127.0.0.1:80'],
     single_hop => $single_hop
   }
+
   file {
-    '/var/lib/tor/webapp/':
+    '/var/lib/tor/static/':
       ensure => directory,
       owner  => 'debian-tor',
       group  => 'debian-tor',

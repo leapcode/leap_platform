@@ -1,6 +1,7 @@
 # configure webapp service
 class site_webapp {
   tag 'leap_service'
+  $services         = hiera('services', [])
   $definition_files = hiera('definition_files')
   $provider         = $definition_files['provider']
   $eip_service      = $definition_files['eip_service']
@@ -177,7 +178,7 @@ class site_webapp {
       notify  => Service['apache'];
   }
 
-  if $tor and member($services, 'hidden_service') {
+  if $tor and member($services, 'tor_hidden_service') {
     $hidden_service = $tor['hidden_service']
     include ::site_webapp::hidden_service
   }
