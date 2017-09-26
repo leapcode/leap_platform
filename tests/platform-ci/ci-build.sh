@@ -156,6 +156,7 @@ run() {
 
   # Do the deployment
   echo "Attempting a deploy..."
+  LEAP_CMD cert renew "$provider_name"
   deploy
   echo "Attempting to run tests..."
   test
