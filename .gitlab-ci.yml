@@ -5,7 +5,7 @@ image: 0xacab.org:4567/leap/docker/ruby:latest
 # persistent on the gitlab-runner so we don't need to install from
 # scratch on every pipeline
 cache:
-  key: "$CI_BUILD_REF_NAME"
+  key: "global_platform_cache_between_pipelines"
   untracked: true
   paths:
     - tests/platform-ci/vendor/
@@ -51,15 +51,6 @@ catalog:
   script:
     - su -c '/usr/local/bin/bundle exec rake catalog' cirunner
 
-# rspec:
-#  stage: rspec
-#  script:
-#    - /usr/local/bin/bundle exec rake spec
-
-# The deploy_test job is run on any merge request. This is used to ensure that
-# the merge request will deploy and test properly. It is not run when the merge
-# request is accepted into master, instead the 'latest' job below is run
-# instead.
 deploy_test:
   stage: deploy
   except:
@@ -75,6 +66,7 @@ deploy_test:manual:
   only:
     - master
   when: manual
+  allow_failure: false
   script:
     - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
 
