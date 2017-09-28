@@ -39,6 +39,9 @@ ROOTDIR=$(readlink -f "$(dirname $0)")
 # leap_platform
 PLATFORMDIR=$(readlink -f "${ROOTDIR}/../..")
 
+# deb repo component to configure
+COMPONENT=${COMPONENT:-"master"}
+
 # In the gitlab CI pipeline leap is installed in a different
 # stage by bundle. To debug you can run a single CI job locally
 # so we install leap_cli as gem here.
@@ -88,7 +91,7 @@ build_from_scratch() {
   # Create cloud.json needed for `leap vm` commands using AWS credentials
   which jq || ( apt-get update -y && apt-get install jq -y )
 
-  # Dsiable xtrace
+  # Disable xtrace
   set +x
 
   [ -z "$AWS_ACCESS_KEY" ]  && fail "\$AWS_ACCESS_KEY  is not set - please provide it as env variable."
@@ -102,7 +105,8 @@ build_from_scratch() {
   [ -d "./tags" ] || mkdir "./tags"
   /bin/echo "{\"environment\": \"$TAG\"}" | /usr/bin/json_pp > "${PROVIDERDIR}/tags/${TAG}.json"
 
-  pwd
+  # configure deb repo component
+  echo '{}' | jq ".sources.platform.apt |= { \"source\": \"http://deb.leap.se/platform\", \"component\": \"${COMPONENT}\" }" > common.json
 
   # remove old cached nodes
   echo "Removing old cached nodes..."

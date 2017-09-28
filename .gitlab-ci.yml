@@ -51,10 +51,17 @@ catalog:
   script:
     - su -c '/usr/local/bin/bundle exec rake catalog' cirunner
 
-deploy_test:
+deploy_test:master:
   stage: deploy
   except:
     - master
+  script:
+    - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
+
+deploy_test:staging:
+  stage: deploy
+  variables:
+    COMPONENT: "staging"
   script:
     - su -c 'set -o pipefail; stdbuf -oL -eL ./ci-build.sh | ts' cirunner
 
