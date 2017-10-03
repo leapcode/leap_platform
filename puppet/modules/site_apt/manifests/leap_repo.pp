@@ -7,14 +7,14 @@ class site_apt::leap_repo {
   # on jessie, keys need to be in /etc/apt/...
   # see https://0xacab.org/leap/platform/issues/8862
   if ( $::operatingsystemmajrelease == '8' ) {
-    if $::site_apt::apt_url_platform_basic =~ /.*experimental.*/ {
+    if $::site_apt::apt_platform_component =~ /.*(staging|master).*/ {
       $archive_key = 'CE433F407BAB443AFEA196C1837C1AD5367429D9'
     } else {
       $archive_key = '1E453B2CE87BEE2F7DFE99661E34A1828E207901'
     }
   }
   if ( $::operatingsystemmajrelease != '8' ) {
-    if $::site_apt::apt_url_platform_basic =~ /.*experimental.*/ {
+    if $::site_apt::apt_platform_component =~ /.*(staging|master).*/ {
       $archive_key = '/usr/share/keyrings/leap-experimental-archive.gpg'
     } else {
       $archive_key = '/usr/share/keyrings/leap-archive.gpg'
