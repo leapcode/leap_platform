@@ -1,9 +1,0 @@
-{
-  "sources": {
-    "platform": {
-      "apt": {
-        "basic": "http://deb.leap.se/experimental-0.9"
-      }
-    }
-  }
-}
