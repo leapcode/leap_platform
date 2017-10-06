@@ -60,10 +60,8 @@ class site_static {
   include site_config::ruby::dev
 
   if (member($formats, 'rack')) {
-    include site_apt::preferences::passenger
     class { 'passenger':
       manage_munin => false,
-      require      => Class['site_apt::preferences::passenger']
     }
   }
 
