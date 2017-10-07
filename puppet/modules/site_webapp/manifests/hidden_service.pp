@@ -14,7 +14,8 @@ class site_webapp::hidden_service {
 
   tor::daemon::hidden_service { 'webapp':
     ports      => [ '80 127.0.0.1:80'],
-    single_hop => $hidden_service['single_hop']
+    single_hop => $hidden_service['single_hop'],
+    v3         => $hidden_service['v3']
   }
 
   file {
