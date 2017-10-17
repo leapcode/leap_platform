@@ -12,9 +12,9 @@
 #   * AWS credentials as environment variables:
 #     * `AWS_ACCESS_KEY`
 #     * `AWS_SECRET_KEY`
-#   * ssh private key used to login to remove vm
-#     * `SSH_PRIVATE_KEY`
-#
+#   * ssh private keys used to clone providers:
+#     * `BITMASK_PROVIDER_SSH_PRIVATE_KEY`
+#     * `IBEX_PROVIDER_SSH_PRIVATE_KEY`
 
 # exit if any commands returns non-zero status
 set -e
@@ -100,7 +100,8 @@ build_from_scratch() {
 
   [ -z "$AWS_ACCESS_KEY" ]  && fail "\$AWS_ACCESS_KEY  is not set - please provide it as env variable."
   [ -z "$AWS_SECRET_KEY" ]  && fail "\$AWS_SECRET_KEY  is not set - please provide it as env variable."
-  [ -z "$SSH_PRIVATE_KEY" ] && fail "\$SSH_PRIVATE_KEY is not set - please provide it as env variable."
+  [ -z "$BITMASK_PROVIDER_SSH_PRIVATE_KEY" ] && fail "\$BITMASK_PROVIDER_SSH_PRIVATE_KEY is not set - please provide it as env variable."
+  [ -z "$IBEX_PROVIDER_SSH_PRIVATE_KEY" ] && fail "\$IBEX_PROVIDER_SSH_PRIVATE_KEY is not set - please provide it as env variable."
 
   /usr/bin/jq ".platform_ci.auth |= .+ {\"aws_access_key_id\":\"$AWS_ACCESS_KEY\", \"aws_secret_access_key\":\"$AWS_SECRET_KEY\"}" < cloud.json.template > cloud.json
   # Enable xtrace again only if it was set at beginning of script
@@ -139,6 +140,12 @@ run() {
   provider_name=$1
   provider_URI=$2
   platform_branch=$3
+
+  # Configure ssh keypair
+  [ -d ~/.ssh ] || /bin/mkdir ~/.ssh
+  /bin/echo "${provider_name}_PROVIDER_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  /bin/chmod 600 ~/.ssh/id_rsa
+  /bin/cp "${ROOTDIR}/provider/users/gitlab-runner-${provider_name}/gitlab-runner-${provider_name}_ssh.pub" ~/.ssh/id_rsa.pub
 
   # Setup the provider repository
   echo "Setting up the provider repository: $provider_name by cloning $provider_URI"
@@ -231,12 +238,6 @@ cleanup() {
 
 # Ensure we don't output secret stuff to console even when running in verbose mode with -x
 set +x
-
-# Configure ssh keypair
-[ -d ~/.ssh ] || /bin/mkdir ~/.ssh
-/bin/echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-/bin/chmod 600 ~/.ssh/id_rsa
-/bin/cp "${ROOTDIR}/provider/users/gitlab-runner/gitlab-runner_ssh.pub" ~/.ssh/id_rsa.pub
 
 # Enable xtrace again only if it was set at beginning of script
 [[ $xtrace == true ]] && set -x

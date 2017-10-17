@@ -18,9 +18,12 @@
 /tests/platform-ci/provider/tags/*
 !/tests/platform-ci/provider/tags/catalogtest.json
 /tests/platform-ci/provider/users/*
-!/tests/platform-ci/provider/users/gitlab-runner
-/tests/platform-ci/provider/users/gitlab-runner/*
-!/tests/platform-ci/provider/users/gitlab-runner/gitlab-runner_ssh.pub
+!tests/platform-ci/provider/users/gitlab-runner-bitmask
+tests/platform-ci/provider/users/gitlab-runner-bitmask/*
+!tests/platform-ci/provider/users/gitlab-runner-bitmask/gitlab-runner-bitmask_ssh.pub
+!tests/platform-ci/provider/users/gitlab-runner-ibex
+tests/platform-ci/provider/users/gitlab-runner-ibex/*
+!tests/platform-ci/provider/users/gitlab-runner-ibex/gitlab-runner-ibex_ssh.pub
 /tests/platform-ci/provider/test
 
 /builds
