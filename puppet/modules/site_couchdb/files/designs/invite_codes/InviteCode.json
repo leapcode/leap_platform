@@ -1,22 +1,26 @@
 {
-   "_id": "_design/InviteCode",
-   "language": "javascript",
-   "views": {
-       "by__id": {
-           "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['_id'] != null)) {\n                    emit(doc['_id'], 1);\n                  }\n                }\n",
-           "reduce": "_sum"
-       },
-       "by_invite_code": {
-           "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['invite_code'] != null)) {\n                    emit(doc['invite_code'], 1);\n                  }\n                }\n",
-           "reduce": "_sum"
-       },
-       "by_invite_count": {
-           "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['invite_count'] != null)) {\n                    emit(doc['invite_count'], 1);\n                  }\n                }\n",
-           "reduce": "_sum"
-       },
-       "all": {
-           "map": "                function(doc) {\n                  if (doc['type'] == 'InviteCode') {\n                    emit(doc._id, null);\n                  }\n                }\n"
-       }
-   },
-   "couchrest-hash": "83fb8f504520b4a9c7ddbb7928cd0ce3"
+  "_id": "_design/InviteCode",
+  "language": "javascript",
+  "views": {
+    "by_invite_code": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['invite_code'] != null)) {\n                    emit(doc['invite_code'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_invite_count": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['invite_count'] != null)) {\n                    emit(doc['invite_count'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_created_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['created_at'] != null)) {\n                    emit(doc['created_at'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "by_updated_at": {
+      "map": "                function(doc) {\n                  if ((doc['type'] == 'InviteCode') && (doc['updated_at'] != null)) {\n                    emit(doc['updated_at'], 1);\n                  }\n                }\n",
+      "reduce": "_sum"
+    },
+    "all": {
+      "map": "                function(doc) {\n                  if (doc['type'] == 'InviteCode') {\n                    emit(doc._id, null);\n                  }\n                }\n"
+    }
+  },
+  "couchrest-hash": "2d1883c83164a0be127c3a569d9c1902"
 }
