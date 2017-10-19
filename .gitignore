@@ -24,6 +24,9 @@ tests/platform-ci/provider/users/gitlab-runner-bitmask/*
 !tests/platform-ci/provider/users/gitlab-runner-ibex
 tests/platform-ci/provider/users/gitlab-runner-ibex/*
 !tests/platform-ci/provider/users/gitlab-runner-ibex/gitlab-runner-ibex_ssh.pub
+!tests/platform-ci/provider/users/gitlab-runner-platform
+tests/platform-ci/provider/users/gitlab-runner-platform/*
+!tests/platform-ci/provider/users/gitlab-runner-platform/gitlab-runner-platform_ssh.pub
 /tests/platform-ci/provider/test
 
 /builds

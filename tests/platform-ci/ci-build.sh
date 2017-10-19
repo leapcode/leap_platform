@@ -13,8 +13,8 @@
 #     * `AWS_ACCESS_KEY`
 #     * `AWS_SECRET_KEY`
 #   * ssh private keys used to clone providers:
-#     * `BITMASK_PROVIDER_SSH_PRIVATE_KEY`
-#     * `IBEX_PROVIDER_SSH_PRIVATE_KEY`
+#     * `bitmask_PROVIDER_SSH_PRIVATE_KEY`
+#     * `ibex_PROVIDER_SSH_PRIVATE_KEY`
 
 # exit if any commands returns non-zero status
 set -e
@@ -70,7 +70,26 @@ test() {
   LEAP_CMD test "$TAG"
 }
 
+ssh_setup() {
+  # set the provider name from the first argument passed to the function
+  provider_name=$1
+  # set CI_SSH_SECRET_PRIVATE_KEY to the variable name keyed off of the provider_name
+  CI_SSH_SECRET_PRIVATE_KEY=${provider_name}_PROVIDER_SSH_PRIVATE_KEY
+  # Set the SSH_PRIVATE_KEY to the value provided in the CI runner secret variable setting in gitlab
+  SSH_PRIVATE_KEY=${!CI_SSH_SECRET_PRIVATE_KEY}
+  echo "Working with provider: $provider_name"
+  [ -z "$SSH_PRIVATE_KEY" ] && fail "${provider_name}_PROVIDER_SSH_PRIVATE_KEY is not set - please provide it as env variable."
+  # Configure ssh keypair
+  [ -d ~/.ssh ] || /bin/mkdir ~/.ssh
+  /bin/echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  /bin/chmod 600 ~/.ssh/id_rsa
+  /bin/cp "${ROOTDIR}/provider/users/gitlab-runner-${provider_name}/gitlab-runner-${provider_name}_ssh.pub" ~/.ssh/id_rsa.pub
+}
+
 build_from_scratch() {
+  # setup ssh keys
+  ssh_setup platform
+
   # allow passing into the function the services, use a default set if empty
   SERVICES=$1
   if [ -z "$SERVICES" ]
@@ -100,8 +119,6 @@ build_from_scratch() {
 
   [ -z "$AWS_ACCESS_KEY" ]  && fail "\$AWS_ACCESS_KEY  is not set - please provide it as env variable."
   [ -z "$AWS_SECRET_KEY" ]  && fail "\$AWS_SECRET_KEY  is not set - please provide it as env variable."
-  [ -z "$BITMASK_PROVIDER_SSH_PRIVATE_KEY" ] && fail "\$BITMASK_PROVIDER_SSH_PRIVATE_KEY is not set - please provide it as env variable."
-  [ -z "$IBEX_PROVIDER_SSH_PRIVATE_KEY" ] && fail "\$IBEX_PROVIDER_SSH_PRIVATE_KEY is not set - please provide it as env variable."
 
   /usr/bin/jq ".platform_ci.auth |= .+ {\"aws_access_key_id\":\"$AWS_ACCESS_KEY\", \"aws_secret_access_key\":\"$AWS_SECRET_KEY\"}" < cloud.json.template > cloud.json
   # Enable xtrace again only if it was set at beginning of script
@@ -141,11 +158,8 @@ run() {
   provider_URI=$2
   platform_branch=$3
 
-  # Configure ssh keypair
-  [ -d ~/.ssh ] || /bin/mkdir ~/.ssh
-  /bin/echo "${provider_name}_PROVIDER_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-  /bin/chmod 600 ~/.ssh/id_rsa
-  /bin/cp "${ROOTDIR}/provider/users/gitlab-runner-${provider_name}/gitlab-runner-${provider_name}_ssh.pub" ~/.ssh/id_rsa.pub
+  # setup ssh keys
+  ssh_setup "$provider_name"
 
   # Setup the provider repository
   echo "Setting up the provider repository: $provider_name by cloning $provider_URI"
