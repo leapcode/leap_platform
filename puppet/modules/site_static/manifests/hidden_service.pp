@@ -1,11 +1,12 @@
 # create hidden service for static sites
-class site_static::hidden_service ( $single_hop = false ) {
+class site_static::hidden_service ( $single_hop = false, $v3 = false ) {
   Class['site_tor::hidden_service'] -> Class['site_static::hidden_service']
   include site_tor::hidden_service
 
   tor::daemon::hidden_service { 'static':
     ports      => [ '80 127.0.0.1:80'],
-    single_hop => $single_hop
+    single_hop => $single_hop,
+    v3         => $v3
   }
 
   file {

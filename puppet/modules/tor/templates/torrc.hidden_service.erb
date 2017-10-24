@@ -10,3 +10,11 @@ HiddenServiceDir <%= @data_dir %>/<%= @name %>
 HiddenServicePort <%= port %>
 <% end -%>
 
+<% if @v3 != false %>
+# hidden service v3 static
+HiddenServiceDir <%= @data_dir %>/<%= @name -%>3
+HiddenServiceVersion 3
+<% @ports.each do |port| -%>
+HiddenServicePort <%= port %>
+<% end -%>
+<% end -%>

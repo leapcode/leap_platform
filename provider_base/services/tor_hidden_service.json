@@ -5,7 +5,8 @@
       "public_key": "= tor_public_key_path(:node_tor_pub_key, tor.hidden_service.key_type)",
       "private_key": "= tor_private_key_path(:node_tor_priv_key, tor.hidden_service.key_type)",
       "address": "=> onion_address(:node_tor_pub_key)",
-      "single_hop": false
+      "single_hop": false,
+      "v3": false
     }
   }
 }

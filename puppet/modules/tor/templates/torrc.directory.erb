@@ -2,7 +2,7 @@
 <%  if @port != '0' -%>
 DirPort <%= @port %>
 <%  end -%>
-<%  listen_addresses.each do |listen_address| -%>
+<%  @listen_addresses.each do |listen_address| -%>
 DirListenAddress <%= listen_address %>
 <%  end -%>
 <%  if @port_front_page != '' -%>

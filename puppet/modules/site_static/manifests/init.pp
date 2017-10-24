@@ -79,7 +79,8 @@ class site_static {
     $hidden_service = $tor['hidden_service']
     $onion_domain     = "${hidden_service['address']}.onion"
     class { 'site_static::hidden_service':
-      single_hop => $hidden_service['single_hop']
+      single_hop => $hidden_service['single_hop'],
+      v3         => $hidden_service['v3']
     }
 
     # Currently, we only support a single hidden service address per server.
