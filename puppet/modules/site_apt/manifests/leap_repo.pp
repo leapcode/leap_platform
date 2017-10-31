@@ -22,7 +22,7 @@ class site_apt::leap_repo {
   }
 
   apt::sources_list { 'leap.list':
-    content => "deb [signed-by=${archive_key}] ${::site_apt::apt_url_platform_basic} ${::site_apt::apt_platform_codename} ${::site_apt::apt_platform_component}\n",
+    content => "deb [signed-by=${archive_key}] ${::site_apt::apt_url_platform_basic} ${::site_apt::apt_platform_component} ${::site_apt::apt_platform_codename}\n",
     before  => Exec[refresh_apt]
   }
 
