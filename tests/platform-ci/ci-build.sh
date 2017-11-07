@@ -191,8 +191,32 @@ run() {
   test
 }
 
+soledad_migration() {
+  # check the version of soledad installed
+  # if the version is not greater than 0.9, we need to do the migration
+  if ! LEAP_CMD run "dpkg --compare-versions \$(dpkg -l |grep soledad-server|grep ^ii|awk '{ print \$3}') gt 0.9" vm |grep -q oops
+  then
+      echo "Need to migrate from soledad 0.9!"
+      if ! LEAP_CMD run 'systemctl stop leap-mx' vm
+      then fail
+      fi
+      if ! LEAP_CMD run 'systemctl stop soledad-server' vm
+      then fail
+      fi
+      if ! LEAP_CMD run --stream '/usr/share/soledad-server/migration/0.9/migrate.py --verbose --log-file /var/log/leap/soledad_migration.log --do-migrate' vm
+      then fail
+      fi
+      if ! LEAP_CMD run 'systemctl start leap-mx' vm
+      then fail
+      fi
+      if ! LEAP_CMD run 'systemctl start soledad-server' vm
+      then fail
+      fi
+  fi
+}
+
 upgrade_test() {
-  # Checkout stable branch containing last release
+  # Checkout stable branch containing previous stable release
   # and deploy this
   cd "$PLATFORMDIR"
   # due to cache, this remote is sometimes already added
@@ -208,7 +232,7 @@ upgrade_test() {
   /usr/local/bin/bundle install
 
   cd "$PROVIDERDIR"
-
+  LEAP_CMD --version
   build_from_scratch 'couchdb,soledad,mx,webapp,tor,monitor'
   deploy
   test
@@ -225,12 +249,17 @@ upgrade_test() {
   /usr/local/bin/bundle install
 
   cd "$PROVIDERDIR"
-
+  LEAP_CMD --version
+  
   # due to the 'tor' service no longer being valid in 0.10, we need to change
   # that service to 'tor_relay'. This is done by changing the services array
   # with jq to be set to the full correct list of services
   jq '.services = ["couchdb","soledad","mx","webapp","tor_relay","monitor"]' < nodes/${NAME}.json
   deploy
+
+  # check for soledad migration, and run it if necessary
+  soledad_migration
+
   test
 
   cleanup
