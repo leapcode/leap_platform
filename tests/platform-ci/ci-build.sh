@@ -203,7 +203,7 @@ soledad_migration() {
       if ! LEAP_CMD run 'systemctl stop soledad-server' vm
       then fail
       fi
-      if ! LEAP_CMD run --stream '/usr/share/soledad-server/migration/0.9/migrate.py --verbose --log-file /var/log/leap/soledad_migration.log --do-migrate' vm
+      if ! LEAP_CMD run --stream '/usr/share/soledad-server/migration/0.9/migrate.py --log-file /dev/stdout --verbose --do-migrate | tee /var/log/leap/soledad_migration.log' vm
       then fail
       fi
       if ! LEAP_CMD run 'systemctl start leap-mx' vm
@@ -257,9 +257,13 @@ upgrade_test() {
   jq '.services = ["couchdb","soledad","mx","webapp","tor_relay","monitor"]' < nodes/${NAME}.json
   deploy
 
+  # pre-migration test
+  test
+
   # check for soledad migration, and run it if necessary
   soledad_migration
 
+  # run the test again, this should succeed
   test
 
   cleanup
