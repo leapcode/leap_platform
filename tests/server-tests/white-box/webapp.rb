@@ -4,6 +4,7 @@ require 'json'
 
 class Webapp < LeapTest
   depends_on "Network"
+  depends_on "Soledad"
 
   def setup
   end
