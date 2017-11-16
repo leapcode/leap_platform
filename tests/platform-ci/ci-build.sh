@@ -194,9 +194,9 @@ run() {
 soledad_migration() {
   # check the version of soledad installed
   # if the version is not greater than 0.9, we need to do the migration
-  if ! LEAP_CMD run "dpkg --compare-versions \$(dpkg -l |grep soledad-server|grep ^ii|awk '{ print \$3}') gt 0.9" vm |grep -q oops
+  if ! LEAP_CMD run "dpkg --compare-versions \$(dpkg -l |grep soledad-server|grep ^ii|awk '{ print \$3}') gt 0.8" vm |grep -q oops
   then
-      echo "Need to migrate from soledad 0.9!"
+      echo "Need to migrate from soledad 0.8!"
       if ! LEAP_CMD run 'systemctl stop leap-mx' vm
       then fail
       fi
