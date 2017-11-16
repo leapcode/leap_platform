@@ -66,6 +66,11 @@ deploy() {
   LEAP_CMD deploy "$TAG"
 }
 
+leap_info() {
+  echo "Running leap info on $TAG"
+  LEAP_CMD info "${TAG}"
+}
+
 test() {
   LEAP_CMD test "$TAG"
 }
@@ -149,8 +154,6 @@ build_from_scratch() {
 
   echo "Running leap node init on TAG: $TAG"
   LEAP_CMD node init "$TAG"
-  echo "Running leap info on $TAG"
-  LEAP_CMD info "${TAG}"
 }
 
 run() {
@@ -235,6 +238,7 @@ upgrade_test() {
   LEAP_CMD --version
   build_from_scratch 'couchdb,soledad,mx,webapp,tor,monitor'
   deploy
+  leap_info
   test
 
   # Checkout HEAD of current branch and re-deploy
@@ -250,7 +254,7 @@ upgrade_test() {
 
   cd "$PROVIDERDIR"
   LEAP_CMD --version
-  
+
   # due to the 'tor' service no longer being valid in 0.10, we need to change
   # that service to 'tor_relay'. This is done by changing the services array
   # with jq to be set to the full correct list of services
@@ -258,10 +262,13 @@ upgrade_test() {
   deploy
 
   # pre-migration test
-  test
+  # allowed to fail because when a migration is needed, soledad-server refuses to start
+  test || /bin/true
 
   # check for soledad migration, and run it if necessary
   soledad_migration
+
+  leap_info
 
   # run the test again, this should succeed
   test
@@ -305,6 +312,7 @@ case "$CI_JOB_NAME" in
   deploy_test*)
     build_from_scratch
     deploy
+    leap_info
     test
     cleanup
     ;;
