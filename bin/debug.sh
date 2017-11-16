@@ -12,6 +12,10 @@ export FACTERLIB="/srv/leap/puppet/modules/apache/lib/facter:/srv/leap/puppet/mo
 
 facter 2>/dev/null | egrep -i "$facts"
 
+# show leap debian repo used
+echo -e '\n\n'
+cat /etc/apt/sources.list.d/leap*.list
+
 # query installed versions
 echo -e '\n\n'
 dpkg -l | egrep "$apps"
