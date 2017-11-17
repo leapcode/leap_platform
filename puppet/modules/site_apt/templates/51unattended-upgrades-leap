@@ -1,5 +1,5 @@
 // this file is managed by puppet !
 
 Unattended-Upgrade::Origins-Pattern {
-  "site=deb.leap.se,component=<%= @apt_platform_component %>";
+  "site=deb.leap.se,codename=<%= @apt_platform_component %>";
 }
