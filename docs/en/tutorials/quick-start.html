@@ -123,6 +123,9 @@ Quick Start Tutorial - LEAP Platform Documentation
         <a href="quick-start/index.html#install-pre-requisites">Install pre-requisites</a>
       </li>
       <li>
+        <a href="quick-start/index.html#the-platform-recipes">The platform recipes</a>
+      </li>
+      <li>
         <a href="quick-start/index.html#install-the-leap-command-line-utility">Install the LEAP command-line utility</a>
       </li>
     </ol>
@@ -138,6 +141,9 @@ Quick Start Tutorial - LEAP Platform Documentation
       </li>
       <li>
         <a href="quick-start/index.html#option-b-add-a-local-node">Option B: Add a local node</a>
+      </li>
+      <li>
+        <a href="quick-start/index.html#option-c-add-a-virtual-machine-in-the-cloud">Option C: Add a virtual machine in the cloud</a>
       </li>
     </ol>
   </li>
@@ -197,7 +203,7 @@ Quick Start Tutorial - LEAP Platform Documentation
 
 <ol>
 <li>A local Vagrant virtual machine: a Vagrant machine can only be useful for testing.</li>
-<li>A real or paravirtualized server: The server must have Debian Jessie installed, and you must be able to SSH into the machine as root. Paravirtualization includes KVM, Xen, OpenStack, Amazon, but not VirtualBox or OpenVZ.</li>
+<li>A real or paravirtualized server: The server must have Debian Jessie installed, and you must be able to SSH into the machine as root. Paravirtualization includes KVM, Xen, OpenStack, Amazon, but not VirtualBox or OpenVZ. Proxmox has an known issue <a href="https://leap.se/code/issues/8683">when changing the resolver</a></li>
 </ol>
 </li>
 </ol>
@@ -214,15 +220,20 @@ Quick Start Tutorial - LEAP Platform Documentation
 
 <h1><a name="prepare-your-workstation"></a>Prepare your workstation</h1>
 
-<p>In order to be able to manage your servers, you need to install the <code>leap</code> command on your workstation:</p>
+<p>In order to be able to manage your servers, you need to setup the LEAP Platform on your desktop. This consists of three parts: the platform recipes, the <code>leap</code> command, and your provider instance. We will go over these step-by-step below, you can find more details in the <a href="quick-start/platform.html">platform introduction</a>.</p>
 
 <h3><a name="install-pre-requisites"></a>Install pre-requisites</h3>
 
 <p>Install core prerequisites on your workstation.</p>
 
-<p><em>Debian &amp; Ubuntu</em></p>
+<p><em>Debian Unstable (sid)</em></p>
 
-<pre><code>workstation$ sudo apt-get install git ruby ruby-dev rsync openssh-client openssl rake make bzip2
+<pre><code>workstation$ sudo apt-get install git rsync openssh-client openssl zlib1g-dev
+</code></pre>
+
+<p><em>Other Debian &amp; Ubuntu</em></p>
+
+<pre><code>workstation$ sudo apt-get install git ruby ruby-dev rsync openssh-client openssl rake make bzip2 zlib1g-dev
 </code></pre>
 
 <p><em>Mac OS</em></p>
@@ -231,9 +242,38 @@ Quick Start Tutorial - LEAP Platform Documentation
 workstation$ ruby-install ruby
 </code></pre>
 
+<h3><a name="the-platform-recipes"></a>The platform recipes</h3>
+
+<p>The LEAP platform recipes are a set modules designed to work together to provide you everything you need to manage your provider. You typically do not need to modify these, but do need them available for deploying your provider.</p>
+
+<p>To obtain the platform recipes, simply clone the git repository, and then check out the most recent stable release branch:</p>
+
+<pre><code>workstation$ git clone -b version/0.9.x https://leap.se/git/leap_platform
+</code></pre>
+
+<p>If you want to get the latest development branch (Beware: it could be unstable !) you could simply use the master branch instead by:</p>
+
+<pre><code>workstation$ git clone https://leap.se/git/leap_platform
+</code></pre>
+
 <h3><a name="install-the-leap-command-line-utility"></a>Install the LEAP command-line utility</h3>
 
-<p>Install the <code>leap</code> command system-wide:</p>
+<p>The <code>leap</code> <a href="quick-start/guide/commands.html">command line tool</a> is what you use to manage everything about your provider.</p>
+
+<p>Keep these rules in mind:</p>
+
+<ul>
+<li><code>leap</code> is run on your workstation: The <code>leap</code> command is always run locally on your workstation, never on a server you are deploying to.</li>
+<li><code>leap</code> is run from within a provider instance: The <code>leap</code> command requires that the current working directory is a valid provider instance, except when running <code>leap new</code> to create a new provider instance.</li>
+</ul>
+
+
+<p>If on Debian Unstable (sid), simply do this:</p>
+
+<pre><code>workstation$ sudo apt install leap-cli
+</code></pre>
+
+<p>Otherwise, you will need to do this:</p>
 
 <pre><code>workstation$ sudo gem install leap_cli
 </code></pre>
@@ -340,13 +380,17 @@ workstation$ leap cert csr
 
 <h3><a name="option-b-add-a-local-node"></a>Option B: Add a local node</h3>
 
-<p>Create a node, with the services &ldquo;webapp&rdquo; and &ldquo;couchdb&rdquo;, and then start the local virtual machine:</p>
+<p>Create a node, with the services &ldquo;webapp&rdquo;, &ldquo;soledad&rdquo; and &ldquo;couchdb&rdquo;, and then start the local virtual machine:</p>
 
-<pre><code>workstation$ leap node add --local wildebeest services:webapp,couchdb
+<pre><code>workstation$ leap node add --local wildebeest services:webapp,couchdb,soledad
 workstation$ leap local start wildebeest
 </code></pre>
 
 <p>It will take a while to download the Virtualbox base box and create the virtual machine.</p>
+
+<h3><a name="option-c-add-a-virtual-machine-in-the-cloud"></a>Option C: Add a virtual machine in the cloud</h3>
+
+<p>In order to create a provider using the cloud, please follow this <a href="https://leap.se/en/docs/platform/guide/virtual-machines">instructions</a>.</p>
 
 <h1><a name="deploy-your-provider"></a>Deploy your provider</h1>
 

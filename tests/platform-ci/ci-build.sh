@@ -239,6 +239,9 @@ upgrade_test() {
   build_from_scratch 'couchdb,soledad,mx,webapp,tor,monitor'
   deploy
   leap_info
+  # In 0.9 leap info did not output apt sources, so we do it manually
+  # but can remove it for next release
+  cat /etc/apt/sources.list.d/*
   test
 
   # Checkout HEAD of current branch and re-deploy

@@ -110,7 +110,7 @@ tor - LEAP Platform Documentation
 <div id='title-box'>
 <h1>tor</h1>
 
-<div id='summary'>Tor exit node or hidden service</div>
+<div id='summary'>Tor services: relay, exit node and hidden service</div>
 </div>
 <div id='content-box'>
 <div id="TOC"><ol>
@@ -124,14 +124,40 @@ tor - LEAP Platform Documentation
 
 <h2><a name="topology"></a>Topology</h2>
 
-<p>Nodes with <code>tor</code> service will run a Tor exit or hidden service, depending on what other service it is paired with:</p>
+<p>Nodes with <code>tor</code> service will run a Tor relay with some pre-defined settings, which can be changed with some configuration (see <em>Configuration</em> below). You can enable an exit or a hidden service with additional configuration.</p>
+
+<h2><a name="configuration"></a>Configuration</h2>
+
+<p>By default, if a node has service &lsquo;tor&rsquo; configured, it will run a tor relay (not an exit). The relay will be configured with bandwidth limitations, contacts, a nickname and a family. The defaults for these (shown below), can be overridden as desired.</p>
 
 <ul>
-<li><code>tor</code> + <code>openvpn</code>: when combined with <code>openvpn</code> nodes, <code>tor</code> will create a Tor exit node to provide extra cover traffic for the VPN. This can be especially useful if there are VPN gateways without much traffic.</li>
-<li><code>tor</code> + <code>webapp</code>: when combined with a <code>webapp</code> node, the <code>tor</code> service will make the webapp and the API available via .onion hidden service.</li>
-<li><code>tor</code> stand alone: a regular Tor exit node.</li>
+<li><code>tor.bandwidth_rate</code>: the max bandwidth allocated to Tor, in KB per second, when used as an exit node (default: 6550 KB/sec).</li>
+<li><code>tor.type</code>: what type of tor node to make, at this moment only &lsquo;exit&rsquo; is supported. If not specified, acts as a relay.</li>
+<li><code>tor.contacts</code>: the contact information for the relay (default: the list of provider contacts)</li>
+<li><code>tor.nickname</code>: the nickname of the relay (default: a combination of the node name and a hash of the family)</li>
+<li><code>tor.family</code>: a list of the other nicknames that are part of the same provider</li>
+<li><code>tor.hidden_service</code>: to enable a hidden service, set &lsquo;active&rsquo; to be true (see below for an example), do <em>not</em> configure &ldquo;services&rdquo;: [&ldquo;tor&rdquo;] for the node!</li>
 </ul>
 
+
+<p>Examples:</p>
+
+<p>To add a relay to a node:</p>
+
+<pre><code>{ 
+ "services": ["tor"]
+}
+</code></pre>
+
+<p>To enable a hidden service, without a relay, do <em>not</em> specify the tor service (it is not considered secure to have a node configured as a relay and a hidden service at the same time, see: <a href="https://trac.torproject.org/8742">https://trac.torproject.org/8742</a>), instead configure the node to have the following:</p>
+
+<pre><code>{
+  "tor": {
+    "hidden_service": {
+    "active": true
+  }
+}
+</code></pre>
 
 <p>If activated, you can list the hidden service .onion addresses this way:</p>
 
@@ -139,18 +165,12 @@ tor - LEAP Platform Documentation
 
 <p>Then just add &lsquo;.onion&rsquo; to the end of the printed addresses.</p>
 
-<h2><a name="configuration"></a>Configuration</h2>
-
-<ul>
-<li><code>tor.bandwidth_rate</code>: the max bandwidth allocated to Tor, in KB per second, when used as an exit node.</li>
-</ul>
-
-
-<p>For example:</p>
+<p>To enable a Tor exit node:</p>
 
 <pre><code>{
   "tor": {
-    "bandwidth_rate": 6550
+    "bandwidth_rate": 6550,
+    "type": "exit"
   }
 }
 </code></pre>

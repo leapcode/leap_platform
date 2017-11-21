@@ -37,6 +37,13 @@ For a live deployment of the platform, the number of servers that is required
 depends on your needs and which services you want to deploy. At the moment, the
 LEAP Platform supports servers with a base Debian Jessie installation.
 
+Upgrading
+=============================
+
+If you are upgrading from a previous version of the LEAP Platform, take special
+care to follow the instructions detailed in the CHANGES.md to move from one
+release to the next.
+
 Troubleshooting
 =============================
 

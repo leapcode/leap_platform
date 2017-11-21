@@ -437,12 +437,12 @@ $ leap local save web1
 
 <p>Clone the platform with</p>
 
-<pre><code>git clone --recursive -b develop https://github.com/leapcode/leap_platform.git
+<pre><code>git clone https://leap.se/git/leap_platform
 </code></pre>
 
 <p>Start the vagrant box with</p>
 
-<pre><code>cd leap_platform
+<pre><code>cd leap_platform/tests/example-provider
 vagrant up
 </code></pre>
 
@@ -531,7 +531,7 @@ started by the bitmask client:</p>
 sudo apt-get install ruby-dev libxslt-dev libxml2-dev libvirt-dev
 
 # install the required plugins
-vagrant plugin install vagrant-libvirt fog fog-libvirt sahara
+vagrant plugin install vagrant-libvirt sahara
 </code></pre>
 
 <p>Log out and then log back in.</p>
@@ -585,8 +585,6 @@ virsh pool-autostart vagrant
 <li><code>Call to virConnectOpen failed: internal error: Unable to locate libvirtd daemon in /usr/sbin (to override, set $LIBVIRTD_PATH to the name of the libvirtd binary)</code> - you don&rsquo;t have the libvirtd daemon running or installed, be sure you installed the &lsquo;libvirt-bin&rsquo; package and it is running</li>
 <li><code>Call to virConnectOpen failed: Failed to connect socket to '/var/run/libvirt/libvirt-sock': Permission denied</code> - you need to be in the libvirt group to access the socket, do &lsquo;sudo adduser <user> libvirtd&rsquo; and then re-login to your session.</li>
 <li>if each call to vagrant ends up with a segfault, it may be because you still have virtualbox around. if so, remove virtualbox to keep only libvirt + KVM. according to <a href="https://github.com/pradels/vagrant-libvirt/issues/75">https://github.com/pradels/vagrant-libvirt/issues/75</a> having two virtualization engines installed simultaneously can lead to such weird issues.</li>
-<li>see the <a href="https://github.com/pradels/vagrant-libvirt/issues">vagrant-libvirt issue list on github</a></li>
-<li>be sure to use vagrant-libvirt >= 0.0.11 and sahara >= 0.0.16 (which are the latest stable gems you would get with <code>vagrant plugin install [vagrant-libvirt|sahara]</code>) for proper libvirt support,</li>
 </ul>
 
 

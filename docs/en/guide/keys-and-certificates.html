@@ -181,6 +181,25 @@ Keys and Certificates - LEAP Platform Documentation
       <li>
         <a href="keys-and-certificates/index.html#renewing-a-certificate">Renewing a certificate</a>
       </li>
+      <li>
+        <a href="keys-and-certificates/index.html#issues">Issues</a>
+        <ol>
+          <li>
+            <a href="keys-and-certificates/index.html#certs-already-expired">Certs already expired</a>
+            <ol>
+              <li>
+                <a href="keys-and-certificates/index.html#install-the-official-acme-client">Install the official acme client</a>
+              </li>
+              <li>
+                <a href="keys-and-certificates/index.html#fetch-cert">Fetch cert</a>
+              </li>
+              <li>
+                <a href="keys-and-certificates/index.html#deploy-the-certs">Deploy the certs</a>
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </li>
     </ol>
   </li>
 </ol></div>
@@ -444,6 +463,76 @@ workstation$ leap deploy
 </code></pre>
 
 <p>There is no need to create a new CSR: renewing will reuse the old private key and the old CSR. It is especially important to not create a new CSR if you have advertised public key pins using HPKP.</p>
+
+<h2><a name="issues"></a>Issues</h2>
+
+<h3><a name="certs-already-expired"></a>Certs already expired</h3>
+
+<p>When a cert is already expired, you can get into a possible deadlock situation on your servers which you can only resolve manually at the moment.</p>
+
+<h4><a name="install-the-official-acme-client"></a>Install the official acme client</h4>
+
+<p>Log in to your webapp node and install the <code>certbot</code> package:</p>
+
+<pre><code>server$ apt install -t jessie-backports certbot
+</code></pre>
+
+<h4><a name="fetch-cert"></a>Fetch cert</h4>
+
+<p>Stop apache so the letsencrypt client can bind to port 80:</p>
+
+<pre><code>server$ systemctl stop apache2
+</code></pre>
+
+<p>Fetch the certs</p>
+
+<pre><code>server$ certbot certonly --standalone --email admin@$(hostname -d) -d $(hostname -d) -d api.$(hostname -d) -d $(hostname -f) -d nicknym.$(hostname -d)
+</code></pre>
+
+<p>This will put the certs and keys into <code>/etc/letsencrypt/live/DOMAIN/</code>.</p>
+
+<p>Now, go to your workstation&rsquo;s provider configuration directory and copy the newly created files from the server to your local config. You will override existing files so please make a backup before proceeding, or use a version control system to track changes.</p>
+
+<pre><code>workstation$ cd PATH_TO_PROVIDER_CONFIG
+</code></pre>
+
+<p>Copy the Certificate</p>
+
+<pre><code>workstation$ scp 'root@SERVER:/etc/letsencrypt/live/$(hostname -d)/cert.pem' files/cert/DOMAIN.crt
+</code></pre>
+
+<p>Copy the private key</p>
+
+<pre><code>workstation$ scp 'root@SERVER:/etc/letsencrypt/live/$(hostname -d)/privkey.pem' files/cert/DOMAIN.key
+</code></pre>
+
+<p>Copy the CA chain cert</p>
+
+<pre><code>workstation$ scp 'root@SERVER:/etc/letsencrypt/live/$(hostname -d)/fullchain.pem' files/cert/commercial_ca.crt
+</code></pre>
+
+<h4><a name="deploy-the-certs"></a>Deploy the certs</h4>
+
+<p>Now you only need to deploy the certs</p>
+
+<pre><code>workstation$ leap deploy
+</code></pre>
+
+<p>This will put them into the right locations which are:</p>
+
+<ul>
+<li><code>/etc/x509/certs/leap_commercial.crt</code> for the certificate</li>
+<li><code>/etc/x509/./keys/leap_commercial.key</code> for the private key</li>
+<li><code>/usr/local/share/ca-certificates/leap_commercial_ca.crt</code> for the CA chain cert.</li>
+</ul>
+
+
+<p>Start apache2 again</p>
+
+<pre><code>server$ systemctl start apache2
+</code></pre>
+
+<p>Done! In the future please make sure to always renew letsencrypt certificates before they expire ;).</p>
 
 </div>
 </div>
