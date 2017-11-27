@@ -4,7 +4,7 @@ require 'json'
 
 class Webapp < LeapTest
   depends_on "Network"
-  depends_on "Soledad"
+  depends_on "Soledad" if service?(:soledad)
 
   def setup
   end
