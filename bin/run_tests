@@ -507,7 +507,7 @@ end
 
 if ARGV.include?('--debug') || ARGV.include?('-d')
   DEBUG=true
-  require 'debugger'
+  require 'byebug'
 else
   DEBUG=false
 end
