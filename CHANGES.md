@@ -1,3 +1,133 @@
+Platform 0.10
+------------------------------------------------
+
+The main focus for Platform 0.10 was to update of all client-side daemons to
+newest releases, like Soledad and OpenVPN. This introduces a *compatibility
+change*: by setting the platform version to 0.10, it also requires client 0.9.4
+or later. We also switched the development branch to the 'master' branch and are
+creating a branch called 0.10.x to push hot-fixes during the 0.10 life-cycle.
+
+Note: This will be the last major release of the LEAP Platform for Debian
+Jessie. We will continue to support 0.10 with minor releases with important
+security and bug fixes, but the next major release will require an upgrade to
+Stretch.
+
+New Features:
+
+* Tor single-hop onion service capability.
+* `leap info` is now run after deploy
+* Timestamps are added to deployments
+* Missing ssh host keys are generated on node init
+* Private networking support for local Vagrant development
+* Static sites get lets encrypt support
+* add command `leap node disable`, `leap node enable`, `leap ping`
+
+Notable Changes:
+
+* Removed haproxy because we don't support multi-node couchdb installations anymore (#8144).
+* Disable nagios notification emails (#8772).
+* Fix layout of apt repository (#8888)
+* Limit what archive signing keys are accepted for the leap debian repository packages (#8425).
+* Monitor the Webapp logs for errors (#5174).
+* Moved development to the master branch.
+* Rewrite leap_cli ssh code
+* Debian wheezy was fully deprecated
+* Restructure package archives to enable auto packaging, and CI testing
+* Significant CI improvements
+* Troubleshooting information added to `leap user ls`
+* Couchdb service is no longer required on soledad nodes (#8693)
+* Tor service refactored (#8864), and v3 hidden service support added (#8879)
+* Fixed unattended-upgrades (#8891)
+* Alert on 409 responses for webapp
+* Many other issues resolved, full list: https://0xacab.org/groups/leap/milestones/platform-010?title=Platform+0.10
+
+Upgrading:
+
+If you have a node with the service 'tor' defined, you will need to change it to
+be either 'tor-relay', or 'tor-exit'. Look in your provider directory under the
+nodes directory for any .json file that has a 'services' section with 'tor'
+defined, change that to the correct tor service you are wanting to deploy.
+
+Make sure you have the correct version of leap_cli
+
+    workstation$ sudo gem install leap_cli --version=1.9
+
+If you are upgrading from a version previous to 0.9, please follow those upgrade
+instructions before upgrading to 0.10.
+
+Prepare your platform source by checking out the 0.10.x branch:
+
+    workstation$ cd leap_platform
+    workstation$ git fetch
+    workstation$ git checkout 0.10.x
+
+Then, deploy:
+
+    workstation$ cd $PROVIDER_DIR
+    workstation$ leap deploy
+    workstation$ leap test
+
+After deployment, if the leap test does not succeed, you should
+investigate. Please see below for some post-deployment upgrade steps that you
+may need to perform.
+
+Starting with Soledad Server 0.9.0, the CouchDB database schema was changed to
+improve speed of the server side storage backend. If you provided email, you
+will need to run the migration script, otherwise it is unnecessary. Until you
+migrate, soledad will refuse to start.
+
+To run the migration script, do the following (replacing $PROVIDER_DIR,
+$COUCHDB_NODE, $MX_NODE, and $SOLEDAD_NODE with your values):
+
+First backup your couchdb databases, just to be safe. NOTE: This can take some
+time and will place several hundred megabytes of data into
+/var/backups/couchdb. The size and time depends on how many users there are on
+your system. For example, 15k users took approximately 25 minutes and 308M of
+space:
+
+    workstation$ leap ssh $COUCHDB_NODE
+    server# cd /srv/leap/couchdb/scripts
+    server# ./cleanup-user-dbs
+    server# time ./couchdb_dumpall.sh
+
+ Once that has finished, then its time to run the migration:
+
+    workstation$ cd $PROVIDER_DIR
+    workstation$ leap run 'systemctl leap_mx stop' $MX_NODE
+    workstation$ leap run --stream '/usr/share/soledad-server/migration/0.9/migrate.py --log-file /var/log/leap/soledad_migration --verbose --do-migrate' $SOLEDAD_NODE
+    wait for it to finish (will print DONE)
+    rerun if interrupted
+    workstation$ leap deploy
+    workstation$ leap test
+
+Known Issues:
+
+If you have been deploying from our master branch (ie: unstable code), you might
+end up with a broken sources line for apt. If you get the following:
+    WARNING: The following packages cannot be authenticated!
+
+Then you should remove the files on your nodes inside
+/var/lib/puppet/modules/apt/keys and deploy again. (#8862, #8876)
+
+* When upgrading, sometimes systemd does not report the correct state of a
+  daemon. The daemon will be not running, but systemd thinks it is. The symptom
+  of this is that a deploy will succeed but `leap test` will fail. To fix, you
+  can run `systemctl stop DAEMON` and then `systemctl start DAEMON` on the
+  affected host (systemctl restart seems to work less reliably).
+
+Includes:
+
+* leap_web: 0.9.2
+* nickserver: 0.10.0
+* leap-mx: 0.10.1
+* soledad-server: 0.10.5
+
+Commits: https://0xacab.org/groups/leap/milestones/platform-010?title=Platform+0.10
+
+For details on about all the changes included in this release please consult the
+[LEAP platform 0.10 milestone](https://0xacab.org/leap/platform/milestones/7 ).
+
+
 Platform 0.9
 --------------------------------------
 

@@ -20,11 +20,29 @@ class LeapTest
     }.compact
   end
 
-  def assert_running(process, options={})
-    processes = pgrep(process)
-    assert processes.any?, "No running process for #{process}"
-    if options[:single]
-      assert processes.length == 1, "More than one process for #{process}"
+  #
+  # passes if the specified process is runnin.
+  #
+  # arguments:
+  #
+  #  match   => VALUE      -- scan process table for VALUE
+  #  service => VALUE      -- call systemctl is-active VALUE
+  #
+  #  single  => true|false -- if true, there must be one result
+  #
+  def assert_running(match:nil, service:nil, single:false)
+    if match
+      processes = pgrep(match)
+      assert processes.any?, "No running process for #{match}"
+      if single
+        assert processes.length == 1, "More than one process for #{match}"
+      end
+    elsif service
+      `systemctl is-active #{service} 2>&1`
+      if $?.exitstatus != 0
+        output = `systemctl status #{service} 2>&1`
+        fail "Service '#{service}' is not running:\n#{output}"
+      end
     end
   end
 

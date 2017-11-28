@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://leap.se/git/puppet_systemd
 	branch = master
-	commit = 6d47fd4999fe03eba6fb11c4490dcbb90d937900
-	parent = 56a771a3008d10720dd05fd815aeafbacdd1e08e
+	commit = f3c4059603a6ac19f132b0dc47b95e49d9ddc4ba
+	parent = 77d11c7ddeaeb123bf871bd2bfce0e5ace0c158e
 	cmdver = 0.3.0

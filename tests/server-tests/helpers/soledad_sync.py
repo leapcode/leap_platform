@@ -27,6 +27,7 @@ os.environ['SKIP_TWISTED_SSL_CHECK'] = '1'
 
 from twisted.internet import defer, reactor
 from twisted.python import log
+from twisted.python.lockfile import FilesystemLock
 
 from client_side_db import get_soledad_instance
 from leap.common.events import flags
@@ -35,11 +36,19 @@ flags.set_events_enabled(False)
 
 NUMDOCS = 1
 USAGE = "Usage: %s uuid token server cert_file password" % sys.argv[0]
+SYNC_TIMEOUT = 60
 
 
 def bail(msg, exitcode):
     print "[!] %s" % msg
     sys.exit(exitcode)
+
+
+def obtain_lock():
+    scriptname = os.path.basename(__file__)
+    lockfile = os.path.join(tempfile.gettempdir(), scriptname + '.lock')
+    lock = FilesystemLock(lockfile)
+    return lock.lock()
 
 
 def create_docs(soledad):
@@ -64,13 +73,27 @@ if __name__ == '__main__':
     if len(sys.argv) < 6:
         bail(USAGE, 2)
 
+    if not obtain_lock():
+        bail("another instance is already running", 1)
+
     uuid, token, server, cert_file, passphrase = sys.argv[1:]
     s = get_soledad_instance(
         uuid, passphrase, tempdir, server, cert_file, token)
 
+    def syncWithTimeout(_):
+        d = s.sync()
+        reactor.callLater(SYNC_TIMEOUT, d.cancel)
+        return d
+
     def onSyncDone(sync_result):
         print "SYNC_RESULT:", sync_result
         s.close()
+        rm_tempdir()
+        reactor.stop()
+
+    def trap_cancel(f):
+        f.trap(defer.CancelledError)
+        log.err("sync timed out after %s seconds" % SYNC_TIMEOUT)
         rm_tempdir()
         reactor.stop()
 
@@ -81,8 +104,9 @@ if __name__ == '__main__':
 
     def start_sync():
         d = create_docs(s)
-        d.addCallback(lambda _: s.sync())
+        d.addCallback(syncWithTimeout)
         d.addCallback(onSyncDone)
+        d.addErrback(trap_cancel)
         d.addErrback(log_and_exit)
 
     reactor.callWhenRunning(start_sync)

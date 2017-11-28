@@ -142,7 +142,7 @@ Virtual Machines - LEAP Platform Documentation
 
 <h2><a name="introduction"></a>Introduction</h2>
 
-<p>You can use the <code>leap</code> command line to easily remote virtual machines.</p>
+<p>You can use the <code>leap</code> command line to easily manage remote virtual machines.</p>
 
 <p>Note: there are two types of virtual machines that <code>leap</code> can handle:</p>
 
@@ -220,6 +220,7 @@ Virtual Machines - LEAP Platform Documentation
 
 <ul>
 <li><a href="https://aws.amazon.com/ec2/instance-types/">Available instance types for AWS</a></li>
+<li><a href="https://aws.amazon.com/pt/blogs/security/wheres-my-secret-access-key/">Where’s My Secret Access Key?</a></li>
 </ul>
 
 
@@ -243,6 +244,11 @@ leap vm start mynode
 <p>You can specify seed values to <code>leap vm add</code>. For example:</p>
 
 <pre><code>leap vm add mynode services:webapp tags:seattle vm.options.InstanceType:t2.small
+</code></pre>
+
+<p>For an email provider installation, you should specify the following seeds:</p>
+
+<pre><code>leap vm add mynode services:webapp,couchdb,soledad,mx
 </code></pre>
 
 <p>Check to see what the status is of all VMs:</p>

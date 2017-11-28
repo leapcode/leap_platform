@@ -49,6 +49,10 @@ module LeapCli
         end
       end
 
+      def first
+        ObjectList.new(self.values.first)
+      end
+
       def exclude(node)
         list = self.dup
         list.delete(node.name)

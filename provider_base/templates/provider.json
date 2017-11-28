@@ -1,0 +1,19 @@
+//
+// This file defines global aspects of your service provider
+// See https://leap.se/provider-configuration
+//
+{
+  "domain": "<%= domain %>",
+  "name": {
+    "en": "<%= name %>"
+  },
+  "description": {
+    "en": "You really should change this text"
+  },
+  "contacts": {
+    "default": "<%= contacts %>"
+  },
+  "languages": ["en"],
+  "default_language": "en",
+  "enrollment_policy": "invite"
+}

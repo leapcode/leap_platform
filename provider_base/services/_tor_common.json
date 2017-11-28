@@ -1,0 +1,8 @@
+{
+  "tor": {
+    "type": "disabled",
+    "contacts": "= [provider.contacts['tor'] || provider.contacts.default].flatten",
+    "nickname": "= (self.name + secret(:tor_family)).sub('_','')[0..18]",
+    "family": "= nodes[:services => 'tor'][:environment => '!local'].field('tor.nickname').join(',')"
+  }
+}

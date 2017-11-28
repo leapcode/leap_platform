@@ -1,9 +1,8 @@
 #
-# TODO: currently, this is dependent on some things that are set up in
+# TODO: currently, this is dependent on one thing that is set up in
 # site_webapp
 #
-# (1) HAProxy -> couchdb
-# (2) Apache
+# (1) Apache
 #
 # It would be good in the future to make nickserver installable independently of
 # site_webapp.
@@ -29,10 +28,11 @@ class site_nickserver {
   # the port that nickserver is actually running on
   $nickserver_local_port = '64250'
 
-  # couchdb is available on localhost via haproxy, which is bound to 4096.
+  # couchdb is available on localhost:
+  # - When couchdb is running on a different node: Via stunnel, which is bound to 4000.
+  # - When couchdb is running on the same node: On port 5984
   $couchdb_host      = 'localhost'
-  # See site_webapp/templates/haproxy_couchdb.cfg.erg
-  $couchdb_port      = '4096'
+  $couchdb_port      = $nickserver['couchdb_port']
 
   $sources           = hiera('sources')
 
@@ -61,21 +61,30 @@ class site_nickserver {
     require   => Group['nickserver'];
   }
 
+  # Eariler we used bundle install without --deployment
+  exec { 'clean_git_repo':
+    cwd     => '/srv/leap/nickserver',
+    user    => 'nickserver',
+    command => '/usr/bin/git checkout Gemfile.lock',
+    onlyif  => '/usr/bin/git status | /bin/grep -q "modified: *Gemfile.lock"',
+    require => Package['git']
+  }
+
   vcsrepo { '/srv/leap/nickserver':
-    ensure   => present,
+    ensure   => latest,
     revision => $sources['nickserver']['revision'],
     provider => $sources['nickserver']['type'],
     source   => $sources['nickserver']['source'],
     owner    => 'nickserver',
     group    => 'nickserver',
-    require  => [ User['nickserver'], Group['nickserver'] ],
+    require  => [ User['nickserver'], Group['nickserver'], Exec['clean_git_repo'] ],
     notify   => Exec['nickserver_bundler_update'];
   }
 
   exec { 'nickserver_bundler_update':
     cwd     => '/srv/leap/nickserver',
-    command => '/bin/bash -c "/usr/bin/bundle check || /usr/bin/bundle install --path vendor/bundle"',
-    unless  => '/usr/bin/bundle check',
+    command => '/usr/bin/bundle install --deployment',
+    unless  => '/bin/bash -c "/usr/bin/bundle config --local frozen 1; /usr/bin/bundle check"',
     user    => 'nickserver',
     timeout => 600,
     require => [
@@ -101,42 +110,26 @@ class site_nickserver {
   # NICKSERVER DAEMON
   #
 
-  file {
-    '/usr/bin/nickserver':
-      ensure  => link,
-      target  => '/srv/leap/nickserver/bin/nickserver',
-      require => Vcsrepo['/srv/leap/nickserver'];
-
-    '/etc/init.d/nickserver':
-      owner   => root,
-      group   => 0,
-      mode    => '0755',
-      source  => '/srv/leap/nickserver/dist/debian-init-script',
-      require => Vcsrepo['/srv/leap/nickserver'];
+  file { '/usr/bin/nickserver':
+    ensure  => link,
+    target  => '/srv/leap/nickserver/bin/nickserver',
+    require => Vcsrepo['/srv/leap/nickserver'];
   }
 
-  # register initscript at systemd on nodes newer than wheezy
-  # see https://leap.se/code/issues/7614
-  case $::operatingsystemrelease {
-    /^7.*/: { }
-    default:  {
-      exec { 'register_systemd_nickserver':
-        refreshonly => true,
-        command     => '/bin/systemctl enable nickserver',
-        subscribe   => File['/etc/init.d/nickserver'],
-        before      => Service['nickserver'];
-      }
-    }
+  ::systemd::unit_file {'nickserver.service':
+    ensure    => present,
+    source    => '/srv/leap/nickserver/dist/nickserver.service',
+    subscribe => Vcsrepo['/srv/leap/nickserver'],
+    require   => File['/usr/bin/nickserver'];
   }
 
   service { 'nickserver':
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => [
-      File['/etc/init.d/nickserver'],
-      File['/usr/bin/nickserver'],
+    ensure   => running,
+    provider => 'systemd',
+    enable   => true,
+    require  => [
+      Systemd::Unit_file['nickserver.service'],
+      Exec['systemctl-daemon-reload'],
       Class['Site_config::X509::Key'],
       Class['Site_config::X509::Cert'],
       Class['Site_config::X509::Ca'] ];

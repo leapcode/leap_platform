@@ -254,9 +254,9 @@ module LeapCli
         end
 
         if digest == "MD5" && encoding == :hex
-          return fp.scan(/../).join(':')
+          return fp.strip.scan(/../).join(':')
         else
-          return fp
+          return fp.strip
         end
       end
 
@@ -267,11 +267,12 @@ module LeapCli
         Net::SSH::Buffer.from(:key, @key).to_s.split("\001\000").last.size * 8
       end
 
-      def summary
+      def summary(type: :ssh, digest: :sha256, encoding: :hex)
+        fp = digest.to_s.upcase + ":" + self.fingerprint(type: type, digest: digest, encoding: encoding)
         if self.filename
-          "%s %s %s (%s)" % [self.type, self.bits, self.fingerprint, File.basename(self.filename)]
+          "%s %s %s (%s)" % [self.type, self.bits, fp, File.basename(self.filename)]
         else
-          "%s %s %s" % [self.type, self.bits, self.fingerprint]
+          "%s %s %s" % [self.type, self.bits, fp]
         end
       end
 

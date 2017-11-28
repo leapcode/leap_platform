@@ -22,10 +22,6 @@ if ! egrep -q "$DEBIAN_VERSION" /etc/debian_version; then
   exit 1
 fi
 mkdir -p $LEAP_DIR
-if ! grep -q -e '^en_US.UTF-8' /etc/locale.gen; then
-  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-  /usr/sbin/locale-gen
-fi
 
 #
 # UPDATE PACKAGES
@@ -83,9 +79,20 @@ if [[ $exit_code -ne 0 ]]; then
   exit $exit_code
 fi
 
+# need to have the locales package from above
+if ! grep -q -e '^en_US.UTF-8' /etc/locale.gen 2> /dev/null; then
+  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  /usr/sbin/locale-gen
+fi
+
 #
 # FINALIZE
 #
 mkdir -p $HIERA_DIR
 chmod 0755 $HIERA_DIR
 touch $INIT_FILE
+
+# Sometimes not all keys are already generated, happens more often
+# with VMs
+# that would give us errors in the get_ssh_keys_cmd during node init
+/usr/bin/ssh-keygen -A

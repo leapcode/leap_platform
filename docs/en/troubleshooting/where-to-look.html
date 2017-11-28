@@ -115,9 +115,6 @@ Where to look - LEAP Platform Documentation
         <a href="where-to-look/index.html#places-to-look-for-errors">Places to look for errors</a>
       </li>
       <li>
-        <a href="where-to-look/index.html#is-haproxy-ok">Is haproxy ok ?</a>
-      </li>
-      <li>
         <a href="where-to-look/index.html#is-couchdb-accessible-through-stunnel">Is couchdb accessible through stunnel ?</a>
       </li>
       <li>
@@ -216,22 +213,10 @@ Where to look - LEAP Platform Documentation
 </ul>
 
 
-<h2><a name="is-haproxy-ok"></a>Is haproxy ok ?</h2>
-
-<pre><code>curl -s -X  GET "http://127.0.0.1:4096"
-</code></pre>
-
 <h2><a name="is-couchdb-accessible-through-stunnel"></a>Is couchdb accessible through stunnel ?</h2>
 
-<ul>
-<li><p>Depending on how many couch nodes you have, increase the port for every test
-(see /etc/haproxy/haproxy.cfg for the server/port mapping):</p>
-
-<p>  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4000">http://127.0.0.1:4000</a>&rdquo;
-  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4001">http://127.0.0.1:4001</a>&rdquo;
-  &hellip;</p></li>
-</ul>
-
+<pre><code>curl -s -X  GET "http://127.0.0.1:4000"
+</code></pre>
 
 <h2><a name="check-couchdb-acl-as-admin"></a>Check couchdb acl as admin</h2>
 
@@ -240,8 +225,8 @@ cat /srv/leap/webapp/config/couchdb.yml.admin  # see username and password
 echo "machine 127.0.0.1 login admin password &lt;PASSWORD&gt;" &gt; /etc/couchdb/couchdb-admin.netrc
 chmod 600 /etc/couchdb/couchdb-admin.netrc
 
-curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4096"
-curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4096/_all_dbs"
+curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4000"
+curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4000/_all_dbs"
 </code></pre>
 
 <h2><a name="check-couchdb-acl-as-unpriviledged-user"></a>Check couchdb acl as unpriviledged user</h2>
@@ -250,8 +235,8 @@ curl -s --netrc-file /etc/couchdb/couchdb-admin.netrc -X GET "http://127.0.0.1:4
 echo "machine 127.0.0.1 login webapp password &lt;PASSWORD&gt;" &gt; /etc/couchdb/couchdb-webapp.netrc
 chmod 600 /etc/couchdb/couchdb-webapp.netrc
 
-curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:4096"
-curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:4096/_all_dbs"
+curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:4000"
+curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:4000/_all_dbs"
 </code></pre>
 
 <h2><a name="all-urls-accessible"></a>All URLs accessible ?</h2>
@@ -350,15 +335,8 @@ curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:
 
 <h2><a name="is-couchdb-accessible-through-stunnel-2"></a>Is couchdb accessible through stunnel ?</h2>
 
-<ul>
-<li><p>Depending on how many couch nodes you have, increase the port for every test
-(see /etc/haproxy/haproxy.cfg for the server/port mapping):</p>
-
-<p>  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4000">http://127.0.0.1:4000</a>&rdquo;
-  curl -s -X  GET &ldquo;<a href="http://127.0.0.1:4001">http://127.0.0.1:4001</a>&rdquo;
-  &hellip;</p></li>
-</ul>
-
+<pre><code>curl -s -X  GET "http://127.0.0.1:4000"
+</code></pre>
 
 <h2><a name="query-leap-mx"></a>Query leap-mx</h2>
 
@@ -398,14 +376,9 @@ curl -s --netrc-file /etc/couchdb/couchdb-webapp.netrc -X GET "http://127.0.0.1:
 echo "machine 127.0.0.1 login leap_mx password &lt;PASSWORD&gt;" &gt; /etc/couchdb/couchdb-leap_mx.netrc
 chmod 600 /etc/couchdb/couchdb-leap_mx.netrc
 
-curl -s --netrc-file /etc/couchdb/couchdb-leap_mx.netrc -X GET "http://127.0.0.1:4096/_all_dbs"   # pick one "user-&lt;hash&gt;" db
-curl -s --netrc-file /etc/couchdb/couchdb-leap_mx.netrc -X GET "http://127.0.0.1:4096/user-de9c77a3d7efbc779c6c20da88e8fb9c"
+curl -s --netrc-file /etc/couchdb/couchdb-leap_mx.netrc -X GET "http://127.0.0.1:4000/_all_dbs"   # pick one "user-&lt;hash&gt;" db
+curl -s --netrc-file /etc/couchdb/couchdb-leap_mx.netrc -X GET "http://127.0.0.1:4000/user-de9c77a3d7efbc779c6c20da88e8fb9c"
 </code></pre>
-
-<ul>
-<li>you may check multiple times, cause 127.0.0.1:4096 is haproxy load-balancing the different couchdb nodes</li>
-</ul>
-
 
 <h2><a name="mailspool"></a>Mailspool</h2>
 

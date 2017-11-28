@@ -74,13 +74,15 @@
   Require all granted
 </Directory>
 
-<%- if @tor && (@always_use_hidden_service || @use_hidden_service) -%>
+<%- if @onion_active && (@always_use_hidden_service || @use_hidden_service) -%>
 ##
-## Tor
+## Hidden Service
 ##
 <VirtualHost 127.0.0.1:80>
-  ServerName <%= @tor_domain %>
-  ServerAlias www.<%= @tor_domain %>
+  ServerName <%= @onion_domain %>
+<%- if @www_alias -%>
+  ServerAlias www.<%= @onion_domain %>
+<%- end -%>
 
   <IfModule mod_headers.c>
     Header set X-Frame-Options "deny"
@@ -102,7 +104,9 @@
 ##
 <VirtualHost *:80>
   ServerName <%= @domain %>
+<%- if @www_alias -%>
   ServerAlias www.<%= @domain %>
+<%- end -%>
 <%- @aliases && @aliases.each do |domain_alias| -%>
   ServerAlias <%= domain_alias %>
 <%- end -%>
@@ -122,7 +126,9 @@
 ##
 <VirtualHost *:443>
   ServerName <%= @domain %>
+<%- if @www_alias -%>
   ServerAlias www.<%= @domain %>
+<%- end -%>
 <%- @aliases && @aliases.each do |domain_alias| -%>
   ServerAlias <%= domain_alias %>
 <%- end -%>

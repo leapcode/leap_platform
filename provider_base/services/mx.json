@@ -19,17 +19,12 @@
       "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
     }
   },
-  "haproxy": {
-    "couch": {
-      "listen_port": 4096,
-      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port)"
-    }
-  },
   "couchdb_leap_mx_user": {
     "username": "= global.services[:couchdb].couch.users[:leap_mx].username",
     "password": "= secret :couch_leap_mx_password",
     "salt": "= hex_secret :couch_leap_mx_password_salt, 128"
   },
+  "couchdb_port": "= couchdb_port",
   "mynetworks": "= host_ips(nodes)",
   "rbls": ["zen.spamhaus.org"],
   "clamav": {
@@ -37,7 +32,6 @@
   },
   "x509": {
     "use": true,
-    "use_commercial": true,
     "ca_cert": "= file :ca_cert, :missing => 'provider CA. Run `leap cert ca`'",
     "client_ca_cert": "= file :client_ca_cert, :missing => 'Certificate Authority. Run `leap cert ca`'",
     "client_ca_key": "= file :client_ca_key, :missing => 'Certificate Authority. Run `leap cert ca`'"

@@ -12,7 +12,8 @@
      "name": "= node.name + '.' + (dns.public ? domain.full_suffix : domain.internal_suffix)"
   },
   "dns": {
-    "public": "= service_type != 'internal_service'"
+    "public": "= service_type != 'internal_service'",
+    "aliases": []
   },
   "ssh": {
     "authorized_keys": "= authorized_keys",
@@ -71,11 +72,12 @@
     "nickserver": {
       "type": "git",
       "source": "https://leap.se/git/nickserver",
-      "revision": "origin/version/0.9"
+      "revision": "tags/0.10.0"
     },
     "platform": {
       "apt": {
-        "basic": "= 'http://deb.leap.se/' + Leap::Platform.major_version"
+        "basic": "http://deb.leap.se/platform",
+        "component": "0.10"
       }
     },
     "soledad": {
@@ -86,7 +88,7 @@
     "webapp": {
       "type": "git",
       "source": "https://leap.se/git/leap_web",
-      "revision": "origin/version/0.8"
+      "revision": "tags/0.9.2"
     }
   }
 }

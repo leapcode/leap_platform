@@ -9,14 +9,14 @@
     "all": {
       "map": "                function(doc) {\n                  if (doc['type'] == 'Identity') {\n                    emit(doc._id, null);\n                  }\n                }\n"
     },
-    "cert_fingerprints_by_expiry": {
-      "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.cert_fingerprints === \"object\") {\n    for (fp in doc.cert_fingerprints) {\n      if (doc.cert_fingerprints.hasOwnProperty(fp)) {\n        emit(doc.cert_fingerprints[fp], fp);\n      }\n    }\n  }\n}\n"
+    "disabled": {
+      "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.user_id === \"undefined\") {\n    emit(doc._id, 1);\n  }\n}\n"
     },
     "cert_expiry_by_fingerprint": {
       "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.cert_fingerprints === \"object\") {\n    for (fp in doc.cert_fingerprints) {\n      if (doc.cert_fingerprints.hasOwnProperty(fp)) {\n        emit(fp, doc.cert_fingerprints[fp]);\n      }\n    }\n  }\n}\n"
     },
-    "disabled": {
-      "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.user_id === \"undefined\") {\n    emit(doc._id, 1);\n  }\n}\n"
+    "cert_fingerprints_by_expiry": {
+      "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.cert_fingerprints === \"object\") {\n    for (fp in doc.cert_fingerprints) {\n      if (doc.cert_fingerprints.hasOwnProperty(fp)) {\n        emit(doc.cert_fingerprints[fp], fp);\n      }\n    }\n  }\n}\n"
     },
     "pgp_key_by_email": {
       "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.keys === \"object\") {\n    emit(doc.address, doc.keys[\"pgp\"]);\n  }\n}\n"

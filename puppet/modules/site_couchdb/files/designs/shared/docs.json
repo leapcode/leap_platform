@@ -1,8 +1,0 @@
-{
-   "_id": "_design/docs", 
-   "views": {
-      "get": {
-         "map": "function(doc) {\n    if (doc.u1db_rev) {\n        var is_tombstone = true;\n        var has_conflicts = false;\n        if (doc._attachments) {\n            if (doc._attachments.u1db_content)\n                is_tombstone = false;\n            if (doc._attachments.u1db_conflicts)\n                has_conflicts = true;\n        }\n        emit(doc._id,\n            {\n                \"couch_rev\": doc._rev,\n                \"u1db_rev\": doc.u1db_rev,\n                \"is_tombstone\": is_tombstone,\n                \"has_conflicts\": has_conflicts,\n            }\n        );\n    }\n}\n"
-      }
-   }
-}

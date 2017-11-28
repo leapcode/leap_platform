@@ -133,8 +133,8 @@ openvpn - LEAP Platform Documentation
 <p><em>Essential configuration</em></p>
 
 <ul>
-<li><code>openvpn.gateway_address</code>: The address that OpenVPN daemon is bound to and that VPN clients connect to.</li>
 <li><code>ip_address</code>: The main IP of the server, and the egress address for outgoing traffic.</li>
+<li><code>openvpn.gateway_address</code>: A secondary address on the same machine (sharing the same interface, or on a separate interface). The OpenVPN daemon is bound to this address and VPN clients connect to it.</li>
 </ul>
 
 

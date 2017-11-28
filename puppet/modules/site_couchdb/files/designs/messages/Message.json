@@ -2,12 +2,12 @@
   "_id": "_design/Message",
   "language": "javascript",
   "views": {
-    "by_user_ids_to_show": {
-      "map": "function (doc) {\n  if (doc.type === 'Message' && doc.user_ids_to_show && Array.isArray(doc.user_ids_to_show)) {\n    doc.user_ids_to_show.forEach(function (userId) {\n      emit(userId, 1);\n    });\n  }\n}\n",
-      "reduce": "          function(key, values, rereduce) {\n            return sum(values);\n          }\n"
-    },
     "by_user_ids_to_show_and_created_at": {
       "map": "// not using at moment\n// call with something like Message.by_user_ids_to_show_and_created_at.startkey([user_id, start_date]).endkey([user_id,end_date])\nfunction (doc) {\n  if (doc.type === 'Message' && doc.user_ids_to_show && Array.isArray(doc.user_ids_to_show)) {\n    doc.user_ids_to_show.forEach(function (userId) {\n      emit([userId, doc.created_at], 1);\n    });\n  }\n}\n",
+      "reduce": "          function(key, values, rereduce) {\n            return sum(values);\n          }\n"
+    },
+    "by_user_ids_to_show": {
+      "map": "function (doc) {\n  if (doc.type === 'Message' && doc.user_ids_to_show && Array.isArray(doc.user_ids_to_show)) {\n    doc.user_ids_to_show.forEach(function (userId) {\n      emit(userId, 1);\n    });\n  }\n}\n",
       "reduce": "          function(key, values, rereduce) {\n            return sum(values);\n          }\n"
     },
     "all": {

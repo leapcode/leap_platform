@@ -4,6 +4,7 @@ require 'json'
 
 class Webapp < LeapTest
   depends_on "Network"
+  depends_on "Soledad" if service?(:soledad)
 
   def setup
   end
@@ -16,19 +17,9 @@ class Webapp < LeapTest
     pass
   end
 
-  def test_02_Can_contact_couchdb_via_haproxy?
-    if property('haproxy.couch')
-      url = couchdb_url_via_haproxy("", url_options)
-      assert_get(url) do |body|
-        assert_match /"couchdb":"Welcome"/, body, "Request to #{url} should return couchdb welcome message."
-      end
-      pass
-    end
-  end
-
   def test_03_Are_daemons_running?
-    assert_running '^/usr/sbin/apache2'
-    assert_running '^ruby /usr/bin/nickserver'
+    assert_running match: '^/usr/sbin/apache2'
+    assert_running match: 'ruby /usr/bin/nickserver'
     pass
   end
 

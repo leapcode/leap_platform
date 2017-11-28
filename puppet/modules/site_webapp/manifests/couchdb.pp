@@ -1,9 +1,10 @@
+# Configures webapp couchdb config
 class site_webapp::couchdb {
 
   $webapp                  = hiera('webapp')
-  # haproxy listener on port localhost:4096, see site_webapp::haproxy
+  # stunnel endpoint on port localhost:4000
   $couchdb_host            = 'localhost'
-  $couchdb_port            = '4096'
+  $couchdb_port            = $webapp['couchdb_port']
   $couchdb_webapp_user     = $webapp['couchdb_webapp_user']['username']
   $couchdb_webapp_password = $webapp['couchdb_webapp_user']['password']
   $couchdb_admin_user      = $webapp['couchdb_admin_user']['username']
@@ -22,8 +23,8 @@ class site_webapp::couchdb {
     # couchdb.admin.yml is a symlink to prevent the vcsrepo resource
     # from changing its user permissions every time.
     '/srv/leap/webapp/config/couchdb.admin.yml':
-      ensure => 'link',
-      target => '/etc/leap/couchdb.admin.yml',
+      ensure  => 'link',
+      target  => '/etc/leap/couchdb.admin.yml',
       require => Vcsrepo['/srv/leap/webapp'];
 
     '/etc/leap/couchdb.admin.yml':

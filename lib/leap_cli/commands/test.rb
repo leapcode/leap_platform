@@ -35,7 +35,7 @@ module LeapCli; module Commands
         SSH::remote_command(node, options) do |ssh, host|
           ssh.stream(test_cmd(options), :raise_error => true, :log_wrap => true)
         end
-      rescue LeapCli::SSH::ExecuteError
+      rescue LeapCli::SSH::TimeoutError, SSHKit::Runner::ExecuteError, SSHKit::Command::Failed
         if options[:continue]
           exit_status(1)
         else

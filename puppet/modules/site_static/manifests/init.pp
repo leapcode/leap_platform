@@ -7,11 +7,17 @@ class site_static {
   include site_config::x509::key
   include site_config::x509::ca_bundle
 
-  $static         = hiera('static')
-  $domains        = $static['domains']
-  $formats        = $static['formats']
-  $bootstrap      = $static['bootstrap_files']
-  $tor            = hiera('tor', false)
+  $services  = hiera('services', [])
+  $static    = hiera('static')
+  $domains   = $static['domains']
+  $formats   = $static['formats']
+  $bootstrap = $static['bootstrap_files']
+  $tor       = hiera('tor', false)
+  if $tor and member($services, 'tor_hidden_service') {
+    $onion_active = true
+  } else {
+    $onion_active = false
+  }
 
   file {
     '/srv/static/':
@@ -54,10 +60,8 @@ class site_static {
   include site_config::ruby::dev
 
   if (member($formats, 'rack')) {
-    include site_apt::preferences::passenger
     class { 'passenger':
       manage_munin => false,
-      require      => Class['site_apt::preferences::passenger']
     }
   }
 
@@ -67,16 +71,18 @@ class site_static {
     }
 
     package { 'zlib1g-dev':
-        ensure => installed
+      ensure => installed
     }
   }
 
-  if $tor {
+  if $onion_active {
     $hidden_service = $tor['hidden_service']
-    $tor_domain     = "${hidden_service['address']}.onion"
-    if $hidden_service['active'] {
-      include site_static::hidden_service
+    $onion_domain     = "${hidden_service['address']}.onion"
+    class { 'site_static::hidden_service':
+      single_hop => $hidden_service['single_hop'],
+      v3         => $hidden_service['v3']
     }
+
     # Currently, we only support a single hidden service address per server.
     # So if there is more than one domain configured, then we need to make sure
     # we don't enable the hidden service for every domain.

@@ -1,6 +1,7 @@
 # configure webapp service
 class site_webapp {
   tag 'leap_service'
+  $services         = hiera('services', [])
   $definition_files = hiera('definition_files')
   $provider         = $definition_files['provider']
   $eip_service      = $definition_files['eip_service']
@@ -10,6 +11,7 @@ class site_webapp {
   $provider_domain  = $node_domain['full_suffix']
   $webapp           = hiera('webapp')
   $api_version      = $webapp['api_version']
+  $secret_key_base  = $webapp['secret_key_base']
   $secret_token     = $webapp['secret_token']
   $tor              = hiera('tor', false)
   $sources          = hiera('sources')
@@ -19,7 +21,6 @@ class site_webapp {
   include ::site_config::ruby::dev
   include ::site_webapp::apache
   include ::site_webapp::couchdb
-  include ::site_haproxy
   include ::site_webapp::cron
   include ::site_config::default
   include ::site_config::x509::cert
@@ -106,7 +107,9 @@ class site_webapp {
     '/srv/leap/webapp/public/ca.crt':
       ensure  => link,
       require => Vcsrepo['/srv/leap/webapp'],
+      # lint:ignore:variable_is_lowercase
       target  => "${x509::variables::local_CAs}/${site_config::params::ca_name}.crt";
+      # lint:endignore
 
     "/srv/leap/webapp/public/${api_version}":
       ensure  => directory,
@@ -175,11 +178,9 @@ class site_webapp {
       notify  => Service['apache'];
   }
 
-  if $tor {
+  if $tor and member($services, 'tor_hidden_service') {
     $hidden_service = $tor['hidden_service']
-    if $hidden_service['active'] {
-      include ::site_webapp::hidden_service
-    }
+    include ::site_webapp::hidden_service
   }
 
 

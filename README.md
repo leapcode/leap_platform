@@ -1,7 +1,7 @@
 Leap Platform
 =============================
 
-[![Build Status](https://0xacab.org/leap/platform/badges/develop/build.svg)](https://0xacab.org/leap/platform/commits/develop)
+[![Build Status](https://0xacab.org/leap/platform/badges/master/build.svg)](https://0xacab.org/leap/platform/commits/master)
 
 The LEAP Platform is set of complementary packages and server recipes to
 automate the maintenance of LEAP services in a hardened Debian environment. Its
@@ -36,6 +36,13 @@ walk you through using Vagrant to setup a test deployment.
 For a live deployment of the platform, the number of servers that is required
 depends on your needs and which services you want to deploy. At the moment, the
 LEAP Platform supports servers with a base Debian Jessie installation.
+
+Upgrading
+=============================
+
+If you are upgrading from a previous version of the LEAP Platform, take special
+care to follow the instructions detailed in the CHANGES.md to move from one
+release to the next.
 
 Troubleshooting
 =============================

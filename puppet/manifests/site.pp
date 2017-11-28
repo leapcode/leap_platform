@@ -44,8 +44,16 @@ node default {
     include site_nagios
   }
 
-  if member($services, 'tor') {
-    include site_tor
+  if member($services, 'tor_relay') {
+    include site_tor::relay
+  }
+
+  if member($services, 'tor_exit') {
+    include site_tor::relay
+  }
+
+  if member($services, 'tor_hidden_service') {
+    include site_tor::hidden_service
   }
 
   if member($services, 'mx') {

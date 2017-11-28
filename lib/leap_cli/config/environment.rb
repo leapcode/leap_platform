@@ -122,14 +122,25 @@ module LeapCli; module Config
     end
 
     #
-    # Alters the node's json config file. Unfortunately, doing this will
-    # strip out all the comments.
+    # Alters the node's json config file. As a side effect, all comments get
+    # moved to the top of the file.
     #
-    def update_node_json(node, new_values)
+    # NOTE: This does a shallow merge! In other words, a call like this...
+    #
+    #     update_node_json(node, {"webapp" => {"domain" => "example.org"})
+    #
+    # ...is probably not what you want, because it will entirely remove all
+    # existing entries under "webapp".
+    #
+    def update_node_json(node, new_values, options=nil)
       node_json_path = Path.named_path([:node_config, node.name])
+      comments       = read_comments(node_json_path)
       old_data       = load_json(node_json_path, Config::Node)
+      options && options[:remove] && options[:remove].each do |key|
+        old_data.delete(key)
+      end
       new_data       = old_data.merge(new_values)
-      new_contents   = JSON.sorted_generate(new_data) + "\n"
+      new_contents   = [comments, JSON.sorted_generate(new_data), "\n"].join
       Util::write_file! node_json_path, new_contents
     end
 
@@ -150,6 +161,17 @@ module LeapCli; module Config
         end
       end
       results
+    end
+
+    def read_comments(filename)
+      buffer = StringIO.new
+      File.open(filename, "rb", :encoding => 'UTF-8') do |f|
+        while (line = f.gets)
+          next unless line =~ /^\s*\/\//
+          buffer << line
+        end
+      end
+      return buffer.string.force_encoding('utf-8')
     end
 
     def load_json(filename, object_class, options={})

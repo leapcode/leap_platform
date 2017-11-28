@@ -30,3 +30,6 @@ tests/platform-ci/provider/users/gitlab-runner-platform/*
 /tests/platform-ci/provider/test
 
 /builds
+
+/.ruby-version
+/.rbenv-gemsets

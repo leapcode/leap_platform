@@ -5,6 +5,15 @@
 
 class site_stunnel {
 
+  # Install stunnel4 from jessie-backports because the
+  # jessie version randonly closes the connection prematurely
+  # see https://0xacab.org/leap/platform/issues/8746
+  apt::preferences_snippet { 'stunnel4':
+    package  => 'stunnel4',
+    release  => "${::lsbdistcodename}-backports",
+    priority => 999;
+  }
+
   # include the generic stunnel module
   # increase the number of open files to allow for 800 connections
   class { 'stunnel': default_extra => 'ulimit -n 4096' }
@@ -45,4 +54,3 @@ class site_stunnel {
 
   include site_stunnel::override_service
 }
-

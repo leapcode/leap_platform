@@ -140,21 +140,13 @@ class site_postfix::mx {
   # greater verbosity for debugging, take out for production
   #include site_postfix::debug
 
-  case $::operatingsystemrelease {
-    /^7.*/: {
-      $smtpd_relay_restrictions=''
-    }
-    default:  {
-      $smtpd_relay_restrictions="  -o smtpd_relay_restrictions=\$smtps_relay_restrictions\n"
-    }
-  }
-
   $mastercf_tail = "
 smtps     inet  n       -       -       -       -       smtpd
   -o smtpd_tls_wrappermode=yes
   -o smtpd_tls_security_level=encrypt
   -o tls_preempt_cipherlist=yes
-${smtpd_relay_restrictions}  -o smtpd_recipient_restrictions=\$smtps_recipient_restrictions
+  -o smtpd_relay_restrictions=\$smtps_relay_restrictions
+  -o smtpd_recipient_restrictions=\$smtps_recipient_restrictions
   -o smtpd_helo_restrictions=\$smtps_helo_restrictions
   -o smtpd_client_restrictions=
   -o cleanup_service_name=clean_smtps

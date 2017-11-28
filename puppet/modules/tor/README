@@ -113,7 +113,7 @@ Installing torsocks
 
 To install torsocks, simply include the 'torsocks' class in your manifests:
 
-    class { 'torsocks': }
+    class { 'tor::torsocks': }
 
 You can specify the $ensure_version class parameter to get a specific
 version installed.

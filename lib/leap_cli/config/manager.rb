@@ -342,14 +342,25 @@ module LeapCli
         if node.vagrant?
           return self.env("local")
         else
-          environment = self.env(default_environment)
+          environment = nil
           if node['tags']
             node['tags'].to_a.each do |tag|
               if self.environment_names.include?(tag)
-                environment = self.env(tag)
+                if environment.nil?
+                  environment = self.env(tag)
+                else
+                  LeapCli::Util.bail! do
+                    LeapCli.log(
+                      :error,
+                      "The node '%s' is invalid, because it cannot have two environments ('%s' and '%s')." %
+                      [node.name, environment.name, tag]
+                    )
+                  end
+                end
               end
             end
           end
+          environment ||= self.env(default_environment)
           return environment
         end
       end

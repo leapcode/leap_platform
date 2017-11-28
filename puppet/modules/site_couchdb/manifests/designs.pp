@@ -11,6 +11,14 @@ class site_couchdb::designs {
     mode    => '0755'
   }
 
+  #cleanup leftovers from before soledad created its db
+  file {
+    '/srv/leap/couchdb/designs/shared/':
+    ensure  => absent,
+    recurse => true,
+    force   => true,
+  }
+
   site_couchdb::upload_design {
     'customers':    design => 'customers/Customer.json';
     'identities':   design => 'identities/Identity.json';
@@ -19,15 +27,6 @@ class site_couchdb::designs {
     'users':        design => 'users/User.json';
     'tmp_users':    design => 'users/User.json';
     'invite_codes': design => 'invite_codes/InviteCode.json';
-    'shared_docs':
-      db => 'shared',
-      design => 'shared/docs.json';
-    'shared_syncs':
-      db => 'shared',
-      design => 'shared/syncs.json';
-    'shared_transactions':
-      db => 'shared',
-      design => 'shared/transactions.json';
   }
 
   $sessions_db      = rotated_db_name('sessions', 'monthly')

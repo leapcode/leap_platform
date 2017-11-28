@@ -16,4 +16,5 @@ group :test do
   # Install fog-aws because the gem dependency of leap_cli is now optional
   gem "fog-aws"
   gem "leap_cli", :git => 'https://leap.se/git/leap_cli.git'
+  gem "fog-aws"
 end

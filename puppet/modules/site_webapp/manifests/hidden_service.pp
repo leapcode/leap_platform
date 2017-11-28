@@ -1,8 +1,10 @@
 # Configure tor hidden service for webapp
 class site_webapp::hidden_service {
+  Class['site_tor::hidden_service'] -> Class['site_webapp::hidden_service']
+  include site_tor::hidden_service
   $tor              = hiera('tor')
   $hidden_service   = $tor['hidden_service']
-  $tor_domain       = "${hidden_service['address']}.onion"
+  $onion_domain     = "${hidden_service['address']}.onion"
 
   include site_apache::common
   include apache::module::headers
@@ -10,27 +12,30 @@ class site_webapp::hidden_service {
   include apache::module::expires
   include apache::module::removeip
 
-  include tor::daemon
-  tor::daemon::hidden_service { 'webapp': ports => [ '80 127.0.0.1:80'] }
+  tor::daemon::hidden_service { 'webapp':
+    ports      => [ '80 127.0.0.1:80'],
+    single_hop => $hidden_service['single_hop'],
+    v3         => $hidden_service['v3']
+  }
 
   file {
     '/var/lib/tor/webapp/':
-      ensure  => directory,
-      owner   => 'debian-tor',
-      group   => 'debian-tor',
-      mode    => '2700';
+      ensure => directory,
+      owner  => 'debian-tor',
+      group  => 'debian-tor',
+      mode   => '2700';
 
     '/var/lib/tor/webapp/private_key':
-      ensure  => present,
-      source  => "/srv/leap/files/nodes/${::hostname}/tor.key",
-      owner   => 'debian-tor',
-      group   => 'debian-tor',
-      mode    => '0600',
-      notify  => Service['tor'];
+      ensure => present,
+      source => "/srv/leap/files/nodes/${::hostname}/tor.key",
+      owner  => 'debian-tor',
+      group  => 'debian-tor',
+      mode   => '0600',
+      notify => Service['tor'];
 
     '/var/lib/tor/webapp/hostname':
       ensure  => present,
-      content => "${tor_domain}\n",
+      content => "${onion_domain}\n",
       owner   => 'debian-tor',
       group   => 'debian-tor',
       mode    => '0600',

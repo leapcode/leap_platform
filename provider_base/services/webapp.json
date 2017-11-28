@@ -11,6 +11,7 @@
       "tickets", "vmail", "www-data"],
     "domain": "= provider.domain",
     "modules": ["user", "billing", "help"],
+    "couchdb_port": "= couchdb_port",
     "couchdb_webapp_user": "= global.services[:couchdb].couch.users[:webapp]",
     "couchdb_admin_user": "= global.services[:couchdb].couch.users[:admin]",
     "customization_dir": "= file_path 'webapp'",
@@ -22,6 +23,7 @@
     "invite_required": "= provider.enrollment_policy == 'invite'",
     "default_service_level": "= provider.service.default_service_level",
     "service_levels": "= service_levels()",
+    "secret_key_base": "= secret :webapp_secret_key_base",
     "secret_token": "= secret :webapp_secret_token",
     "api_version": 1,
     "secure": false,
@@ -45,12 +47,6 @@
       "couch_client": "= stunnel_client(nodes_like_me[:services => :couchdb], global.services[:couchdb].couch.port)"
     }
   },
-  "haproxy": {
-    "couch": {
-      "listen_port": 4096,
-      "servers": "= haproxy_servers(nodes_like_me[:services => :couchdb], stunnel.clients.couch_client, global.services[:couchdb].couch.port)"
-    }
-  },
   "definition_files": {
     "provider": "= file :provider_json_template",
     "eip_service": "= file [:eip_service_json_template, 'v'+webapp.api_version.to_s]",
@@ -67,15 +63,13 @@
   },
   "nickserver": {
     "domain": "= 'nicknym.' + domain.full_suffix",
+    "couchdb_port": "= couchdb_port",
     "couchdb_nickserver_user": {
       "username": "= global.services[:couchdb].couch.users[:nickserver].username",
       "password": "= secret :couch_nickserver_password",
       "salt": "= hex_secret :couch_nickserver_password_salt, 128"
     },
     "port": 6425
-  },
-  "dns": {
-    "aliases": "= [domain.full, webapp.domain, api.domain, nickserver.domain]"
   },
   "x509": {
     "use": true,

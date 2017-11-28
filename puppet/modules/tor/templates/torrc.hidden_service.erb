@@ -1,6 +1,20 @@
+<% if @single_hop != false %>
+HiddenServiceSingleHopMode 1
+HiddenServiceNonAnonymousMode 1
+SOCKSPort 0
+<% end %>
+
 # hidden service <%= @name %>
 HiddenServiceDir <%= @data_dir %>/<%= @name %>
 <% @ports.each do |port| -%>
 HiddenServicePort <%= port %>
 <% end -%>
 
+<% if @v3 != false %>
+# hidden service v3 static
+HiddenServiceDir <%= @data_dir %>/<%= @name -%>3
+HiddenServiceVersion 3
+<% @ports.each do |port| -%>
+HiddenServicePort <%= port %>
+<% end -%>
+<% end -%>
