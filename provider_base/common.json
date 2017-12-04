@@ -72,12 +72,12 @@
     "nickserver": {
       "type": "git",
       "source": "https://leap.se/git/nickserver",
-      "revision": "tags/0.10.0"
+      "revision": "origin/master"
     },
     "platform": {
       "apt": {
         "basic": "http://deb.leap.se/platform",
-        "component": "0.10"
+        "component": "master"
       }
     },
     "soledad": {
@@ -88,7 +88,7 @@
     "webapp": {
       "type": "git",
       "source": "https://leap.se/git/leap_web",
-      "revision": "tags/0.9.2"
+      "revision": "origin/master"
     }
   }
 }
