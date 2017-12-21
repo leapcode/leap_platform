@@ -1,13 +1,10 @@
 ---
 image: 0xacab.org:4567/leap/docker/ruby:latest
 
-# This is for caching the gems not only between the stages, but also
-# persistent on the gitlab-runner so we don't need to install from
-# scratch on every pipeline
 cache:
-  key: "global_platform_cache_between_pipelines"
   untracked: true
   paths:
+    # Cache gems
     - tests/platform-ci/vendor/
 
 before_script:
