@@ -9,7 +9,7 @@ cache:
 
 before_script:
   - cd tests/platform-ci
-  - time ./setup.sh
+  - su -c 'time ./setup.sh' cirunner
 
 stages:
   - syntax
