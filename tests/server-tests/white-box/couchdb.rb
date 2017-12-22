@@ -51,20 +51,26 @@ class CouchDB < LeapTest
     end
   end
 
+  #
+  # TODO: test for the existance of 'soledad' user if soledad service is enabled.
+  #
   def test_04_Do_ACL_users_exist?
-    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'soledad', 'webapp', 'replication']
+    acl_users = ['_design/_auth', 'leap_mx', 'nickserver', 'webapp', 'replication']
     url = couchdb_backend_url("/_users/_all_docs", :username => 'admin')
     assert_get(url) do |body|
       response = JSON.parse(body)
-      assert_equal acl_users.count, response['total_rows']
       actual_users = response['rows'].map{|row| row['id'].sub(/^org.couchdb.user:/, '') }
+      actual_users.delete('soledad') # for now, ignore user 'soledad'
       assert_equal acl_users.sort, actual_users.sort
     end
     pass
   end
 
+  #
+  # TODO: test for the existance of 'shared' db if soledad service is enabled.
+  #
   def test_05_Do_required_databases_exist?
-    dbs_that_should_exist = ["customers","identities","keycache","shared","tickets","users", "tmp_users"]
+    dbs_that_should_exist = ["customers","identities","keycache","tickets","users", "tmp_users"]
     dbs_that_should_exist << "tokens_#{rotation_suffix}"
     dbs_that_should_exist << "sessions_#{rotation_suffix}"
     dbs_that_should_exist.each do |db_name|
