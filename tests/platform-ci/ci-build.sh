@@ -84,11 +84,14 @@ ssh_setup() {
   SSH_PRIVATE_KEY=${!CI_SSH_SECRET_PRIVATE_KEY}
   echo "Working with provider: $provider_name"
   [ -z "$SSH_PRIVATE_KEY" ] && fail "${provider_name}_PROVIDER_SSH_PRIVATE_KEY is not set - please provide it as env variable."
-  # Configure ssh keypair
-  [ -d ~/.ssh ] || /bin/mkdir ~/.ssh
-  /bin/echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-  /bin/chmod 600 ~/.ssh/id_rsa
-  /bin/cp "${ROOTDIR}/provider/users/gitlab-runner-${provider_name}/gitlab-runner-${provider_name}_ssh.pub" ~/.ssh/id_rsa.pub
+  # install ssh-agent
+  which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
+  # run ssh-agent
+  eval $(ssh-agent -s)
+  # add ssh key stored in SSH_PRIVATE_KEY variable to the agent store
+  # see https://gitlab.com/gitlab-org/gitlab-ee/issues/2940 for fixing
+  # broken line endings
+  ssh-add <(echo "$SSH_PRIVATE_KEY" | sed 's/\r$//')
 }
 
 build_from_scratch() {
