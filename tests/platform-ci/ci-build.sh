@@ -92,6 +92,9 @@ ssh_setup() {
   # see https://gitlab.com/gitlab-org/gitlab-ee/issues/2940 for fixing
   # broken line endings
   ssh-add <(echo "$SSH_PRIVATE_KEY" | sed 's/\r$//')
+
+  [ -d ~/.ssh ] || /bin/mkdir ~/.ssh
+  /bin/cp "${ROOTDIR}/provider/users/gitlab-runner-${provider_name}/gitlab-runner-${provider_name}_ssh.pub" ~/.ssh/id_rsa.pub
 }
 
 build_from_scratch() {
