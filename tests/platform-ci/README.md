@@ -25,7 +25,7 @@ In order to do so, you need to set your AWS credentials as environment variables
 
 If you want to login to this machine during or after the deploy you need to 
 
-    export SSH_PRIVATE_KEY=$(cat ~/.ssh/id_rsa)
+    export platform_PROVIDER_SSH_PRIVATE_KEY=$(cat ~/.ssh/id_rsa)
 
 then start the deply test with
 
@@ -36,10 +36,10 @@ then start the deply test with
 Another possibility to run the platform tests is to use [gitlab-runner](https://docs.gitlab.com/runner/)
 together with [Docker](https://www.docker.com/).
 
-Export `AWS_ACCESS_KEY`, `AWS_SECRET_KEY` and `SSH_PRIVATE_KEY` as shown above.
+Export `AWS_ACCESS_KEY`, `AWS_SECRET_KEY` and `platform_PROVIDER_SSH_PRIVATE_KEY` as shown above.
 From the root dir of this repo run:
 
-    gitlab-runner exec docker --env AWS_ACCESS_KEY="$AWS_ACCESS_KEY" --env AWS_SECRET_KEY="$AWS_SECRET_KEY" --env platform_PROVIDER_SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" deploy_test
+    gitlab-runner exec docker --env AWS_ACCESS_KEY="$AWS_ACCESS_KEY" --env AWS_SECRET_KEY="$AWS_SECRET_KEY" --env platform_PROVIDER_platform_PROVIDER_SSH_PRIVATE_KEY="$platform_PROVIDER_SSH_PRIVATE_KEY" deploy_test
 
 See `.gitlab-ci.yml` for all the different test jobs.
 
