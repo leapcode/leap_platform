@@ -39,7 +39,7 @@ together with [Docker](https://www.docker.com/).
 Export `AWS_ACCESS_KEY`, `AWS_SECRET_KEY` and `platform_PROVIDER_SSH_PRIVATE_KEY` as shown above.
 From the root dir of this repo run:
 
-    gitlab-runner exec docker --env AWS_ACCESS_KEY="$AWS_ACCESS_KEY" --env AWS_SECRET_KEY="$AWS_SECRET_KEY" --env platform_PROVIDER_platform_PROVIDER_SSH_PRIVATE_KEY="$platform_PROVIDER_SSH_PRIVATE_KEY" deploy_test
+    gitlab-runner exec docker --env AWS_ACCESS_KEY="$AWS_ACCESS_KEY" --env AWS_SECRET_KEY="$AWS_SECRET_KEY" --env platform_PROVIDER_SSH_PRIVATE_KEY="$platform_PROVIDER_SSH_PRIVATE_KEY" deploy_test
 
 See `.gitlab-ci.yml` for all the different test jobs.
 
