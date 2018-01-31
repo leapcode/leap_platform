@@ -18,6 +18,9 @@
     "cert_fingerprints_by_expiry": {
       "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.cert_fingerprints === \"object\") {\n    for (fp in doc.cert_fingerprints) {\n      if (doc.cert_fingerprints.hasOwnProperty(fp)) {\n        emit(doc.cert_fingerprints[fp], fp);\n      }\n    }\n  }\n}\n"
     },
+    "keys_by_email": {
+      "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.keys === \"object\") {\n    emit(doc.address, doc.keys);\n  }\n}\n"
+    },
     "pgp_key_by_email": {
       "map": "function(doc) {\n  if (doc.type != 'Identity') {\n    return;\n  }\n  if (typeof doc.keys === \"object\") {\n    emit(doc.address, doc.keys[\"pgp\"]);\n  }\n}\n"
     },
@@ -30,5 +33,5 @@
       "reduce": "_sum"
     }
   },
-  "couchrest-hash": "4a774c3f56122b655a314670403b27e2"
+  "couchrest-hash": "fbc2bd6950424cf7f3fa44ff899615a1"
 }
