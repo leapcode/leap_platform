@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>
+Upgrade to 0.10 - LEAP Platform Documentation
+</title>
+<meta content='width=device-width, initial-scale=1.0' name='viewport'>
+<meta charset='UTF-8'>
+<base href="" />
+<style>
+  body {
+    background: #444;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin: 0px;
+  }
+  #sidebar {
+    flex: 0 0 250px;
+    background: white;
+    margin-right: 10px;
+    padding: 20px;
+  }
+  #sidebar ul {
+    list-style-type: none;
+    padding-left: 0px;
+    margin: 0;
+  }
+  #sidebar li { padding: 4px }
+  #sidebar li a { text-decoration: none }
+  #sidebar li.active { background: #444 }
+  #sidebar li.active a { color: white }
+  #sidebar li.level1 { padding-left: 20px }
+  #sidebar li.level2 { padding-left: 40px }
+  #main {
+    flex: 1 1 auto;
+    background: white;
+    padding: 20px;
+  }
+  #title-box {
+    padding-bottom: 20px;
+    border-bottom: 5px solid #eee;
+  }
+  #title-box h1 {
+    margin-top: 0px;
+  }
+  pre {
+    padding: 10px;
+    background: #eef;
+  }
+  code {
+    background: #eef;
+  }
+  table {border-collapse: collapse}
+  table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    vertical-align: top;
+  }
+</style>
+</head>
+<body>
+<div id='sidebar'>
+<ul>
+<li class=''>
+<a href='../../index.html'>Home</a>
+</li>
+<li class=' level0'>
+<a class='' href='../guide.html'>Guide</a>
+</li>
+<li class=' level0'>
+<a class='' href='../tutorials.html'>Tutorials</a>
+</li>
+<li class=' level0'>
+<a class='' href='../services.html'>Services</a>
+</li>
+<li class='semi-active level0'>
+<a class='' href='../upgrading.html'>Upgrading</a>
+</li>
+<li class='active level1'>
+<a class='' href='upgrade-0-10.html'>Upgrade to 0.10</a>
+</li>
+<li class=' level1'>
+<a class='' href='upgrade-0-9.html'>Upgrade to 0.9</a>
+</li>
+<li class=' level1'>
+<a class='' href='upgrade-0-8.html'>Upgrade to 0.8</a>
+</li>
+<li class=' level0'>
+<a class='' href='../troubleshooting.html'>Troubleshooting</a>
+</li>
+<li class=' level0'>
+<a class='' href='../details.html'>Details</a>
+</li>
+</ul>
+</div>
+<div id='main'>
+<div id='title-box'>
+<h1>Upgrade to 0.10</h1>
+
+<div id='summary'></div>
+</div>
+<div id='content-box'>
+<h2><a name="upgrading-to-platform-010"></a>Upgrading to Platform 0.10</h2>
+
+<p>If you have a node with the service &lsquo;tor&rsquo; defined, you will need to change it to
+be either &lsquo;tor-relay&rsquo;, or &lsquo;tor-exit&rsquo;. Look in your provider directory under the
+nodes directory for any .json file that has a &lsquo;services&rsquo; section with &lsquo;tor&rsquo;
+defined, change that to the correct tor service you are wanting to deploy.</p>
+
+<p>Make sure you have the correct version of leap_cli</p>
+
+<pre><code>workstation$ sudo gem install leap_cli --version=1.9
+</code></pre>
+
+<p>If you are upgrading from a version previous to 0.9, please follow those upgrade
+instructions before upgrading to 0.10.</p>
+
+<p>Prepare your platform source by checking out the 0.10.x branch:</p>
+
+<pre><code>workstation$ cd leap_platform
+workstation$ git fetch
+workstation$ git checkout 0.10.x
+</code></pre>
+
+<p>Then, deploy:</p>
+
+<pre><code>workstation$ cd $PROVIDER_DIR
+workstation$ leap deploy
+workstation$ leap test
+</code></pre>
+
+<p>After deployment, if the leap test does not succeed, you should
+investigate. Please see below for some post-deployment upgrade steps that you
+may need to perform.</p>
+
+<p>Starting with Soledad Server 0.9.0, the CouchDB database schema was changed to
+improve speed of the server side storage backend. If you provided email, you
+will need to run the migration script, otherwise it is unnecessary. Until you
+migrate, soledad will refuse to start.</p>
+
+<p>To run the migration script, do the following (replacing $PROVIDER_DIR,
+$COUCHDB_NODE, $MX_NODE, and $SOLEDAD_NODE with your values):</p>
+
+<p>First backup your couchdb databases, just to be safe. NOTE: This can take some
+time and will place several hundred megabytes of data into
+/var/backups/couchdb. The size and time depends on how many users there are on
+your system. For example, 15k users took approximately 25 minutes and 308M of
+space:
+    workstation$ leap ssh $COUCHDB_NODE
+    server# cd /srv/leap/couchdb/scripts
+    server# ./cleanup-user-dbs
+    server# time ./couchdb_dumpall.sh</p>
+
+<p> Once that has finished, then its time to run the migration:</p>
+
+<pre><code>workstation$ cd $PROVIDER_DIR
+workstation$ leap run 'systemctl leap_mx stop' $MX_NODE
+workstation$ leap run --stream '/usr/share/soledad-server/migration/0.9/migrate.py --log-file /var/log/leap/soledad_migration --verbose --do-migrate' $SOLEDAD_NODE
+wait for it to finish (will print DONE)
+rerun if interrupted
+workstation$ leap deploy
+workstation$ leap test
+</code></pre>
+
+<p>Known Issues:</p>
+
+<p>If you have been deploying from our master branch (ie: unstable code), you might
+end up with a broken sources line for apt. If you get the following:
+    WARNING: The following packages cannot be authenticated!
+Then you should remove the files on your nodes inside
+/var/lib/puppet/modules/apt/keys and deploy again. (#8862, #8876)</p>
+
+<ul>
+<li>When upgrading, sometimes systemd does not report the correct state of a
+daemon. The daemon will be not running, but systemd thinks it is. The symptom
+of this is that a deploy will succeed but <code>leap test</code> will fail. To fix, you
+can run <code>systemctl stop DAEMON</code> and then <code>systemctl start DAEMON</code> on the
+affected host (systemctl restart seems to work less reliably).</li>
+</ul>
+
+
+<p>Includes:</p>
+
+<ul>
+<li>leap_web: 0.9.2</li>
+<li>nickserver: 0.10.0</li>
+<li>leap-mx: 0.10.1</li>
+<li>soledad-server: 0.10.5</li>
+</ul>
+
+
+<p>Commits: <a href="https://0xacab.org/groups/leap/milestones/platform-010?title=Platform+0.10">https://0xacab.org/groups/leap/milestones/platform-010?title=Platform+0.10</a></p>
+
+<p>For details on about all the changes included in this release please consult the
+<a href="https://0xacab.org/leap/platform/milestones/7">LEAP platform 0.10 milestone</a>.</p>
+
+<p>Always a good idea to check if you have the latest version of leap_cli:</p>
+
+<pre><code>workstation$ sudo gem install leap_cli --version=1.9
+</code></pre>
+
+<p>If you don&rsquo;t want to install using &lsquo;sudo&rsquo;:</p>
+
+<pre><code>workstation$ gem install --user-install leap_cli --version=1.9
+workstation$ PATH="$PATH:$(ruby -e 'puts Gem.user_dir')/bin"
+</code></pre>
+
+</div>
+</div>
+</body>
+</html>

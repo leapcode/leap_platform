@@ -246,12 +246,13 @@ workstation$ ruby-install ruby
 
 <p>The LEAP platform recipes are a set modules designed to work together to provide you everything you need to manage your provider. You typically do not need to modify these, but do need them available for deploying your provider.</p>
 
-<p>To obtain the platform recipes, simply clone the git repository, and then check out the most recent stable release branch:</p>
+<p>To obtain the platform recipes, simply clone the git repository, and then check out the most recent release tagged stable :</p>
 
-<pre><code>workstation$ git clone -b version/0.9.x https://leap.se/git/leap_platform
+<pre><code>workstation$ git clone https://leap.se/git/leap_platform
+workstation$ git checkout 0.10.0
 </code></pre>
 
-<p>If you want to get the latest development branch (Beware: it could be unstable !) you could simply use the master branch instead by:</p>
+<p>If you want to get the latest developments (Beware: it could be unstable !) you just don&rsquo;t checkout a particular tag :</p>
 
 <pre><code>workstation$ git clone https://leap.se/git/leap_platform
 </code></pre>
@@ -445,7 +446,7 @@ wildebeest# run_tests
 
 <h1><a name="create-an-administrator"></a>Create an administrator</h1>
 
-<p>Assuming that you set up your DNS or <code>/etc/hosts</code> file, you should be able to load <code>https://example.org</code> in your web browser (where example.org is whatever domain name you actually used).</p>
+<p>The registration of new users is since the platform 0.10 restricted by default. You will need to generate an <code>invite code.</code> A simple <code>leap run invite</code> will give you an code like <code>ptxy-rsy1</code> which you can use to register a user. Assuming that you set up your DNS or <code>/etc/hosts</code> file, you should be able to load <code>https://example.org</code> in your web browser (where example.org is whatever domain name you actually used).</p>
 
 <p>Your browser will complain about an untrusted cert, but for now just bypass this. From there, you should be able to register a new user and login.</p>
 
@@ -460,7 +461,7 @@ wildebeest# run_tests
 
 <p>Save that file and run <code>leap deploy</code> again. When you next log on to the web application, the user kangaroo will now be an admin.</p>
 
-<p>If you want to restrict who can register a new user, see <a href="../../services/webapp.html">webapp</a> for configuration options.</p>
+<p>If you want to open up registration of new users, see <a href="../../services/webapp.html">webapp</a> for configuration options.</p>
 
 <h1><a name="what-is-next"></a>What is next?</h1>
 
