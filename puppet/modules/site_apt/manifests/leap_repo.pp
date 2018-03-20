@@ -21,13 +21,19 @@ class site_apt::leap_repo {
     }
   }
 
+  file {
+    '/etc/apt/trusted.gpg.d/leap-archive.gpg':
+      ensure => present,
+      source => 'puppet:///modules/site_apt/keys/leap-archive.gpg';
+    '/etc/apt/trusted.gpg.d/leap-experimental-archive.gpg':
+      ensure => present,
+      source => 'puppet:///modules/site_apt/keys/leap-experimental-archive.gpg'
+  }
+
+
   apt::sources_list { 'leap.list':
     content => "deb [signed-by=${archive_key}] ${::site_apt::apt_url_platform_basic} ${::site_apt::apt_platform_component} ${::site_apt::apt_platform_codename}\n",
     before  => Exec[refresh_apt]
-  }
-
-  package { 'leap-archive-keyring':
-    ensure => latest
   }
 
 }
