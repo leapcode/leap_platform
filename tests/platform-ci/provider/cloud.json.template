@@ -7,7 +7,7 @@
       "aws_access_key_id": "",
       "aws_secret_access_key": ""
     },
-    "default_image": "ami-2a34e94a",
+    "default_image": "ami-310d6c49",
     "default_options": {
       "InstanceType": "t2.small"
     }

@@ -132,6 +132,7 @@ build_from_scratch() {
   [ -z "$AWS_SECRET_KEY" ]  && fail "\$AWS_SECRET_KEY  is not set - please provide it as env variable."
 
   /usr/bin/jq ".platform_ci.auth |= .+ {\"aws_access_key_id\":\"$AWS_ACCESS_KEY\", \"aws_secret_access_key\":\"$AWS_SECRET_KEY\"}" < cloud.json.template > cloud.json
+
   # Enable xtrace again only if it was set at beginning of script
   [[ $xtrace == true ]] && set -x
 
