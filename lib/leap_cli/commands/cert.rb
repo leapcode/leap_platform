@@ -132,7 +132,11 @@ module LeapCli; module Commands
     long_running do
       if cmd_exists?('certtool')
         log 0, 'Generating DH parameters (takes a long time)...'
-        output = assert_run!('certtool --generate-dh-params --sec-param high')
+        if (/darwin/ =~ RUBY_PLATFORM) != nil
+          output = assert_run!('gnutls-certtool --generate-dh-params --sec-param high')
+        else
+          output = assert_run!('certtool --generate-dh-params --sec-param high')
+        end
         output.sub!(/.*(-----BEGIN DH PARAMETERS-----.*-----END DH PARAMETERS-----).*/m, '\1')
         output << "\n"
         write_file!(:dh_params, output)
