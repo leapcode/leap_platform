@@ -4,7 +4,8 @@
 # This script is run on the target server when `leap node init` is run.
 #
 
-DEBIAN_VERSION="^(jessie|8\.)"
+DEBIAN_JESSIE="^(jessie|8\.)"
+DEBIAN_STRETCH="^(stretch|9\.)"
 LEAP_DIR="/srv/leap"
 HIERA_DIR="/etc/leap"
 INIT_FILE="/srv/leap/initialized"
@@ -17,8 +18,10 @@ BAD_APT_RESPONSE="(BADSIG|NO_PUBKEY|KEYEXPIRED|REVKEYSIG|NODATA|Could not resolv
 export DEBIAN_FRONTEND=noninteractive
 
 test -f $INIT_FILE && rm $INIT_FILE
-if ! egrep -q "$DEBIAN_VERSION" /etc/debian_version; then
-  echo "ERROR: This operating system is not supported. The file /etc/debian_version must match /$DEBIAN_VERSION/ but is: `cat /etc/debian_version`"
+if egrep -q "$DEBIAN_STRETCH" /etc/debian_version; then
+  echo "WARNING: This operating system is under development. The file /etc/debian_version must match /$DEBIAN_JESSIE/ but is: `cat /etc/debian_version`"
+  elif ! egrep -q "$DEBIAN_JESSIE" /etc/debian_version; then
+  echo "ERROR: This operating system is not supported. The file /etc/debian_version must match /$DEBIAN_JESSIE/ but is: `cat /etc/debian_version`"
   exit 1
 fi
 mkdir -p $LEAP_DIR
